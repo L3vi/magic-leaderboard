@@ -1,0 +1,21 @@
+{
+  "name": "magic-leaderboard",
+  "version": "1.0.0",
+  "description": "MTG Commander Score Tracker",
+  "scripts": {
+    "start": "parcel public/index.html --port 3000 --open",
+    "server": "node server.js",
+    "predeploy": "parcel build public/index.html --dist-dir docs",
+    "deploy": "gh-pages -d docs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "parcel": "^2.15.2"
+  }
+}
