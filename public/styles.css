@@ -1,99 +1,410 @@
 /* Enhanced styling for the MTG Commander Score Tracker */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #23272f 0%, #3a3f4b 100%);
-    color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #23272f;
+  color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
 }
 
 h1 {
-    text-align: center;
-    margin-top: 32px;
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    color: #4f8cff;
-    text-shadow: 0 2px 8px #000a;
+  text-align: center;
+  margin-top: 28px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  color: #4f8cff;
+  text-shadow: 0 2px 8px #000a;
 }
 
 h2 {
-    text-align: center;
-    margin-top: 16px;
-    color: #b3cfff;
-    font-weight: 400;
+  text-align: center;
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-weight: 400;
 }
 
 ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto;
-    max-width: 600px;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 700px;
+  margin-top: 18px;
+  margin-bottom: 18px;
 }
 
 li {
-    background: rgba(44, 49, 60, 0.95);
-    margin: 18px auto;
-    padding: 24px 20px 18px 20px;
-    border-radius: 14px;
-    max-width: 500px;
-    box-shadow: 0 4px 18px 0 #0004;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.12s;
+  background: rgba(44, 49, 60, 0.95);
+  margin: 18px auto;
+  padding: 22px 18px 14px 18px;
+  border-radius: 14px;
+  max-width: 600px;
+  box-shadow: 0 4px 18px 0 #0003;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.12s;
 }
 
 li:hover {
-    transform: scale(1.025);
-    box-shadow: 0 8px 32px 0 #0006;
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px 0 #0005;
 }
 
 .player-name {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #7ecfff;
-    margin-bottom: 6px;
+  font-weight: 600;
+  color: #7ecfff;
+  margin-bottom: 6px;
 }
 
 .player-score {
-    font-size: 1.1rem;
-    color: #fff;
-    margin-bottom: 10px;
+  color: #fff;
+  margin-bottom: 10px;
 }
 
 .button-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 button {
-    background: linear-gradient(90deg, #4f8cff 0%, #7ecfff 100%);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 18px;
-    margin: 2px 0;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 500;
-    box-shadow: 0 2px 8px #0002;
-    transition: background 0.2s, transform 0.1s;
+  background: #4f8cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  margin: 2px 0;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 2px 8px #0002;
+  transition: background 0.2s, transform 0.1s;
 }
 
 button:hover {
-    background: linear-gradient(90deg, #3762c2 0%, #4f8cff 100%);
-    transform: translateY(-2px) scale(1.07);
+  background: #3762c2;
+  transform: translateY(-2px) scale(1.07);
 }
 
+.scoreboard-container {
+  max-width: 1100px;
+  margin: 32px auto 0 auto;
+  background: rgba(35, 39, 47, 0.98);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px #0004;
+  padding: 28px 18px 32px 18px;
+}
+
+.scoreboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  color: #fff;
+  background: none;
+}
+
+.scoreboard-table th {
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.scoreboard-table th:hover {
+  background: rgba(120, 180, 255, 0.13);
+}
+
+/* --- Redesigned Scoreboard Row & Content Styles --- */
+.scoreboard-row {
+  background: none;
+  transition: background 0.18s;
+  height: 54px;
+  border-radius: 10px;
+  border-bottom: none;
+  margin-bottom: 8px;
+}
+
+.scoreboard-row:nth-child(even) {
+  background: rgba(120, 130, 150, 0.18);
+  border-radius: 10px;
+}
+
+.scoreboard-row:hover {
+  background: rgba(80, 120, 200, 0.1);
+}
+
+:root {
+  --scoreboard-header-font-size: 1.3em;
+  --scoreboard-player-content-font-size: 1.1em;
+  --scoreboard-other-content-font-size: 1.3em;
+  --placement-btns-opacity: 0.25;
+  --placement-btns-opacity-hover: 1;
+  --placement-btns-transition: opacity 0.18s;
+  --placement-btn-bg: #4f8cff;
+  --placement-btn-bg-hover: #3762c2;
+  --placement-btn-plus-hover: #22c55e;
+  --placement-btn-minus-hover: #dc2626;
+}
+
+.scoreboard-table th,
+.scoreboard-header-row,
+.scoreboard-player-header,
+.scoreboard-placement-header {
+  font-size: var(--scoreboard-header-font-size);
+  padding: 10px 0 10px 0;
+  letter-spacing: 0.03em;
+}
+
+.scoreboard-table th.scoreboard-rank-header {
+  width: 38px;
+  min-width: 38px;
+  max-width: 38px;
+}
+
+.scoreboard-table th.scoreboard-player-header {
+  width: 180px;
+  min-width: 120px;
+  max-width: 220px;
+}
+
+.scoreboard-table th.scoreboard-placement-header-score {
+  width: 80px;
+  min-width: 70px;
+  max-width: 90px;
+}
+
+.scoreboard-table th.scoreboard-placement-header-avgscore {
+  width: 90px;
+  min-width: 70px;
+  max-width: 100px;
+}
+
+.scoreboard-table th.scoreboard-placement-header-1st,
+.scoreboard-table th.scoreboard-placement-header-2nd,
+.scoreboard-table th.scoreboard-placement-header-3rd,
+.scoreboard-table th.scoreboard-placement-header-4th {
+  width: 70px;
+  min-width: 60px;
+  max-width: 80px;
+}
+
+.scoreboard-table th.scoreboard-placement-header-games {
+  width: 70px;
+  min-width: 60px;
+  max-width: 80px;
+}
+
+.scoreboard-player-header {
+  text-align: left !important;
+  padding-left: 24px !important;
+  padding-right: 12px !important;
+}
+
+.scoreboard-player-cell,
+.scoreboard-player-name-edit,
+.scoreboard-player-input,
+.scoreboard-save-btn,
+.scoreboard-player-name {
+  font-size: var(--scoreboard-player-content-font-size);
+  padding: 6px 12px 6px 12px;
+  text-align: left !important;
+}
+
+.scoreboard-player-score,
+.scoreboard-placement-count,
+.scoreboard-table
+  td:not(.scoreboard-player-cell):not(.scoreboard-player-name-edit):not(
+    .scoreboard-player-input
+  ):not(.scoreboard-save-btn):not(.scoreboard-player-name),
+.scoreboard-row:not(.scoreboard-player-cell),
+.scoreboard-rank,
+.scoreboard-placement-label {
+  font-size: var(--scoreboard-other-content-font-size);
+  text-align: center;
+  padding: 6px 0 6px 0;
+}
+
+.scoreboard-rank {
+  text-align: right;
+  font-weight: 700;
+  padding: 0 18px 0 0;
+  border: none;
+}
+
+.scoreboard-placement-cell {
+  display: table-cell;
+  border: none;
+  padding: 0 0 0 18px;
+  vertical-align: middle;
+}
+
+.scoreboard-placement-flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* --- Placement Button Styles: Unified, Clean, No Overlap --- */
+.scoreboard-placement-btns-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  width: auto;
+  opacity: var(--placement-btns-opacity);
+  transition: var(--placement-btns-transition);
+}
+
+.scoreboard-placement-flex-row .scoreboard-placement-btns-container {
+  opacity: var(--placement-btns-opacity);
+  transition: var(--placement-btns-transition);
+}
+
+.scoreboard-placement-flex-row:hover .scoreboard-placement-btns-container {
+  opacity: var(--placement-btns-opacity-hover);
+}
+
+.scoreboard-placement-btn {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.85em;
+  box-shadow: 0 1px 4px #0002;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--placement-btn-bg);
+  color: #fff;
+  transition: background 0.2s, color 0.2s, box-shadow 0.1s, transform 0.1s;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.scoreboard-placement-btn:active {
+  box-shadow: 0 2px 8px #0005;
+  transform: scale(0.95);
+}
+
+.scoreboard-placement-btn:hover {
+  background: var(--placement-btn-bg-hover);
+  transform: translateY(-2px) scale(1.07);
+}
+
+.scoreboard-placement-btn-plus:hover {
+  background: var(--placement-btn-plus-hover) !important;
+  color: #fff;
+}
+
+.scoreboard-placement-btn-minus:hover {
+  background: var(--placement-btn-minus-hover) !important;
+  color: #fff;
+}
+
+.scoreboard-placement-btn[aria-label],
+.scoreboard-placement-btn[title] {
+  outline: none;
+}
+
+.scoreboard-placement-btn:focus {
+  outline: 2px solid #7ecfff;
+  outline-offset: 2px;
+}
+
+.scoreboard-player-games-inprogress {
+  color: inherit;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+}
+
+.scoreboard-player-games {
+  padding: 6px 12px;
+  text-align: center;
+}
+
+/* New scoreboard placement header score style */
+.scoreboard-placement-header-score {
+  text-align: unset;
+}
+
+/* Average score styles */
+.scoreboard-player-avgscore {
+  font-size: var(--scoreboard-other-content-font-size);
+  padding: 6px 0 6px 0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.scoreboard-placement-header-avgscore {
+  font-size: var(--scoreboard-header-font-size);
+  padding: 10px 0 10px 0;
+  text-align: center;
+}
+
+/* Edit button style */
+.scoreboard-edit-btn {
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  margin-left: 18px;
+  padding: 0;
+  box-shadow: none;
+  color: inherit;
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
-    li {
-        max-width: 95vw;
-        padding: 16px 6px 12px 6px;
-    }
-    ul {
-        max-width: 98vw;
-    }
+  li {
+    max-width: 95vw;
+    padding: 16px 6px 12px 6px;
+  }
+  ul {
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .scoreboard-container {
+    padding: 8px 2vw 16px 2vw;
+  }
+  .scoreboard-header-row {
+    font-size: unset;
+    padding: 6px 0 6px 0;
+  }
+  .scoreboard-player-info {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .scoreboard-player-score {
+    font-size: unset;
+    padding: 4px 0 4px 0;
+    text-align: center;
+  }
+  .scoreboard-placement-count {
+    font-size: unset;
+    padding: 4px 0 4px 0;
+  }
+  .scoreboard-player-cell {
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+  .scoreboard-placement-cell {
+    padding-left: 4px;
+  }
 }

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import scoresData from '../data/scores.json';
 
 const placements = [
-    { label: '1st Place', points: 4 },
-    { label: '2nd Place', points: 3 },
-    { label: '3rd Place', points: 2 },
-    { label: '4th Place', points: 1 },
+    { label: '1st', field: 'first', points: 4, color: '#ffd700' },
+    { label: '2nd', field: 'second', points: 3, color: '#c0c0c0' },
+    { label: '3rd', field: 'third', points: 2, color: '#cd7f32' },
+    { label: '4th', field: 'fourth', points: 1, color: '#b3cfff' },
 ];
 
 const PencilIcon = ({ size = 18 }) => (
@@ -14,9 +13,15 @@ const PencilIcon = ({ size = 18 }) => (
     </svg>
 );
 
+// Helper to get games played for a player
+const getGamesPlayed = player =>
+  (player.first || 0) + (player.second || 0) + (player.third || 0) + (player.fourth || 0);
+
 const ScoreBoard = ({ scores, updateScore, updatePlayerName }) => {
     const [editIdx, setEditIdx] = useState(null);
     const [editValue, setEditValue] = useState("");
+    const [sortBy, setSortBy] = useState('score');
+    const [sortDir, setSortDir] = useState('desc');
 
     const handleEdit = (idx, currentName) => {
         setEditIdx(idx);
@@ -29,89 +34,174 @@ const ScoreBoard = ({ scores, updateScore, updatePlayerName }) => {
         setEditValue("");
     };
 
+    const handleSort = (col) => {
+        if (sortBy === col) {
+            setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(col);
+            setSortDir(col === 'name' ? 'asc' : 'desc');
+        }
+    };
+
+    const getSortValue = (player, col) => {
+        if (col === 'name') return player.name.toLowerCase();
+        if (col === 'avgScore') {
+            const gamesPlayed = getGamesPlayed(player);
+            return gamesPlayed > 0 ? player.score / gamesPlayed : -Infinity;
+        }
+        if (col === 'gamesPlayed') {
+            return getGamesPlayed(player);
+        }
+        if (placements.some(p => p.field === col)) {
+            return player[col] || 0;
+        }
+        return player[col] || 0;
+    };
+
+    // UseMemo for maxGames
+    const maxGames = React.useMemo(
+      () => Math.max(...scores.players.map(getGamesPlayed)),
+      [scores.players]
+    );
+
+    const getSortedPlayers = React.useMemo(() => {
+        const players = [...scores.players];
+        players.sort((a, b) => {
+            const valA = getSortValue(a, sortBy);
+            const valB = getSortValue(b, sortBy);
+            if (typeof valA === 'string' && typeof valB === 'string') {
+                if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+                return 0;
+            } else {
+                return sortDir === 'asc' ? valA - valB : valB - valA;
+            }
+        });
+        return players;
+    }, [scores.players, sortBy, sortDir]);
+
     return (
-        <div>
-            <h2>Score Board</h2>
-            <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: '24px',
-                maxWidth: 1100,
-                margin: '0 auto',
-            }}>
-                {[0, 1].map(col => (
-                    <ul key={col} style={{ flex: 1, minWidth: 320, maxWidth: 500, padding: 0 }}>
-                        {scores.players
-                            .filter((_, idx) => idx % 2 === col)
-                            .map((player, idxInCol) => {
-                                const idx = col + idxInCol * 2;
-                                return (
-                                    <li key={player.name + idx}>
-                                        <div className="player-name" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            {editIdx === idx ? (
-                                                <>
-                                                    <input
-                                                        type="text"
-                                                        value={editValue}
-                                                        onChange={e => setEditValue(e.target.value)}
-                                                        style={{
-                                                            fontSize: '1.1rem',
-                                                            fontWeight: 600,
-                                                            color: '#7ecfff',
-                                                            background: 'transparent',
-                                                            border: 'none',
-                                                            borderBottom: '1.5px solid #7ecfff',
-                                                            outline: 'none',
-                                                            width: '80%',
-                                                            textAlign: 'center',
-                                                            marginBottom: '6px',
-                                                        }}
-                                                    />
-                                                    <button
-                                                        onClick={() => handleSave(idx)}
-                                                        style={{ marginLeft: 8, background: '#4f8cff', color: '#fff', borderRadius: 4, padding: '2px 10px', fontSize: 14 }}
-                                                    >
-                                                        Save
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span>{player.name}</span>
-                                                    <button
-                                                        onClick={() => handleEdit(idx, player.name)}
-                                                        style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: 6, padding: 0 }}
-                                                        aria-label="Edit name"
-                                                    >
-                                                        <PencilIcon />
-                                                    </button>
-                                                </>
-                                            )}
+        <div className="scoreboard-container">
+            <table className="scoreboard-table">
+                <thead>
+                    <tr className="scoreboard-header-row">
+                        <th className="scoreboard-rank-header">#</th>
+                        <th
+                            className="scoreboard-player-header"
+                            onClick={() => handleSort('name')}
+                        >
+                            Player
+                            <span className="sort-arrow">{sortBy === 'name' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                        </th>
+                        <th
+                            className="scoreboard-placement-header scoreboard-placement-header-score"
+                            onClick={() => handleSort('score')}
+                        >
+                            Points
+                            <span className="sort-arrow">{sortBy === 'score' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                        </th>
+                        {placements.map(p => (
+                            <th
+                                key={p.label}
+                                className={`scoreboard-placement-header scoreboard-placement-header-${p.label.toLowerCase()}`}
+                                style={{ color: p.color }}
+                                onClick={() => handleSort(p.field)}
+                            >
+                                {p.label}
+                                <span className="sort-arrow">{sortBy === p.field && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                            </th>
+                        ))}
+                        <th
+                            className="scoreboard-placement-header scoreboard-placement-header-games"
+                            onClick={() => handleSort('gamesPlayed')}
+                        >
+                            Games
+                            <span className="sort-arrow">{sortBy === 'gamesPlayed' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                        </th>
+                        <th
+                            className="scoreboard-placement-header scoreboard-placement-header-avgscore"
+                            onClick={() => handleSort('avgScore')}
+                        >
+                            Average
+                            <span className="sort-arrow">{sortBy === 'avgScore' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {getSortedPlayers.map((player, i) => {
+                        const idx = scores.players.findIndex(p => p.name === player.name);
+                        const gamesPlayed = getGamesPlayed(player);
+                        const inProgress = gamesPlayed < maxGames;
+                        const avgScore = gamesPlayed > 0 ? (player.score / gamesPlayed).toFixed(2) : '-';
+                        return (
+                            <tr key={player.name} className="scoreboard-row">
+                                <td className="scoreboard-rank">{i + 1}</td>
+                                <td className="scoreboard-player-cell">
+                                    {editIdx === idx ? (
+                                        <>
+                                            <input
+                                                type="text"
+                                                value={editValue}
+                                                onChange={e => setEditValue(e.target.value)}
+                                                className="scoreboard-player-input"
+                                            />
+                                            <button
+                                                onClick={() => handleSave(idx)}
+                                                className="scoreboard-save-btn"
+                                            >
+                                                Save
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="scoreboard-player-name">{player.name}</span>
+                                            <button
+                                                onClick={() => handleEdit(idx, player.name)}
+                                                className="scoreboard-edit-btn"
+                                                aria-label="Edit name"
+                                            >
+                                                <PencilIcon size={22} />
+                                            </button>
+                                        </>
+                                    )}
+                                </td>
+                                <td className="scoreboard-player-score">{player.score}</td>
+                                {placements.map((placement, pIdx) => (
+                                    <td key={placement.label} className={`scoreboard-placement-cell scoreboard-placement-cell-${placement.label.toLowerCase()}`}> 
+                                        <div className="scoreboard-placement-flex-row">
+                                            <span className="scoreboard-placement-count">{player[placement.field]}</span>
+                                            <div className="scoreboard-placement-btns-container">
+                                                <button
+                                                    onClick={() => updateScore(idx, pIdx + 1)}
+                                                    className={`scoreboard-placement-btn scoreboard-placement-btn-plus scoreboard-placement-btn-${placement.label.toLowerCase()}`}
+                                                    title={`Add ${placement.label}`}
+                                                    aria-label={`Add ${placement.label} for ${player.name}`}
+                                                    tabIndex={0}
+                                                    disabled={false}
+                                                >
+                                                    +
+                                                </button>
+                                                <button
+                                                    onClick={() => updateScore(idx, pIdx + 1, true)}
+                                                    className={`scoreboard-placement-btn scoreboard-placement-btn-minus scoreboard-placement-btn-${placement.label.toLowerCase()}`}
+                                                    title={`Undo ${placement.label}`}
+                                                    aria-label={`Undo ${placement.label} for ${player.name}`}
+                                                    tabIndex={0}
+                                                    disabled={player[placement.field] === 0}
+                                                >
+                                                    -
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="player-score">{player.score} points</div>
-                                        <div className="button-row">
-                                            {placements.map((placement, pIdx) => (
-                                                <React.Fragment key={placement.label}>
-                                                    <button
-                                                        onClick={() => updateScore(idx, pIdx + 1)}
-                                                    >
-                                                        +{placement.points} {placement.label}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => updateScore(idx, pIdx + 1, true)}
-                                                        style={{ background: '#ff4f4f', color: '#fff' }}
-                                                    >
-                                                        -{placement.points}
-                                                    </button>
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                    </ul>
-                ))}
-            </div>
+                                    </td>
+                                ))}
+                                <td className={`scoreboard-player-games${inProgress ? ' scoreboard-player-games-inprogress' : ''}`}>{gamesPlayed}</td>
+                                <td className="scoreboard-player-avgscore">{avgScore}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </div>
     );
 };

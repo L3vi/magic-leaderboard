@@ -25,11 +25,20 @@ const App = () => {
     // Update score and persist to backend
     const updateScore = (playerIdx, placement, isSubtract = false) => {
         const points = [0, 4, 3, 2, 1];
+        const placeFields = [null, 'first', 'second', 'third', 'fourth'];
         const delta = isSubtract ? -points[placement] : points[placement];
+        const placeDelta = isSubtract ? -1 : 1;
         const newScores = { ...scores };
         newScores.players = newScores.players.map((player, idx) => {
             if (idx === playerIdx) {
-                return { ...player, score: player.score + delta };
+                // Update score and placement count
+                const updated = { ...player, score: player.score + delta };
+                const placeField = placeFields[placement];
+                if (placeField) {
+                    updated[placeField] = (updated[placeField] || 0) + placeDelta;
+                    if (updated[placeField] < 0) updated[placeField] = 0;
+                }
+                return updated;
             }
             return player;
         });
