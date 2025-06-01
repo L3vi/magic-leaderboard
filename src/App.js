@@ -1,19 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import ScoreBoard from './components/ScoreBoard';
 import { db, ref, set, onValue } from './firebase';
+import scores2025 from './data/scores-2025.json';
+import scores2024 from './data/scores-2024.json';
 
 const SCORES_PATH = 'scores';
+
+const AVAILABLE_SHEETS = [
+  { label: '2025', file: 'scores-2025.json', data: scores2025 },
+  { label: '2024', file: 'scores-2024.json', data: scores2024 }
+];
+
+const getSheetData = (file) => {
+  const found = AVAILABLE_SHEETS.find(sheet => sheet.file === file);
+  return found ? found.data : null;
+};
 
 const App = () => {
     const [scores, setScores] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // Track if we are using Firebase or local fallback
     const [usingFirebase, setUsingFirebase] = useState(true);
     const [showIndicator, setShowIndicator] = useState(true);
+    const [selectedSheet, setSelectedSheet] = useState(AVAILABLE_SHEETS[0].file);
 
     // Fetch scores from Firebase (live updates)
     useEffect(() => {
+        setLoading(true);
+        setError(null);
         const scoresRef = ref(db, SCORES_PATH);
         const unsubscribe = onValue(scoresRef, (snapshot) => {
             const data = snapshot.val();
@@ -23,37 +37,35 @@ const App = () => {
                 setLoading(false);
                 setUsingFirebase(true);
             } else {
-                // Fallback to local JSON if Firebase is empty
-                import('./data/scores-2025.json')
-                  .then(localData => {
-                    setScores(localData.default || localData);
-                    setError(null);
-                    setLoading(false);
-                    setUsingFirebase(false);
-                  })
-                  .catch(() => {
-                    setError('Failed to load scores from both Firebase and local file.');
-                    setLoading(false);
-                    setUsingFirebase(false);
-                  });
+                // Fallback to statically imported local JSON
+                const localData = getSheetData(selectedSheet);
+                if (localData) {
+                  setScores(localData);
+                  setError(null);
+                  setLoading(false);
+                  setUsingFirebase(false);
+                } else {
+                  setError('Failed to load scores from both Firebase and local file.');
+                  setLoading(false);
+                  setUsingFirebase(false);
+                }
             }
         }, (err) => {
-            // Fallback to local JSON if Firebase errors
-            import('./data/scores-2025.json')
-              .then(localData => {
-                setScores(localData.default || localData);
-                setError(null);
-                setLoading(false);
-                setUsingFirebase(false);
-              })
-              .catch(() => {
-                setError('Failed to load scores from both Firebase and local file.');
-                setLoading(false);
-                setUsingFirebase(false);
-              });
+            // Fallback to statically imported local JSON
+            const localData = getSheetData(selectedSheet);
+            if (localData) {
+              setScores(localData);
+              setError(null);
+              setLoading(false);
+              setUsingFirebase(false);
+            } else {
+              setError('Failed to load scores from both Firebase and local file.');
+              setLoading(false);
+              setUsingFirebase(false);
+            }
         });
         return () => unsubscribe();
-    }, []);
+    }, [selectedSheet]);
 
     // Update score and persist to Firebase
     const updateScore = (playerIdx, placement, isSubtract = false) => {
@@ -100,6 +112,19 @@ const App = () => {
     return (
         <div>
             <h1>MTG Commander Score Tracker</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+              <label htmlFor="scoresheet-select" style={{ marginRight: 8, color: '#b3d8ff', fontWeight: 500, fontSize: '1.1rem' }}>Scoresheet:</label>
+              <select
+                id="scoresheet-select"
+                value={selectedSheet}
+                onChange={e => setSelectedSheet(e.target.value)}
+                style={{ borderRadius: 6, padding: '4px 12px', fontSize: '1.1rem', background: '#263a53', color: '#b3d8ff', border: 'none', outline: 'none' }}
+              >
+                {AVAILABLE_SHEETS.map(sheet => (
+                  <option key={sheet.file} value={sheet.file}>{sheet.label}</option>
+                ))}
+              </select>
+            </div>
             <ScoreBoard scores={scores} updateScore={updateScore} updatePlayerName={updatePlayerName} />
             {showIndicator && (
                 <div style={{
