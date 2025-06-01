@@ -1,105 +1,36 @@
 /* Enhanced styling for the MTG Commander Score Tracker */
+html {
+  font-size: 16px;
+}
+
 body {
   font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 1rem;
   background: #23272f;
   color: #f5f5f5;
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  height: 100vh;
   letter-spacing: 0.01em;
-  line-height: 1.6;
+  line-height: 1.4;
+  overflow-y: hidden;
 }
 
-h1 {
-  text-align: center;
-  margin-top: 28px;
-  margin-bottom: 16px;
-  letter-spacing: 2px;
-  color: #4f8cff;
-  text-shadow: 0 2px 8px #000a;
-}
-
-h2 {
-  text-align: center;
-  margin-top: 18px;
-  margin-bottom: 10px;
-  font-weight: 400;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto;
-  max-width: 700px;
-  margin-top: 18px;
-  margin-bottom: 18px;
-}
-
-li {
-  background: rgba(44, 49, 60, 0.95);
-  margin: 18px auto;
-  padding: 22px 18px 14px 18px;
-  border-radius: 14px;
-  max-width: 600px;
-  box-shadow: 0 4px 18px 0 #0003;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.12s;
-}
-
-li:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 32px 0 #0005;
-}
-
-.player-name {
-  font-weight: 600;
-  color: #7ecfff;
-  margin-bottom: 6px;
-}
-
-.player-score {
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-.button-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-button {
-  background: #4f8cff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  margin: 2px 0;
-  cursor: pointer;
-  font-weight: 500;
-  box-shadow: 0 2px 8px #0002;
-  transition: background 0.2s, transform 0.1s;
-}
-
-button:hover {
-  background: #3762c2;
-  transform: translateY(-2px) scale(1.07);
-}
-
+/* --- Scoreboard Styles --- */
 .scoreboard-container {
-  max-width: 1100px;
-  margin: 32px auto 0 auto;
+  max-width: 1300px;
+  margin: 24px auto 0 auto;
   background: rgba(35, 39, 47, 0.98);
   border-radius: 24px;
   box-shadow: 0 8px 32px #0004;
-  padding: 28px 18px 32px 18px;
+  padding: 18px 12px 24px 12px;
+  /* overflow-x: auto; already handled if needed */
 }
 
 .scoreboard-table {
   width: 100%;
+  min-width: 1100px;
   border-collapse: separate;
   border-spacing: 0 8px;
   color: #fff;
@@ -110,25 +41,32 @@ button:hover {
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
+  background: #263a53;
+  color: #b3d8ff;
+  box-shadow: 0 2px 8px #0002;
+}
+
+.scoreboard-table th:first-child {
+  border-top-left-radius: 20px;
+}
+
+.scoreboard-table th:last-child {
+  border-top-right-radius: 20px;
 }
 
 .scoreboard-table th:hover {
   background: rgba(120, 180, 255, 0.13);
 }
 
-/* --- Redesigned Scoreboard Row & Content Styles --- */
 .scoreboard-row {
   background: none;
   transition: background 0.18s;
   height: 54px;
-  border-radius: 10px;
   border-bottom: none;
-  margin-bottom: 8px;
 }
 
 .scoreboard-row:nth-child(even) {
   background: rgba(120, 130, 150, 0.18);
-  border-radius: 10px;
 }
 
 .scoreboard-row:hover {
@@ -136,9 +74,8 @@ button:hover {
 }
 
 :root {
-  --scoreboard-header-font-size: 1.3em;
-  --scoreboard-player-content-font-size: 1.1em;
-  --scoreboard-other-content-font-size: 1.3em;
+  --scoreboard-font-size: 1.9rem;
+  --scoreboard-font-weight: 600;
   --placement-btns-opacity: 0.25;
   --placement-btns-opacity-hover: 1;
   --placement-btns-transition: opacity 0.18s;
@@ -152,9 +89,13 @@ button:hover {
 .scoreboard-header-row,
 .scoreboard-player-header,
 .scoreboard-placement-header {
-  font-size: var(--scoreboard-header-font-size);
+  font-size: var(--scoreboard-font-size);
+  font-weight: var(--scoreboard-font-weight);
   padding: 10px 0 10px 0;
   letter-spacing: 0.03em;
+  background: #263a53;
+  color: #b3d8ff;
+  box-shadow: 0 2px 8px #0002;
 }
 
 .scoreboard-table th.scoreboard-rank-header {
@@ -202,12 +143,14 @@ button:hover {
   padding-right: 12px !important;
 }
 
+.scoreboard-player-header,
 .scoreboard-player-cell,
 .scoreboard-player-name-edit,
 .scoreboard-player-input,
 .scoreboard-save-btn,
 .scoreboard-player-name {
-  font-size: var(--scoreboard-player-content-font-size);
+  font-size: var(--scoreboard-font-size);
+  font-weight: var(--scoreboard-font-weight);
   padding: 6px 12px 6px 12px;
   text-align: left !important;
 }
@@ -221,7 +164,8 @@ button:hover {
 .scoreboard-row:not(.scoreboard-player-cell),
 .scoreboard-rank,
 .scoreboard-placement-label {
-  font-size: var(--scoreboard-other-content-font-size);
+  font-size: var(--scoreboard-font-size);
+  font-weight: var(--scoreboard-font-weight);
   text-align: center;
   padding: 6px 0 6px 0;
 }
@@ -248,14 +192,12 @@ button:hover {
   gap: 10px;
 }
 
-/* --- Placement Button Styles: Unified, Clean, No Overlap --- */
 .scoreboard-placement-btns-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   background: none;
-  border-radius: 0;
   box-shadow: none;
   overflow: visible;
   width: auto;
@@ -292,8 +234,6 @@ button:hover {
   background: var(--placement-btn-bg);
   color: #fff;
   transition: background 0.2s, color 0.2s, box-shadow 0.1s, transform 0.1s;
-  min-width: 24px;
-  min-height: 24px;
 }
 
 .scoreboard-placement-btn:active {
@@ -337,26 +277,23 @@ button:hover {
   text-align: center;
 }
 
-/* New scoreboard placement header score style */
 .scoreboard-placement-header-score {
   text-align: unset;
 }
 
-/* Average score styles */
 .scoreboard-player-avgscore {
-  font-size: var(--scoreboard-other-content-font-size);
+  font-size: var(--scoreboard-font-size);
   padding: 6px 0 6px 0;
   text-align: center;
   font-weight: 700;
 }
 
 .scoreboard-placement-header-avgscore {
-  font-size: var(--scoreboard-header-font-size);
+  font-size: var(--scoreboard-font-size);
   padding: 10px 0 10px 0;
   text-align: center;
 }
 
-/* Edit button style */
 .scoreboard-edit-btn {
   background: none !important;
   border: none;
@@ -365,25 +302,39 @@ button:hover {
   padding: 0;
   box-shadow: none;
   color: inherit;
+  font-weight: var(--scoreboard-font-weight);
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  li {
-    max-width: 95vw;
-    padding: 16px 6px 12px 6px;
-  }
-  ul {
-    max-width: 98vw;
-  }
+h1 {
+  text-align: center;
+  margin-top: 18px;
+  margin-bottom: 12px;
+  letter-spacing: 2.5px;
+  color: #5fa8e9;
+  font-size: 2.6rem;
+  font-weight: 800;
+  text-shadow: 0 4px 24px #000a, 0 1px 0 #3762c2;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #b3d8ff;
+  font-size: 1.5rem;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 8px #0006;
 }
 
 @media (max-width: 700px) {
   .scoreboard-container {
     padding: 8px 2vw 16px 2vw;
   }
-  .scoreboard-header-row {
-    font-size: unset;
+  .scoreboard-header-row,
+  .scoreboard-table th {
+    font-size: 1rem;
+    font-weight: var(--scoreboard-font-weight);
     padding: 6px 0 6px 0;
   }
   .scoreboard-player-info {
@@ -391,10 +342,18 @@ button:hover {
     gap: 10px;
     align-items: flex-start;
   }
-  .scoreboard-player-score {
-    font-size: unset;
+  .scoreboard-player-score,
+  .scoreboard-player-avgscore,
+  .scoreboard-player-games {
+    font-size: var(--scoreboard-font-size);
+    font-weight: var(--scoreboard-font-weight);
     padding: 4px 0 4px 0;
     text-align: center;
+  }
+  .scoreboard-player-name {
+    font-size: var(--scoreboard-font-size);
+    font-weight: var(--scoreboard-font-weight);
+    padding: 4px 0 4px 0;
   }
   .scoreboard-placement-count {
     font-size: unset;
@@ -406,5 +365,14 @@ button:hover {
   }
   .scoreboard-placement-cell {
     padding-left: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scoreboard-table th,
+  .scoreboard-table td {
+    font-size: 0.95rem;
+    font-weight: var(--scoreboard-font-weight);
+    padding: 8px 4px;
   }
 }
