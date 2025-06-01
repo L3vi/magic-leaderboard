@@ -24,7 +24,7 @@ const App = () => {
                 setUsingFirebase(true);
             } else {
                 // Fallback to local JSON if Firebase is empty
-                import('./data/scores.json')
+                import('./data/scores-2025.json')
                   .then(localData => {
                     setScores(localData.default || localData);
                     setError(null);
@@ -39,7 +39,7 @@ const App = () => {
             }
         }, (err) => {
             // Fallback to local JSON if Firebase errors
-            import('./data/scores.json')
+            import('./data/scores-2025.json')
               .then(localData => {
                 setScores(localData.default || localData);
                 setError(null);

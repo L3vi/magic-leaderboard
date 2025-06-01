@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const app = express();
 const PORT = 4000;
-const SCORES_PATH = path.join(__dirname, 'src', 'data', 'scores.json');
+const SCORES_PATH = path.join(__dirname, 'src', 'data', 'scores-2025.json');
 
 app.use(cors());
 app.use(express.json());

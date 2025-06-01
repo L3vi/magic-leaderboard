@@ -24,7 +24,7 @@ mtg-commander-score-tracker
 │   ├── components
 │   │   └── ScoreBoard.js  # Component for displaying scores
 │   └── data
-│       └── scores.json    # JSON file for storing scores
+│       └── scores-2025.json    # JSON file for storing scores for 2025
 ├── package.json           # NPM configuration file
 └── README.md              # Project documentation
 ```
@@ -53,7 +53,7 @@ mtg-commander-score-tracker
 
 - Use the UI to select the placement of each player after a game.
 - The scores will be updated automatically based on the placements selected.
-- The scores are saved in `src/data/scores.json` and will persist across sessions.
+- The scores are saved in `src/data/scores-2025.json` and will persist across sessions.
 
 ## Contributing
 
