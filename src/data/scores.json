@@ -1,68 +1,68 @@
 {
   "players": [
     {
+      "first": 7,
+      "fourth": 3,
       "name": "Anson",
-      "score": 26,
+      "score": 46,
+      "second": 2,
+      "third": 4
+    },
+    {
       "first": 4,
-      "second": 1,
-      "third": 3,
-      "fourth": 0
-    },
-    {
+      "fourth": 3,
       "name": "Caleb",
-      "score": 16,
-      "first": 1,
-      "second": 2,
-      "third": 1,
-      "fourth": 3
+      "score": 35,
+      "second": 3,
+      "third": 3
     },
     {
-      "name": "Danny",
-      "score": 17,
-      "first": 1,
-      "second": 0,
-      "third": 5,
-      "fourth": 2
-    },
-    {
-      "name": "Jordan",
-      "score": 19,
-      "first": 0,
-      "second": 5,
-      "third": 1,
-      "fourth": 1
-    },
-    {
-      "name": "Levi",
-      "score": 20,
       "first": 2,
-      "second": 1,
-      "third": 3,
-      "fourth": 2
-    },
-    {
-      "name": "Nate",
-      "score": 22,
-      "first": 0,
-      "second": 5,
-      "third": 3,
-      "fourth": 0
-    },
-    {
-      "name": "Parker",
-      "score": 23,
-      "first": 3,
-      "second": 2,
-      "third": 1,
-      "fourth": 2
-    },
-    {
-      "name": "Shane",
-      "score": 24,
-      "first": 5,
+      "fourth": 3,
+      "name": "Danny",
+      "score": 36,
       "second": 0,
-      "third": 0,
-      "fourth": 3
+      "third": 12
+    },
+    {
+      "first": 3,
+      "fourth": 1,
+      "name": "Jordan",
+      "score": 33,
+      "second": 5,
+      "third": 2
+    },
+    {
+      "first": 4,
+      "fourth": 2,
+      "name": "Levi",
+      "score": 39,
+      "second": 2,
+      "third": 7
+    },
+    {
+      "first": 1,
+      "fourth": 0,
+      "name": "Nate",
+      "score": 47,
+      "second": 10,
+      "third": 6
+    },
+    {
+      "first": 8,
+      "fourth": 3,
+      "name": "Parker",
+      "score": 47,
+      "second": 3,
+      "third": 1
+    },
+    {
+      "first": 9,
+      "fourth": 4,
+      "name": "Shane",
+      "score": 52,
+      "second": 1,
+      "third": 4
     }
   ]
 }

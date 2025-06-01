@@ -73,9 +73,26 @@ const ScoreBoard = ({ scores, updateScore, updatePlayerName }) => {
                 if (valA < valB) return sortDir === 'asc' ? -1 : 1;
                 if (valA > valB) return sortDir === 'asc' ? 1 : -1;
                 return 0;
-            } else {
-                return sortDir === 'asc' ? valA - valB : valB - valA;
+            } else if (typeof valA === 'number' && typeof valB === 'number') {
+                if (valA === valB) {
+                    // Tie-breaker logic
+                    if (sortBy === 'score') {
+                        // Tie on points: break by average (higher wins)
+                        const avgA = getGamesPlayed(a) > 0 ? a.score / getGamesPlayed(a) : -Infinity;
+                        const avgB = getGamesPlayed(b) > 0 ? b.score / getGamesPlayed(b) : -Infinity;
+                        if (avgA === avgB) return 0;
+                        return sortDir === 'asc' ? (avgA - avgB) : (avgB - avgA);
+                    } else if (sortBy === 'avgScore') {
+                        // Tie on average: break by total points (higher wins)
+                        if (a.score === b.score) return 0;
+                        return sortDir === 'asc' ? (a.score - b.score) : (b.score - a.score);
+                    }
+                    return 0;
+                } else {
+                    return sortDir === 'asc' ? valA - valB : valB - valA;
+                }
             }
+            return 0;
         });
         return players;
     }, [scores.players, sortBy, sortDir]);
