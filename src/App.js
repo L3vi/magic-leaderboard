@@ -103,14 +103,14 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ minWidth: 340, maxWidth: 520 }}>
+    <div className="addgame-modal-overlay">
+      <div className="addgame-modal-content">
         <h2>Add Game</h2>
         <form onSubmit={handleSubmit}>
           <label>Date:<br />
             <input type="date" value={date} onChange={e => setDate(e.target.value)} className="addgame-date-input" />
           </label>
-          <div style={{ marginTop: 16 }}>
+          <div className="addgame-table-wrapper">
             <AddGameTable
               events={events}
               players={players}
@@ -124,8 +124,8 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
               removePlayer={removePlayer}
             />
           </div>
-          {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
-          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+          {error && <div className="addgame-error">{error}</div>}
+          <div className="addgame-modal-actions">
             <button className="modal-close-btn" type="button" onClick={onClose}>Cancel</button>
             <button className="modal-close-btn" type="submit">Add Game</button>
           </div>

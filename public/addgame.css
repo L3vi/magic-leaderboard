@@ -20,6 +20,8 @@
 .addgame-row select.addgame-select:focus {
   border: 1.5px solid var(--color-header);
   box-shadow: 0 0 0 2px #5fa8e955;
+  position: relative;
+  z-index: 3100;
 }
 .addgame-remove-btn {
   background: none;
@@ -69,4 +71,237 @@
 .addgame-date-input:focus {
   border: 1.5px solid var(--color-header);
   box-shadow: 0 0 0 2px #5fa8e955;
+}
+
+/* Modal overlay for Add Game */
+.addgame-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModalBg 0.2s;
+}
+@keyframes fadeInModalBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal content for Add Game */
+.addgame-modal-content {
+  background: linear-gradient(120deg, #23293a 80%, #2a3955 100%);
+  border-radius: 18px;
+  box-shadow: 0 8px 40px 0 #0008, 0 1.5px 0 #5fa8e9;
+  padding: 2.2rem 1.7rem 1.7rem 1.7rem;
+  min-width: 340px;
+  max-width: 98vw;
+  width: auto;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeInModal 0.22s cubic-bezier(.4,1.6,.6,1);
+  color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 600px) {
+  .addgame-modal-content {
+    min-width: 0;
+    width: 98vw;
+    padding: 1.1rem 0.5rem 1.2rem 0.5rem;
+  }
+}
+@keyframes fadeInModal {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.addgame-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.1rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+  color: #5fa8e9;
+}
+
+.addgame-modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.addgame-table-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.addgame-error {
+  color: #b00;
+  background: #ffeaea;
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.98rem;
+  text-align: center;
+}
+
+.addgame-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.modal-close-btn {
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-close-btn:hover {
+  background: var(--color-btn-hover);
+}
+
+/* Player Details Modal Styles */
+.player-details-modal {
+  min-width: 340px;
+  padding: 36px;
+}
+.player-details-name {
+  font-size: 2.1rem;
+  margin-bottom: 8px;
+  letter-spacing: 1.2px;
+  text-align: center;
+}
+.player-details-stats {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 18px;
+  font-size: 1.18rem;
+  font-weight: 500;
+  justify-content: center;
+}
+.player-details-commanders {
+  margin-bottom: 18px;
+  font-size: 1.08rem;
+  text-align: center;
+}
+.player-details-commanders-list {
+  color: #b3d8ff;
+}
+.player-details-games-table {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 18px;
+}
+.player-details-placement {
+  font-weight: 600;
+}
+.player-details-commander {
+  color: #b3d8ff;
+}
+.player-details-close-btn {
+  font-size: 1.08rem;
+  padding: 10px 28px;
+  margin-top: 8px;
+}
+
+/* Loading spinner for Scryfall suggestions */
+.scryfall-loading-spinner,
+.scryfall-loading-spinner-inside {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border: 2.5px solid #5fa8e9;
+  border-top: 2.5px solid #23293a;
+  border-radius: 50%;
+  animation: scryfall-spin 0.7s linear infinite;
+  background: none;
+  pointer-events: none;
+  z-index: 3200;
+}
+@keyframes scryfall-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Hide browser default dropdown/arrow/clear/spin/search icons for .addgame-input */
+.addgame-input::-webkit-calendar-picker-indicator,
+.addgame-input::-webkit-clear-button,
+.addgame-input::-webkit-inner-spin-button,
+.addgame-input::-webkit-outer-spin-button,
+.addgame-input::-webkit-search-cancel-button,
+.addgame-input::-webkit-search-decoration {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+.addgame-input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
+.addgame-input::-ms-clear {
+  display: none;
+}
+.addgame-input::-ms-reveal {
+  display: none;
+}
+.addgame-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Scryfall Autocomplete Suggestions Popup (true popup, not injected content) */
+.scryfall-popup {
+  position: fixed;
+  z-index: 4000;
+  min-width: 220px;
+  max-width: 340px;
+  background: #23293a;
+  border: 1.5px solid #5fa8e9;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px #000b;
+  color: #eaf6ff;
+  font-size: 1.08rem;
+  font-family: inherit;
+  outline: none;
+  animation: fadeInScryfall 0.18s cubic-bezier(.4,1.6,.6,1);
+  padding: 0.15rem 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+@keyframes fadeInScryfall {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.scryfall-popup-item {
+  padding: 9px 18px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  font-size: 1.08rem;
+  color: inherit;
+  font-family: inherit;
+  transition: background 0.13s, color 0.13s;
+  outline: none;
+  border-radius: 0;
+}
+.scryfall-popup-item:hover,
+.scryfall-popup-item.active,
+.scryfall-popup-item:focus {
+  background: #263a53;
+  color: #5fa8e9;
+  outline: none;
 }
