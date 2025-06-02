@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ScoreBoard from './components/ScoreBoard';
 import AddGameTable from './components/AddGameTable';
+import PlayerDetailsModal from './components/PlayerDetailsModal';
 import scores2025 from './data/scores-2025.json';
 import scores2024 from './data/scores-2024.json';
 
@@ -203,15 +204,12 @@ const App = () => {
           onSubmit={handleAddGame}
         />
       )}
-      {/* Player Details Modal Placeholder */}
       {selectedPlayer && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>{selectedPlayer.name} - Details</h2>
-            <p>Player details coming soon...</p>
-            <button className="modal-close-btn" onClick={() => setSelectedPlayer(null)}>Close</button>
-          </div>
-        </div>
+        <PlayerDetailsModal
+          player={selectedPlayer}
+          event={event}
+          onClose={() => setSelectedPlayer(null)}
+        />
       )}
     </div>
   );
