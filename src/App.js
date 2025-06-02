@@ -1,171 +1,220 @@
 import React, { useState, useEffect } from 'react';
 import ScoreBoard from './components/ScoreBoard';
-import { db, ref, set, onValue } from './firebase';
+import AddGameTable from './components/AddGameTable';
 import scores2025 from './data/scores-2025.json';
 import scores2024 from './data/scores-2024.json';
-
-const SCORES_PATH = 'scores';
 
 const AVAILABLE_SHEETS = [
   { label: '2025', file: 'scores-2025.json', data: scores2025 },
   { label: '2024', file: 'scores-2024.json', data: scores2024 }
 ];
 
-const getSheetData = (file) => {
-  const found = AVAILABLE_SHEETS.find(sheet => sheet.file === file);
-  return found ? found.data : null;
+function aggregatePlayers(event) {
+  // Aggregate player stats from all games in the event
+  const playerMap = {};
+  event.games.forEach(game => {
+    game.players.forEach(({ name, placement, commander }) => {
+      if (!playerMap[name]) {
+        playerMap[name] = {
+          name,
+          score: 0,
+          first: 0,
+          second: 0,
+          third: 0,
+          fourth: 0,
+          games: 0,
+          commanderHistory: []
+        };
+      }
+      playerMap[name].games += 1;
+      playerMap[name].commanderHistory.push({ commander, gameId: game.id, placement });
+      switch (placement) {
+        case 1: playerMap[name].first += 1; playerMap[name].score += 4; break;
+        case 2: playerMap[name].second += 1; playerMap[name].score += 3; break;
+        case 3: playerMap[name].third += 1; playerMap[name].score += 2; break;
+        case 4: playerMap[name].fourth += 1; playerMap[name].score += 1; break;
+        default: break;
+      }
+    });
+  });
+  return Object.values(playerMap);
+}
+
+const getToday = () => new Date().toISOString().slice(0, 10);
+
+function getUniquePlayers(events) {
+  const names = new Set();
+  events.forEach(ev => ev.games.forEach(g => g.players.forEach(p => names.add(p.name))));
+  return Array.from(names);
+}
+
+function getCommanderHistory(events, playerName) {
+  const commanders = {};
+  events.forEach(ev => ev.games.forEach(g => g.players.forEach(p => {
+    if (p.name === playerName && p.commander) {
+      commanders[p.commander] = (commanders[p.commander] || 0) + 1;
+    }
+  })));
+  return Object.entries(commanders).sort((a, b) => b[1] - a[1]).map(([c]) => c);
+}
+
+const AddGameWizard = ({ events, onClose, onSubmit }) => {
+  const allPlayers = getUniquePlayers(events);
+  const [date, setDate] = useState(getToday());
+  const [players, setPlayers] = useState([allPlayers[0] || '', allPlayers[1] || '', '', '']);
+  const [placements, setPlacements] = useState([1, 2, 3, 4]);
+  const [commanders, setCommanders] = useState(['', '', '', '']);
+  const [error, setError] = useState('');
+
+  const addPlayer = () => {
+    setPlayers(p => [...p, '']);
+    setPlacements(p => [...p, p.length + 1]);
+    setCommanders(c => [...c, '']);
+  };
+  const removePlayer = i => {
+    if (players.length > 2) {
+      setPlayers(p => p.filter((_, idx) => idx !== i));
+      setPlacements(p => p.filter((_, idx) => idx !== i));
+      setCommanders(c => c.filter((_, idx) => idx !== i));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+    const names = players.map(p => p.trim()).filter(Boolean);
+    if (names.length < 2 || new Set(names).size !== names.length) {
+      setError('Enter at least 2 unique player names.');
+      return;
+    }
+    // Compose game object
+    const game = {
+      id: `game-${Date.now()}`,
+      timestampStart: null,
+      timestampEnd: null,
+      players: players.map((name, i) => ({
+        name: name.trim(),
+        placement: placements[i],
+        commander: commanders[i] || ''
+      }))
+    };
+    onSubmit({ date, game });
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ minWidth: 340, maxWidth: 520 }}>
+        <h2>Add Game</h2>
+        <form onSubmit={handleSubmit}>
+          <label>Date:<br />
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} className="addgame-date-input" />
+          </label>
+          <div style={{ marginTop: 16 }}>
+            <AddGameTable
+              events={events}
+              players={players}
+              setPlayers={setPlayers}
+              placements={placements}
+              setPlacements={setPlacements}
+              commanders={commanders}
+              setCommanders={setCommanders}
+              allPlayers={allPlayers}
+              addPlayer={addPlayer}
+              removePlayer={removePlayer}
+            />
+          </div>
+          {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
+          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+            <button className="modal-close-btn" type="button" onClick={onClose}>Cancel</button>
+            <button className="modal-close-btn" type="submit">Add Game</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 const App = () => {
-    const [scores, setScores] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [usingFirebase, setUsingFirebase] = useState(true);
-    const [showIndicator, setShowIndicator] = useState(true);
-    const [selectedSheet, setSelectedSheet] = useState(AVAILABLE_SHEETS[0].file);
+  const [selectedSheet, setSelectedSheet] = useState(AVAILABLE_SHEETS[0].file);
+  const [event, setEvent] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [showAddGame, setShowAddGame] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
-    // Fetch scores from Firebase (live updates)
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        const scoresRef = ref(db, SCORES_PATH);
-        const unsubscribe = onValue(scoresRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                setScores(data);
-                setError(null);
-                setLoading(false);
-                setUsingFirebase(true);
-            } else {
-                // Fallback to statically imported local JSON
-                const localData = getSheetData(selectedSheet);
-                if (localData) {
-                  setScores(localData);
-                  setError(null);
-                  setLoading(false);
-                  setUsingFirebase(false);
-                } else {
-                  setError('Failed to load scores from both Firebase and local file.');
-                  setLoading(false);
-                  setUsingFirebase(false);
-                }
-            }
-        }, (err) => {
-            // Fallback to statically imported local JSON
-            const localData = getSheetData(selectedSheet);
-            if (localData) {
-              setScores(localData);
-              setError(null);
-              setLoading(false);
-              setUsingFirebase(false);
-            } else {
-              setError('Failed to load scores from both Firebase and local file.');
-              setLoading(false);
-              setUsingFirebase(false);
-            }
-        });
-        return () => unsubscribe();
-    }, [selectedSheet]);
+  useEffect(() => {
+    const sheet = AVAILABLE_SHEETS.find(s => s.file === selectedSheet);
+    if (sheet && sheet.data && sheet.data.events && sheet.data.events.length > 0) {
+      // For now, just use the first event in the year
+      setEvent(sheet.data.events[0]);
+    } else {
+      setEvent(null);
+    }
+  }, [selectedSheet]);
 
-    // Update score and persist to Firebase
-    const updateScore = (playerIdx, placement, isSubtract = false) => {
-        if (!scores) return;
-        const points = [0, 4, 3, 2, 1];
-        const placeFields = [null, 'first', 'second', 'third', 'fourth'];
-        const delta = isSubtract ? -points[placement] : points[placement];
-        const placeDelta = isSubtract ? -1 : 1;
-        const newScores = { ...scores };
-        newScores.players = newScores.players.map((player, idx) => {
-            if (idx === playerIdx) {
-                // Update score and placement count
-                const updated = { ...player, score: player.score + delta };
-                const placeField = placeFields[placement];
-                if (placeField) {
-                    updated[placeField] = (updated[placeField] || 0) + placeDelta;
-                    if (updated[placeField] < 0) updated[placeField] = 0;
-                }
-                return updated;
-            }
-            return player;
-        });
-        setScores(newScores);
-        set(ref(db, SCORES_PATH), newScores);
-    };
+  useEffect(() => {
+    if (event) {
+      setPlayers(aggregatePlayers(event));
+    } else {
+      setPlayers([]);
+    }
+  }, [event]);
 
-    // Update player name and persist to Firebase
-    const updatePlayerName = (playerIdx, newName) => {
-        if (!scores) return;
-        const newScores = { ...scores };
-        newScores.players = newScores.players.map((player, idx) => {
-            if (idx === playerIdx) {
-                return { ...player, name: newName };
-            }
-            return player;
-        });
-        setScores(newScores);
-        set(ref(db, SCORES_PATH), newScores);
-    };
+  const handleAddGame = ({ date, game }) => {
+    // For now, just add to the first event in the selected year (in-memory)
+    setEvent(ev => {
+      const newEvent = { ...ev, games: [...ev.games, game] };
+      setPlayers(aggregatePlayers(newEvent));
+      return newEvent;
+    });
+    setShowAddGame(false);
+  };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
-
-    return (
-        <div>
-            <h1>MTG Commander Score Tracker</h1>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
-              <label htmlFor="scoresheet-select" style={{ marginRight: 8, color: '#b3d8ff', fontWeight: 500, fontSize: '1.1rem' }}>Scoresheet:</label>
-              <select
-                id="scoresheet-select"
-                value={selectedSheet}
-                onChange={e => setSelectedSheet(e.target.value)}
-                style={{ borderRadius: 6, padding: '4px 12px', fontSize: '1.1rem', background: '#263a53', color: '#b3d8ff', border: 'none', outline: 'none' }}
-              >
-                {AVAILABLE_SHEETS.map(sheet => (
-                  <option key={sheet.file} value={sheet.file}>{sheet.label}</option>
-                ))}
-              </select>
-            </div>
-            <ScoreBoard scores={scores} updateScore={updateScore} updatePlayerName={updatePlayerName} />
-            {showIndicator && (
-                <div style={{
-                    position: 'fixed',
-                    left: 0,
-                    bottom: 0,
-                    width: '100vw',
-                    background: usingFirebase ? '#22c55e' : '#f59e42',
-                    color: '#fff',
-                    textAlign: 'center',
-                    fontWeight: 600,
-                    fontSize: '0.95em',
-                    letterSpacing: '0.04em',
-                    padding: '6px 0',
-                    zIndex: 1000,
-                    boxShadow: '0 -2px 8px #0003',
-                }}>
-                    <span>{usingFirebase ? 'Database: Online (Firebase)' : 'Database: Offline (Local Fallback)'}</span>
-                    <button
-                        onClick={() => setShowIndicator(false)}
-                        aria-label="Hide database status indicator"
-                        style={{
-                            position: 'absolute',
-                            right: 12,
-                            top: 4,
-                            background: 'none',
-                            border: 'none',
-                            color: '#fff',
-                            fontWeight: 700,
-                            fontSize: '1.2em',
-                            cursor: 'pointer',
-                            padding: 0,
-                            lineHeight: 1,
-                        }}
-                    >
-                        ×
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="app-container">
+      <div className="app-header-row">
+        <h1>MTG Commander Leaderboard</h1>
+        <select
+          id="scoresheet-select"
+          className="scoresheet-select"
+          value={selectedSheet}
+          onChange={e => setSelectedSheet(e.target.value)}
+        >
+          {AVAILABLE_SHEETS.map(sheet => (
+            <option key={sheet.file} value={sheet.file}>{sheet.label}</option>
+          ))}
+        </select>
+      </div>
+      <ScoreBoard
+        scores={{ players }}
+        onPlayerClick={player => setSelectedPlayer(player)}
+        minimal
+      />
+      <button
+        onClick={() => setShowAddGame(true)}
+        aria-label="Add Game"
+        title="Add Game"
+      >
+        +
+      </button>
+      {showAddGame && (
+        <AddGameWizard
+          events={event ? [event] : []}
+          onClose={() => setShowAddGame(false)}
+          onSubmit={handleAddGame}
+        />
+      )}
+      {/* Player Details Modal Placeholder */}
+      {selectedPlayer && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>{selectedPlayer.name} - Details</h2>
+            <p>Player details coming soon...</p>
+            <button className="modal-close-btn" onClick={() => setSelectedPlayer(null)}>Close</button>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default App;

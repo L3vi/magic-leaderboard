@@ -1,68 +1,33 @@
 {
-  "players": [
+  "year": 2025,
+  "events": [
     {
-      "first": 7,
-      "fourth": 3,
-      "name": "Anson",
-      "score": 46,
-      "second": 2,
-      "third": 4
-    },
-    {
-      "first": 4,
-      "fourth": 3,
-      "name": "Caleb",
-      "score": 35,
-      "second": 3,
-      "third": 3
-    },
-    {
-      "first": 2,
-      "fourth": 3,
-      "name": "Danny",
-      "score": 36,
-      "second": 0,
-      "third": 12
-    },
-    {
-      "first": 3,
-      "fourth": 1,
-      "name": "Jordan",
-      "score": 33,
-      "second": 5,
-      "third": 2
-    },
-    {
-      "first": 4,
-      "fourth": 2,
-      "name": "Levi",
-      "score": 39,
-      "second": 2,
-      "third": 7
-    },
-    {
-      "first": 1,
-      "fourth": 0,
-      "name": "Nate",
-      "score": 47,
-      "second": 10,
-      "third": 6
-    },
-    {
-      "first": 8,
-      "fourth": 3,
-      "name": "Parker",
-      "score": 47,
-      "second": 3,
-      "third": 1
-    },
-    {
-      "first": 9,
-      "fourth": 4,
-      "name": "Shane",
-      "score": 52,
-      "second": 1,
-      "third": 4
+      "id": "event-2025-1",
+      "date": "2025-06-01",
+      "games": [
+        {
+          "id": "game-1",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "players": [
+            { "name": "Anson", "placement": 1, "commander": "" },
+            { "name": "Caleb", "placement": 2, "commander": "" },
+            { "name": "Danny", "placement": 3, "commander": "" },
+            { "name": "Jordan", "placement": 4, "commander": "" }
+          ]
+        },
+        {
+          "id": "game-2",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "players": [
+            { "name": "Levi", "placement": 1, "commander": "" },
+            { "name": "Nate", "placement": 2, "commander": "" },
+            { "name": "Parker", "placement": 3, "commander": "" },
+            { "name": "Shane", "placement": 4, "commander": "" }
+          ]
+        }
+      ]
     }
   ]
 }

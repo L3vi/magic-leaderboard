@@ -1,13 +1,28 @@
 /* Enhanced styling for the MTG Commander Score Tracker */
-html {
-  font-size: 16px;
+:root {
+  --font-main: "Segoe UI", Arial, sans-serif;
+  --font-size-large: 1.9rem;
+  --font-size-h1: 2.6rem;
+  --font-size-table: 1.9rem;
+  --color-bg: #23272f;
+  --color-bg-table: rgba(35, 39, 47, 0.98);
+  --color-header: #5fa8e9;
+  --color-header-row: #263a53;
+  --color-header-text: #b3d8ff;
+  --color-row-alt: rgba(120, 130, 150, 0.18);
+  --color-row-hover: rgba(80, 120, 200, 0.13);
+  --color-text: #f5f5f5;
+  --color-shadow: #0004;
+  --color-btn: #22c55e;
+  --color-btn-hover: #16a34a;
+  --padding-table-cell: 12px 20px;
 }
 
+html { font-size: 16px; }
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 1rem;
-  background: #23272f;
-  color: #f5f5f5;
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: var(--color-text);
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -17,292 +32,52 @@ body {
   overflow-y: hidden;
 }
 
-/* --- Scoreboard Styles --- */
-.scoreboard-container {
-  max-width: 1300px;
-  margin: 24px auto 0 auto;
-  background: rgba(35, 39, 47, 0.98);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px #0004;
-  padding: 18px 12px 24px 12px;
-  /* overflow-x: auto; already handled if needed */
-}
-
-.scoreboard-table {
-  width: 100%;
-  min-width: 1100px;
-  border-collapse: separate;
-  border-spacing: 0 8px;
+/* Floating Add Game Button */
+button[aria-label="Add Game"] {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  background: var(--color-btn);
   color: #fff;
-  background: none;
-}
-
-.scoreboard-table th {
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-  background: #263a53;
-  color: #b3d8ff;
-  box-shadow: 0 2px 8px #0002;
-}
-
-.scoreboard-table th:first-child {
-  border-top-left-radius: 20px;
-}
-
-.scoreboard-table th:last-child {
-  border-top-right-radius: 20px;
-}
-
-.scoreboard-table th:hover {
-  background: rgba(120, 180, 255, 0.13);
-}
-
-.scoreboard-row {
-  background: none;
-  transition: background 0.18s;
-  height: 54px;
-  border-bottom: none;
-}
-
-.scoreboard-row:nth-child(even) {
-  background: rgba(120, 130, 150, 0.18);
-}
-
-.scoreboard-row:hover {
-  background: rgba(80, 120, 200, 0.1);
-}
-
-:root {
-  --scoreboard-font-size: 1.9rem;
-  --scoreboard-font-weight: 600;
-  --placement-btns-opacity: 0.25;
-  --placement-btns-opacity-hover: 1;
-  --placement-btns-transition: opacity 0.18s;
-  --placement-btn-bg: #4f8cff;
-  --placement-btn-bg-hover: #3762c2;
-  --placement-btn-plus-hover: #22c55e;
-  --placement-btn-minus-hover: #dc2626;
-}
-
-.scoreboard-table th,
-.scoreboard-header-row,
-.scoreboard-player-header,
-.scoreboard-placement-header {
-  font-size: var(--scoreboard-font-size);
-  font-weight: var(--scoreboard-font-weight);
-  padding: 10px 0 10px 0;
-  letter-spacing: 0.03em;
-  background: #263a53;
-  color: #b3d8ff;
-  box-shadow: 0 2px 8px #0002;
-}
-
-.scoreboard-table th.scoreboard-rank-header {
-  width: 38px;
-  min-width: 38px;
-  max-width: 38px;
-}
-
-.scoreboard-table th.scoreboard-player-header {
-  width: 180px;
-  min-width: 120px;
-  max-width: 220px;
-}
-
-.scoreboard-table th.scoreboard-placement-header-score {
-  width: 80px;
-  min-width: 70px;
-  max-width: 90px;
-}
-
-.scoreboard-table th.scoreboard-placement-header-avgscore {
-  width: 90px;
-  min-width: 70px;
-  max-width: 100px;
-}
-
-.scoreboard-table th.scoreboard-placement-header-1st,
-.scoreboard-table th.scoreboard-placement-header-2nd,
-.scoreboard-table th.scoreboard-placement-header-3rd,
-.scoreboard-table th.scoreboard-placement-header-4th {
-  width: 70px;
-  min-width: 60px;
-  max-width: 80px;
-}
-
-.scoreboard-table th.scoreboard-placement-header-games {
-  width: 70px;
-  min-width: 60px;
-  max-width: 80px;
-}
-
-.scoreboard-player-header {
-  text-align: left !important;
-  padding-left: 24px !important;
-  padding-right: 12px !important;
-}
-
-.scoreboard-player-header,
-.scoreboard-player-cell,
-.scoreboard-player-name-edit,
-.scoreboard-player-input,
-.scoreboard-save-btn,
-.scoreboard-player-name {
-  font-size: var(--scoreboard-font-size);
-  font-weight: var(--scoreboard-font-weight);
-  padding: 6px 12px 6px 12px;
-  text-align: left !important;
-}
-
-.scoreboard-player-score,
-.scoreboard-placement-count,
-.scoreboard-table
-  td:not(.scoreboard-player-cell):not(.scoreboard-player-name-edit):not(
-    .scoreboard-player-input
-  ):not(.scoreboard-save-btn):not(.scoreboard-player-name),
-.scoreboard-row:not(.scoreboard-player-cell),
-.scoreboard-rank,
-.scoreboard-placement-label {
-  font-size: var(--scoreboard-font-size);
-  font-weight: var(--scoreboard-font-weight);
-  text-align: center;
-  padding: 6px 0 6px 0;
-}
-
-.scoreboard-rank {
-  text-align: right;
-  font-weight: 700;
-  padding: 0 18px 0 0;
   border: none;
-}
-
-.scoreboard-placement-cell {
-  display: table-cell;
-  border: none;
-  padding: 0 0 0 18px;
-  vertical-align: middle;
-}
-
-.scoreboard-placement-flex-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.scoreboard-placement-btns-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  box-shadow: none;
-  overflow: visible;
-  width: auto;
-  opacity: var(--placement-btns-opacity);
-  transition: var(--placement-btns-transition);
-}
-
-.scoreboard-placement-flex-row .scoreboard-placement-btns-container {
-  opacity: var(--placement-btns-opacity);
-  transition: var(--placement-btns-transition);
-}
-
-.scoreboard-placement-flex-row:hover .scoreboard-placement-btns-container {
-  opacity: var(--placement-btns-opacity-hover);
-}
-
-.scoreboard-placement-btn {
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
+  width: 64px;
+  height: 64px;
+  font-size: 2.2rem;
+  box-shadow: 0 4px 16px var(--color-shadow);
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.2s;
+}
+button[aria-label="Add Game"]:hover { background: var(--color-btn-hover); }
+
+/* Modal Overlay Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #000a;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  font-size: 0.85em;
-  box-shadow: 0 1px 4px #0002;
-  margin: 0;
-  border: none;
-  cursor: pointer;
-  font-weight: 700;
-  line-height: 1;
-  background: var(--placement-btn-bg);
+  z-index: 2000;
+}
+.modal-content {
+  background: var(--color-bg-table);
+  padding: 48px;
+  border-radius: 16px;
+  min-width: 320px;
+  max-width: 90vw;
   color: #fff;
-  transition: background 0.2s, color 0.2s, box-shadow 0.1s, transform 0.1s;
+  box-shadow: 0 8px 32px #0008;
 }
 
-.scoreboard-placement-btn:active {
-  box-shadow: 0 2px 8px #0005;
-  transform: scale(0.95);
-}
-
-.scoreboard-placement-btn:hover {
-  background: var(--placement-btn-bg-hover);
-  transform: translateY(-2px) scale(1.07);
-}
-
-.scoreboard-placement-btn-plus:hover {
-  background: var(--placement-btn-plus-hover) !important;
-  color: #fff;
-}
-
-.scoreboard-placement-btn-minus:hover {
-  background: var(--placement-btn-minus-hover) !important;
-  color: #fff;
-}
-
-.scoreboard-placement-btn[aria-label],
-.scoreboard-placement-btn[title] {
-  outline: none;
-}
-
-.scoreboard-placement-btn:focus {
-  outline: 2px solid #7ecfff;
-  outline-offset: 2px;
-}
-
-.scoreboard-player-games-inprogress {
-  color: inherit;
-  font-weight: 700;
-  transition: background 0.2s, color 0.2s;
-}
-
-.scoreboard-player-games {
-  padding: 6px 12px;
-  text-align: center;
-}
-
-.scoreboard-placement-header-score {
-  text-align: unset;
-}
-
-.scoreboard-player-avgscore {
-  font-size: var(--scoreboard-font-size);
-  padding: 6px 0 6px 0;
-  text-align: center;
-  font-weight: 700;
-}
-
-.scoreboard-placement-header-avgscore {
-  font-size: var(--scoreboard-font-size);
-  padding: 10px 0 10px 0;
-  text-align: center;
-}
-
-.scoreboard-edit-btn {
-  background: none !important;
-  border: none;
-  cursor: pointer;
-  margin-left: 18px;
-  padding: 0;
-  box-shadow: none;
-  color: inherit;
-  font-weight: var(--scoreboard-font-weight);
+/* Remove old placement/edit button styles */
+.scoreboard-edit-btn,
+.scoreboard-save-btn,
+.scoreboard-placement-btn,
+.scoreboard-placement-btns-container,
+.scoreboard-placement-flex-row {
+  display: none !important;
 }
 
 h1 {
@@ -310,69 +85,57 @@ h1 {
   margin-top: 18px;
   margin-bottom: 12px;
   letter-spacing: 2.5px;
-  color: #5fa8e9;
-  font-size: 2.6rem;
+  color: var(--color-header);
+  font-size: var(--font-size-h1);
   font-weight: 800;
   text-shadow: 0 4px 24px #000a, 0 1px 0 #3762c2;
 }
-
 h2 {
   text-align: center;
   margin-top: 10px;
   margin-bottom: 6px;
   font-weight: 500;
-  color: #b3d8ff;
-  font-size: 1.5rem;
+  color: var(--color-header-text);
   letter-spacing: 1.2px;
   text-shadow: 0 2px 8px #0006;
 }
 
-@media (max-width: 700px) {
-  .scoreboard-container {
-    padding: 8px 2vw 16px 2vw;
-  }
-  .scoreboard-header-row,
-  .scoreboard-table th {
-    font-size: 1rem;
-    font-weight: var(--scoreboard-font-weight);
-    padding: 6px 0 6px 0;
-  }
-  .scoreboard-player-info {
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .scoreboard-player-score,
-  .scoreboard-player-avgscore,
-  .scoreboard-player-games {
-    font-size: var(--scoreboard-font-size);
-    font-weight: var(--scoreboard-font-weight);
-    padding: 4px 0 4px 0;
-    text-align: center;
-  }
-  .scoreboard-player-name {
-    font-size: var(--scoreboard-font-size);
-    font-weight: var(--scoreboard-font-weight);
-    padding: 4px 0 4px 0;
-  }
-  .scoreboard-placement-count {
-    font-size: unset;
-    padding: 4px 0 4px 0;
-  }
-  .scoreboard-player-cell {
-    padding-right: 4px;
-    padding-left: 4px;
-  }
-  .scoreboard-placement-cell {
-    padding-left: 4px;
-  }
+.app-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 0 0 0;
 }
 
-@media (max-width: 480px) {
-  .scoreboard-table th,
-  .scoreboard-table td {
-    font-size: 0.95rem;
-    font-weight: var(--scoreboard-font-weight);
-    padding: 8px 4px;
-  }
+.app-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.scoresheet-select {
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 1.2rem;
+  background: var(--color-header-row);
+  color: var(--color-header-text);
+  border: none;
+  outline: none;
+  min-width: 100px;
+}
+
+.modal-close-btn {
+  margin-top: 16px;
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-close-btn:hover {
+  background: var(--color-btn-hover);
 }
