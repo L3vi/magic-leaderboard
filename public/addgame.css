@@ -305,3 +305,17 @@
   color: #5fa8e9;
   outline: none;
 }
+
+.commander-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 8px;
+  flex-shrink: 0;
+  background: #23293a;
+  border: 1.5px solid #5fa8e9;
+  box-shadow: 0 2px 8px #0003;
+  display: inline-block;
+  vertical-align: middle;
+}

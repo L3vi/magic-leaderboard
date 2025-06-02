@@ -108,9 +108,16 @@ h2 {
 
 .app-header-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  gap: 0.5em;
+  margin-bottom: 1.5em;
+}
+.app-header-row h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #5fa8e9;
+  margin: 0;
+  line-height: 1.1;
 }
 
 .scoresheet-select {
@@ -122,6 +129,46 @@ h2 {
   border: none;
   outline: none;
   min-width: 100px;
+}
+
+#scoresheet-select {
+  font-family: inherit;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #5fa8e9;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0.05em 0.5em 0.05em 0.3em;
+  margin-left: 0.3em;
+  outline: none;
+  transition: background 0.18s;
+  cursor: pointer;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  vertical-align: middle;
+  height: 1.3em;
+  line-height: 1.1;
+  display: inline-block;
+}
+#scoresheet-select:hover {
+  background: #b3d8ff;
+  color: #5fa8e9;
+  border: none;
+  box-shadow: none;
+}
+#scoresheet-select:focus {
+  background: transparent;
+  color: #5fa8e9;
+  border: none;
+  box-shadow: none;
+}
+#scoresheet-select option {
+  color: #23293a;
+  background: #eaf6ff;
+  font-weight: 600;
 }
 
 .modal-close-btn {
@@ -138,4 +185,49 @@ h2 {
 }
 .modal-close-btn:hover {
   background: var(--color-btn-hover);
+}
+
+/* Scryfall Autocomplete Suggestions Popup (site style) */
+.scryfall-popup {
+  position: fixed;
+  z-index: 4000;
+  min-width: 220px;
+  max-width: 340px;
+  background: #23293a;
+  border: 1.5px solid #5fa8e9;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px #000b;
+  color: #eaf6ff;
+  font-size: 1.08rem;
+  font-family: inherit;
+  outline: none;
+  animation: fadeInScryfall 0.18s cubic-bezier(.4,1.6,.6,1);
+  padding: 0.15rem 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+@keyframes fadeInScryfall {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.scryfall-popup-item {
+  padding: 9px 18px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  font-size: 1.08rem;
+  color: inherit;
+  font-family: inherit;
+  transition: background 0.13s, color 0.13s;
+  outline: none;
+  border-radius: 0;
+}
+.scryfall-popup-item:hover,
+.scryfall-popup-item.active,
+.scryfall-popup-item:focus {
+  background: #263a53;
+  color: #5fa8e9;
+  outline: none;
 }

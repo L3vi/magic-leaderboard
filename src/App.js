@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import ScoreBoard from './components/ScoreBoard';
-import AddGameTable from './components/AddGameTable';
-import PlayerDetailsModal from './components/PlayerDetailsModal';
-import scores2025 from './data/scores-2025.json';
-import scores2024 from './data/scores-2024.json';
+import React, { useState, useEffect } from "react";
+import ScoreBoard from "./components/ScoreBoard";
+import AddGameTable from "./components/AddGameTable";
+import PlayerDetailsModal from "./components/PlayerDetailsModal";
+import scores2025 from "./data/scores-2025.json";
+import scores2024 from "./data/scores-2024.json";
 
 const AVAILABLE_SHEETS = [
-  { label: '2025', file: 'scores-2025.json', data: scores2025 },
-  { label: '2024', file: 'scores-2024.json', data: scores2024 }
+  { label: "2025", file: "scores-2025.json", data: scores2025 },
+  { label: "2024", file: "scores-2024.json", data: scores2024 },
 ];
 
+// Utility functions
 function aggregatePlayers(event) {
-  // Aggregate player stats from all games in the event
   const playerMap = {};
-  event.games.forEach(game => {
+  event.games.forEach((game) => {
     game.players.forEach(({ name, placement, commander }) => {
       if (!playerMap[name]) {
         playerMap[name] = {
@@ -24,7 +24,7 @@ function aggregatePlayers(event) {
           third: 0,
           fourth: 0,
           games: 0,
-          commanderHistory: []
+          commanderHistory: [],
         };
       }
       playerMap[name].games += 1;
@@ -45,50 +45,61 @@ const getToday = () => new Date().toISOString().slice(0, 10);
 
 function getUniquePlayers(events) {
   const names = new Set();
-  events.forEach(ev => ev.games.forEach(g => g.players.forEach(p => names.add(p.name))));
+  events.forEach((ev) => ev.games.forEach((g) => g.players.forEach((p) => names.add(p.name))));
   return Array.from(names);
 }
 
 function getCommanderHistory(events, playerName) {
   const commanders = {};
-  events.forEach(ev => ev.games.forEach(g => g.players.forEach(p => {
-    if (p.name === playerName && p.commander) {
-      commanders[p.commander] = (commanders[p.commander] || 0) + 1;
-    }
-  })));
-  return Object.entries(commanders).sort((a, b) => b[1] - a[1]).map(([c]) => c);
+  events.forEach((ev) =>
+    ev.games.forEach((g) =>
+      g.players.forEach((p) => {
+        if (p.name === playerName && p.commander) {
+          commanders[p.commander] = (commanders[p.commander] || 0) + 1;
+        }
+      })
+    )
+  );
+  return Object.entries(commanders)
+    .sort((a, b) => b[1] - a[1])
+    .map(([c]) => c);
 }
 
 const AddGameWizard = ({ events, onClose, onSubmit }) => {
   const allPlayers = getUniquePlayers(events);
   const [date, setDate] = useState(getToday());
-  const [players, setPlayers] = useState([allPlayers[0] || '', allPlayers[1] || '', '', '']);
+  // Default to 4 players for new game
+  const [players, setPlayers] = useState([
+    allPlayers[0] || "",
+    allPlayers[1] || "",
+    allPlayers[2] || "",
+    allPlayers[3] || "",
+  ]);
   const [placements, setPlacements] = useState([1, 2, 3, 4]);
-  const [commanders, setCommanders] = useState(['', '', '', '']);
-  const [error, setError] = useState('');
+  const [commanders, setCommanders] = useState(["", "", "", ""]);
+  const [error, setError] = useState("");
 
   const addPlayer = () => {
-    setPlayers(p => [...p, '']);
-    setPlacements(p => [...p, p.length + 1]);
-    setCommanders(c => [...c, '']);
+    setPlayers((p) => [...p, ""]);
+    setPlacements((p) => [...p, p.length + 1]);
+    setCommanders((c) => [...c, ""]);
   };
-  const removePlayer = i => {
+  const removePlayer = (i) => {
     if (players.length > 2) {
-      setPlayers(p => p.filter((_, idx) => idx !== i));
-      setPlacements(p => p.filter((_, idx) => idx !== i));
-      setCommanders(c => c.filter((_, idx) => idx !== i));
+      setPlayers((p) => p.filter((_, idx) => idx !== i));
+      setPlacements((p) => p.filter((_, idx) => idx !== i));
+      setCommanders((c) => c.filter((_, idx) => idx !== i));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    const names = players.map(p => p.trim()).filter(Boolean);
+    setError("");
+    const names = players.map((p) => p.trim()).filter(Boolean);
     if (names.length < 2 || new Set(names).size !== names.length) {
-      setError('Enter at least 2 unique player names.');
+      setError("Enter at least 2 unique player names.");
       return;
     }
-    // Compose game object
     const game = {
       id: `game-${Date.now()}`,
       timestampStart: null,
@@ -96,8 +107,8 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
       players: players.map((name, i) => ({
         name: name.trim(),
         placement: placements[i],
-        commander: commanders[i] || ''
-      }))
+        commander: commanders[i] || "",
+      })),
     };
     onSubmit({ date, game });
   };
@@ -107,8 +118,14 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
       <div className="addgame-modal-content">
         <h2>Add Game</h2>
         <form onSubmit={handleSubmit}>
-          <label>Date:<br />
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} className="addgame-date-input" />
+          <label>
+            Date:<br />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="addgame-date-input"
+            />
           </label>
           <div className="addgame-table-wrapper">
             <AddGameTable
@@ -126,8 +143,12 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
           </div>
           {error && <div className="addgame-error">{error}</div>}
           <div className="addgame-modal-actions">
-            <button className="modal-close-btn" type="button" onClick={onClose}>Cancel</button>
-            <button className="modal-close-btn" type="submit">Add Game</button>
+            <button className="modal-close-btn" type="button" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="modal-close-btn" type="submit">
+              Add Game
+            </button>
           </div>
         </form>
       </div>
@@ -143,9 +164,8 @@ const App = () => {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   useEffect(() => {
-    const sheet = AVAILABLE_SHEETS.find(s => s.file === selectedSheet);
+    const sheet = AVAILABLE_SHEETS.find((s) => s.file === selectedSheet);
     if (sheet && sheet.data && sheet.data.events && sheet.data.events.length > 0) {
-      // For now, just use the first event in the year
       setEvent(sheet.data.events[0]);
     } else {
       setEvent(null);
@@ -161,8 +181,7 @@ const App = () => {
   }, [event]);
 
   const handleAddGame = ({ date, game }) => {
-    // For now, just add to the first event in the selected year (in-memory)
-    setEvent(ev => {
+    setEvent((ev) => {
       const newEvent = { ...ev, games: [...ev.games, game] };
       setPlayers(aggregatePlayers(newEvent));
       return newEvent;
@@ -178,16 +197,18 @@ const App = () => {
           id="scoresheet-select"
           className="scoresheet-select"
           value={selectedSheet}
-          onChange={e => setSelectedSheet(e.target.value)}
+          onChange={(e) => setSelectedSheet(e.target.value)}
         >
-          {AVAILABLE_SHEETS.map(sheet => (
-            <option key={sheet.file} value={sheet.file}>{sheet.label}</option>
+          {AVAILABLE_SHEETS.map((sheet) => (
+            <option key={sheet.file} value={sheet.file}>
+              {sheet.label}
+            </option>
           ))}
         </select>
       </div>
       <ScoreBoard
         scores={{ players }}
-        onPlayerClick={player => setSelectedPlayer(player)}
+        onPlayerClick={(player) => setSelectedPlayer(player)}
         minimal
       />
       <button
