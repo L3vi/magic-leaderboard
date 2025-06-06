@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const PlayerDetailsModal = ({ player, event, onClose }) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!player) return null;
   // Gather all games for this player
   const games = event.games.filter(g => g.players.some(p => p.name === player.name));

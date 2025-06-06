@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import ReactDOM from "react-dom";
 
 function getCommanderHistory(events, playerName) {
@@ -135,6 +135,17 @@ export default function AddGameTable({
       };
     }
   }, [popupInfo.idx]);
+
+  // Close popup on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setPopupInfo({ idx: null, rect: null });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div>

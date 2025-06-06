@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ScoreBoard from "./components/ScoreBoard";
 import AddGameTable from "./components/AddGameTable";
 import PlayerDetailsModal from "./components/PlayerDetailsModal";
@@ -78,6 +78,14 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
   const [placements, setPlacements] = useState([1, 2, 3, 4]);
   const [commanders, setCommanders] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const addPlayer = () => {
     setPlayers((p) => [...p, ""]);
