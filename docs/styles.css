@@ -1,0 +1,232 @@
+/* Enhanced styling for the MTG Commander Score Tracker */
+:root {
+  --font-main: "Segoe UI", Arial, sans-serif;
+  --font-size-large: 1.9rem;
+  --font-size-h1: 2.6rem;
+  --font-size-table: 1.9rem;
+  --color-bg: #23272f;
+  --color-bg-table: rgba(35, 39, 47, 0.98);
+  --color-header: #5fa8e9;
+  --color-header-row: #263a53;
+  --color-header-text: #b3d8ff;
+  --color-row-alt: rgba(120, 130, 150, 0.18);
+  --color-row-hover: rgba(80, 120, 200, 0.13);
+  --color-text: #f5f5f5;
+  --color-shadow: #0004;
+  --color-btn: #22c55e;
+  --color-btn-hover: #16a34a;
+  --padding-table-cell: 12px 20px;
+}
+
+html { font-size: 16px; }
+body {
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  height: 100vh;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  overflow-y: hidden;
+}
+
+button[aria-label="Add Game"] {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  font-size: 2.2rem;
+  box-shadow: 0 4px 16px var(--color-shadow);
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.2s;
+}
+button[aria-label="Add Game"]:hover { background: var(--color-btn-hover); }
+
+/* Modal Overlay Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #000a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: var(--color-bg-table);
+  padding: 48px;
+  border-radius: 16px;
+  min-width: 320px;
+  max-width: 90vw;
+  color: #fff;
+  box-shadow: 0 8px 32px #0008;
+}
+
+/* Remove old placement/edit button styles */
+.scoreboard-edit-btn,
+.scoreboard-save-btn,
+.scoreboard-placement-btn,
+.scoreboard-placement-btns-container,
+.scoreboard-placement-flex-row {
+  display: none !important;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 18px;
+  margin-bottom: 12px;
+  letter-spacing: 2.5px;
+  color: var(--color-header);
+  font-size: var(--font-size-h1);
+  font-weight: 800;
+  text-shadow: 0 4px 24px #000a, 0 1px 0 #3762c2;
+}
+h2 {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--color-header-text);
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 8px #0006;
+}
+
+.app-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 0 0 0;
+}
+
+.app-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 1.5em;
+}
+.app-header-row h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #5fa8e9;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.scoresheet-select {
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 1.2rem;
+  background: var(--color-header-row);
+  color: var(--color-header-text);
+  border: none;
+  outline: none;
+  min-width: 100px;
+}
+
+#scoresheet-select {
+  font-family: inherit;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #5fa8e9;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0.05em 0.5em 0.05em 0.3em;
+  margin-left: 0.3em;
+  outline: none;
+  transition: background 0.18s;
+  cursor: pointer;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  vertical-align: middle;
+  height: 1.3em;
+  line-height: 1.1;
+  display: inline-block;
+}
+#scoresheet-select:hover {
+  background: #b3d8ff;
+  color: #5fa8e9;
+  border: none;
+  box-shadow: none;
+}
+#scoresheet-select:focus {
+  background: transparent;
+  color: #5fa8e9;
+  border: none;
+  box-shadow: none;
+}
+#scoresheet-select option {
+  color: #23293a;
+  background: #eaf6ff;
+  font-weight: 600;
+}
+
+.modal-close-btn {
+  margin-top: 16px;
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-close-btn:hover {
+  background: var(--color-btn-hover);
+}
+
+/* Scryfall Autocomplete Suggestions Popup (site style) */
+.scryfall-popup {
+  position: fixed;
+  z-index: 4000;
+  min-width: 220px;
+  max-width: 340px;
+  background: #23293a;
+  border: 1.5px solid #5fa8e9;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px #000b;
+  color: #eaf6ff;
+  font-size: 1.08rem;
+  font-family: inherit;
+  outline: none;
+  animation: fadeInScryfall 0.18s cubic-bezier(.4,1.6,.6,1);
+  padding: 0.15rem 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+@keyframes fadeInScryfall {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.scryfall-popup-item {
+  padding: 9px 18px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  font-size: 1.08rem;
+  color: inherit;
+  font-family: inherit;
+  transition: background 0.13s, color 0.13s;
+  outline: none;
+  border-radius: 0;
+}
+.scryfall-popup-item:hover,
+.scryfall-popup-item.active,
+.scryfall-popup-item:focus {
+  background: #263a53;
+  color: #5fa8e9;
+  outline: none;
+}

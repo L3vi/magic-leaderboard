@@ -1,0 +1,51 @@
+/* Add Game Modal & Table Styles */
+.addgame-table {
+  margin-bottom: 0;
+  background: none;
+}
+.addgame-row input.addgame-input,
+.addgame-row select.addgame-select {
+  font-size: 1.1rem;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #2a3955;
+  background: #23293a;
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.addgame-row input.addgame-input:focus,
+.addgame-row select.addgame-select:focus {
+  border: 1.5px solid var(--color-header);
+  box-shadow: 0 0 0 2px #5fa8e955;
+  position: relative;
+  z-index: 3100;
+}
+.addgame-remove-btn {
+  background: none;
+  color: #e66;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  transition: background 0.15s;
+}
+.addgame-remove-btn:hover {
+  background: #e66a;
+}
+.addgame-add-btn {
+  margin-top: 10px;
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
