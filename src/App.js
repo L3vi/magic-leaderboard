@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ScoreBoard from "./components/ScoreBoard";
 import AddGameTable from "./components/AddGameTable";
 import PlayerDetailsModal from "./components/PlayerDetailsModal";
+import GamesList from "./components/GamesList";
 import scores2025 from "./data/scores-2025.json";
 import scores2024 from "./data/scores-2024.json";
 
@@ -25,10 +26,36 @@ function aggregatePlayers(event) {
           fourth: 0,
           games: 0,
           commanderHistory: [],
+          opponentStats: {},
         };
       }
       playerMap[name].games += 1;
-      playerMap[name].commanderHistory.push({ commander, gameId: game.id, placement });
+      playerMap[name].commanderHistory.push({ 
+        commander, 
+        gameId: game.id, 
+        placement,
+        date: game.dateCreated || game.date 
+      });
+      
+      // Track opponent statistics
+      game.players.forEach((opponent) => {
+        if (opponent.name !== name) {
+          if (!playerMap[name].opponentStats[opponent.name]) {
+            playerMap[name].opponentStats[opponent.name] = {
+              wins: 0,
+              losses: 0,
+              games: 0
+            };
+          }
+          playerMap[name].opponentStats[opponent.name].games += 1;
+          if (placement < opponent.placement) {
+            playerMap[name].opponentStats[opponent.name].wins += 1;
+          } else if (placement > opponent.placement) {
+            playerMap[name].opponentStats[opponent.name].losses += 1;
+          }
+        }
+      });
+      
       switch (placement) {
         case 1: playerMap[name].first += 1; playerMap[name].score += 4; break;
         case 2: playerMap[name].second += 1; playerMap[name].score += 3; break;
@@ -77,6 +104,7 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
   ]);
   const [placements, setPlacements] = useState([1, 2, 3, 4]);
   const [commanders, setCommanders] = useState(["", "", "", ""]);
+  const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -112,6 +140,8 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
       id: `game-${Date.now()}`,
       timestampStart: null,
       timestampEnd: null,
+      dateCreated: new Date().toISOString(),
+      notes: notes.trim(),
       players: players.map((name, i) => ({
         name: name.trim(),
         placement: placements[i],
@@ -149,6 +179,16 @@ const AddGameWizard = ({ events, onClose, onSubmit }) => {
               removePlayer={removePlayer}
             />
           </div>
+          <label>
+            Notes (optional):<br />
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="addgame-notes-input"
+              placeholder="Any funny plays, memorable moments, etc..."
+              rows="3"
+            />
+          </label>
           {error && <div className="addgame-error">{error}</div>}
           <div className="addgame-modal-actions">
             <button className="modal-close-btn" type="button" onClick={onClose}>
@@ -170,6 +210,7 @@ const App = () => {
   const [players, setPlayers] = useState([]);
   const [showAddGame, setShowAddGame] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [activeTab, setActiveTab] = useState('leaderboard'); // 'leaderboard' or 'games'
 
   useEffect(() => {
     const sheet = AVAILABLE_SHEETS.find((s) => s.file === selectedSheet);
@@ -214,15 +255,44 @@ const App = () => {
           ))}
         </select>
       </div>
-      <ScoreBoard
-        scores={{ players }}
-        onPlayerClick={(player) => setSelectedPlayer(player)}
-        minimal
-      />
+      
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-button ${activeTab === 'leaderboard' ? 'active' : ''}`}
+          onClick={() => setActiveTab('leaderboard')}
+        >
+          Leaderboard
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'games' ? 'active' : ''}`}
+          onClick={() => setActiveTab('games')}
+        >
+          Games
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'leaderboard' && (
+        <ScoreBoard
+          scores={{ players }}
+          onPlayerClick={(player) => setSelectedPlayer(player)}
+          minimal
+        />
+      )}
+      
+      {activeTab === 'games' && (
+        <GamesList 
+          event={event}
+          onPlayerClick={(player) => setSelectedPlayer(player)}
+        />
+      )}
+      
       <button
         onClick={() => setShowAddGame(true)}
         aria-label="Add Game"
         title="Add Game"
+        className="add-game-fab"
       >
         +
       </button>

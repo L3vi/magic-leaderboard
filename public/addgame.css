@@ -73,6 +73,31 @@
   box-shadow: 0 0 0 2px #5fa8e955;
 }
 
+/* Notes input field */
+.addgame-notes-input {
+  font-size: 1.1rem;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #2a3955;
+  background: #23293a;
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border 0.15s, box-shadow 0.15s;
+  margin-top: 4px;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+.addgame-notes-input:focus {
+  border: 1.5px solid var(--color-header);
+  box-shadow: 0 0 0 2px #5fa8e955;
+}
+.addgame-notes-input::placeholder {
+  color: #6b7280;
+}
+
 /* Modal overlay for Add Game */
 .addgame-modal-overlay {
   position: fixed;
@@ -111,7 +136,8 @@
   .addgame-modal-content {
     min-width: 0;
     width: 98vw;
-    padding: 1.1rem 0.5rem 1.2rem 0.5rem;
+    padding: 1.5rem 1rem 1.2rem 1rem;
+    margin: 1rem;
   }
 }
 @keyframes fadeInModal {
@@ -135,6 +161,12 @@
   gap: 1.1rem;
 }
 
+.addgame-modal-content label {
+  font-weight: 600;
+  color: #b3d8ff;
+  margin-bottom: 0.25rem;
+}
+
 .addgame-table-wrapper {
   margin-bottom: 0.5rem;
 }
@@ -156,6 +188,18 @@
   margin-top: 0.5rem;
 }
 
+@media (max-width: 600px) {
+  .addgame-modal-actions {
+    justify-content: center;
+    flex-direction: column-reverse;
+  }
+  
+  .modal-close-btn {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
 .modal-close-btn {
   background: var(--color-btn);
   color: #fff;
@@ -175,12 +219,27 @@
   min-width: 340px;
   padding: 36px;
 }
+
+@media (max-width: 600px) {
+  .player-details-modal {
+    padding: 20px;
+    min-width: 0;
+  }
+}
+
 .player-details-name {
   font-size: 2.1rem;
   margin-bottom: 8px;
   letter-spacing: 1.2px;
   text-align: center;
 }
+
+@media (max-width: 600px) {
+  .player-details-name {
+    font-size: 1.8rem;
+  }
+}
+
 .player-details-stats {
   display: flex;
   gap: 18px;
@@ -188,7 +247,16 @@
   font-size: 1.18rem;
   font-weight: 500;
   justify-content: center;
+  flex-wrap: wrap;
 }
+
+@media (max-width: 600px) {
+  .player-details-stats {
+    font-size: 1rem;
+    gap: 12px;
+  }
+}
+
 .player-details-commanders {
   margin-bottom: 18px;
   font-size: 1.08rem;
