@@ -1,5 +1,6 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { db, ref, set, onValue } from "../firebase"; // Ensure `ref` is imported
 
 function getCommanderHistory(events, playerName) {
   const commanders = {};
@@ -87,9 +88,13 @@ export default function AddGameTable({
   };
 
   const handlePlayerChange = (i, val) => {
-    const arr = [...players];
-    arr[i] = val;
-    setPlayers(arr);
+    if (val === "add-new-player") {
+      setShowAddPlayerModal(true);
+    } else {
+      const arr = [...players];
+      arr[i] = val;
+      setPlayers(arr);
+    }
   };
   const handlePlacementChange = (i, val) => {
     const arr = [...placements];
@@ -147,6 +152,27 @@ export default function AddGameTable({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Firebase integration
+  const [newPlayer, setNewPlayer] = useState("");
+  const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+
+  useEffect(() => {
+    const playersRef = ref(db, "players");
+    onValue(playersRef, (snapshot) => {
+      const data = snapshot.val();
+      setPlayers(data ? Object.values(data) : []);
+    });
+  }, []);
+
+  const handleAddPlayer = () => {
+    if (newPlayer.trim()) {
+      const newPlayerRef = ref(db, `players/${newPlayer}`);
+      set(newPlayerRef, newPlayer);
+      setNewPlayer("");
+      setShowAddPlayerModal(false);
+    }
+  };
+
   return (
     <div>
       <table
@@ -200,20 +226,23 @@ export default function AddGameTable({
                 style={{ position: "relative" }}
               >
                 <div style={{ position: "relative", width: "100%" }}>
-                  <input
-                    type="text"
-                    list="player-suggestions"
-                    value={p}
+                  <select
                     onChange={(e) => handlePlayerChange(i, e.target.value)}
-                    placeholder={`Player ${i + 1}`}
-                    autoFocus={i === 0}
                     className="addgame-input"
                     style={{
                       minWidth: 0,
                       width: "100%",
                       paddingRight: scryfallLoading[i] ? 28 : undefined,
                     }}
-                  />
+                  >
+                    <option value="">Select Player</option>
+                    {players.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                    <option value="add-new-player">Add New Player</option>
+                  </select>
                   {scryfallLoading[i] && (
                     <span
                       className="scryfall-loading-spinner-inside"
@@ -358,6 +387,20 @@ export default function AddGameTable({
           </div>,
           document.body
         )}
+
+      {/* Add New Player Modal */}
+      {showAddPlayerModal && (
+        <div className="modal">
+          <input
+            type="text"
+            value={newPlayer}
+            onChange={(e) => setNewPlayer(e.target.value)}
+            placeholder="Enter new player name"
+          />
+          <button onClick={handleAddPlayer}>Add Player</button>
+          <button onClick={() => setShowAddPlayerModal(false)}>Cancel</button>
+        </div>
+      )}
     </div>
   );
 }

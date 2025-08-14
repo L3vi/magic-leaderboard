@@ -19,3 +19,18 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 export { db, ref, set, onValue };
+
+export const fetchPlayers = (callback) => {
+  const playersRef = ref(db, 'players');
+  onValue(playersRef, (snapshot) => {
+    const data = snapshot.val();
+    callback(data ? Object.values(data) : []);
+  });
+};
+
+export const addPlayer = (playerName) => {
+  if (playerName.trim()) {
+    const newPlayerRef = ref(db, `players/${playerName}`);
+    set(newPlayerRef, playerName);
+  }
+};
