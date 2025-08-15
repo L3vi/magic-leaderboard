@@ -1,114 +1,222 @@
-/* Scoreboard Table Styles (extracted from styles.css) */
+/* Mobile-First Scoreboard Styles */
+
+/* Scoreboard container */
 .scoreboard-container {
-  max-width: 1100px;
-  margin: 24px auto 0 auto;
-  background: var(--color-bg-table);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px var(--color-shadow);
-  padding: 32px 32px 40px 32px;
-  overflow-x: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
 }
 
+/* Table styles */
 .scoreboard-table {
   width: 100%;
-  min-width: 900px;
-  max-width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-  color: #fff;
-  background: none;
-  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
-.scoreboard-table th,
+/* Header row */
 .scoreboard-header-row {
-  font-size: var(--font-size-large);
-  font-weight: 600;
-  padding: var(--padding-table-cell);
-  background: var(--color-header-row);
-  color: var(--color-header-text);
-  box-shadow: 0 2px 8px #0002;
+  background: var(--color-surface-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.scoreboard-header-row th {
+  padding: var(--spacing-md);
   text-align: left;
-  letter-spacing: 0.03em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.scoreboard-table th:hover { background: rgba(120, 180, 255, 0.13); }
-
-.scoreboard-table td {
-  font-size: var(--font-size-table);
-  padding: var(--padding-table-cell);
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
 }
 
+.scoreboard-header-row th:hover {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Hide some columns on mobile */
+.scoreboard-rank-header {
+  width: 2.5rem;
+}
+
+.scoreboard-player-header {
+  min-width: 0;
+}
+
+.scoreboard-placement-header {
+  text-align: center;
+  width: 4rem;
+}
+
+.scoreboard-placement-header-score {
+  color: var(--color-primary);
+}
+
+.scoreboard-placement-header-games,
+.scoreboard-placement-header-avgscore {
+  display: none; /* Hide on mobile */
+}
+
+/* Data rows */
 .scoreboard-row {
-  background: none;
-  transition: background 0.18s;
-  height: 54px;
-  border-bottom: none;
-}
-.scoreboard-row:nth-child(even) { background: var(--color-row-alt); }
-.scoreboard-row:hover { background: var(--color-row-hover); }
-
-.scoreboard-rank-header,
-.scoreboard-table th.scoreboard-rank-header,
-.scoreboard-table td.scoreboard-rank {
-  width: 48px;
-  min-width: 48px;
-  max-width: 48px;
-}
-.scoreboard-player-header,
-.scoreboard-table th.scoreboard-player-header,
-.scoreboard-table td.scoreboard-player-cell {
-  width: 220px;
-  min-width: 160px;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.scoreboard-table th.scoreboard-placement-header-score,
-.scoreboard-table td.scoreboard-player-score {
-  width: 110px;
-  min-width: 90px;
-  max-width: 120px;
-}
-.scoreboard-table th.scoreboard-placement-header-games,
-.scoreboard-table td.scoreboard-player-games {
-  width: 110px;
-  min-width: 90px;
-  max-width: 120px;
-}
-.scoreboard-table th.scoreboard-placement-header-avgscore,
-.scoreboard-table td.scoreboard-player-avgscore {
-  width: 110px;
-  min-width: 90px;
-  max-width: 120px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
-@media (max-width: 700px) {
-  .scoreboard-container { padding: 8px 2vw 16px 2vw; }
-  .scoreboard-header-row,
-  .scoreboard-table th {
+.scoreboard-row:hover {
+  background: var(--color-surface-elevated);
+}
+
+.scoreboard-row:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.scoreboard-row td {
+  padding: var(--spacing-md);
+  vertical-align: middle;
+}
+
+/* Rank column */
+.scoreboard-rank {
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+/* Player name */
+.scoreboard-player-cell {
+  min-width: 0;
+}
+
+.scoreboard-player-name {
+  font-weight: 600;
+  color: var(--color-text);
+  word-wrap: break-word;
+  display: block;
+}
+
+/* Score */
+.scoreboard-player-score {
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* Games and average (hidden on mobile) */
+.scoreboard-player-games,
+.scoreboard-player-avgscore {
+  display: none;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Sort arrow */
+.sort-arrow {
+  margin-left: var(--spacing-xs);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 30rem) {
+  .scoreboard-table {
+    font-size: 0.75rem;
+  }
+  
+  .scoreboard-row td,
+  .scoreboard-header-row th {
+    padding: var(--spacing-sm);
+  }
+  
+  .scoreboard-player-score {
+    font-size: 0.875rem;
+  }
+  
+  .scoreboard-rank {
+    font-size: 0.625rem;
+  }
+}
+
+/* Tablet styles (768px and up) */
+@media (min-width: 48rem) {
+  .scoreboard-table {
     font-size: 1rem;
-    font-weight: 600;
-    padding: 6px 0;
   }
-  .scoreboard-player-score,
-  .scoreboard-player-avgscore,
-  .scoreboard-player-games,
-  .scoreboard-player-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 4px 0;
-    text-align: center;
+  
+  .scoreboard-placement-header-games {
+    display: table-cell;
   }
-  .scoreboard-player-cell { padding: 0 4px; }
+  
+  .scoreboard-player-games {
+    display: table-cell;
+  }
+  
+  .scoreboard-rank {
+    font-size: 0.875rem;
+  }
 }
-@media (max-width: 480px) {
-  .scoreboard-table th,
-  .scoreboard-table td {
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 8px 4px;
+
+/* Desktop styles (1024px and up) */
+@media (min-width: 64rem) {
+  .scoreboard-placement-header-avgscore {
+    display: table-cell;
   }
+  
+  .scoreboard-player-avgscore {
+    display: table-cell;
+  }
+  
+  .scoreboard-rank {
+    font-size: 1rem;
+  }
+  
+  .scoreboard-player-score {
+    font-size: 1.125rem;
+  }
+}
+
+/* Placement colors for better visual hierarchy */
+.scoreboard-row:nth-child(1) .scoreboard-rank {
+  color: #ffd700;
+  font-weight: 900;
+}
+
+.scoreboard-row:nth-child(2) .scoreboard-rank {
+  color: #c0c0c0;
+  font-weight: 800;
+}
+
+.scoreboard-row:nth-child(3) .scoreboard-rank {
+  color: #cd7f32;
+  font-weight: 700;
+}
+
+/* Loading state */
+.scoreboard-loading {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Empty state */
+.scoreboard-empty {
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
 }

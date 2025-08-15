@@ -9,7 +9,17 @@ const formatDate = (dateString) => {
 const formatDateTime = (dateString) => {
   if (!dateString) return "Unknown";
   const date = new Date(dateString);
-  return date.toLocaleString();
+  const dateStr = date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  const timeStr = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+  return `${dateStr}, ${timeStr}`;
 };
 
 const getPlacementDisplay = (placement) => {
@@ -22,6 +32,15 @@ const getPlacementDisplay = (placement) => {
   return placements[placement] || { text: `${placement}th`, color: "#ffffff" };
 };
 
+// Function to get Scryfall image URL for a card
+const getCardImageUrl = (cardName) => {
+  if (!cardName) return null;
+  // Scryfall API endpoint for card images
+  // Using art_crop to show just the artwork without borders/text
+  const encodedName = encodeURIComponent(cardName.toLowerCase());
+  return `https://api.scryfall.com/cards/named?format=image&version=art_crop&exact=${encodedName}`;
+};
+
 const GameCard = ({ game, onPlayerClick }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -29,7 +48,19 @@ const GameCard = ({ game, onPlayerClick }) => {
   const sortedPlayers = [...game.players].sort(
     (a, b) => a.placement - b.placement
   );
-  const winner = sortedPlayers[0];
+
+  // Create comma-separated player list with winner highlighted
+  const playerList = sortedPlayers.map((player, index) => {
+    const isWinner = player.placement === 1;
+    return (
+      <span key={index}>
+        <span className={isWinner ? "winner-name" : "player-name"}>
+          {player.name}
+        </span>
+        {index < sortedPlayers.length - 1 ? ", " : ""}
+      </span>
+    );
+  });
 
   return (
     <div className="game-card">
@@ -38,18 +69,11 @@ const GameCard = ({ game, onPlayerClick }) => {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="game-card-main-info">
-          <div className="game-winner">
-            <span className="winner-crown">👑</span>
-            <span className="winner-name">{winner.name}</span>
-            {winner.commander && (
-              <span className="winner-commander">({winner.commander})</span>
-            )}
+          <div className="game-players-summary">
+            {playerList}
           </div>
-          <div className="game-meta">
-            <span className="game-date">
-              {formatDate(game.dateCreated || game.date)}
-            </span>
-            <span className="player-count">{game.players.length} players</span>
+          <div className="game-datetime">
+            {formatDateTime(game.dateCreated || game.date)}
           </div>
         </div>
         <div className="expand-indicator">{isExpanded ? "▼" : "▶"}</div>
@@ -81,7 +105,17 @@ const GameCard = ({ game, onPlayerClick }) => {
                     <span className="player-name">{player.name}</span>
                   </div>
                   {player.commander && (
-                    <span className="player-commander">{player.commander}</span>
+                    <div className="player-commander-container">
+                      <span className="player-commander">{player.commander}</span>
+                      <img 
+                        src={getCardImageUrl(player.commander)} 
+                        alt={player.commander}
+                        className="commander-card-art"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
               );
