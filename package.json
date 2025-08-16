@@ -6,7 +6,7 @@
     "start": "parcel public/index.html --port 3000 --open",
     "server": "node server.js",
     "build": "parcel build public/index.html --dist-dir build --public-url ./",
-    "build:docs": "parcel build public/index.html --dist-dir docs --public-url ./"
+  "build:docs": "rm -rf docs/* && cp docs/404.html docs/.404.html && parcel build public/index.html --dist-dir docs --public-url ./ && mv docs/.404.html docs/404.html"
   },
   "dependencies": {
     "cors": "^2.8.5",
