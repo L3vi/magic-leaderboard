@@ -1,3 +1,26 @@
+import { useEffect, useRef } from "react";
+
+function useScryfallUris(players) {
+  const [uris, setUris] = useState({});
+  const requested = useRef({});
+
+  useEffect(() => {
+    players.forEach((player) => {
+      const commander = player.commander;
+      if (!commander || uris[commander] || requested.current[commander]) return;
+      requested.current[commander] = true;
+      fetch(`https://api.scryfall.com/cards/named?exact=${encodeURIComponent(commander)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.scryfall_uri) {
+            setUris((prev) => ({ ...prev, [commander]: data.scryfall_uri }));
+          }
+        })
+        .catch(() => {});
+    });
+  }, [players]);
+  return uris;
+}
 import React, { useState, useMemo } from "react";
 
 const formatDate = (dateString) => {
@@ -35,20 +58,18 @@ const getPlacementDisplay = (placement) => {
 // Function to get Scryfall image URL for a card
 const getCardImageUrl = (cardName) => {
   if (!cardName) return null;
-  // Scryfall API endpoint for card images
-  // Using art_crop to show just the artwork without borders/text
   const encodedName = encodeURIComponent(cardName.toLowerCase());
   return `https://api.scryfall.com/cards/named?format=image&version=art_crop&exact=${encodedName}`;
 };
 
-const GameCard = ({ game, onPlayerClick }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+// Fetch Scryfall card data and cache scryfall_uri per commander
+const GameCard = ({ game, onPlayerClick, expanded, onExpand }) => {
   // Sort players by placement
   const sortedPlayers = [...game.players].sort(
     (a, b) => a.placement - b.placement
   );
-
+  // Scryfall URIs for commanders
+  const scryfallUris = useScryfallUris(sortedPlayers);
   // Create comma-separated player list with winner highlighted
   const playerList = sortedPlayers.map((player, index) => {
     const isWinner = player.placement === 1;
@@ -61,33 +82,39 @@ const GameCard = ({ game, onPlayerClick }) => {
       </span>
     );
   });
-
+  // Find the winning commander
+  const winningPlayer = sortedPlayers[0];
+  const winningCommander = winningPlayer?.commander;
   return (
     <div className="game-card">
       <div
         className="game-card-header"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => onExpand(game.id)}
       >
         <div className="game-card-main-info">
           <div className="game-players-summary">
             {playerList}
           </div>
+          {winningCommander && (
+            <div className="game-winning-commander">
+              <span className="winner-name">{winningCommander}</span>
+            </div>
+          )}
           <div className="game-datetime">
             {formatDateTime(game.dateCreated || game.date)}
           </div>
         </div>
-        <div className="expand-indicator">{isExpanded ? "▼" : "▶"}</div>
+        <div className="expand-indicator">{expanded ? "▼" : "▶"}</div>
       </div>
-
-      {isExpanded && (
+      {expanded && (
         <div className="game-card-details">
-          <div className="game-players-list">
+          <div className="game-players-list striped-list">
             {sortedPlayers.map((player, index) => {
               const placementInfo = getPlacementDisplay(player.placement);
               return (
                 <div
                   key={index}
-                  className="game-player-row"
+                  className={`game-player-row${index % 2 === 0 ? ' even' : ' odd'}`}
                   onClick={() =>
                     onPlayerClick && onPlayerClick({ name: player.name })
                   }
@@ -107,27 +134,47 @@ const GameCard = ({ game, onPlayerClick }) => {
                   {player.commander && (
                     <div className="player-commander-container">
                       <span className="player-commander">{player.commander}</span>
-                      <img 
-                        src={getCardImageUrl(player.commander)} 
-                        alt={player.commander}
-                        className="commander-card-art"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
+                      {scryfallUris[player.commander] ? (
+                        <a
+                          href={scryfallUris[player.commander]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabIndex={0}
+                          aria-label={`View ${player.commander} on Scryfall`}
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <img 
+                            src={getCardImageUrl(player.commander)} 
+                            alt={player.commander}
+                            className="commander-card-art"
+                            onClick={e => e.stopPropagation()}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </a>
+                      ) : (
+                        <img 
+                          src={getCardImageUrl(player.commander)} 
+                          alt={player.commander}
+                          className="commander-card-art"
+                          onClick={e => e.stopPropagation()}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-
           {game.notes && (
             <div className="game-notes">
               <strong>Notes:</strong> {game.notes}
             </div>
           )}
-
           <div className="game-timestamps">
             {game.dateCreated && (
               <div className="timestamp">
@@ -140,18 +187,17 @@ const GameCard = ({ game, onPlayerClick }) => {
     </div>
   );
 };
+// ...existing code...
 
 const GamesList = ({ event, onPlayerClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date"); // 'date', 'winner', 'players'
+  const [sortBy, setSortBy] = useState("date");
   const [sortDir, setSortDir] = useState("desc");
+  const [expandedGameId, setExpandedGameId] = useState(null);
 
   const filteredAndSortedGames = useMemo(() => {
     if (!event || !event.games) return [];
-
     let games = [...event.games];
-
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       games = games.filter(
@@ -163,11 +209,8 @@ const GamesList = ({ event, onPlayerClick }) => {
           ) || game?.notes.toLowerCase().includes(query)
       );
     }
-
-    // Sort games
     games.sort((a, b) => {
       let valA, valB;
-
       switch (sortBy) {
         case "date":
           valA = new Date(a.dateCreated || a.date || 0);
@@ -187,12 +230,10 @@ const GamesList = ({ event, onPlayerClick }) => {
           valA = a.id;
           valB = b.id;
       }
-
       if (valA < valB) return sortDir === "asc" ? -1 : 1;
       if (valA > valB) return sortDir === "asc" ? 1 : -1;
       return 0;
     });
-
     return games;
   }, [event, searchQuery, sortBy, sortDir]);
 
@@ -203,6 +244,10 @@ const GamesList = ({ event, onPlayerClick }) => {
       setSortBy(field);
       setSortDir(field === "winner" ? "asc" : "desc");
     }
+  };
+
+  const handleExpand = (gameId) => {
+    setExpandedGameId(prev => prev === gameId ? null : gameId);
   };
 
   if (!event || !event.games) {
@@ -216,36 +261,37 @@ const GamesList = ({ event, onPlayerClick }) => {
   return (
     <div className="games-list-container">
       <div className="games-list-header">
-        <div className="games-search-controls">
-          <input
-            type="text"
-            placeholder="Search games by player, commander, or notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="games-search-input"
-          />
-        </div>
-
-        <div className="games-sort-controls">
-          <span className="sort-label">Sort by:</span>
-          <button
-            className={`sort-button ${sortBy === "date" ? "active" : ""}`}
-            onClick={() => handleSort("date")}
-          >
-            Date {sortBy === "date" && (sortDir === "asc" ? "▲" : "▼")}
-          </button>
-          <button
-            className={`sort-button ${sortBy === "winner" ? "active" : ""}`}
-            onClick={() => handleSort("winner")}
-          >
-            Winner {sortBy === "winner" && (sortDir === "asc" ? "▲" : "▼")}
-          </button>
-          <button
-            className={`sort-button ${sortBy === "players" ? "active" : ""}`}
-            onClick={() => handleSort("players")}
-          >
-            Players {sortBy === "players" && (sortDir === "asc" ? "▲" : "▼")}
-          </button>
+        <div className="games-header-row">
+          <div className="games-sort-controls">
+            <span className="sort-label">Sort by:</span>
+            <button
+              className={`sort-button ${sortBy === "date" ? "active" : ""}`}
+              onClick={() => handleSort("date")}
+            >
+              Date {sortBy === "date" && (sortDir === "asc" ? "▲" : "▼")}
+            </button>
+            <button
+              className={`sort-button ${sortBy === "winner" ? "active" : ""}`}
+              onClick={() => handleSort("winner")}
+            >
+              Winner {sortBy === "winner" && (sortDir === "asc" ? "▲" : "▼")}
+            </button>
+            <button
+              className={`sort-button ${sortBy === "players" ? "active" : ""}`}
+              onClick={() => handleSort("players")}
+            >
+              Players {sortBy === "players" && (sortDir === "asc" ? "▲" : "▼")}
+            </button>
+          </div>
+          <div className="games-search-controls">
+            <input
+              type="text"
+              placeholder="Search games by player, commander, or notes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="games-search-input"
+            />
+          </div>
         </div>
       </div>
 
@@ -257,7 +303,13 @@ const GamesList = ({ event, onPlayerClick }) => {
 
       <div className="games-list">
         {filteredAndSortedGames.map((game) => (
-          <GameCard key={game.id} game={game} onPlayerClick={onPlayerClick} />
+          <GameCard
+            key={game.id}
+            game={game}
+            onPlayerClick={onPlayerClick}
+            expanded={expandedGameId === game.id}
+            onExpand={handleExpand}
+          />
         ))}
       </div>
 

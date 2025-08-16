@@ -43,14 +43,18 @@ export default function AddGameTable({
     if (!query || query.length < 2) return;
     setScryfallLoading((l) => ({ ...l, [idx]: true }));
     try {
+      // Use Scryfall autocomplete endpoint for card names
       const res = await fetch(
-        `https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(
-          query
-        )}`
+        `https://api.scryfall.com/cards/autocomplete?q=${encodeURIComponent(query)}`
       );
+      if (!res.ok) {
+        setScryfallResults((r) => ({ ...r, [idx]: [] }));
+        setScryfallLoading((l) => ({ ...l, [idx]: false }));
+        return;
+      }
       const data = await res.json();
       setScryfallResults((r) => ({ ...r, [idx]: data.data || [] }));
-    } catch {
+    } catch (err) {
       setScryfallResults((r) => ({ ...r, [idx]: [] }));
     }
     setScryfallLoading((l) => ({ ...l, [idx]: false }));
@@ -106,7 +110,16 @@ export default function AddGameTable({
     arr[i] = val;
     setCommanders(arr);
     fetchScryfall(val, i);
-    fetchCommanderImage(val, i);
+    // Only fetch image if the value matches a suggestion (to avoid 404s)
+    if (val && val.length > 2 && /^[a-zA-Z0-9' -]+$/.test(val) && scryfallResults[i]?.includes(val)) {
+      fetchCommanderImage(val, i);
+    }
+    // Always show popup for the currently edited input
+    const input = commanderInputRefs.current[i];
+    if (input) {
+      const rect = input.getBoundingClientRect();
+      setPopupInfo({ idx: i, rect });
+    }
   };
 
   // Handle focus to show popup
@@ -175,162 +188,13 @@ export default function AddGameTable({
 
   return (
     <div>
-      <table
-        className="scoreboard-table addgame-table"
-        style={{
-          minWidth: 0,
-          width: "100%",
-          tableLayout: "auto",
-          maxWidth: 800,
-        }}
-      >
-        <thead>
-          <tr className="scoreboard-header-row">
-            <th
-              className="scoreboard-rank-header"
-              style={{ width: 36, minWidth: 36, maxWidth: 36 }}
-            >
-              #
-            </th>
-            <th
-              className="scoreboard-player-header"
-              style={{ minWidth: 120, width: 160, maxWidth: 200 }}
-            >
-              Player
-            </th>
-            <th
-              className="scoreboard-placement-header scoreboard-placement-header-score"
-              style={{ width: 70, minWidth: 60, maxWidth: 80 }}
-            >
-              Place
-            </th>
-            <th
-              className="scoreboard-player-header"
-              style={{ minWidth: 120, width: 160, maxWidth: 200 }}
-            >
-              Commander
-            </th>
-            <th style={{ width: 32, minWidth: 32, maxWidth: 32 }}></th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="addgame-table-wrapper">
+        {/* Mobile: Card/List layout, Desktop: Table layout */}
+        <div className="addgame-list">
           {players.map((p, i) => (
-            <tr
-              key={i}
-              className="scoreboard-row addgame-row"
-              style={{ position: "relative" }}
-            >
-              <td className="scoreboard-rank">{i + 1}</td>
-              <td
-                className="scoreboard-player-cell"
-                style={{ position: "relative" }}
-              >
-                <div style={{ position: "relative", width: "100%" }}>
-                  <select
-                    onChange={(e) => handlePlayerChange(i, e.target.value)}
-                    className="addgame-input"
-                    style={{
-                      minWidth: 0,
-                      width: "100%",
-                      paddingRight: scryfallLoading[i] ? 28 : undefined,
-                    }}
-                  >
-                    <option value="">Select Player</option>
-                    {players.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                    <option value="add-new-player">Add New Player</option>
-                  </select>
-                  {scryfallLoading[i] && (
-                    <span
-                      className="scryfall-loading-spinner-inside"
-                      aria-label="Loading"
-                    />
-                  )}
-                </div>
-              </td>
-              <td className="scoreboard-player-score">
-                <select
-                  value={placements[i]}
-                  onChange={(e) =>
-                    handlePlacementChange(i, Number(e.target.value))
-                  }
-                  className="addgame-select"
-                  style={{ minWidth: 0, width: "100%" }}
-                >
-                  {players.map((_, idx) => (
-                    <option key={idx + 1} value={idx + 1}>
-                      {idx + 1}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="scoreboard-player-cell">
-                <div
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  {/* Commander thumbnail */}
-                  {commanderImages[i] === undefined && commanders[i] && (
-                    <span
-                      className="scryfall-loading-spinner-inside"
-                      style={{ left: 0, right: "auto", marginRight: 6 }}
-                      aria-label="Loading"
-                    />
-                  )}
-                  {commanderImages[i] && (
-                    <img
-                      src={commanderImages[i]}
-                      alt="Commander thumbnail"
-                      className="commander-thumb"
-                      style={{
-                        width: 36,
-                        height: 36,
-                        objectFit: "cover",
-                        borderRadius: 6,
-                        marginRight: 8,
-                        flexShrink: 0,
-                        background: "#23293a",
-                        border: "1.5px solid #5fa8e9",
-                      }}
-                    />
-                  )}
-                  <input
-                    type="text"
-                    list="commander-suggestions-0"
-                    value={commanders[i]}
-                    onChange={(e) => handleCommanderChange(i, e.target.value)}
-                    placeholder="Commander"
-                    className="addgame-input"
-                    style={{
-                      minWidth: 0,
-                      width: "100%",
-                      paddingRight: scryfallLoading[i] ? 28 : undefined,
-                      marginLeft:
-                        commanderImages[i] || commanderImages[i] === undefined
-                          ? 0
-                          : 0,
-                    }}
-                    autoComplete="off"
-                    ref={(el) => (commanderInputRefs.current[i] = el)}
-                    onFocus={() => handleCommanderFocus(i)}
-                    onBlur={handleCommanderBlur}
-                  />
-                  {scryfallLoading[i] && (
-                    <span
-                      className="scryfall-loading-spinner-inside"
-                      aria-label="Loading"
-                    />
-                  )}
-                </div>
-              </td>
-              <td>
+            <div key={i} className="addgame-card">
+              <div className="addgame-card__header">
+                <span className="addgame-card__rank">#{i + 1}</span>
                 {players.length > 2 && (
                   <button
                     type="button"
@@ -341,11 +205,67 @@ export default function AddGameTable({
                     ×
                   </button>
                 )}
-              </td>
-            </tr>
+              </div>
+              <div className="addgame-card__fields">
+                <div className="addgame-card__field">
+                  <label htmlFor={`player-${i}`}>Player</label>
+                  <select
+                    id={`player-${i}`}
+                    onChange={(e) => handlePlayerChange(i, e.target.value)}
+                    className="addgame-input"
+                  >
+                    <option value="">Select Player</option>
+                    {allPlayers.filter(name => !players.includes(name) || players[i] === name).map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                    <option value="add-new-player">Add New Player</option>
+                  </select>
+                </div>
+                <div className="addgame-card__field">
+                  <label htmlFor={`placement-${i}`}>Place</label>
+                  <select
+                    id={`placement-${i}`}
+                    value={placements[i]}
+                    onChange={(e) => handlePlacementChange(i, Number(e.target.value))}
+                    className="addgame-select"
+                  >
+                    {players.map((_, idx) => (
+                      <option key={idx + 1} value={idx + 1}>{idx + 1}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="addgame-card__field">
+                  <label htmlFor={`commander-${i}`}>Commander</label>
+                  <div className="addgame-card__commander">
+                    {commanderImages[i] === undefined && commanders[i] && (
+                      <span className="scryfall-loading-spinner-inside" aria-label="Loading" />
+                    )}
+                    {commanderImages[i] && (
+                      <img
+                        src={commanderImages[i]}
+                        alt="Commander thumbnail"
+                        className="commander-thumb"
+                      />
+                    )}
+                    <input
+                      id={`commander-${i}`}
+                      type="text"
+                      value={commanders[i]}
+                      onChange={(e) => handleCommanderChange(i, e.target.value)}
+                      placeholder="Commander"
+                      className="addgame-input"
+                      autoComplete="off"
+                      ref={(el) => (commanderInputRefs.current[i] = el)}
+                      onFocus={() => handleCommanderFocus(i)}
+                      onBlur={handleCommanderBlur}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
       <datalist id="player-suggestions">
         {allPlayers.map((name) => (
           <option key={name} value={name} />

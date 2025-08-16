@@ -59,7 +59,7 @@ const ScoreBoard = ({ scores, onPlayerClick, minimal }) => {
 
     return (
         <div className="scoreboard-container">
-            <table className="scoreboard-table">
+            <table className="scoreboard-table striped-list">
                 <thead>
                     <tr className="scoreboard-header-row">
                         <th className="scoreboard-rank-header">#</th>
@@ -97,11 +97,11 @@ const ScoreBoard = ({ scores, onPlayerClick, minimal }) => {
                     {getSortedPlayers.map((player, i) => {
                         const gamesPlayed = getGamesPlayed(player);
                         const avgScore = gamesPlayed > 0 ? (player.score / gamesPlayed).toFixed(2) : '-';
+                        const rowClass = `scoreboard-row${i % 2 === 0 ? ' even' : ' odd'}`;
                         return (
                             <tr
                                 key={player.name}
-                                className="scoreboard-row"
-                                style={{ cursor: 'pointer' }}
+                                className={rowClass}
                                 onClick={() => onPlayerClick && onPlayerClick(player)}
                                 tabIndex={0}
                                 aria-label={`View details for ${player.name}`}

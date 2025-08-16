@@ -16,7 +16,7 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
   
   // Commander frequency
   const commanderCounts = {};
-  player.commanderHistory.forEach(({ commander }) => {
+  (player.commanderHistory || []).forEach(({ commander }) => {
     if (commander) commanderCounts[commander] = (commanderCounts[commander] || 0) + 1;
   });
   const mostPlayed = Object.entries(commanderCounts)
@@ -34,7 +34,7 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
 
   // Win rate by commander
   const commanderWinRates = {};
-  player.commanderHistory.forEach(({ commander, placement }) => {
+  (player.commanderHistory || []).forEach(({ commander, placement }) => {
     if (commander) {
       if (!commanderWinRates[commander]) {
         commanderWinRates[commander] = { wins: 0, games: 0 };
