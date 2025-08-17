@@ -1,0 +1,74 @@
+/* Modal styles scoped for Modal component */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.32);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.5rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: #1a1f2e;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 1.5rem 1rem;
+  max-width: 95vw;
+  width: 100%;
+  min-width: 0;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #334155;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (min-width: 600px) {
+  .modal-content {
+    width: 80vw;
+    max-width: 80vw;
+    padding: 2rem 2rem;
+  }
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-body {
+  flex: 1 1 auto;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.modal-close-btn {
+  align-self: center;
+  margin-top: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-height: 44px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.modal-close-btn:hover {
+  background: #2563eb;
+}

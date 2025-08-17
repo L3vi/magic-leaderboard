@@ -1,0 +1,33 @@
+/* PlayerDetailsModal styles scoped for PlayerDetailsModal component */
+.player-details-modal {
+  background: #1a1f2e;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  color: #f8fafc;
+  position: relative;
+}
+.player-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.modal-close-btn:hover {
+  background: #2563eb;
+}

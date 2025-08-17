@@ -1,21 +1,20 @@
-import React, { useEffect } from 'react';
-import Modal from './Modal';
+import React, { useEffect } from "react";
+import "./PlayerDetailsModal.css";
+import Modal from "../Modal/Modal";
 
-const PlayerDetailsModal = ({ player, event, onClose }) => {
+export default function PlayerDetailsModal({ player, event, onClose }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
   if (!player) return null;
-  
-  // Gather all games for this player
-  const games = event.games.filter(g => g.players.some(p => p.name === player.name));
-  
-  // Commander frequency
+
+  const games = event.games.filter((g) => g.players.some((p) => p.name === player.name));
+
   const commanderCounts = {};
   (player.commanderHistory || []).forEach(({ commander }) => {
     if (commander) commanderCounts[commander] = (commanderCounts[commander] || 0) + 1;
@@ -24,16 +23,14 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
     .sort((a, b) => b[1] - a[1])
     .map(([name, count]) => `${name} (${count})`);
 
-  // Head-to-head statistics
   const opponentStats = Object.entries(player.opponentStats || {})
     .map(([opponentName, stats]) => ({
       name: opponentName,
       ...stats,
-  winRate: stats.games > 0 ? Math.round((stats.wins / stats.games) * 100) : '0'
+      winRate: stats.games > 0 ? Math.round((stats.wins / stats.games) * 100) : "0",
     }))
     .sort((a, b) => b.winRate - a.winRate);
 
-  // Win rate by commander
   const commanderWinRates = {};
   (player.commanderHistory || []).forEach(({ commander, placement }) => {
     if (commander) {
@@ -50,21 +47,20 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
   const commanderWinRatesList = Object.entries(commanderWinRates)
     .map(([commander, stats]) => ({
       commander,
-  winRate: Math.round((stats.wins / stats.games) * 100),
+      winRate: Math.round((stats.wins / stats.games) * 100),
       wins: stats.wins,
-      games: stats.games
+      games: stats.games,
     }))
     .sort((a, b) => b.winRate - a.winRate);
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Unknown';
+    if (!dateString) return "Unknown";
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
 
   return (
     <Modal isOpen={!!player} onClose={onClose} title={player.name}>
-      {/* Flattened content for modal-body, no extra scrolling containers */}
       <div className="player-details-overview">
         <div className="player-stats-grid">
           <div className="stat-card">
@@ -76,11 +72,11 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
             <div className="stat-label">Total Points</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value">{player.games ? (player.score / player.games).toFixed(2) : '-'}</div>
+            <div className="stat-value">{player.games ? (player.score / player.games).toFixed(2) : "-"}</div>
             <div className="stat-label">Avg Points</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value">{player.games ? ((player.first / player.games) * 100).toFixed(1) : '0'}%</div>
+            <div className="stat-value">{player.games ? ((player.first / player.games) * 100).toFixed(1) : "0"}%</div>
             <div className="stat-label">Win Rate</div>
           </div>
         </div>
@@ -146,16 +142,16 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
             </thead>
             <tbody>
               {games.slice(-10).reverse().map((g, idx) => {
-                const p = g.players.find(pl => pl.name === player.name);
+                const p = g.players.find((pl) => pl.name === player.name);
                 const opponents = g.players
-                  .filter(pl => pl.name !== player.name)
-                  .map(pl => pl.name)
-                  .join(', ');
+                  .filter((pl) => pl.name !== player.name)
+                  .map((pl) => pl.name)
+                  .join(", ");
                 return (
                   <tr key={g.id + idx} className="scoreboard-row">
                     <td>{formatDate(g.dateCreated || g.date)}</td>
                     <td className={`placement-${p.placement}`}>{p.placement}</td>
-                    <td className="player-details-commander">{p.commander || '—'}</td>
+                    <td className="player-details-commander">{p.commander || "—"}</td>
                     <td className="opponents-list">{opponents}</td>
                   </tr>
                 );
@@ -166,6 +162,4 @@ const PlayerDetailsModal = ({ player, event, onClose }) => {
       </div>
     </Modal>
   );
-};
-
-export default PlayerDetailsModal;
+}

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ScoreBoard from "./components/ScoreBoard";
-import AddGameTable from "./components/AddGameTable";
-import PlayerDetailsModal from "./components/PlayerDetailsModal";
-import Modal from "./components/Modal";
-import GamesList from "./components/GamesList";
+import ScoreBoard from "./components/ScoreBoard/ScoreBoard";
+import AddGameTable from "./components/AddGameTable/AddGameTable";
+import PlayerDetailsModal from "./components/PlayerDetailsModal/PlayerDetailsModal";
+import Modal from "./components/Modal/Modal";
+import GamesList from "./components/GamesList/GamesList";
 import scores2025 from "./data/scores-2025.json";
 import scores2024 from "./data/scores-2024.json";
 
@@ -282,7 +282,7 @@ const App = () => {
       {/* Tab Content */}
       {activeTab === 'leaderboard' && (
         <ScoreBoard
-          scores={{ players }}
+          players={players}
           onPlayerClick={(player) => setSelectedPlayer(player)}
           minimal
         />
@@ -290,7 +290,7 @@ const App = () => {
       
       {activeTab === 'games' && (
         <GamesList 
-          event={event}
+          games={event ? event.games : []}
           onPlayerClick={(player) => setSelectedPlayer(player)}
         />
       )}
