@@ -1,25 +1,34 @@
+
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { ThemeProvider } from './theme/ThemeProvider';
+import Header from './components/Header/Header';
+import NavBar from './components/NavBar/NavBar';
+import Card from './components/Card/Card';
+
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Leaderboard', href: '/leaderboard' },
+  { label: 'About', href: '/about' },
+];
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider>
+      <Header title="Magic Leaderboard" />
+      <NavBar links={navLinks} />
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '24px' }}>
+        <Card title="Welcome">
+          <p>
+            This is a modern, scalable, and accessible React app scaffold. Components are modular, themed, and fully typed.
+          </p>
+        </Card>
+        <Card title="Leaderboard">
+          <p>
+            Future leaderboard data will appear here. Components are ready for extension and testing.
+          </p>
+        </Card>
+      </main>
+    </ThemeProvider>
   );
 }
 
