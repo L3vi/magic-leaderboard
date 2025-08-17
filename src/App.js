@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ScoreBoard from "./components/ScoreBoard/ScoreBoard";
+import LeaderBoard from "./components/LeaderBoard/LeaderBoard";
 import AddGameTable from "./components/AddGameTable/AddGameTable";
 import PlayerDetailsModal from "./components/PlayerDetailsModal/PlayerDetailsModal";
 import Modal from "./components/Modal/Modal";
@@ -281,7 +281,7 @@ const App = () => {
 
       {/* Tab Content */}
       {activeTab === 'leaderboard' && (
-        <ScoreBoard
+        <LeaderBoard
           players={players}
           onPlayerClick={(player) => setSelectedPlayer(player)}
           minimal

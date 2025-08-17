@@ -11,7 +11,8 @@ const placements = [
 const getGamesPlayed = (player) =>
   (player.first || 0) + (player.second || 0) + (player.third || 0) + (player.fourth || 0);
 
-export default function ScoreBoard({ players, onPlayerClick }) {
+import './LeaderBoard.css';
+export default function LeaderBoard({ players, onPlayerClick }) {
   const [sortBy, setSortBy] = React.useState("score");
   const [sortDir, setSortDir] = React.useState("desc");
 
@@ -59,61 +60,76 @@ export default function ScoreBoard({ players, onPlayerClick }) {
 
   return (
     <>
-      <div className="scoreboard-container">
-        <table className="scoreboard-table striped-list">
+      <div className="leaderboard-container">
+        <table className="leaderboard-table striped-list">
           <thead>
-            <tr className="scoreboard-header-row">
-              <th className="scoreboard-rank-header">#</th>
+            <tr className="leaderboard-header-row">
+              <th className="leaderboard-rank-header">#</th>
               <th
-                className="scoreboard-player-header"
+                className="leaderboard-player-header"
                 onClick={() => handleSort("name")}
               >
                 Player
-                <span className="sort-arrow">{sortBy === "name" && (sortDir === "asc" ? "▲" : "▼")}</span>
+                <span className="sort-arrow">{sortBy === "name" && (sortDir === "asc" ? "\u25b2" : "\u25bc")}</span>
               </th>
               <th
-                className="scoreboard-placement-header scoreboard-placement-header-score"
+                className="leaderboard-placement-header leaderboard-placement-header-score"
                 onClick={() => handleSort("score")}
               >
                 Points
-                <span className="sort-arrow">{sortBy === "score" && (sortDir === "asc" ? "▲" : "▼")}</span>
+                <span className="sort-arrow">{sortBy === "score" && (sortDir === "asc" ? "\u25b2" : "\u25bc")}</span>
               </th>
               <th
-                className="scoreboard-placement-header scoreboard-placement-header-games"
+                className="leaderboard-placement-header leaderboard-placement-header-games"
                 onClick={() => handleSort("gamesPlayed")}
               >
                 Games
-                <span className="sort-arrow">{sortBy === "gamesPlayed" && (sortDir === "asc" ? "▲" : "▼")}</span>
+                <span className="sort-arrow">{sortBy === "gamesPlayed" && (sortDir === "asc" ? "\u25b2" : "\u25bc")}</span>
               </th>
               <th
-                className="scoreboard-placement-header scoreboard-placement-header-avgscore"
+                className="leaderboard-placement-header leaderboard-placement-header-avgscore"
                 onClick={() => handleSort("avgScore")}
               >
                 Avg
-                <span className="sort-arrow">{sortBy === "avgScore" && (sortDir === "asc" ? "▲" : "▼")}</span>
+                <span className="sort-arrow">{sortBy === "avgScore" && (sortDir === "asc" ? "\u25b2" : "\u25bc")}</span>
               </th>
+              {placements.map((p) => (
+                <th
+                  key={p.field}
+                  className={`leaderboard-placement-header leaderboard-placement-header-${p.field}`}
+                  onClick={() => handleSort(p.field)}
+                  style={{ color: p.color }}
+                >
+                  {p.label}
+                  <span className="sort-arrow">{sortBy === p.field && (sortDir === "asc" ? "\u25b2" : "\u25bc")}</span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {getSortedPlayers.map((player, i) => {
+            {getSortedPlayers.map((player, idx) => {
               const gamesPlayed = getGamesPlayed(player);
               const avgScore = gamesPlayed > 0 ? (player.score / gamesPlayed).toFixed(2) : "-";
-              const rowClass = `scoreboard-row${i % 2 === 0 ? " even" : " odd"}`;
               return (
                 <tr
                   key={player.name}
-                  className={rowClass}
+                  className="leaderboard-row"
                   onClick={() => onPlayerClick && onPlayerClick(player)}
-                  tabIndex={0}
-                  aria-label={`View details for ${player.name}`}
                 >
-                  <td className="scoreboard-rank">{i + 1}</td>
-                  <td className="scoreboard-player-cell">
-                    <span className="scoreboard-player-name">{player.name}</span>
-                  </td>
-                  <td className="scoreboard-player-score">{player.score}</td>
-                  <td className="scoreboard-player-games">{gamesPlayed}</td>
-                  <td className="scoreboard-player-avgscore">{avgScore}</td>
+                  <td className="leaderboard-rank">{idx + 1}</td>
+                  <td className="leaderboard-player-name">{player.name}</td>
+                  <td className="leaderboard-player-score">{player.score}</td>
+                  <td className="leaderboard-player-games">{gamesPlayed}</td>
+                  <td className="leaderboard-player-avgscore">{avgScore}</td>
+                  {placements.map((p) => (
+                    <td
+                      key={p.field}
+                      className={`leaderboard-player-placement leaderboard-player-${p.field}`}
+                      style={{ color: p.color }}
+                    >
+                      {player[p.field] || 0}
+                    </td>
+                  ))}
                 </tr>
               );
             })}

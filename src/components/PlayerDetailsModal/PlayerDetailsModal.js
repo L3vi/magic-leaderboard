@@ -131,9 +131,9 @@ export default function PlayerDetailsModal({ player, event, onClose }) {
       <div className="player-details-section">
         <h3>Recent Games</h3>
         <div className="recent-games-table">
-          <table className="scoreboard-table">
+          <table className="leaderboard-table">
             <thead>
-              <tr className="scoreboard-header-row">
+              <tr className="leaderboard-header-row">
                 <th>Date</th>
                 <th>Place</th>
                 <th>Commander</th>
@@ -148,7 +148,7 @@ export default function PlayerDetailsModal({ player, event, onClose }) {
                   .map((pl) => pl.name)
                   .join(", ");
                 return (
-                  <tr key={g.id + idx} className="scoreboard-row">
+                  <tr key={g.id + idx} className="leaderboard-row">
                     <td>{formatDate(g.dateCreated || g.date)}</td>
                     <td className={`placement-${p.placement}`}>{p.placement}</td>
                     <td className="player-details-commander">{p.commander || "—"}</td>
