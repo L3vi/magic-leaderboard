@@ -218,7 +218,6 @@ export default function AddGameTable({
                     {allPlayers.filter(name => !players.includes(name) || players[i] === name).map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
-                    <option value="add-new-player">Add New Player</option>
                   </select>
                 </div>
                 <div className="addgame-card__field">

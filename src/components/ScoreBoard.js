@@ -58,67 +58,79 @@ const ScoreBoard = ({ scores, onPlayerClick, minimal }) => {
     }, [scores.players, sortBy, sortDir]);
 
     return (
-        <div className="scoreboard-container">
-            <table className="scoreboard-table striped-list">
-                <thead>
-                    <tr className="scoreboard-header-row">
-                        <th className="scoreboard-rank-header">#</th>
-                        <th
-                            className="scoreboard-player-header"
-                            onClick={() => handleSort('name')}
-                        >
-                            Player
-                            <span className="sort-arrow">{sortBy === 'name' && (sortDir === 'asc' ? '▲' : '▼')}</span>
-                        </th>
-                        <th
-                            className="scoreboard-placement-header scoreboard-placement-header-score"
-                            onClick={() => handleSort('score')}
-                        >
-                            Points
-                            <span className="sort-arrow">{sortBy === 'score' && (sortDir === 'asc' ? '▲' : '▼')}</span>
-                        </th>
-                        <th
-                            className="scoreboard-placement-header scoreboard-placement-header-games"
-                            onClick={() => handleSort('gamesPlayed')}
-                        >
-                            Games
-                            <span className="sort-arrow">{sortBy === 'gamesPlayed' && (sortDir === 'asc' ? '▲' : '▼')}</span>
-                        </th>
-                        <th
-                            className="scoreboard-placement-header scoreboard-placement-header-avgscore"
-                            onClick={() => handleSort('avgScore')}
-                        >
-                            Avg
-                            <span className="sort-arrow">{sortBy === 'avgScore' && (sortDir === 'asc' ? '▲' : '▼')}</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {getSortedPlayers.map((player, i) => {
-                        const gamesPlayed = getGamesPlayed(player);
-                        const avgScore = gamesPlayed > 0 ? (player.score / gamesPlayed).toFixed(2) : '-';
-                        const rowClass = `scoreboard-row${i % 2 === 0 ? ' even' : ' odd'}`;
-                        return (
-                            <tr
-                                key={player.name}
-                                className={rowClass}
-                                onClick={() => onPlayerClick && onPlayerClick(player)}
-                                tabIndex={0}
-                                aria-label={`View details for ${player.name}`}
+        <>
+            <div className="scoreboard-container">
+                <table className="scoreboard-table striped-list">
+                    <thead>
+                        <tr className="scoreboard-header-row">
+                            <th className="scoreboard-rank-header">#</th>
+                            <th
+                                className="scoreboard-player-header"
+                                onClick={() => handleSort('name')}
                             >
-                                <td className="scoreboard-rank">{i + 1}</td>
-                                <td className="scoreboard-player-cell">
-                                    <span className="scoreboard-player-name">{player.name}</span>
-                                </td>
-                                <td className="scoreboard-player-score">{player.score}</td>
-                                <td className="scoreboard-player-games">{gamesPlayed}</td>
-                                <td className="scoreboard-player-avgscore">{avgScore}</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
+                                Player
+                                <span className="sort-arrow">{sortBy === 'name' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                            </th>
+                            <th
+                                className="scoreboard-placement-header scoreboard-placement-header-score"
+                                onClick={() => handleSort('score')}
+                            >
+                                Points
+                                <span className="sort-arrow">{sortBy === 'score' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                            </th>
+                            <th
+                                className="scoreboard-placement-header scoreboard-placement-header-games"
+                                onClick={() => handleSort('gamesPlayed')}
+                            >
+                                Games
+                                <span className="sort-arrow">{sortBy === 'gamesPlayed' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                            </th>
+                            <th
+                                className="scoreboard-placement-header scoreboard-placement-header-avgscore"
+                                onClick={() => handleSort('avgScore')}
+                            >
+                                Avg
+                                <span className="sort-arrow">{sortBy === 'avgScore' && (sortDir === 'asc' ? '▲' : '▼')}</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {getSortedPlayers.map((player, i) => {
+                            const gamesPlayed = getGamesPlayed(player);
+                            const avgScore = gamesPlayed > 0 ? (player.score / gamesPlayed).toFixed(2) : '-';
+                            const rowClass = `scoreboard-row${i % 2 === 0 ? ' even' : ' odd'}`;
+                            return (
+                                <tr
+                                    key={player.name}
+                                    className={rowClass}
+                                    onClick={() => onPlayerClick && onPlayerClick(player)}
+                                    tabIndex={0}
+                                    aria-label={`View details for ${player.name}`}
+                                >
+                                    <td className="scoreboard-rank">{i + 1}</td>
+                                    <td className="scoreboard-player-cell">
+                                        <span className="scoreboard-player-name">{player.name}</span>
+                                    </td>
+                                    <td className="scoreboard-player-score">{player.score}</td>
+                                    <td className="scoreboard-player-games">{gamesPlayed}</td>
+                                    <td className="scoreboard-player-avgscore">{avgScore}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+            {/* Add New Player button below the leaderboard */}
+            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                <button
+                    className="addplayer-btn global-btn"
+                    onClick={() => window.dispatchEvent(new CustomEvent('showAddPlayerModal'))}
+                    aria-label="Add New Player"
+                >
+                    Add New Player
+                </button>
+            </div>
+        </>
     );
 };
 

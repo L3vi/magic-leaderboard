@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ScoreBoard from "./components/ScoreBoard";
 import AddGameTable from "./components/AddGameTable";
 import PlayerDetailsModal from "./components/PlayerDetailsModal";
+import Modal from "./components/Modal";
 import GamesList from "./components/GamesList";
 import scores2025 from "./data/scores-2025.json";
 import scores2024 from "./data/scores-2024.json";
@@ -211,6 +212,12 @@ const App = () => {
   const [showAddGame, setShowAddGame] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [activeTab, setActiveTab] = useState('leaderboard'); // 'leaderboard' or 'games'
+  const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+  useEffect(() => {
+    const handler = () => setShowAddPlayerModal(true);
+    window.addEventListener('showAddPlayerModal', handler);
+    return () => window.removeEventListener('showAddPlayerModal', handler);
+  }, []);
 
   useEffect(() => {
     const sheet = AVAILABLE_SHEETS.find((s) => s.file === selectedSheet);
@@ -297,11 +304,30 @@ const App = () => {
         +
       </button>
       {showAddGame && (
-        <AddGameWizard
-          events={event ? [event] : []}
-          onClose={() => setShowAddGame(false)}
-          onSubmit={handleAddGame}
-        />
+        <Modal isOpen={showAddGame} onClose={() => setShowAddGame(false)} title="Add New Game">
+          <AddGameWizard
+            events={event ? [event] : []}
+            onClose={() => setShowAddGame(false)}
+            onSubmit={handleAddGame}
+          />
+        </Modal>
+      )}
+      {showAddPlayerModal && (
+        <Modal isOpen={showAddPlayerModal} onClose={() => setShowAddPlayerModal(false)} title="Add New Player">
+          <input
+            type="text"
+            placeholder="Enter new player name"
+            className="addplayer-input"
+          />
+          <div className="addplayer-modal-actions">
+            <button className="modal-close-btn" onClick={() => setShowAddPlayerModal(false)}>
+              Cancel
+            </button>
+            <button className="modal-close-btn">
+              Add Player
+            </button>
+          </div>
+        </Modal>
       )}
       {selectedPlayer && (
         <PlayerDetailsModal

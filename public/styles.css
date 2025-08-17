@@ -1,3 +1,212 @@
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-primary, #2563eb);
+  width: 100%;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.1;
+}
+.stat-card:last-child .stat-value {
+  font-size: 1.7rem;
+  letter-spacing: -1px;
+}
+/* Compact win rate and recent games for mobile */
+.commander-winrates,
+.opponent-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+.commander-winrate-item,
+.opponent-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.95rem;
+  background: var(--color-surface-elevated, #f8f8f8);
+  border-radius: var(--radius-sm);
+}
+.commander-name,
+.opponent-name {
+  font-weight: 500;
+  flex: 1 1 50%;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.commander-record,
+.opponent-record {
+  flex: 1 1 50%;
+  text-align: right;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .commander-winrate-item,
+  .opponent-stat-item {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.15rem;
+  }
+  .commander-record,
+  .opponent-record {
+    font-size: 0.9rem;
+  }
+  .recent-games-table table {
+    font-size: 0.85rem;
+  }
+}
+/* Mobile-friendly adjustments for player details modal */
+.player-details-modal,
+.player-details-overview,
+.player-details-section {
+  width: 100%;
+  box-sizing: border-box;
+}
+.player-stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.stat-card {
+  flex: 1 1 40%;
+  min-width: 120px;
+  background: var(--color-surface-elevated, #f8f8f8);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+}
+.recent-games-table {
+  width: 100%;
+  overflow-x: auto;
+}
+.recent-games-table table {
+  min-width: 400px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.scoreboard-table th,
+.scoreboard-table td {
+  padding: 0.5rem 0.25rem;
+  font-size: 0.95rem;
+}
+@media (max-width: 600px) {
+  .player-stats-grid {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .stat-card {
+    min-width: 0;
+    width: 100%;
+    font-size: 1rem;
+  }
+  .recent-games-table table {
+    min-width: 320px;
+    font-size: 0.9rem;
+  }
+}
+/* Clean, mobile-friendly modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.5rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 1.5rem 1rem;
+  max-width: 95vw;
+  width: 100%;
+  min-width: 0;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-main);
+  animation: slideIn 0.3s cubic-bezier(0.4, 1.6, 0.6, 1);
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-body {
+  flex: 1 1 auto;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.modal-close-btn {
+  align-self: center;
+  margin-top: 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-main);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-height: 44px;
+  box-shadow: var(--shadow-sm);
+}
+
+.modal-close-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (min-width: 600px) {
+  .modal-content {
+    width: 80vw;
+    max-width: 80vw;
+    padding: 2rem 2rem;
+  }
+}
+/* Global button style for consistency */
+.global-btn,
+.addplayer-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 1rem;
+  font-family: inherit;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: none;
+}
+.global-btn:hover,
+.addplayer-btn:hover {
+  background: var(--color-hover, #f0f0f0);
+  border-color: var(--color-primary);
+}
 /* Unified input styles for all forms and cards */
 input,
 select,
@@ -8,7 +217,8 @@ textarea {
   color: var(--color-text);
   font-size: 1rem;
   font-family: inherit;
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
+    var(--spacing-md);
   transition: border-color 0.2s, box-shadow 0.2s;
   appearance: none;
   -webkit-appearance: none;
@@ -19,19 +229,13 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.1);
-  outline: none;
-}
-.game-winning-commander {
-  margin-top: 0;
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-snug);
-}
-.winner-name {
-  font-weight: var(--font-weight-bold);
-  color: #b8860b;
-  text-shadow: 0 0 1px rgba(184, 134, 11, 0.3);
+  @media (min-width: 600px) {
+    .modal-content {
+      width: 80vw;
+      max-width: 80vw;
+      padding: 2rem 2rem;
+    }
+  }
 }
 
 .games-header-row {
@@ -70,8 +274,10 @@ textarea:focus {
 /* Mobile-First Design for MTG Commander Score Tracker */
 :root {
   /* Typography - Mobile-optimized font system */
-  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas", monospace;
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas",
+    monospace;
 
   /* Font sizes - Mobile-first with fluid scaling */
   --font-size-xs: 0.75rem;
@@ -139,8 +345,10 @@ textarea:focus {
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Z-index scale */
   --z-dropdown: 1000;
@@ -433,10 +641,10 @@ button[aria-label="Add Game"]:active {
 .scoreboard-row {
 }
 .scoreboard-row.even {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 .scoreboard-row.odd {
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
   transition: background-color 0.2s ease;
   cursor: pointer;
 }
@@ -669,16 +877,16 @@ button[aria-label="Add Game"]:active {
 }
 
 .game-player-row.even {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 .game-player-row.odd {
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 .striped-list > .even {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 .striped-list > .odd {
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .game-player-row:hover {
@@ -1036,7 +1244,7 @@ button[aria-label="Add Game"]:active {
   font-family: var(--font-main);
   font-size: var(--font-size-sm);
   outline: none;
-  animation: fadeInScryfall 0.18s cubic-bezier(.4, 1.6, .6, 1);
+  animation: fadeInScryfall 0.18s cubic-bezier(0.4, 1.6, 0.6, 1);
   padding: var(--spacing-xs) 0;
   max-height: 240px;
   overflow-y: auto;
@@ -1107,7 +1315,6 @@ select:focus-visible {
 
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {

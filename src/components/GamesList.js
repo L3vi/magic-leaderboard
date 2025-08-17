@@ -22,6 +22,7 @@ function useScryfallUris(players) {
   return uris;
 }
 import React, { useState, useMemo } from "react";
+import Modal from "./Modal";
 
 const formatDate = (dateString) => {
   if (!dateString) return "Unknown";
@@ -193,7 +194,7 @@ const GamesList = ({ event, onPlayerClick }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const [sortDir, setSortDir] = useState("desc");
-  const [expandedGameId, setExpandedGameId] = useState(null);
+  const [modalGame, setModalGame] = useState(null);
 
   const filteredAndSortedGames = useMemo(() => {
     if (!event || !event.games) return [];
@@ -246,8 +247,8 @@ const GamesList = ({ event, onPlayerClick }) => {
     }
   };
 
-  const handleExpand = (gameId) => {
-    setExpandedGameId(prev => prev === gameId ? null : gameId);
+  const handleExpand = (game) => {
+    setModalGame(game);
   };
 
   if (!event || !event.games) {
@@ -307,11 +308,63 @@ const GamesList = ({ event, onPlayerClick }) => {
             key={game.id}
             game={game}
             onPlayerClick={onPlayerClick}
-            expanded={expandedGameId === game.id}
-            onExpand={handleExpand}
+            expanded={false}
+            onExpand={() => handleExpand(game)}
           />
         ))}
       </div>
+      {modalGame && (
+        <Modal isOpen={!!modalGame} onClose={() => setModalGame(null)} title={"Game Details"}>
+          {/* Render the same details as the expanded card */}
+          <div className="game-card-details">
+            <div className="game-players-list striped-list">
+              {modalGame.players.sort((a, b) => a.placement - b.placement).map((player, index) => {
+                const placementInfo = getPlacementDisplay(player.placement);
+                return (
+                  <div
+                    key={index}
+                    className={`game-player-row${index % 2 === 0 ? ' even' : ' odd'}`}
+                    onClick={() => onPlayerClick && onPlayerClick({ name: player.name })}
+                  >
+                    <div className="player-placement-info">
+                      <span
+                        className="placement-badge"
+                        style={{ backgroundColor: placementInfo.color, color: "#000" }}
+                      >
+                        {placementInfo.text}
+                      </span>
+                      <span className="player-name">{player.name}</span>
+                    </div>
+                    {player.commander && (
+                      <div className="player-commander-container">
+                        <span className="player-commander">{player.commander}</span>
+                        <img 
+                          src={getCardImageUrl(player.commander)} 
+                          alt={player.commander}
+                          className="commander-card-art"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {modalGame.notes && (
+              <div className="game-notes">
+                <strong>Notes:</strong> {modalGame.notes}
+              </div>
+            )}
+            <div className="game-timestamps">
+              {modalGame.dateCreated && (
+                <div className="timestamp">
+                  <strong>Recorded:</strong> {formatDateTime(modalGame.dateCreated)}
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {filteredAndSortedGames.length === 0 && searchQuery && (
         <div className="no-games">No games match your search criteria.</div>
