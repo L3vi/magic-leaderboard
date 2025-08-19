@@ -1,15 +1,41 @@
 .logo-main {
   fill: var(--accent, #e57373);
 }
+
 .header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1.5rem 2rem 0.5rem 2rem;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  box-shadow: var(--header-shadow);
+}
+
+.header-main {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  padding: 1.5rem 2rem 1rem 2rem;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--header-border);
-  box-shadow: var(--header-shadow);
+}
+
+.header-nav-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .header-nav-desktop {
+    display: block;
+    margin-top: 0.5rem;
+  }
+  .nav-bar-mobile {
+    display: none !important;
+  }
 }
 
 .header-logo {
