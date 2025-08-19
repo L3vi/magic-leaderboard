@@ -1,0 +1,64 @@
+{
+  "year": 2025,
+  "events": [
+    {
+      "id": "event-2025-1",
+      "date": "2025-06-01",
+      "games": [
+        {
+          "id": "game-1",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "dateCreated": "2025-06-01T10:30:00.000Z",
+          "notes": "Anson pulled off an amazing combo win with Atraxa!",
+          "players": [
+            { "name": "Anson", "placement": 1, "commander": "Atraxa, Praetors' Voice" },
+            { "name": "Caleb", "placement": 2, "commander": "Krenko, Mob Boss" },
+            { "name": "Danny", "placement": 3, "commander": "Ghalta, Primal Hunger" },
+            { "name": "Jordan", "placement": 4, "commander": "Teferi, Temporal Archmage" }
+          ]
+        },
+        {
+          "id": "game-2",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "dateCreated": "2025-06-01T14:15:00.000Z",
+          "notes": "Epic 5-player game that went for 3 hours!",
+          "players": [
+            { "name": "Levi", "placement": 1, "commander": "Edgar Markov" },
+            { "name": "Nate", "placement": 2, "commander": "Meren of Clan Nel Toth" },
+            { "name": "Parker", "placement": 3, "commander": "Prossh, Skyraider of Kher" },
+            { "name": "Shane", "placement": 4, "commander": "Kaalia of the Vast" },
+            { "name": "Alex", "placement": 5, "commander": "Zurgo Bellstriker" }
+          ]
+        },
+        {
+          "id": "game-3",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "dateCreated": "2025-06-02T19:45:00.000Z",
+          "notes": "",
+          "players": [
+            { "name": "Danny", "placement": 1, "commander": "Ghalta, Primal Hunger" },
+            { "name": "Jordan", "placement": 2, "commander": "Azami, Lady of Scrolls" },
+            { "name": "Anson", "placement": 3, "commander": "Atraxa, Praetors' Voice" },
+            { "name": "Caleb", "placement": 4, "commander": "Alesha, Who Smiles at Death" }
+          ]
+        },
+        {
+          "id": "game-4",
+          "timestampStart": null,
+          "timestampEnd": null,
+          "dateCreated": "2025-06-05T16:20:00.000Z",
+          "notes": "Levi's first win with his new Yuriko deck - lots of ninjas and extra turns!",
+          "players": [
+            { "name": "Levi", "placement": 1, "commander": "Yuriko, the Tiger's Shadow" },
+            { "name": "Parker", "placement": 2, "commander": "Prossh, Skyraider of Kher" },
+            { "name": "Shane", "placement": 3, "commander": "Kaalia of the Vast" },
+            { "name": "Nate", "placement": 4, "commander": "Meren of Clan Nel Toth" }
+          ]
+        }
+      ]
+    }
+  ]
+}

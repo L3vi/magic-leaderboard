@@ -1,10 +1,16 @@
+/* ===================== */
+/* NavBar Component      */
+/* ===================== */
+
+/* ===================== */
+/* Mobile-first styles   */
+/* ===================== */
 .nav-item.active {
   color: var(--accent-dark, #b45309);
   font-weight: 700;
   position: relative;
 }
 
-/* Mobile: underline indicator */
 .nav-item.active::after {
   content: "";
   display: block;
@@ -18,21 +24,7 @@
   background: var(--accent-dark, #b45309);
 }
 
-@media (min-width: 768px) {
-  .nav-item.active {
-    background: var(--accent-light, #ffe082);
-    color: var(--accent-dark, #b45309);
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.08);
-  }
-  .nav-item.active::after {
-    display: none;
-  }
-}
-
-/* ===================== */
-/* Mobile-first styles   */
-/* ===================== */
+/* Layout styles */
 .nav-bar {
   position: fixed;
   left: 0;
@@ -47,6 +39,7 @@
   z-index: 100;
 }
 
+/* Nav item styles */
 .nav-item {
   background: none;
   border: none;
@@ -66,12 +59,14 @@
   color: var(--accent-dark, #b45309);
 }
 
+/* Label styles */
 .nav-label {
   font-size: 0.75rem;
   margin-top: 0.1rem;
   color: var(--text, #f3f4f6);
 }
 
+/* Floating action button styles */
 .nav-fab {
   position: absolute;
   left: 50%;
@@ -100,10 +95,10 @@
 }
 
 /* ===================== */
-/* Desktop styles        */
+/* Desktop overrides     */
 /* ===================== */
 @media (min-width: 768px) {
-  /* NavBar integrated with header */
+  /* Layout overrides */
   .nav-bar {
     position: static;
     height: auto;
@@ -117,6 +112,7 @@
     margin-top: 0.5rem;
     gap: 1.5rem;
   }
+  /* Nav item overrides */
   .nav-item {
     font-size: 1.1rem;
     flex-direction: row;
@@ -126,24 +122,34 @@
     border-radius: 8px;
     color: var(--accent, #fbbf24);
     transition: background 0.18s, color 0.18s, transform 0.18s;
-  }
-  .nav-bar {
-    align-items: center;
-  }
-  .nav-item {
     justify-content: center;
     align-items: center;
     text-align: center;
   }
+  .nav-item.active {
+    background: var(--accent-light, #ffe082);
+    color: var(--accent-dark, #b45309);
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.18);
+    border-radius: 8px;
+    font-weight: 700;
+    position: relative;
+  }
+  .nav-item.active::after {
+    display: none;
+  }
+  /* Label overrides */
   .nav-label {
     text-align: center;
     width: 100%;
+    font-size: 1rem;
+    margin-top: 0;
+    color: var(--text, #f3f4f6);
   }
+  /* Hide FAB on desktop */
   .nav-fab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: none;
   }
+  /* Nav item hover/active */
   .nav-item:hover {
     background: var(--accent-light, #ffe082);
     color: var(--accent-dark, #b45309);
@@ -153,13 +159,5 @@
     background: var(--accent-dark, #b45309);
     color: var(--header-bg, #232326);
     transform: scale(1);
-  }
-  .nav-label {
-    font-size: 1rem;
-    margin-top: 0;
-    color: var(--text, #f3f4f6);
-  }
-  .nav-fab {
-    display: none;
   }
 }

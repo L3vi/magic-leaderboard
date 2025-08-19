@@ -1,4 +1,6 @@
-/* Root theme variables for light and dark mode */
+/* ===================== */
+/* Root Theme Variables  */
+/* ===================== */
 :root {
   --background: #18181b;
   --foreground: #eaeaea;
@@ -10,28 +12,31 @@
   --accent-dark: #1e40af;
 }
 
+/* ===================== */
+/* Dark Mode Overrides   */
+/* ===================== */
 @media (prefers-color-scheme: dark) {
   :root {
-  --background: #111;
-  --foreground: #eaeaea;
-  --header-bg: #18181b;
-  --header-border: #222;
-  --header-shadow: 0 2px 8px rgba(229,115,115,0.18);
-  --background: #1e293b;
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --accent-dark: #1e40af;
-  --header-shadow: 0 2px 8px rgba(59,130,246,0.18);
-
-  --success: #34d399;
-  --info: #3b82f6;
-  --danger: #e57373;
-  --text: #f3f4f6;
-  --card-border: #1e40af;
-  --card-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    --background: #1e293b;
+    --foreground: #eaeaea;
+    --header-bg: #18181b;
+    --header-border: #222;
+    --header-shadow: 0 2px 8px rgba(59,130,246,0.18);
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-dark: #1e40af;
+    --success: #34d399;
+    --info: #3b82f6;
+    --danger: #e57373;
+    --text: #f3f4f6;
+    --card-border: #1e40af;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
 }
 
+/* ===================== */
+/* Body Styles           */
+/* ===================== */
 body {
   background: var(--background);
   color: var(--foreground);

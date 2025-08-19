@@ -7,9 +7,6 @@ function App() {
   return (
     <>
       <Header />
-      <div style={{ textAlign: "center", marginTop: "1rem" }}>
-        <p>Welcome to the Commander tournament tracker!</p>
-      </div>
       <Leaderboard />
     </>
   );
