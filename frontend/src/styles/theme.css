@@ -1,0 +1,26 @@
+/* Root theme variables for light and dark mode */
+:root {
+  --background: #fff;
+  --foreground: #222;
+  --header-bg: #fff;
+  --header-border: #eee;
+  --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #18181b;
+    --foreground: #f3f3f3;
+    --header-bg: #232326;
+    --header-border: #333;
+    --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  transition: background 0.2s, color 0.2s;
+}
