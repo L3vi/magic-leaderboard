@@ -1,10 +1,10 @@
-import React from 'react';
-import './Header.css';
+import React from "react";
+import "./Header.css";
 
 const Header: React.FC = () => (
   <header className="header">
     <img
-      src={process.env.PUBLIC_URL + '/logo.svg'}
+      src={process.env.PUBLIC_URL + "/logo.svg"}
       alt="Magic Leaderboard Logo"
       className="header-logo"
     />
