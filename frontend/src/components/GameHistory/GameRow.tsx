@@ -71,15 +71,22 @@ const GameRow: React.FC<GameRowProps> = ({
             })}
           </span>
           <span className="game-history-players">
-            {players.map((p) => p.name).join(", ")}
+            {players.map((p, idx) => {
+              const isWinner = winner && p.name === winner.name;
+              return (
+                <span
+                  key={p.name + idx}
+                  style={isWinner ? { color: "var(--success, #34d399)", fontWeight: 700 } : {}}
+                >
+                  {p.name}
+                  {idx < players.length - 1 ? ", " : ""}
+                </span>
+              );
+            })}
           </span>
           {winner && (
-            <span className="game-history-winner" aria-label="Winning player">
-              Winner: <strong>{winner.name}</strong> (
-              <span className="game-history-winner-commander">
-                {winner.commander}
-              </span>
-              )
+            <span className="game-history-winner-commander" aria-label="Winning commander">
+              {winner.commander}
             </span>
           )}
         </div>
