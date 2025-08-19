@@ -15,35 +15,34 @@ interface GameRowProps {
   onDetails: (id: string) => void;
 }
 
-// Scryfall image hook
+// Global cache for commander images
+const commanderImageCache: Record<string, string> = {};
+
 function useCommanderArt(commander: string): string {
-  const [imgUrl, setImgUrl] = useState<string>("");
-  useEffect(() => {
+  const [imgUrl, setImgUrl] = React.useState(commanderImageCache[commander] || "");
+  React.useEffect(() => {
+    if (commanderImageCache[commander]) {
+      setImgUrl(commanderImageCache[commander]);
+      return;
+    }
     let isMounted = true;
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
+    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`)
+      .then(res => res.json())
+      .then(data => {
         let art = "";
         if (data.image_uris && data.image_uris.art_crop) {
           art = data.image_uris.art_crop;
-        } else if (
-          data.card_faces &&
-          data.card_faces[0]?.image_uris?.art_crop
-        ) {
+        } else if (data.card_faces && data.card_faces[0]?.image_uris?.art_crop) {
           art = data.card_faces[0].image_uris.art_crop;
         }
+        commanderImageCache[commander] = art;
         if (isMounted) setImgUrl(art);
       })
       .catch(() => {
+        commanderImageCache[commander] = ""; // cache failure
         if (isMounted) setImgUrl("");
       });
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [commander]);
   return imgUrl;
 }
