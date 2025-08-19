@@ -29,3 +29,29 @@ body {
 .center {
   text-align: center;
 }
+
+/* ===================== */
+/* App Tabs Styles        */
+/* ===================== */
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 1rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.tab-btn.active {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+}
+
+.tab-btn:focus {
+  outline: 2px solid var(--accent);
+}

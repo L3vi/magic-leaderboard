@@ -4,9 +4,15 @@ import NavBar from "./NavBar";
 
 interface HeaderProps {
   title?: string;
+  activeTab: "leaderboard" | "games";
+  setActiveTab: (tab: "leaderboard" | "games") => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title = "Magic Leaderboard" }) => (
+const Header: React.FC<HeaderProps> = ({
+  title = "Magic Leaderboard",
+  activeTab,
+  setActiveTab,
+}) => (
   <header className="header" aria-label="Site Header">
     <div className="header-main">
       <a href="/" aria-label="Home">
@@ -15,10 +21,10 @@ const Header: React.FC<HeaderProps> = ({ title = "Magic Leaderboard" }) => (
       <h1 className="header-title">{title}</h1>
     </div>
     <div className="header-nav-desktop">
-      <NavBar />
+      <NavBar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
     <div className="nav-bar-mobile">
-      <NavBar />
+      <NavBar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   </header>
 );

@@ -3,17 +3,20 @@ import "./NavBar.css";
 
 // Simple icons using emoji for now; replace with SVGs or icon library as needed
 const NAV_ITEMS = [
-	{ label: "Leaderboard", icon: "🏆" },
-	{ label: "Games", icon: "🎲" },
+	{ label: "Leaderboard", icon: "🏆", tab: "leaderboard" },
+	{ label: "Games", icon: "🎲", tab: "games" },
 	{ label: "Add Game", icon: "➕", isFab: true },
 ];
 
-const NavBar: React.FC = () => {
-	const [activeIdx, setActiveIdx] = React.useState(0);
+interface NavBarProps {
+	activeTab: "leaderboard" | "games";
+	setActiveTab: (tab: "leaderboard" | "games") => void;
+}
 
+const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
 	return (
 		<nav className="nav-bar">
-			{NAV_ITEMS.map((item, idx) =>
+			{NAV_ITEMS.map((item) =>
 				item.isFab ? (
 					<button key={item.label} className="nav-fab" aria-label={item.label}>
 						{item.icon}
@@ -21,9 +24,11 @@ const NavBar: React.FC = () => {
 				) : (
 					<button
 						key={item.label}
-						className={`nav-item${activeIdx === idx ? " active" : ""}`}
+						className={`nav-item${
+							activeTab === item.tab ? " active" : ""
+						}`}
 						aria-label={item.label}
-						onClick={() => setActiveIdx(idx)}
+						onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
 					>
 						<span className="nav-icon">{item.icon}</span>
 						<span className="nav-label">{item.label}</span>

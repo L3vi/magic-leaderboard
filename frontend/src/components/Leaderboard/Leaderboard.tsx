@@ -1,7 +1,6 @@
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Leaderboard.css";
 
-
 import React from "react";
 import gameHistory from "../../data/game-history.json";
 
@@ -39,7 +38,7 @@ const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
   average: "Avg Place",
-  gamesPlayed: "Games"
+  gamesPlayed: "Games",
 };
 
 const Leaderboard: React.FC = () => {
@@ -52,9 +51,10 @@ const Leaderboard: React.FC = () => {
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name);
     } else {
-      return sortOrder === "asc"
-        ? (a[sortKey] as number) - (b[sortKey] as number)
-        : (b[sortKey] as number) - (a[sortKey] as number);
+      // Type-safe access for numeric keys
+      const aValue = a[sortKey as keyof Player] as number;
+      const bValue = b[sortKey as keyof Player] as number;
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
     }
   });
 
