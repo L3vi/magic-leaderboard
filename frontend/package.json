@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "React + TypeScript client for Magic Leaderboard.",
   "scripts": {
-    "start": "parcel public/index.html"
+  "start": "parcel public/index.html --open"
   },
   "keywords": [],
   "author": "",

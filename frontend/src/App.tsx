@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <div>
-      <h1>Magic Leaderboard</h1>
-      <p>Welcome to the Commander tournament tracker!</p>
-    </div>
+    <>
+      <Header />
+      <div style={{ textAlign: "center", marginTop: "1rem" }}>
+        <p>Welcome to the Commander tournament tracker!</p>
+      </div>
+    </>
   );
 }
 

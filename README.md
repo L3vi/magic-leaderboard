@@ -1,26 +1,26 @@
-# Magic: The Gathering Commander Leaderboard
 
-A small web application to track Magic: The Gathering Commander games for a friend tournament.
+# Magic Leaderboard
 
-## Core Features
-- **Leaderboard:** Shows current player rankings based on scores.
-- **Game Creation:** Log a new game and enter results.
-- **Player Management:** Add new players.
-- **Score Tracking:** Track scores per player for each game.
-- **Game History:** Keep a record of past games.
+A web app to track Magic: The Gathering Commander games and player rankings for casual tournaments.
 
-## Future/Advanced Features
+## Features
+- **Leaderboard:** View current player rankings.
+- **Game Logging:** Record new games and results.
+- **Player Management:** Add and manage players.
+- **Score Tracking:** Track scores per player and game.
+- **Game History:** Browse past games.
+
+## Planned Features
 - Multiple scoresheets by date/year.
-- Detailed game histories per player.
-- Integration with external data (like commanders).
-- Analytics/graphs showing player performance over time.
-- Timestamped game start/end for accuracy.
+- Detailed player histories.
+- Commander data integration.
+- Performance analytics and graphs.
+- Timestamped games.
 
 ## Tech Stack
-- **Frontend:** React + TypeScript
+- **Frontend:** React + TypeScript (bundled with Parcel)
 - **Backend:** Express + TypeScript
-- **Database:** SQLite (easy to migrate later)
-- **Bundler:** Parcel (frontend)
+- **Database:** SQLite
 
 ## Project Structure
 ```
@@ -34,9 +34,10 @@ magic-leaderboard/
     package.json
     tsconfig.json
   frontend/
+    public/
+      index.html
+      logo.svg
     src/
-      components/
-      pages/
       App.tsx
       index.tsx
     package.json
@@ -47,21 +48,26 @@ magic-leaderboard/
 ## Setup
 
 ### Backend
-1. `cd backend`
-2. `npm install`
-3. `npm run dev`
+```bash
+cd backend
+npm install
+npm run dev
+```
 
 ### Frontend
-1. `cd frontend`
-2. `npm install`
-3. `npm run start`
+```bash
+cd frontend
+npm install
+npm start
+```
+Parcel will auto-open the app in your browser.
 
-## Incremental Development
-- Add features one at a time, using feature branches.
+## Development Guidelines
+- Use feature branches for new features.
 - Keep code modular and organized.
 - Write tests for new features.
-- Refactor as needed for maintainability.
+- Refactor for maintainability.
 
 ---
 
-This project is designed for simplicity, clarity, and scalability. Add features as needed and keep the codebase clean!
+This project is designed for simplicity, clarity, and scalability. Feel free to add features and keep the codebase clean!

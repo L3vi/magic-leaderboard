@@ -1,0 +1,15 @@
+.header {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.header-logo {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+.header-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
