@@ -1,9 +1,12 @@
+
+import React, { useMemo, useRef } from "react";
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Leaderboard.css";
-
-import React from "react";
 import gameHistory from "../../data/game-history.json";
 
+/**
+ * Aggregates player stats from all events and games.
+ */
 function aggregatePlayers(events: any[]): Player[] {
   const playerMap: Record<string, Player & { totalPlacement: number }> = {};
   events.forEach((event) => {
@@ -41,22 +44,42 @@ const COLUMN_LABELS: Record<SortKey, string> = {
   gamesPlayed: "Games",
 };
 
+/**
+ * Leaderboard component for the Magic Leaderboard app.
+ * - Displays sortable player stats in a responsive, accessible layout.
+ * - Uses ARIA roles, keyboard navigation, and semantic HTML.
+ */
 const Leaderboard: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("score");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
-  const allPlayers = aggregatePlayers(gameHistory.events);
-  const sortedPlayers = [...allPlayers].sort((a, b) => {
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  // Memoize player aggregation and sorting for performance
+  const allPlayers = useMemo(() => aggregatePlayers(gameHistory.events), []);
+  const sortedPlayers = useMemo(() => {
+    const players = [...allPlayers];
     if (sortKey === "name") {
-      return sortOrder === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
+      players.sort((a, b) =>
+        sortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      );
     } else {
-      // Type-safe access for numeric keys
-      const aValue = a[sortKey as keyof Player] as number;
-      const bValue = b[sortKey as keyof Player] as number;
-      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      players.sort((a, b) => {
+        const aValue = a[sortKey as keyof Player] as number;
+        const bValue = b[sortKey as keyof Player] as number;
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      });
     }
-  });
+    return players;
+  }, [allPlayers, sortKey, sortOrder]);
+
+  // Keyboard navigation for sortable headers
+  const handleHeaderKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>, key: SortKey) => {
+    if (e.key === "Enter" || e.key === " " /* space */) {
+      handleSort(key);
+    }
+  };
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -68,24 +91,30 @@ const Leaderboard: React.FC = () => {
   }
 
   return (
-    <section className="leaderboard">
-      <div className="leaderboard-header">
+    <section className="leaderboard" aria-labelledby="leaderboard-title" role="table">
+      <h2 id="leaderboard-title" className="leaderboard-title">Leaderboard</h2>
+      <div className="leaderboard-header" role="row" ref={headerRef}>
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
             style={{ cursor: "pointer", userSelect: "none" }}
+            tabIndex={0}
+            role="columnheader"
+            aria-sort={sortKey === key ? (sortOrder === "asc" ? "ascending" : "descending") : undefined}
+            aria-label={`Sort by ${label}`}
             onClick={() => handleSort(key as SortKey)}
+            onKeyDown={e => handleHeaderKeyDown(e, key as SortKey)}
           >
             {label}
             {sortKey === key && (
-              <span style={{ marginLeft: 4 }}>
+              <span style={{ marginLeft: 4 }} aria-hidden="true">
                 {sortOrder === "asc" ? "▲" : "▼"}
               </span>
             )}
           </span>
         ))}
       </div>
-      <div className="leaderboard-list">
+      <div className="leaderboard-list" role="rowgroup">
         {sortedPlayers.map((player) => (
           <PlayerRow key={player.name} player={player} />
         ))}
