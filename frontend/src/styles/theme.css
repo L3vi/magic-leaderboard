@@ -1,19 +1,34 @@
 /* Root theme variables for light and dark mode */
 :root {
-  --background: #fff;
-  --foreground: #222;
-  --header-bg: #fff;
-  --header-border: #eee;
-  --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --background: #18181b;
+  --foreground: #eaeaea;
+  --header-bg: #232326;
+  --header-border: #222;
+  --header-shadow: 0 2px 8px rgba(229,115,115,0.12);
+  --accent: #fbbf24; /* Gold/amber for highlights */
+  --accent-light: #ffe082;
+  --accent-dark: #b45309;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #18181b;
-    --foreground: #f3f3f3;
-    --header-bg: #232326;
-    --header-border: #333;
-    --header-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --background: #111;
+  --foreground: #eaeaea;
+  --header-bg: #18181b;
+  --header-border: #222;
+  --header-shadow: 0 2px 8px rgba(229,115,115,0.18);
+  --background: #1e293b;
+  --accent: #fbbf24;
+  --accent-light: #ffe082;
+  --accent-dark: #b45309;
+  --header-shadow: 0 2px 8px rgba(251,191,36,0.18);
+  
+  --success: #34d399;
+  --info: #3b82f6;
+  --danger: #e57373;
+  --text: #f3f4f6;
+  --card-border: #b45309;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
 }
 

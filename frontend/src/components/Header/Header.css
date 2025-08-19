@@ -1,3 +1,6 @@
+.logo-main {
+  fill: var(--accent, #e57373);
+}
 .header {
   display: flex;
   flex-direction: row;
@@ -14,15 +17,14 @@
   height: 48px;
   margin-right: 1.25rem;
   margin-bottom: 0;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.07));
 }
 
 .header-title {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   padding: 0.5rem 1rem;
-  color: var(--foreground);
+  color: var(--accent);
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0.02em;
 }

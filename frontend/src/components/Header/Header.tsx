@@ -1,4 +1,5 @@
 import "./Header.css";
+import Logo from "../Logo/Logo";
 
 interface HeaderProps {
   title?: string;
@@ -6,12 +7,9 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = "Magic Leaderboard" }) => (
   <header className="header" aria-label="Site Header">
-    <img
-      src="/logo.svg"
-      alt="Magic Leaderboard Logo"
-      className="header-logo"
-      aria-hidden="true"
-    />
+    <a href="/" aria-label="Home">
+      <Logo />
+    </a>
     <h1 className="header-title">{title}</h1>
   </header>
 );
