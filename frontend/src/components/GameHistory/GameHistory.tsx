@@ -1,6 +1,6 @@
-
 import React, { useState, useMemo } from "react";
 import "./GameHistory.css";
+import GameRow from "./GameRow";
 
 // TypeScript interfaces for game history data
 interface Player {
@@ -87,37 +87,15 @@ const GameHistory: React.FC = () => {
               // Find winner (placement 1)
               const winner = game.players.find(p => p.placement === 1);
               return (
-                <li
+                <GameRow
                   key={game.id}
-                  className="game-history-game"
-                  tabIndex={0}
-                  aria-label={`Game on ${new Date(game.dateCreated).toLocaleDateString()}`}
-                >
-                  <div className="game-history-summary-row">
-                    <div className="game-history-summary-main">
-                      <span className="game-history-date">
-                        {new Date(game.dateCreated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
-                      </span>
-                      <span className="game-history-players">
-                        {game.players.map(p => p.name).join(", ")}
-                      </span>
-                      {winner && (
-                        <span className="game-history-winner" aria-label="Winning player">
-                          Winner: <strong>{winner.name}</strong> (<span className="game-history-winner-commander">{winner.commander}</span>)
-                        </span>
-                      )}
-                    </div>
-                    <div className="game-history-summary-actions">
-                      <button
-                        className="game-history-details-btn"
-                        onClick={() => openDetails(game.id)}
-                        aria-label="Show more details"
-                      >
-                        More Details
-                      </button>
-                    </div>
-                  </div>
-                </li>
+                  id={game.id}
+                  dateCreated={game.dateCreated}
+                  notes={game.notes}
+                  players={game.players}
+                  winner={winner}
+                  onDetails={openDetails}
+                />
               );
             })}
           </ul>
