@@ -1,0 +1,74 @@
+.leaderboard {
+  width: 100%;
+  max-width: 480px;
+  margin: 1.5rem auto;
+  background: var(--header-bg);
+  border-radius: 1rem;
+  box-shadow: var(--header-shadow);
+  padding: 1rem;
+}
+
+.leaderboard-title {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--accent-light);
+  color: var(--accent-dark);
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--background);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  font-size: 1.1rem;
+  color: var(--foreground);
+  box-shadow: 0 1px 4px rgba(59,130,246,0.08);
+}
+
+.player-name {
+  font-weight: 500;
+  flex: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player-score, .player-average, .player-games {
+  flex: 1;
+  text-align: right;
+  min-width: 48px;
+}
+
+@media (max-width: 600px) {
+  .leaderboard {
+    max-width: 100vw;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+  }
+  .leaderboard-title {
+    font-size: 1.2rem;
+  }
+  .leaderboard-header, .player-row {
+    font-size: 1rem;
+    padding: 0.5rem 0.25rem;
+  }
+}

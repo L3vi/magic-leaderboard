@@ -1,6 +1,6 @@
 import "./Header.css";
-import Logo from "../Logo/Logo";
-import NavBar from "../NavBar/NavBar";
+import Logo from "./Logo";
+import NavBar from "./NavBar";
 
 interface HeaderProps {
   title?: string;
@@ -15,6 +15,9 @@ const Header: React.FC<HeaderProps> = ({ title = "Magic Leaderboard" }) => (
       <h1 className="header-title">{title}</h1>
     </div>
     <div className="header-nav-desktop">
+      <NavBar />
+    </div>
+    <div className="nav-bar-mobile">
       <NavBar />
     </div>
   </header>

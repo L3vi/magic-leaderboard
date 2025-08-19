@@ -127,15 +127,32 @@
     color: var(--accent, #fbbf24);
     transition: background 0.18s, color 0.18s, transform 0.18s;
   }
+  .nav-bar {
+    align-items: center;
+  }
+  .nav-item {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .nav-label {
+    text-align: center;
+    width: 100%;
+  }
+  .nav-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .nav-item:hover {
     background: var(--accent-light, #ffe082);
     color: var(--accent-dark, #b45309);
-    transform: scale(1.08);
+    transform: scale(1.05);
   }
   .nav-item:active {
     background: var(--accent-dark, #b45309);
     color: var(--header-bg, #232326);
-    transform: scale(0.96);
+    transform: scale(1);
   }
   .nav-label {
     font-size: 1rem;
