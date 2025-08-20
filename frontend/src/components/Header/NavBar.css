@@ -91,6 +91,40 @@
   transform: translateX(-50%) translateY(-30%) scale(1.08);
 }
 
+/* Desktop floating action button */
+.nav-fab-desktop {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--accent, #fbbf24);
+  color: var(--header-bg, #232326);
+  border: none;
+  border-radius: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  padding: 0.75rem 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+
+.nav-fab-desktop:hover {
+  background: var(--accent-dark, #b45309);
+  box-shadow: 0 6px 24px rgba(30, 64, 175, 0.22);
+}
+
+.nav-fab-icon {
+  font-size: 1.5rem;
+}
+
+.nav-fab-label {
+  font-size: 1.1rem;
+}
+
 /* ===================== */
 /* Desktop overrides     */
 /* ===================== */
@@ -153,9 +187,12 @@
   }
 
   /* Hide FAB on desktop */
-  .nav-fab {
-    display: none;
-  }
+    .nav-fab {
+      display: none;
+    }
+    .nav-fab-desktop {
+      display: flex;
+    }
 
   /* Nav item hover/active */
   .nav-item:hover {
@@ -168,5 +205,11 @@
     background: var(--accent-dark, #b45309);
     color: var(--header-bg, #232326);
     transform: scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-fab-desktop {
+    display: none;
   }
 }

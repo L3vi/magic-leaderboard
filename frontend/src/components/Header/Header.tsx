@@ -14,6 +14,7 @@ interface HeaderProps {
   title?: string;
   activeTab: "leaderboard" | "games";
   setActiveTab: (tab: "leaderboard" | "games") => void;
+  onNewGame?: () => void;
 }
 
 /**
@@ -26,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({
   title = "Magic Leaderboard",
   activeTab,
   setActiveTab,
+  onNewGame,
 }) => {
   return (
     <header className="header" aria-label="Site Header" role="banner">
@@ -37,11 +39,11 @@ const Header: React.FC<HeaderProps> = ({
       </div>
       {/* Desktop Navigation */}
       <nav className="header-nav-desktop" aria-label="Main Navigation" role="navigation">
-        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} />
       </nav>
       {/* Mobile Navigation */}
       <nav className="nav-bar-mobile" aria-label="Mobile Navigation" role="navigation">
-        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} />
       </nav>
     </header>
   );

@@ -10,6 +10,7 @@ import "./NavBar.css";
 interface NavBarProps {
 	activeTab: "leaderboard" | "games";
 	setActiveTab: (tab: "leaderboard" | "games") => void;
+	onNewGame?: () => void;
 }
 
 // Navigation items for the NavBar
@@ -26,7 +27,7 @@ const NAV_ITEMS = [
  * - Uses semantic HTML and theme variables.
  */
 
-const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
+const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) => {
 	const navRef = React.useRef<HTMLDivElement>(null);
 	const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 	const [underlineStyle, setUnderlineStyle] = React.useState<React.CSSProperties>({});
@@ -83,40 +84,44 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [activeTab]);
 
-	return (
-		<div className="nav-bar" role="tablist" aria-label="Main Navigation" ref={navRef}>
-			{NAV_ITEMS.map((item, idx) =>
-				item.isFab ? (
-					<button
-						key={item.label}
-						className="nav-fab"
-						aria-label={item.label}
-						tabIndex={0}
-						role="button"
-						onKeyDown={e => handleKeyDown(e, idx)}
-					>
-						{item.icon}
-					</button>
-				) : (
-					<button
-						key={item.label}
-						className={`nav-item${activeTab === item.tab ? " active" : ""}`}
-						aria-label={item.label}
-						aria-selected={activeTab === item.tab}
-						tabIndex={0}
-						role="tab"
-						onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
-						onKeyDown={e => handleKeyDown(e, idx)}
-						ref={el => tabRefs.current[idx] = el}
-					>
-						<span className="nav-icon" aria-hidden="true">{item.icon}</span>
-						<span className="nav-label">{item.label}</span>
-					</button>
-				)
-			)}
-			<div className="nav-highlight" style={underlineStyle} />
-		</div>
-	);
+		return (
+			<>
+				<div className="nav-bar" role="tablist" aria-label="Main Navigation" ref={navRef}>
+					{NAV_ITEMS.filter(item => !item.isFab).map((item, idx) => (
+						<button
+							key={item.label}
+							className={`nav-item${activeTab === item.tab ? " active" : ""}`}
+							aria-label={item.label}
+							aria-selected={activeTab === item.tab}
+							tabIndex={0}
+							role="tab"
+							onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
+							onKeyDown={e => handleKeyDown(e, idx)}
+							ref={el => tabRefs.current[idx] = el}
+						>
+							<span className="nav-icon" aria-hidden="true">{item.icon}</span>
+							<span className="nav-label">{item.label}</span>
+						</button>
+					))}
+					{/* Mobile FAB */}
+							<button
+								className="nav-fab"
+								aria-label="Add Game"
+								tabIndex={0}
+								role="button"
+								onClick={onNewGame}
+							>
+								➕
+							</button>
+					<div className="nav-highlight" style={underlineStyle} />
+				</div>
+				{/* Desktop FAB */}
+						<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
+							<span className="nav-fab-icon">➕</span>
+							<span className="nav-fab-label">New Game</span>
+						</button>
+			</>
+		);
 };
 
 export default NavBar;
