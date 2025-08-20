@@ -37,14 +37,20 @@ body {
 /* App Tabs Styles        */
 /* ===================== */
 
-
 @media (max-width: 600px) {
+  /* Prevent content from being covered by bottom nav bar */
+  .tab-content {
+    padding-bottom: calc(
+      var(--navbar-height) + 4px
+    ); /* nav bar height + extra for spacing */
+  }
+
   .slide-in-left {
-    animation: slide-in-left 0.3s cubic-bezier(.4, 0, .2, 1);
+    animation: slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .slide-in-right {
-    animation: slide-in-right 0.3s cubic-bezier(.4, 0, .2, 1);
+    animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes slide-in-left {
@@ -72,7 +78,6 @@ body {
   }
 }
 
-
 .tab-btn {
   background: none;
   border: none;
@@ -94,9 +99,4 @@ body {
 
 .tab-btn:focus {
   outline: 2px solid var(--accent);
-}
-
-/* Prevent content from being covered by bottom nav bar */
-.tab-content {
-  padding-bottom: calc(var(--navbar-height) + 4px); /* nav bar height + extra for spacing */
 }
