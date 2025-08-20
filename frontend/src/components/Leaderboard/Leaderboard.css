@@ -28,10 +28,13 @@
   color: var(--accent-dark);
 }
 
-
 .leaderboard-header span {
   cursor: pointer;
   border-radius: 0.5rem;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .leaderboard-header span:hover {
@@ -45,7 +48,6 @@
   color: #fff;
   box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
 }
-
 
 /* ===================== */
 /* Desktop overrides     */

@@ -35,7 +35,7 @@
 
 .player-row>span {
     flex: 1;
-    text-align: right;
+    text-align: center;
     min-width: 80px;
     padding: 0 0.5rem;
     transition: background 0.18s, color 0.18s, box-shadow 0.18s;
