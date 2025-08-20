@@ -83,6 +83,10 @@
     padding: 0.5rem 0.25rem;
     color: var(--accent-dark);
   }
+
+  .game-row:hover {
+    background: none !important;
+  }
 }
 
 /* ===================== */

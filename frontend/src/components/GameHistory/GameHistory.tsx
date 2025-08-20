@@ -37,9 +37,8 @@ import Modal from "../Modal/Modal";
 const GameHistory: React.FC = () => {
   // Filtering state
   const [filter, setFilter] = useState("");
-  // Track selected game for modal (future)
+  // Track selected game for modal
   const [selected, setSelected] = useState<string | null>(null);
-  const [activeGame, setActiveGame] = useState<string | null>(null);
 
   // Flatten all games from all events
   const allGames = useMemo(() => {
@@ -65,7 +64,7 @@ const GameHistory: React.FC = () => {
     ? filteredGames.find(g => g.id === selected)
     : null;
 
-  const closeDetails = () => { setSelected(null); setActiveGame(null); };
+  const closeDetails = () => { setSelected(null); };
 
   return (
     <section className="game-history main-section">
@@ -95,8 +94,7 @@ const GameHistory: React.FC = () => {
                 notes={game.notes}
                 players={game.players}
                 winner={winner}
-                onClick={() => { setSelected(game.id); setActiveGame(game.id); }}
-                active={activeGame === game.id && !selectedGame}
+                onClick={() => setSelected(game.id)}
               />
             );
           })
@@ -116,7 +114,6 @@ const GameHistory: React.FC = () => {
       </Modal>
     </section>
   );
-  // ...existing code...
 };
 
 export default GameHistory;
