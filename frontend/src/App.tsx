@@ -10,9 +10,10 @@ function App() {
   return (
     <>
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
-      {/* Tab navigation is now handled by NavBar */}
-      {activeTab === 'leaderboard' && <Leaderboard />}
-      {activeTab === 'games' && <GameHistory />}
+      <div className={`tab-content${activeTab === 'leaderboard' ? ' slide-in-left' : ' slide-in-right'}`}>
+        {activeTab === 'leaderboard' && <Leaderboard />}
+        {activeTab === 'games' && <GameHistory />}
+      </div>
     </>
   );
 }

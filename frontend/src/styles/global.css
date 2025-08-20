@@ -11,6 +11,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 body {
@@ -35,6 +36,45 @@ body {
 /* ===================== */
 /* App Tabs Styles        */
 /* ===================== */
+
+
+@media (max-width: 600px) {
+  .slide-in-left {
+    animation: slide-in-left 0.3s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .slide-in-right {
+    animation: slide-in-right 0.3s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100vw);
+      opacity: 0.5;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100vw);
+      opacity: 0.5;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+
+
+
 .tab-btn {
   background: none;
   border: none;
