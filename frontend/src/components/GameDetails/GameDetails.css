@@ -1,63 +1,126 @@
 /* Modal styles for GameDetails */
 
+/* Redesigned GameDetails modal */
 .game-details {
-  background: var(--color-bg);
-  color: var(--color-text);
-  border-radius: 1rem;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.25);
-  padding: 2rem;
-  min-width: 320px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
+  background: none;
+  color: var(--foreground);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  max-width: none;
+  max-height: none;
+  overflow-y: visible;
   font-size: 1rem;
+  position: static;
+  animation: none;
+}
+.game-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
 }
 .game-details-title {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: 700;
+  flex: 1;
+  font-size: 1.6rem;
+  font-weight: 800;
   text-align: center;
+  color: var(--accent);
+  margin: 0;
+}
+.game-details-date {
+  font-size: 1rem;
+  color: var(--accent-light);
+  margin-left: 1rem;
+}
+.game-details-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--accent);
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: color 0.18s;
+}
+.game-details-close:hover {
+  color: var(--accent-dark);
 }
 .game-details-info {
   margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-.game-details-players {
-  margin-top: 1rem;
 }
 .game-details-players-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
   font-size: 1rem;
+  background: var(--background);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.08);
 }
 .game-details-players-table th,
 .game-details-players-table td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--color-border);
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--accent-light);
   text-align: left;
 }
 .game-details-players-table th {
-  background: var(--color-bg-secondary);
-  font-weight: 600;
-  color: var(--color-accent);
+  background: var(--accent-dark);
+  font-weight: 700;
+  color: var(--foreground);
 }
 .game-details-players-table tr.winner td {
   font-weight: bold;
-  color: var(--color-accent);
+  color: var(--accent);
+  background: var(--accent-light);
 }
 .player-name {
   margin-right: 0.5rem;
+  font-weight: 600;
 }
 .player-commander {
   font-style: italic;
-  color: var(--color-secondary);
+  color: var(--accent-light);
 }
 .winner-badge {
+  margin-left: 0.3rem;
+  font-size: 1.2em;
+}
+.game-details-notes {
+  margin-top: 1.2rem;
+  background: var(--header-bg);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: var(--foreground);
+  box-shadow: 0 1px 4px rgba(59,130,246,0.08);
+}
+.game-details-notes h3 {
+  margin-top: 0;
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.game-details-notes p {
+  margin-bottom: 0;
+  font-size: 1rem;
+}
+@media (max-width: 600px) {
+  .game-details {
+    padding: 1rem 0.2rem 0.5rem 0.2rem;
+    min-width: 0;
+  }
+  .game-details-title {
+    font-size: 1.2rem;
+  }
+  .game-details-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .game-details-date {
+    margin-left: 0;
+  }
+}
   margin-left: 0.5rem;
 }
 .winner-name {

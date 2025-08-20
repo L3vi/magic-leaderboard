@@ -16,6 +16,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   useEffect(() => {
     if (isOpen) {
       lastFocusedElement.current = document.activeElement as HTMLElement;
+      // Prevent background scroll
+  document.body.classList.add("modal-open");
       // Focus the modal content
       contentRef.current?.focus();
       // Escape key to close
@@ -44,6 +46,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
         document.removeEventListener("keydown", handleKeyDown);
         // Restore focus
         lastFocusedElement.current?.focus();
+        // Restore scroll
+  document.body.classList.remove("modal-open");
       };
     }
   }, [isOpen, onClose]);

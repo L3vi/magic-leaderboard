@@ -49,10 +49,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
 
   return (
     <form className="new-game-form" onSubmit={handleSubmit}>
-      <h2>Create New Game</h2>
       {playerFields.map((field, idx) => (
-        <label key={idx} style={{ position: 'relative' }}>
-          {`Player ${idx + 1}`}
+        <div key={idx} className="player-field-row">
           {!field.addNew ? (
             <select
               value={field.value}
@@ -82,13 +80,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
               type="button"
               className="remove-player-btn"
               onClick={() => removePlayerField(idx)}
-              aria-label={`Remove Player ${idx + 1}`}
-              style={{ position: 'absolute', right: 0, top: 0 }}
+              aria-label={`Remove Player`}
             >
               &times;
             </button>
           )}
-        </label>
+        </div>
       ))}
       <div className="form-actions" style={{ justifyContent: 'flex-start', marginBottom: '1rem' }}>
         {playerFields.length < MAX_PLAYERS && (

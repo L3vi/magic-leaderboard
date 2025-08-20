@@ -22,9 +22,8 @@
 :root {
   --background: #18181b;
   --foreground: #eaeaea;
-  --header-bg: #232326;
-  --header-border: #222;
-  --header-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  --border: #222;
+  --shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
   /* blue shadow */
   --accent: #3b82f6;
   /* Blue for highlights */
@@ -38,11 +37,10 @@
 /* ===================== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1e293b;
-    --foreground: #eaeaea;
-    --header-bg: #18181b;
-    --header-border: #222;
-    --header-shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
+  --background: #1e293b;
+  --foreground: #eaeaea;
+  --border: #222;
+  --shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
     --accent: #3b82f6;
     --accent-light: #60a5fa;
     --accent-dark: #1e40af;
