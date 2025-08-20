@@ -39,6 +39,7 @@ const GameHistory: React.FC = () => {
   const [filter, setFilter] = useState("");
   // Track selected game for modal (future)
   const [selected, setSelected] = useState<string | null>(null);
+  const [activeGame, setActiveGame] = useState<string | null>(null);
 
   // Flatten all games from all events
   const allGames = useMemo(() => {
@@ -64,7 +65,7 @@ const GameHistory: React.FC = () => {
     ? filteredGames.find(g => g.id === selected)
     : null;
 
-  const closeDetails = () => setSelected(null);
+  const closeDetails = () => { setSelected(null); setActiveGame(null); };
 
   return (
     <section className="game-history main-section">
@@ -94,7 +95,8 @@ const GameHistory: React.FC = () => {
                 notes={game.notes}
                 players={game.players}
                 winner={winner}
-                onClick={() => setSelected(game.id)}
+                onClick={() => { setSelected(game.id); setActiveGame(game.id); }}
+                active={activeGame === game.id && !selectedGame}
               />
             );
           })

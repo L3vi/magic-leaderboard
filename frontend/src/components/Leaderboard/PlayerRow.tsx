@@ -25,11 +25,12 @@ export interface Player {
 interface PlayerRowProps {
   player: Player;
   onClick?: () => void;
+  active?: boolean;
 }
 
-const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick }) => (
+const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, active }) => (
   <div
-    className="player-row"
+    className={`player-row${active ? ' active' : ''}`}
     role="row"
     tabIndex={0}
     aria-label={`Player ${player.name}, Score ${player.score}, Avg Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}

@@ -14,6 +14,7 @@ interface GameRowProps {
   players: Player[];
   winner?: Player;
   onClick?: () => void;
+  active?: boolean;
 }
 
 // Global cache for commander images
@@ -55,10 +56,11 @@ const GameRow: React.FC<GameRowProps> = ({
   players,
   winner,
   onClick,
+  active,
 }) => {
   return (
     <div
-      className="game-row"
+      className={`game-row${active ? ' active' : ''}`}
       tabIndex={0}
       aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}
       onClick={onClick}

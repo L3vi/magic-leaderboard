@@ -55,6 +55,7 @@ const Leaderboard: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("score");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const [selectedPlayer, setSelectedPlayer] = React.useState<Player | null>(null);
+  const [activePlayer, setActivePlayer] = React.useState<string | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Memoize player aggregation and sorting for performance
@@ -94,11 +95,13 @@ const Leaderboard: React.FC = () => {
   }
 
   function handlePlayerClick(player: Player) {
+    setActivePlayer(player.name);
     setSelectedPlayer(player);
   }
 
   function handleModalClose() {
     setSelectedPlayer(null);
+    setActivePlayer(null);
   }
 
   return (
@@ -127,7 +130,12 @@ const Leaderboard: React.FC = () => {
       </div>
       <div className="leaderboard-list" role="rowgroup">
         {sortedPlayers.map((player) => (
-          <PlayerRow key={player.name} player={player} onClick={() => handlePlayerClick(player)} />
+          <PlayerRow
+            key={player.name}
+            player={player}
+            onClick={() => handlePlayerClick(player)}
+            active={activePlayer === player.name && !selectedPlayer}
+          />
         ))}
       </div>
       <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title="Player Details">

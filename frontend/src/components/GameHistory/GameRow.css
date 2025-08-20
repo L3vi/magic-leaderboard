@@ -19,6 +19,11 @@
     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
 
+.game-row.active {
+    background: var(--accent-light, #e0e7ff);
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
+}
+
 .game-row-main {
     display: flex;
     flex-direction: column;
