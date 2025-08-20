@@ -31,77 +31,24 @@
   color: var(--accent-dark);
 }
 
-.leaderboard-header span,
-.player-row > span {
-  flex: 1;
-  text-align: right;
-  min-width: 80px;
-  padding: 0 0.5rem;
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-}
+
 .leaderboard-header span {
   cursor: pointer;
   border-radius: 0.5rem;
 }
+
 .leaderboard-header span:hover {
   background: var(--accent-light, #60a5fa);
   color: var(--accent-dark, #1e40af);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
 }
+
 .leaderboard-header span:active {
   background: var(--accent-dark, #1e40af);
   color: #fff;
   box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
 }
-.leaderboard-header span:first-child,
-.player-row > .player-name {
-  text-align: left;
-}
-.player-row > .player-name {
-  font-weight: 500;
-}
 
-.leaderboard-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.player-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--background);
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.5rem;
-  font-size: 1.1rem;
-  color: var(--foreground);
-  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
-  cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
-}
-.player-row:active {
-  background: var(--accent-dark, #1e40af);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
-  transform: scale(0.98);
-}
-.player-name {
-  font-weight: 500;
-  flex: 2;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.player-score,
-.player-average,
-.player-games {
-  flex: 1;
-  text-align: right;
-  min-width: 48px;
-}
 
 /* ===================== */
 /* Desktop overrides     */
@@ -115,30 +62,19 @@
     border-radius: 0;
     box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
   }
+
   .leaderboard-title {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
+
   .leaderboard-header {
     font-size: 1.5rem;
     padding: 1.25rem 0;
   }
+
   .leaderboard-list {
     gap: 1.5rem;
-  }
-  .player-row {
-    font-size: 1.5rem;
-    padding: 1.5rem 1vw;
-  }
-  .player-row:hover {
-    background: var(--accent-light, #60a5fa);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
-    transform: scale(1.02);
-  }
-  .player-score,
-  .player-average,
-  .player-games {
-    min-width: 120px;
   }
 }
 
@@ -151,11 +87,12 @@
     border-radius: 0.5rem;
     padding: 0.5rem;
   }
+
   .leaderboard-title {
     font-size: 1.2rem;
   }
-  .leaderboard-header,
-  .player-row {
+
+  .leaderboard-header {
     font-size: 1rem;
     padding: 0.5rem 0.25rem;
   }

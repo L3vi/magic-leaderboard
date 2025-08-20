@@ -1,0 +1,29 @@
+/* ===================== */
+/* PlayerDetails Modal   */
+/* ===================== */
+
+.player-details {
+  padding: 0.5rem 0;
+}
+.player-details-name {
+  font-size: 1.3rem;
+  color: var(--accent, #2563eb);
+  margin-bottom: 0.7rem;
+  font-weight: 700;
+}
+.player-details-stats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--foreground, #222);
+}
+.player-details-stats li {
+  margin-bottom: 0.4rem;
+  padding: 0.2rem 0.1rem;
+}
+.player-details-stats strong {
+  color: var(--accent, #2563eb);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}

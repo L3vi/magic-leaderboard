@@ -1,6 +1,8 @@
 
 import React, { useMemo, useRef } from "react";
 import PlayerRow, { Player } from "./PlayerRow";
+import Modal from "../Modal/Modal";
+import PlayerDetails from "../PlayerDetails/PlayerDetails";
 import "./Leaderboard.css";
 import gameHistory from "../../data/game-history.json";
 
@@ -52,6 +54,7 @@ const COLUMN_LABELS: Record<SortKey, string> = {
 const Leaderboard: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("score");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Memoize player aggregation and sorting for performance
@@ -90,6 +93,14 @@ const Leaderboard: React.FC = () => {
     }
   }
 
+  function handlePlayerClick(player: Player) {
+    setSelectedPlayer(player);
+  }
+
+  function handleModalClose() {
+    setSelectedPlayer(null);
+  }
+
   return (
     <section className="leaderboard" aria-labelledby="leaderboard-title" role="table">
       <h2 id="leaderboard-title" className="leaderboard-title">Leaderboard</h2>
@@ -97,6 +108,7 @@ const Leaderboard: React.FC = () => {
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
+            className={`leaderboard-col${key === 'name' ? ' player-name' : ''}`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"
@@ -116,9 +128,14 @@ const Leaderboard: React.FC = () => {
       </div>
       <div className="leaderboard-list" role="rowgroup">
         {sortedPlayers.map((player) => (
-          <PlayerRow key={player.name} player={player} />
+          <div key={player.name} onClick={() => handlePlayerClick(player)} style={{ width: "100%" }}>
+            <PlayerRow player={player} />
+          </div>
         ))}
       </div>
+      <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title={selectedPlayer?.name}>
+        {selectedPlayer && <PlayerDetails player={selectedPlayer} />}
+      </Modal>
     </section>
   );
 };

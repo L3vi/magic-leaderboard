@@ -1,5 +1,6 @@
 
 import React from "react";
+import "./PlayerRow.css";
 
 /**
  * Player interface defines the shape of a leaderboard player.
@@ -22,10 +23,10 @@ export interface Player {
  */
 const PlayerRow: React.FC<{ player: Player }> = ({ player }) => (
   <div className="player-row" role="row" tabIndex={0} aria-label={`Player ${player.name}, Score ${player.score}, Avg Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}>
-    <span className="player-name" role="cell">{player.name}</span>
-    <span className="player-score" role="cell">{player.score}</span>
-    <span className="player-average" role="cell">{player.average.toFixed(2)}</span>
-    <span className="player-games" role="cell">{player.gamesPlayed}</span>
+    <span className="leaderboard-col player-name" role="cell">{player.name}</span>
+    <span className="leaderboard-col player-score" role="cell">{player.score}</span>
+    <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(2)}</span>
+    <span className="leaderboard-col player-games" role="cell">{player.gamesPlayed}</span>
   </div>
 );
 
