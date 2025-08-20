@@ -23,7 +23,12 @@ function App() {
   });
 
   // Handler to open new game modal
-  const handleNewGame = () => setIsNewGameOpen(true);
+  const handleNewGame = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setIsNewGameOpen(true);
+  };
   const handleCloseNewGame = () => setIsNewGameOpen(false);
   const handleSubmitNewGame = (gameData: any) => {
     // TODO: Add logic to save new game
