@@ -1,162 +1,126 @@
-/* Title styles */
+
+
+/* ===================== */
+/* GameHistory Table Layout */
+/* ===================== */
+
+.game-history {
+  width: 100%;
+  max-width: 900px;
+  margin: 1.5rem auto;
+  background: var(--header-bg);
+  border-radius: 1rem;
+  box-shadow: var(--header-shadow);
+  padding: 1rem;
+}
+
 .game-history-title {
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   color: var(--accent);
   font-weight: 700;
 }
 
-/* Controls container */
+.game-history-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid var(--accent-light);
+  color: var(--accent-dark);
+  margin-bottom: 1rem;
+}
+
 .game-history-controls {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  align-items: center;
 }
 
-/* Search/filter styles */
 .game-history-filter {
   padding: 0.5rem 1.5rem;
   border-radius: 0.5rem;
-  margin: 0 auto;
-  display: flex;
-  min-width: 320px;
-  max-width: 480px;
+  min-width: 220px;
+  max-width: 320px;
   width: 100%;
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
+  border: 1.5px solid var(--accent-light);
+  font-size: 1rem;
+  background: var(--header-bg);
+  color: var(--accent-dark);
 }
-/* Game history list styles */
-.game-history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-/* ===================== */
-/* Base Styles           */
-/* ===================== */
 
-/* ===================== */
-/* Utility Classes       */
-/* ===================== */
-.game-history-summary-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+.game-history-table-wrapper {
   width: 100%;
+  overflow-x: auto;
 }
 
-.game-history-summary-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.game-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--header-bg);
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.10);
+  margin-top: 1rem;
 }
 
+.game-history-table th,
+.game-history-table td {
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--accent-light);
+}
+
+.game-history-table th {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.game-history-row:hover {
+  background: var(--accent-light);
+}
 
 .game-history-empty {
   text-align: center;
   color: var(--danger, #e57373);
-  font-size: 1.2rem;
-  margin-top: 2rem;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
 }
 
-.game-history-commanders {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-width: 120px;
-  padding: 2px 0;
-  box-sizing: border-box;
-  height: 60px;
-  background: transparent;
-}
+/* ===================== */
+/* Mobile overrides      */
+/* ===================== */
 
-.game-history-commander-img {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  background: #222;
-  border: 2px solid #444;
-  margin: 0 4px;
-  box-sizing: border-box;
-  overflow: hidden;
-
-}
-
-.game-history-commander-img img {
-  object-fit: cover;
-  border-radius: 0.5rem;
-  display: block;
-}
-
-
-.game-history-commander-winner {
-  border: 2.5px solid var(--success, #34d399) !important;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
-}
-
-@media (max-width: 700px) {
-  .game-history-summary-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-
-  .game-history-summary-actions {
-    justify-content: flex-start;
-    min-width: 0;
-    margin-top: 0.5rem;
-  }
-
+@media (max-width: 600px) {
   .game-history {
     max-width: 100vw;
-    padding: 1rem 0.2rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
   }
-
   .game-history-title {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
+    font-size: 1.2rem;
   }
-
-  .game-history-game {
-    padding: 1rem 0.2rem;
+  .game-history-header {
+    font-size: 1rem;
+    padding: 0.5rem 0.25rem;
   }
-
   .game-history-table th,
   .game-history-table td {
     font-size: 0.95rem;
     padding: 0.4rem 0.2rem;
   }
-
-  .game-history-commanders {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    max-width: 100vw;
-    height: auto;
-    margin-bottom: 0.5rem;
-  }
 }
 
 /* ===================== */
-/* Desktop-specific Styles */
+/* Desktop overrides     */
 /* ===================== */
-@media (min-width: 900px) {
 
-  /* Main container */
+@media (min-width: 900px) {
   .game-history {
     max-width: 100vw;
     width: 100vw;
@@ -165,48 +129,17 @@
     border-radius: 0;
     box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
   }
-
-  /* Title */
   .game-history-title {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
-
-  /* List layout */
-  .game-history-list {
-    gap: 2.5rem;
-  }
-
-  /* Game card */
-  .game-history-game {
+  .game-history-header {
     font-size: 1.5rem;
-    padding: 1.5rem 1vw;
-    border-radius: 0;
-    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
-    background: var(--header-bg);
+    padding: 1.25rem 0;
   }
-
-  /* Summary row */
-  .game-history-summary-row {
-    gap: 2.5rem;
-    font-size: 1.3rem;
-  }
-
-  /* Summary main */
-  .game-history-summary-main {
-    gap: 0.7rem;
-  }
-
-  /* Details button */
-  .game-history-details-btn {
+  .game-history-table th,
+  .game-history-table td {
     font-size: 1.1rem;
-    padding: 0.6rem 2rem;
-  }
-
-  /* Info text */
-  .game-history-date,
-  .game-history-players,
-  .game-history-winner {
-    font-size: 1.2rem;
+    padding: 0.75rem 0.5rem;
   }
 }

@@ -57,52 +57,55 @@ const GameHistory: React.FC = () => {
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   }, [allGames, filter]);
 
-
-  // Placeholder for modal open
+  // Details modal handler (placeholder)
   const openDetails = (id: string) => {
     setSelected(id);
     // TODO: open modal in future
-    console.log('Open details for game:', id);
   };
 
   return (
     <section className="game-history" aria-labelledby="game-history-title">
       <h2 id="game-history-title" className="game-history-title">Game History</h2>
-      <div className="game-history-controls">
-        <input
-          type="text"
-          className="game-history-filter"
-          placeholder="Filter by player or commander..."
-          value={filter}
-          onChange={e => setFilter(e.target.value)}
-          aria-label="Filter games"
-        />
+      <div className="game-history-header">
+        <div className="game-history-controls">
+          <input
+            type="text"
+            className="game-history-filter"
+            placeholder="Filter by player or commander..."
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            aria-label="Filter games"
+          />
+        </div>
       </div>
-      <div className="game-history-content">
-        {filteredGames.length === 0 ? (
-          <p className="game-history-empty">No game history found.</p>
-        ) : (
-          <ul className="game-history-list" aria-live="polite">
-            {filteredGames.map(game => {
-              // Find winner (placement 1)
-              const winner = game.players.find(p => p.placement === 1);
-              return (
-                <GameRow
-                  key={game.id}
-                  id={game.id}
-                  dateCreated={game.dateCreated}
-                  notes={game.notes}
-                  players={game.players}
-                  winner={winner}
-                  onDetails={openDetails}
-                />
-              );
-            })}
-          </ul>
-        )}
+      <div className="game-history-table-wrapper">
+        <table className="game-history-table" aria-label="Game history table">
+          <tbody>
+            {filteredGames.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="game-history-empty">No game history found.</td>
+              </tr>
+            ) : (
+              filteredGames.map(game => {
+                const winner = game.players.find(p => p.placement === 1);
+                return (
+                  <GameRow
+                    key={game.id}
+                    id={game.id}
+                    dateCreated={game.dateCreated}
+                    notes={game.notes}
+                    players={game.players}
+                    winner={winner}
+                  />
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </section>
   );
+// ...existing code...
 };
 
 export default GameHistory;

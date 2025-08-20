@@ -13,7 +13,6 @@ interface GameRowProps {
   notes: string;
   players: Player[];
   winner?: Player;
-  onDetails: (id: string) => void;
 }
 
 // Global cache for commander images
@@ -54,24 +53,18 @@ const GameRow: React.FC<GameRowProps> = ({
   notes,
   players,
   winner,
-  onDetails,
 }) => {
   return (
-    <li
-      className="game-history-game"
-      tabIndex={0}
-      aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}
-    >
-      <div className="game-history-summary-row">
-        {/* Left Section */}
-        <div className="game-history-summary-main">
-          <span className="game-history-date">
+    <tr className="game-history-row" tabIndex={0} aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}>
+      <td colSpan={4} className="game-row-flex">
+        <div className="game-row-details">
+          <div className="game-row-date">
             {new Date(dateCreated).toLocaleString([], {
               dateStyle: "medium",
               timeStyle: "short",
             })}
-          </span>
-          <span className="game-history-players">
+          </div>
+          <div className="game-row-players">
             {players.map((p, idx) => {
               const isWinner = winner && p.name === winner.name;
               return (
@@ -84,15 +77,18 @@ const GameRow: React.FC<GameRowProps> = ({
                 </span>
               );
             })}
-          </span>
-          {winner && (
-            <span className="game-history-winner-commander" aria-label="Winning commander">
-              {winner.commander}
-            </span>
-          )}
+          </div>
+          <div className="game-row-winner">
+            {winner ? (
+              <span className="game-row-winner-commander" aria-label="Winning commander">
+                {winner.commander}
+              </span>
+            ) : (
+              <span>-</span>
+            )}
+          </div>
         </div>
-        {/* Middle Section: Thumbnails */}
-        <div className="game-history-commanders">
+        <div className="game-row-commanders">
           {players.map((p, idx) => {
             const artUrl = useCommanderArt(p.commander);
             const isWinner = winner && p.name === winner.name;
@@ -102,31 +98,20 @@ const GameRow: React.FC<GameRowProps> = ({
                 key={key}
                 src={artUrl}
                 alt={p.commander}
-                className={`game-history-commander-img${
-                  isWinner ? " game-history-commander-winner" : ""
-                }`}
+                className={`game-row-commander-img${isWinner ? " game-row-commander-winner" : ""
+                  }`}
                 title={p.commander}
               />
             ) : (
               <div
                 key={key}
-                className="game-history-commander-img-placeholder"
+                className="game-row-commander-img-placeholder"
               />
             );
           })}
         </div>
-        {/* Right Section */}
-        <div className="game-history-summary-actions">
-          <button
-            className="game-history-details-btn"
-            onClick={() => onDetails(id)}
-            aria-label="Show more details"
-          >
-            More Details
-          </button>
-        </div>
-      </div>
-    </li>
+      </td>
+    </tr>
   );
 };
 
