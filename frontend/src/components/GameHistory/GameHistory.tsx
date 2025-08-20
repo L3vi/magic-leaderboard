@@ -31,6 +31,8 @@ interface GameHistoryData {
 import gameHistoryRaw from "../../data/game-history.json";
 const gameHistory: GameHistoryData = gameHistoryRaw;
 
+import GameDetails from "../GameDetails/GameDetails";
+import Modal from "../Modal/Modal";
 
 const GameHistory: React.FC = () => {
   // Filtering state
@@ -57,11 +59,12 @@ const GameHistory: React.FC = () => {
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   }, [allGames, filter]);
 
-  // Details modal handler (placeholder)
-  const openDetails = (id: string) => {
-    setSelected(id);
-    // TODO: open modal in future
-  };
+  // Find selected game object
+  const selectedGame = selected
+    ? filteredGames.find(g => g.id === selected)
+    : null;
+
+  const closeDetails = () => setSelected(null);
 
   return (
     <section className="game-history" aria-labelledby="game-history-title">
@@ -96,6 +99,7 @@ const GameHistory: React.FC = () => {
                     notes={game.notes}
                     players={game.players}
                     winner={winner}
+                    onClick={() => setSelected(game.id)}
                   />
                 );
               })
@@ -103,6 +107,18 @@ const GameHistory: React.FC = () => {
           </tbody>
         </table>
       </div>
+      <Modal isOpen={!!selectedGame} onClose={closeDetails} title="Game Details">
+        {selectedGame && (
+          <GameDetails
+            id={selectedGame.id}
+            dateCreated={selectedGame.dateCreated}
+            notes={selectedGame.notes}
+            players={selectedGame.players}
+            winner={selectedGame.players.find(p => p.placement === 1)}
+            onClose={closeDetails}
+          />
+        )}
+      </Modal>
     </section>
   );
 // ...existing code...

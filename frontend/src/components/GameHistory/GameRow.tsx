@@ -13,6 +13,7 @@ interface GameRowProps {
   notes: string;
   players: Player[];
   winner?: Player;
+  onClick?: () => void;
 }
 
 // Global cache for commander images
@@ -53,9 +54,10 @@ const GameRow: React.FC<GameRowProps> = ({
   notes,
   players,
   winner,
+  onClick,
 }) => {
   return (
-    <tr className="game-history-row" tabIndex={0} aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}>
+    <tr className="game-history-row" tabIndex={0} aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`} onClick={onClick} style={{cursor: onClick ? "pointer" : undefined}}>
       <td colSpan={4} className="game-row-flex">
         <div className="game-row-details">
           <div className="game-row-date">
