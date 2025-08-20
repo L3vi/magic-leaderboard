@@ -95,3 +95,8 @@ body {
 .tab-btn:focus {
   outline: 2px solid var(--accent);
 }
+
+/* Prevent content from being covered by bottom nav bar */
+.tab-content {
+  padding-bottom: calc(var(--navbar-height) + 4px); /* nav bar height + extra for spacing */
+}
