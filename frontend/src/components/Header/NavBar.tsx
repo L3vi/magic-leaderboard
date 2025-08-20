@@ -25,10 +25,13 @@ const NAV_ITEMS = [
  * - Accessible with ARIA roles and keyboard navigation.
  * - Uses semantic HTML and theme variables.
  */
-const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
-	// Keyboard navigation: allow arrow keys to move between tabs
-	const navRef = React.useRef<HTMLDivElement>(null);
 
+const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
+	const navRef = React.useRef<HTMLDivElement>(null);
+	const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+	const [underlineStyle, setUnderlineStyle] = React.useState<React.CSSProperties>({});
+
+	// Keyboard navigation: allow arrow keys to move between tabs
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
 		if (e.key === "ArrowRight" || e.key === "ArrowDown") {
 			e.preventDefault();
@@ -40,6 +43,45 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
 			prev?.focus();
 		}
 	};
+
+	// Update underline position and width when activeTab changes or on resize
+	React.useEffect(() => {
+		const idx = NAV_ITEMS.findIndex(item => item.tab === activeTab);
+		const el = tabRefs.current[idx];
+		if (el && navRef.current) {
+			const navRect = navRef.current.getBoundingClientRect();
+			const rect = el.getBoundingClientRect();
+			setUnderlineStyle({
+				left: rect.left - navRect.left + "px",
+				width: rect.width + "px",
+				bottom: "0px",
+				height: "3px",
+				position: "absolute",
+				background: "var(--accent-dark, #b45309)",
+				borderRadius: "2px",
+				transition: "left 0.3s cubic-bezier(.4,0,.2,1), width 0.3s cubic-bezier(.4,0,.2,1), background 0.18s"
+			});
+		}
+	}, [activeTab]);
+
+	// Recalculate on window resize
+	React.useEffect(() => {
+		const handleResize = () => {
+			const idx = NAV_ITEMS.findIndex(item => item.tab === activeTab);
+			const el = tabRefs.current[idx];
+			if (el && navRef.current) {
+				const navRect = navRef.current.getBoundingClientRect();
+				const rect = el.getBoundingClientRect();
+				setUnderlineStyle(style => ({
+					...style,
+					left: rect.left - navRect.left + "px",
+					width: rect.width + "px"
+				}));
+			}
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, [activeTab]);
 
 	return (
 		<div className="nav-bar" role="tablist" aria-label="Main Navigation" ref={navRef}>
@@ -65,12 +107,14 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab }) => {
 						role="tab"
 						onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
 						onKeyDown={e => handleKeyDown(e, idx)}
+						ref={el => tabRefs.current[idx] = el}
 					>
 						<span className="nav-icon" aria-hidden="true">{item.icon}</span>
 						<span className="nav-label">{item.label}</span>
 					</button>
 				)
 			)}
+			<div className="nav-highlight" style={underlineStyle} />
 		</div>
 	);
 };

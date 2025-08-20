@@ -1,4 +1,14 @@
 /* ===================== */
+/* Main Section Unified  */
+/* ===================== */
+.main-section {
+  background: var(--background);
+  margin: 0 auto;
+  border-radius: 0.5rem;
+  box-shadow: none;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+}
+/* ===================== */
 /* Root Theme Variables  */
 /* ===================== */
 :root {

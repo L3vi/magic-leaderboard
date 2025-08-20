@@ -67,8 +67,7 @@ const GameHistory: React.FC = () => {
   const closeDetails = () => setSelected(null);
 
   return (
-    <section className="game-history" aria-labelledby="game-history-title">
-      <h2 id="game-history-title" className="game-history-title">Game History</h2>
+    <section className="game-history main-section">
       <div className="game-history-header">
         <div className="game-history-controls">
           <input

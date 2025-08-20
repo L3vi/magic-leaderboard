@@ -102,8 +102,7 @@ const Leaderboard: React.FC = () => {
   }
 
   return (
-    <section className="leaderboard" aria-labelledby="leaderboard-title" role="table">
-      <h2 id="leaderboard-title" className="leaderboard-title">Leaderboard</h2>
+    <section className="leaderboard main-section" role="table">
       <div className="leaderboard-header" role="row" ref={headerRef}>
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span

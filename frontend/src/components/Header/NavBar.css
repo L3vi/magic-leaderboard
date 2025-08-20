@@ -11,17 +11,14 @@
   position: relative;
 }
 
-.nav-item.active::after {
-  content: "";
-  display: block;
+.nav-underline {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   bottom: 0.2rem;
-  width: 60%;
   height: 3px;
   border-radius: 2px;
   background: var(--accent-dark, #b45309);
+  transition: left 0.3s cubic-bezier(.4, 0, .2, 1), width 0.3s cubic-bezier(.4, 0, .2, 1), background 0.18s;
+  z-index: 2;
 }
 
 /* Layout styles */
@@ -98,6 +95,7 @@
 /* Desktop overrides     */
 /* ===================== */
 @media (min-width: 768px) {
+
   /* Layout overrides */
   .nav-bar {
     position: static;
@@ -112,6 +110,11 @@
     margin-top: 0.5rem;
     gap: 1.5rem;
   }
+
+  .nav-highlight {
+    display: none !important;
+  }
+
   /* Nav item overrides */
   .nav-item {
     font-size: 1.1rem;
@@ -126,6 +129,7 @@
     align-items: center;
     text-align: center;
   }
+
   .nav-item.active {
     background: var(--accent-light, #ffe082);
     color: var(--accent-dark, #b45309);
@@ -134,9 +138,11 @@
     font-weight: 700;
     position: relative;
   }
+
   .nav-item.active::after {
     display: none;
   }
+
   /* Label overrides */
   .nav-label {
     text-align: center;
@@ -145,16 +151,19 @@
     margin-top: 0;
     color: var(--text, #f3f4f6);
   }
+
   /* Hide FAB on desktop */
   .nav-fab {
     display: none;
   }
+
   /* Nav item hover/active */
   .nav-item:hover {
     background: var(--accent-light, #ffe082);
     color: var(--accent-dark, #b45309);
     transform: scale(1.05);
   }
+
   .nav-item:active {
     background: var(--accent-dark, #b45309);
     color: var(--header-bg, #232326);

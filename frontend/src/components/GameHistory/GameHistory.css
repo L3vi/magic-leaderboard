@@ -1,5 +1,3 @@
-
-
 /* ===================== */
 /* GameHistory Table Layout */
 /* ===================== */
@@ -7,19 +5,15 @@
 .game-history {
   width: 100%;
   max-width: 900px;
-  margin: 1.5rem auto;
-  background: var(--header-bg);
-  border-radius: 1rem;
-  box-shadow: var(--header-shadow);
-  padding: 1rem;
+  margin: 0 auto;
+  background: var(--background);
+  border-radius: 0.5rem;
+  box-shadow: none;
+  padding: 0.5rem 0.5rem 0 0.5rem;
 }
 
 .game-history-title {
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: var(--accent);
-  font-weight: 700;
+  display: none;
 }
 
 .game-history-header {
@@ -27,11 +21,11 @@
   justify-content: center;
   align-items: center;
   font-weight: 600;
-  font-size: 1.1rem;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid var(--accent-light);
+  font-size: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--accent-light);
   color: var(--accent-dark);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .game-history-controls {
@@ -41,10 +35,10 @@
 }
 
 .game-history-filter {
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 2.5rem;
   border-radius: 0.5rem;
-  min-width: 220px;
-  max-width: 320px;
+  min-width: 320px;
+  max-width: 480px;
   width: 100%;
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
   border: 1.5px solid var(--accent-light);
@@ -107,15 +101,18 @@
     border-radius: 0.5rem;
     padding: 0.5rem;
   }
+
   .game-history-title {
     font-size: 1.2rem;
     color: var(--accent);
   }
+
   .game-history-header {
     font-size: 1rem;
     padding: 0.5rem 0.25rem;
     color: var(--accent-dark);
   }
+
   .game-history-table th,
   .game-history-table td {
     font-size: 0.95rem;
@@ -135,18 +132,20 @@
     padding: 2.5rem 0;
     margin: 0;
     border-radius: 0;
-    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
   }
+
   .game-history-title {
     font-size: 2rem;
     margin-bottom: 2rem;
     color: var(--accent);
   }
+
   .game-history-header {
     font-size: 1.5rem;
     padding: 1.25rem 0;
     color: var(--accent-dark);
   }
+
   .game-history-table th,
   .game-history-table td {
     font-size: 1.1rem;

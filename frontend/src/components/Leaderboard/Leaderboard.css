@@ -5,19 +5,16 @@
 /* Mobile-first base styles */
 .leaderboard {
   width: 100%;
-  max-width: 480px;
-  margin: 1.5rem auto;
-  background: var(--header-bg);
-  border-radius: 1rem;
-  box-shadow: var(--header-shadow);
-  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--background);
+  border-radius: 0.5rem;
+  box-shadow: none;
+  padding: 0.5rem 0.5rem 0 0.5rem;
 }
 
 .leaderboard-title {
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: var(--accent);
+  display: none;
 }
 
 .leaderboard-header {
@@ -25,9 +22,9 @@
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  font-size: 1.1rem;
-  padding: 0.5rem 0;
-  border-bottom: 2px solid var(--accent-light);
+  font-size: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--accent-light);
   color: var(--accent-dark);
 }
 
@@ -60,7 +57,6 @@
     padding: 2.5rem 0;
     margin: 0;
     border-radius: 0;
-    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
   }
 
   .leaderboard-title {
