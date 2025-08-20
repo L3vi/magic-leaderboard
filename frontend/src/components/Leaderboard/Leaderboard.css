@@ -85,11 +85,12 @@
   }
 
   .leaderboard-title {
-    font-size: 1.2rem;
+    font-size: 2rem;
+    margin-bottom: 2rem;
   }
 
   .leaderboard-header {
-    font-size: 1rem;
-    padding: 0.5rem 0.25rem;
+    font-size: 1.5rem;
+    padding: 1.25rem 0;
   }
 }
