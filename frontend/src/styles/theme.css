@@ -8,6 +8,14 @@
   box-shadow: none;
   padding: 0.5rem 0.5rem 0 0.5rem;
 }
+
+@media (max-width: 767px) {
+  .main-section {
+    padding-bottom: 80px;
+    /* 64px navbar + extra for safe area */
+  }
+}
+
 /* ===================== */
 /* Root Theme Variables  */
 /* ===================== */
@@ -16,8 +24,10 @@
   --foreground: #eaeaea;
   --header-bg: #232326;
   --header-border: #222;
-  --header-shadow: 0 2px 8px rgba(59,130,246,0.12); /* blue shadow */
-  --accent: #3b82f6; /* Blue for highlights */
+  --header-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  /* blue shadow */
+  --accent: #3b82f6;
+  /* Blue for highlights */
   --accent-light: #60a5fa;
   --accent-dark: #1e40af;
 }
@@ -31,7 +41,7 @@
     --foreground: #eaeaea;
     --header-bg: #18181b;
     --header-border: #222;
-    --header-shadow: 0 2px 8px rgba(59,130,246,0.18);
+    --header-shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
     --accent: #3b82f6;
     --accent-light: #60a5fa;
     --accent-dark: #1e40af;
@@ -40,7 +50,7 @@
     --danger: #e57373;
     --text: #f3f4f6;
     --card-border: #1e40af;
-    --card-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 }
 
