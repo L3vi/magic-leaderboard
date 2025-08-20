@@ -21,8 +21,21 @@ export interface Player {
  * - Displays a single player's stats in the leaderboard.
  * - Uses ARIA roles and semantic HTML for accessibility.
  */
-const PlayerRow: React.FC<{ player: Player }> = ({ player }) => (
-  <div className="player-row" role="row" tabIndex={0} aria-label={`Player ${player.name}, Score ${player.score}, Avg Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}>
+
+interface PlayerRowProps {
+  player: Player;
+  onClick?: () => void;
+}
+
+const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick }) => (
+  <div
+    className="player-row"
+    role="row"
+    tabIndex={0}
+    aria-label={`Player ${player.name}, Score ${player.score}, Avg Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}
+    onClick={onClick}
+    style={onClick ? { cursor: "pointer" } : undefined}
+  >
     <span className="leaderboard-col player-name" role="cell">{player.name}</span>
     <span className="leaderboard-col player-score" role="cell">{player.score}</span>
     <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(2)}</span>

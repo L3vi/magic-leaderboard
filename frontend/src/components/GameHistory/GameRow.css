@@ -1,18 +1,32 @@
-/* Mobile-first: stack details and thumbnails vertically */
-.game-row-flex {
+
+/* ========================= */
+/*  MOBILE-FIRST BASE STYLES */
+/* ========================= */
+
+.game-row-main {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    min-height: 120px;
-    padding: 1rem 0.2rem;
-    gap: 0.75rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    flex: 1 1 60%;
+    min-width: 0;
+    text-align: left;
+}
+
+.game-row {
+    display: flex;
+    flex-direction: column;
     background: var(--header-bg);
     border-radius: 1rem;
     box-shadow: var(--card-shadow, var(--header-shadow));
     transition: background 0.18s, box-shadow 0.18s;
+    min-height: 120px;
+    padding: 1rem 0.2rem;
+    gap: 0.75rem;
 }
 
-.game-row-flex:hover {
+.game-row:hover {
     background: var(--accent-light, #e0e7ff);
     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
@@ -20,11 +34,13 @@
 .game-row-details {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 0.4rem;
     margin-bottom: 0.5rem;
     flex: 1 1 60%;
     min-width: 0;
+    text-align: left;
 }
 
 .game-row-date {
@@ -40,12 +56,7 @@
     flex-wrap: wrap;
 }
 
-.game-row-winner {
-    font-size: 0.95rem;
-    color: var(--success, #34d399);
-    font-weight: 600;
-}
-
+.game-row-winner,
 .game-row-winner-commander {
     font-size: 0.95rem;
     color: var(--success, #34d399);
@@ -56,7 +67,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-end;
     gap: 0.4rem;
     height: auto;
     flex-wrap: wrap;
@@ -64,6 +75,7 @@
     max-width: 100vw;
     box-sizing: border-box;
     background: transparent;
+    flex: 0 0 auto;
 }
 
 .game-row-commander-img,
@@ -91,104 +103,7 @@
     background: #444;
 }
 
-
-.game-row-flex:hover {
-    background: var(--accent-light, #e0e7ff);
-    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
-    transition: background 0.18s, box-shadow 0.18s;
-}
-
-/* Flexbox layout for table row */
-.game-row-flex {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: space-between;
-    min-height: 96px;
-    padding: 1.2rem 0.5rem;
-    background: var(--header-bg);
-    border-radius: 1rem;
-    box-shadow: var(--card-shadow, var(--header-shadow));
-}
-
-.game-row-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-    flex: 1 1 60%;
-    min-width: 0;
-}
-
-.game-row-date {
-    font-size: 1.1rem;
-    color: var(--accent);
-    font-weight: 600;
-}
-
-.game-row-players {
-    font-size: 1rem;
-    color: var(--foreground);
-    font-weight: 500;
-    flex-wrap: wrap;
-}
-
-.game-row-winner {
-    font-size: 1rem;
-    color: var(--success, #34d399);
-    font-weight: 600;
-}
-
-.game-row-winner-commander {
-    font-size: 1rem;
-    color: var(--success, #34d399);
-    font-weight: 600;
-}
-
-.game-row-commanders {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    min-width: 120px;
-    padding: 2px 0;
-    box-sizing: border-box;
-    background: transparent;
-}
-
-.game-row-commander-img {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    background: #222;
-    border: 2px solid #444;
-    margin: 0 4px;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.game-row-commander-winner {
-    border: 2.5px solid var(--success, #34d399) !important;
-    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
-}
-
-.game-row-commander-img-placeholder {
-    width: 64px;
-    height: 64px;
-    background: #444;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 4px;
-}
-
-/* Styles for GameRow component */
+/* Styles for GameRow component (shared) */
 .game-history-game {
     background: var(--header-bg);
     border-radius: 1rem;
@@ -254,7 +169,6 @@
     background: transparent;
 }
 
-
 .game-history-commander-img {
     display: flex;
     align-items: center;
@@ -299,89 +213,37 @@
     transition: background 0.18s, color 0.18s;
 }
 
-.game-history-details-btn:hover,
-.game-row-commanders {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    min-width: 120px;
-    padding: 2px 0;
-    box-sizing: border-box;
-
-    background: transparent;
+.game-history-details-btn:hover {
+    background: var(--accent-dark);
+    color: var(--background);
 }
 
-.game-row-commander-img {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    background: #222;
-    border: 2px solid #444;
-    margin: 0 4px;
-    box-sizing: border-box;
-    overflow: hidden;
-}
+/* ========================= */
+/*   DESKTOP OVERRIDES      */
+/* ========================= */
 
-.game-row-commander-winner {
-    border: 2.5px solid var(--success, #34d399) !important;
-    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
-}
-
-.game-row-commander-img-placeholder {
-    width: 64px;
-    height: 64px;
-    background: #444;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 4px;
-}
-
-
-.game-history-commander-img {
-    height: 64px;
-}
-
-.game-history-summary-row {
-    gap: 2.5rem;
-    font-size: 1.3rem;
-}
-
-.game-history-summary-main {
-    gap: 0.7rem;
-}
-
-.game-history-details-btn {
-    font-size: 1.1rem;
-    padding: 0.6rem 2rem;
-}
-
-.game-history-date,
-.game-history-players,
-.game-history-winner {
-    font-size: 1.2rem;
-}
-
-
-/* Desktop overrides */
 @media (min-width: 700px) {
-    .game-row-flex {
+    .game-row {
+        display: flex;
         flex-direction: row;
-        align-items: stretch;
+        align-items: flex-start;
+        justify-content: space-between;
         min-height: 96px;
         padding: 1.2rem 0.5rem;
         gap: 0;
+        background: var(--background);
     }
 
     .game-row-details {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
         gap: 0.5rem;
         margin-bottom: 0;
+        flex: 1 1 60%;
+        min-width: 0;
+        text-align: left;
     }
 
     .game-row-date,
@@ -392,10 +254,15 @@
     }
 
     .game-row-commanders {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         justify-content: flex-end;
         gap: 0.5rem;
         margin-bottom: 0;
         height: 64px;
+        flex: 0 0 auto;
+        max-width: 40vw;
     }
 
     .game-row-commander-img,
@@ -403,5 +270,25 @@
         width: 64px;
         height: 64px;
         margin: 0 4px;
+    }
+}
+
+@media (min-width: 900px) {
+    .game-row {
+        font-size: 1.5rem;
+        padding: 1.5rem 1vw;
+    }
+    .game-row-main {
+        gap: 0.7rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-row {
+        font-size: 1rem;
+        padding: 0.5rem 0.25rem;
+    }
+    .game-row-main {
+        gap: 0.3rem;
     }
 }

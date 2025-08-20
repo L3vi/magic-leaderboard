@@ -128,9 +128,7 @@ const Leaderboard: React.FC = () => {
       </div>
       <div className="leaderboard-list" role="rowgroup">
         {sortedPlayers.map((player) => (
-          <div key={player.name} onClick={() => handlePlayerClick(player)} style={{ width: "100%" }}>
-            <PlayerRow player={player} />
-          </div>
+          <PlayerRow key={player.name} player={player} onClick={() => handlePlayerClick(player)} />
         ))}
       </div>
       <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title="Player Details">

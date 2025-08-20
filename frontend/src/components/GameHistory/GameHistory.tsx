@@ -81,31 +81,25 @@ const GameHistory: React.FC = () => {
           />
         </div>
       </div>
-      <div className="game-history-table-wrapper">
-        <table className="game-history-table" aria-label="Game history table">
-          <tbody>
-            {filteredGames.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="game-history-empty">No game history found.</td>
-              </tr>
-            ) : (
-              filteredGames.map(game => {
-                const winner = game.players.find(p => p.placement === 1);
-                return (
-                  <GameRow
-                    key={game.id}
-                    id={game.id}
-                    dateCreated={game.dateCreated}
-                    notes={game.notes}
-                    players={game.players}
-                    winner={winner}
-                    onClick={() => setSelected(game.id)}
-                  />
-                );
-              })
-            )}
-          </tbody>
-        </table>
+      <div className="game-history-list" role="rowgroup">
+        {filteredGames.length === 0 ? (
+          <div className="game-history-empty">No game history found.</div>
+        ) : (
+          filteredGames.map(game => {
+            const winner = game.players.find(p => p.placement === 1);
+            return (
+              <GameRow
+                key={game.id}
+                id={game.id}
+                dateCreated={game.dateCreated}
+                notes={game.notes}
+                players={game.players}
+                winner={winner}
+                onClick={() => setSelected(game.id)}
+              />
+            );
+          })
+        )}
       </div>
       <Modal isOpen={!!selectedGame} onClose={closeDetails} title="Game Details">
         {selectedGame && (

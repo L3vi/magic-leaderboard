@@ -57,63 +57,66 @@ const GameRow: React.FC<GameRowProps> = ({
   onClick,
 }) => {
   return (
-    <tr className="game-history-row" tabIndex={0} aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`} onClick={onClick} style={{cursor: onClick ? "pointer" : undefined}}>
-      <td colSpan={4} className="game-row-flex">
-        <div className="game-row-details">
-          <div className="game-row-date">
-            {new Date(dateCreated).toLocaleString([], {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
-          </div>
-          <div className="game-row-players">
-            {players.map((p, idx) => {
-              const isWinner = winner && p.name === winner.name;
-              return (
-                <span
-                  key={p.name + idx}
-                  style={isWinner ? { color: "var(--success, #34d399)", fontWeight: 700 } : {}}
-                >
-                  {p.name}
-                  {idx < players.length - 1 ? ", " : ""}
-                </span>
-              );
-            })}
-          </div>
-          <div className="game-row-winner">
-            {winner ? (
-              <span className="game-row-winner-commander" aria-label="Winning commander">
-                {winner.commander}
-              </span>
-            ) : (
-              <span>-</span>
-            )}
-          </div>
-        </div>
-        <div className="game-row-commanders">
+    <div
+      className="game-row"
+      tabIndex={0}
+      aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}
+      onClick={onClick}
+      style={onClick ? { cursor: "pointer" } : undefined}
+    >
+      <div className="game-row-main">
+        <span className="game-row-date">
+          {new Date(dateCreated).toLocaleString([], {
+            dateStyle: "medium",
+            timeStyle: "short",
+          })}
+        </span>
+        <span className="game-row-players">
           {players.map((p, idx) => {
-            const artUrl = useCommanderArt(p.commander);
             const isWinner = winner && p.name === winner.name;
-            const key = p.commander + idx;
-            return artUrl ? (
-              <img
-                key={key}
-                src={artUrl}
-                alt={p.commander}
-                className={`game-row-commander-img${isWinner ? " game-row-commander-winner" : ""
-                  }`}
-                title={p.commander}
-              />
-            ) : (
-              <div
-                key={key}
-                className="game-row-commander-img-placeholder"
-              />
+            return (
+              <span
+                key={p.name + idx}
+                style={isWinner ? { color: "var(--success, #34d399)", fontWeight: 700 } : {}}
+              >
+                {p.name}
+                {idx < players.length - 1 ? ", " : ""}
+              </span>
             );
           })}
-        </div>
-      </td>
-    </tr>
+        </span>
+        <span className="game-row-winner">
+          {winner ? (
+            <span className="game-row-winner-commander" aria-label="Winning commander">
+              {winner.commander}
+            </span>
+          ) : (
+            <span>-</span>
+          )}
+        </span>
+      </div>
+      <div className="game-row-commanders">
+        {players.map((p, idx) => {
+          const artUrl = useCommanderArt(p.commander);
+          const isWinner = winner && p.name === winner.name;
+          const key = p.commander + idx;
+          return artUrl ? (
+            <img
+              key={key}
+              src={artUrl}
+              alt={p.commander}
+              className={`game-row-commander-img${isWinner ? " game-row-commander-winner" : ""}`}
+              title={p.commander}
+            />
+          ) : (
+            <div
+              key={key}
+              className="game-row-commander-img-placeholder"
+            />
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
