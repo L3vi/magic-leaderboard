@@ -1,20 +1,116 @@
+
 import React from "react";
 import { Player } from "../Leaderboard/PlayerRow";
 import "./PlayerDetails.css";
 
+// Add gameHistory prop for flexibility
 interface PlayerDetailsProps {
   player: Player;
+  gameHistory: Array<{
+    id: string;
+    dateCreated: string;
+    players: Array<{ name: string; placement: number; commander: string }>;
+    notes?: string;
+  }>;
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, gameHistory }) => {
+  // Filter games for this player
+  const games = gameHistory.filter(g => g.players.some(p => p.name === player.name));
+  const totalGames = games.length;
+  const wins = games.filter(g => g.players.find(p => p.name === player.name)?.placement === 1).length;
+  const winRate = totalGames ? Math.round((wins / totalGames) * 100) : 0;
+  const placements = games.map(g => g.players.find(p => p.name === player.name)?.placement || 0);
+  const avgPlacement = placements.length ? (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(2) : "-";
+  const commanders = games.map(g => g.players.find(p => p.name === player.name)?.commander).filter(Boolean);
+  const commanderCounts = commanders.reduce((acc, c) => { acc[c!] = (acc[c!] || 0) + 1; return acc; }, {} as Record<string, number>);
+  const mostPlayedCommander = Object.entries(commanderCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+  const deckDiversity = new Set(commanders).size;
+  const sortedGames = [...games].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+  const firstGameDate = games.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
+  const lastGameDate = games.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
+  const recentGames = sortedGames.slice(0, 5);
+
   return (
     <div className="player-details">
       <h2 className="player-details-name">{player.name}</h2>
-      <ul className="player-details-stats">
-        <li><strong>Score:</strong> {player.score}</li>
-        <li><strong>Average Placement:</strong> {player.average.toFixed(2)}</li>
-        <li><strong>Games Played:</strong> {player.gamesPlayed}</li>
-      </ul>
+      <div className="player-details-section">
+        <dl className="player-details-stats-grid">
+          <div>
+            <dt>Score</dt>
+            <dd>{player.score}</dd>
+          </div>
+          <div>
+            <dt>Games Played</dt>
+            <dd>{totalGames}</dd>
+          </div>
+          <div className="player-details-highlight">
+            <dt>Wins</dt>
+            <dd>{wins}</dd>
+          </div>
+          <div className="player-details-highlight">
+            <dt>Win Rate</dt>
+            <dd>{winRate}%</dd>
+          </div>
+          <div>
+            <dt>Avg Placement</dt>
+            <dd>{avgPlacement}</dd>
+          </div>
+        </dl>
+      </div>
+      <hr className="player-details-divider" />
+      <div className="player-details-section">
+        <dl className="player-details-commander-grid">
+          <div>
+            <dt>Most Played Commander</dt>
+            <dd>{mostPlayedCommander}</dd>
+          </div>
+          <div>
+            <dt>Deck Diversity</dt>
+            <dd>{deckDiversity}</dd>
+          </div>
+        </dl>
+      </div>
+      <hr className="player-details-divider" />
+      <div className="player-details-section">
+        <dl className="player-details-history-grid">
+          <div>
+            <dt>First Game</dt>
+            <dd>{firstGameDate}</dd>
+          </div>
+          <div>
+            <dt>Last Game</dt>
+            <dd>{lastGameDate}</dd>
+          </div>
+        </dl>
+      </div>
+      <hr className="player-details-divider" />
+      <div className="player-details-recent">
+        <h3>Recent Games</h3>
+        <table className="player-details-recent-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Placement</th>
+              <th>Commander</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentGames.map(g => {
+              const p = g.players.find(p => p.name === player.name);
+              return (
+                <tr key={g.id}>
+                  <td>{new Date(g.dateCreated).toLocaleDateString()}</td>
+                  <td className={`player-details-placement placement-${p?.placement}`}>{p?.placement}</td>
+                  <td><strong>{p?.commander}</strong></td>
+                  <td>{g.notes ? <em>{g.notes}</em> : ""}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

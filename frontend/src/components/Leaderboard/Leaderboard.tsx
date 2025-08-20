@@ -133,8 +133,13 @@ const Leaderboard: React.FC = () => {
           </div>
         ))}
       </div>
-      <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title={selectedPlayer?.name}>
-        {selectedPlayer && <PlayerDetails player={selectedPlayer} />}
+      <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title="Player Details">
+        {selectedPlayer && (
+          <PlayerDetails
+            player={selectedPlayer}
+            gameHistory={gameHistory.events.flatMap(event => event.games)}
+          />
+        )}
       </Modal>
     </section>
   );
