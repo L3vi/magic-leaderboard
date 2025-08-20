@@ -3,17 +3,6 @@
 /*  MOBILE-FIRST BASE STYLES */
 /* ========================= */
 
-.game-row-main {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 0.4rem;
-    flex: 1 1 60%;
-    min-width: 0;
-    text-align: left;
-}
-
 .game-row {
     display: flex;
     flex-direction: column;
@@ -31,13 +20,12 @@
     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
 
-.game-row-details {
+.game-row-main {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     gap: 0.4rem;
-    margin-bottom: 0.5rem;
     flex: 1 1 60%;
     min-width: 0;
     text-align: left;
@@ -103,121 +91,6 @@
     background: #444;
 }
 
-/* Styles for GameRow component (shared) */
-.game-history-game {
-    background: var(--header-bg);
-    border-radius: 1rem;
-    box-shadow: var(--card-shadow, var(--header-shadow));
-    padding: 0.5rem 1rem;
-    outline: none;
-    transition: box-shadow 0.2s, background 0.2s;
-    position: relative;
-}
-
-.game-history-game.expanded {
-    background: var(--background);
-    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
-}
-
-.game-history-game:focus {
-    box-shadow: 0 0 0 3px var(--accent-light);
-}
-
-.game-history-summary-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    width: 100%;
-}
-
-.game-history-summary-main {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-.game-history-date {
-    font-size: 1.1rem;
-    color: var(--accent);
-    font-weight: 600;
-}
-
-.game-history-players {
-    font-size: 1rem;
-    color: var(--foreground);
-    font-weight: 500;
-}
-
-.game-history-winner-commander {
-    font-size: 1rem;
-    color: var(--success, #34d399);
-    font-weight: 600;
-}
-
-.game-history-commanders {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    min-width: 120px;
-    padding: 2px 0;
-    box-sizing: border-box;
-    height: 60px;
-    background: transparent;
-}
-
-.game-history-commander-img {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    background: #222;
-    border: 2px solid #444;
-    margin: 0 4px;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.game-history-commander-img img {
-    object-fit: cover;
-    border-radius: 0.5rem;
-    display: block;
-}
-
-.game-history-commander-winner {
-    border: 2.5px solid var(--success, #34d399) !important;
-    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
-}
-
-.game-history-summary-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 120px;
-}
-
-.game-history-details-btn {
-    margin-top: 0.5rem;
-    padding: 0.4rem 1.2rem;
-    border-radius: 0.5rem;
-    border: none;
-    background: var(--accent);
-    color: var(--header-bg);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.18s, color 0.18s;
-}
-
-.game-history-details-btn:hover {
-    background: var(--accent-dark);
-    color: var(--background);
-}
-
 /* ========================= */
 /*   DESKTOP OVERRIDES      */
 /* ========================= */
@@ -234,16 +107,8 @@
         background: var(--background);
     }
 
-    .game-row-details {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
+    .game-row-main {
         gap: 0.5rem;
-        margin-bottom: 0;
-        flex: 1 1 60%;
-        min-width: 0;
-        text-align: left;
     }
 
     .game-row-date,
