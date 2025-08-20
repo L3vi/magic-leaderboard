@@ -126,6 +126,9 @@
     margin: 0 4px;
 }
 
+/* ===================== */
+/* Mobile-specific Styles */
+/* ===================== */
 @media (max-width: 700px) {
     .game-history-summary-row {
         flex-direction: column;
@@ -140,6 +143,9 @@
     }
 }
 
+/* ===================== */
+/* Desktop-specific Styles */
+/* ===================== */
 @media (min-width: 900px) {
     .game-history-game {
         font-size: 1.5rem;

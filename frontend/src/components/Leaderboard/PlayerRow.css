@@ -73,6 +73,9 @@
     white-space: nowrap;
 }
 
+/* ===================== */
+/* Desktop-specific Styles */
+/* ===================== */
 @media (min-width: 900px) {
     .player-row {
         font-size: 1.5rem;
@@ -86,6 +89,9 @@
     }
 }
 
+/* ===================== */
+/* Mobile-specific Styles */
+/* ===================== */
 @media (max-width: 600px) {
     .player-row {
         font-size: 1rem;

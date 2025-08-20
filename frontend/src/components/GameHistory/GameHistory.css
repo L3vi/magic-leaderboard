@@ -1,3 +1,39 @@
+/* Title styles */
+.game-history-title {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Controls container */
+.game-history-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Search/filter styles */
+.game-history-filter {
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+  display: flex;
+  min-width: 320px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
+}
+/* Game history list styles */
+.game-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
 /* ===================== */
 /* Base Styles           */
 /* ===================== */
