@@ -1,0 +1,47 @@
+[
+  {
+    "id": "game-1",
+    "dateCreated": "2025-06-01T10:30:00.000Z",
+    "notes": "Anson pulled off an amazing combo win with Atraxa!",
+    "players": [
+      { "playerId": "player-1", "placement": 1, "commander": "Atraxa, Praetors' Voice" },
+      { "playerId": "player-2", "placement": 2, "commander": "Krenko, Mob Boss" },
+      { "playerId": "player-3", "placement": 3, "commander": "Ghalta, Primal Hunger" },
+      { "playerId": "player-4", "placement": 4, "commander": "Teferi, Temporal Archmage" }
+    ]
+  },
+  {
+    "id": "game-2",
+    "dateCreated": "2025-06-01T14:15:00.000Z",
+    "notes": "Epic 5-player game that went for 3 hours!",
+    "players": [
+      { "playerId": "player-5", "placement": 1, "commander": "Edgar Markov" },
+      { "playerId": "player-6", "placement": 2, "commander": "Meren of Clan Nel Toth" },
+      { "playerId": "player-7", "placement": 3, "commander": "Prossh, Skyraider of Kher" },
+      { "playerId": "player-8", "placement": 4, "commander": "Kaalia of the Vast" },
+      { "playerId": "player-9", "placement": 5, "commander": "Zurgo Bellstriker" }
+    ]
+  },
+  {
+    "id": "game-3",
+    "dateCreated": "2025-06-02T19:45:00.000Z",
+    "notes": "",
+    "players": [
+      { "playerId": "player-3", "placement": 1, "commander": "Ghalta, Primal Hunger" },
+      { "playerId": "player-4", "placement": 2, "commander": "Azami, Lady of Scrolls" },
+      { "playerId": "player-1", "placement": 3, "commander": "Atraxa, Praetors' Voice" },
+      { "playerId": "player-2", "placement": 4, "commander": "Alesha, Who Smiles at Death" }
+    ]
+  },
+  {
+    "id": "game-4",
+    "dateCreated": "2025-06-05T16:20:00.000Z",
+    "notes": "Levi's first win with his new Yuriko deck - lots of ninjas and extra turns!",
+    "players": [
+      { "playerId": "player-5", "placement": 1, "commander": "Yuriko, the Tiger's Shadow" },
+      { "playerId": "player-7", "placement": 2, "commander": "Prossh, Skyraider of Kher" },
+      { "playerId": "player-8", "placement": 3, "commander": "Kaalia of the Vast" },
+      { "playerId": "player-6", "placement": 4, "commander": "Meren of Clan Nel Toth" }
+    ]
+  }
+]

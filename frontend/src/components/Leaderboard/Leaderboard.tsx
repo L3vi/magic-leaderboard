@@ -4,29 +4,30 @@ import PlayerRow, { Player } from "./PlayerRow";
 import Modal from "../Modal/Modal";
 import PlayerDetails from "../PlayerDetails/PlayerDetails";
 import "./Leaderboard.css";
-import gameHistory from "../../data/game-history.json";
+import playersRaw from "../../data/players.json";
+import gamesRaw from "../../data/games.json";
 
 /**
  * Aggregates player stats from all events and games.
  */
-function aggregatePlayers(events: any[]): Player[] {
+function aggregatePlayers(players: any[], games: any[]): Player[] {
   const playerMap: Record<string, Player & { totalPlacement: number }> = {};
-  events.forEach((event) => {
-    event.games.forEach((game: any) => {
-      game.players.forEach((p: any) => {
-        if (!playerMap[p.name]) {
-          playerMap[p.name] = {
-            name: p.name,
-            score: 0,
-            average: 0,
-            gamesPlayed: 0,
-            totalPlacement: 0,
-          };
-        }
-        playerMap[p.name].gamesPlayed += 1;
-        playerMap[p.name].totalPlacement += p.placement;
-        playerMap[p.name].score += Math.max(5 - p.placement, 1);
-      });
+  players.forEach((pl: any) => {
+    playerMap[pl.id] = {
+      name: pl.name,
+      score: 0,
+      average: 0,
+      gamesPlayed: 0,
+      totalPlacement: 0,
+    };
+  });
+  games.forEach((game: any) => {
+    game.players.forEach((p: any) => {
+      if (playerMap[p.playerId]) {
+        playerMap[p.playerId].gamesPlayed += 1;
+        playerMap[p.playerId].totalPlacement += p.placement;
+        playerMap[p.playerId].score += Math.max(5 - p.placement, 1);
+      }
     });
   });
   Object.values(playerMap).forEach((p) => {
@@ -58,7 +59,7 @@ const Leaderboard: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Memoize player aggregation and sorting for performance
-  const allPlayers = useMemo(() => aggregatePlayers(gameHistory.events), []);
+  const allPlayers = useMemo(() => aggregatePlayers(playersRaw, gamesRaw), []);
   const sortedPlayers = useMemo(() => {
     const players = [...allPlayers];
     if (sortKey === "name") {
@@ -134,7 +135,8 @@ const Leaderboard: React.FC = () => {
         {selectedPlayer && (
           <PlayerDetails
             player={selectedPlayer}
-            gameHistory={gameHistory.events.flatMap(event => event.games)}
+            games={gamesRaw}
+            players={playersRaw}
           />
         )}
       </Modal>

@@ -6,29 +6,32 @@ import "./PlayerDetails.css";
 // Add gameHistory prop for flexibility
 interface PlayerDetailsProps {
   player: Player;
-  gameHistory: Array<{
+  games: Array<{
     id: string;
     dateCreated: string;
-    players: Array<{ name: string; placement: number; commander: string }>;
     notes?: string;
+    players: Array<{ playerId: string; placement: number; commander: string }>;
   }>;
+  players: Array<{ id: string; name: string }>;
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, gameHistory }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players }) => {
+  // Helper to get player name from ID
+  const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
   // Filter games for this player
-  const games = gameHistory.filter(g => g.players.some(p => p.name === player.name));
-  const totalGames = games.length;
-  const wins = games.filter(g => g.players.find(p => p.name === player.name)?.placement === 1).length;
+  const gamesForPlayer = games.filter(g => g.players.some(p => getPlayerName(p.playerId) === player.name));
+  const totalGames = gamesForPlayer.length;
+  const wins = gamesForPlayer.filter(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.placement === 1).length;
   const winRate = totalGames ? Math.round((wins / totalGames) * 100) : 0;
-  const placements = games.map(g => g.players.find(p => p.name === player.name)?.placement || 0);
+  const placements = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.placement || 0);
   const avgPlacement = placements.length ? (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(2) : "-";
-  const commanders = games.map(g => g.players.find(p => p.name === player.name)?.commander).filter(Boolean);
+  const commanders = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.commander).filter(Boolean);
   const commanderCounts = commanders.reduce((acc, c) => { acc[c!] = (acc[c!] || 0) + 1; return acc; }, {} as Record<string, number>);
   const mostPlayedCommander = Object.entries(commanderCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
   const deckDiversity = new Set(commanders).size;
-  const sortedGames = [...games].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
-  const firstGameDate = games.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
-  const lastGameDate = games.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
+  const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+  const firstGameDate = gamesForPlayer.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
+  const lastGameDate = gamesForPlayer.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
   const recentGames = sortedGames.slice(0, 5);
 
   return (
@@ -98,7 +101,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, gameHistory }) =>
           </thead>
           <tbody>
             {recentGames.map(g => {
-              const p = g.players.find(p => p.name === player.name);
+              const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
               return (
                 <tr key={g.id}>
                   <td>{new Date(g.dateCreated).toLocaleDateString()}</td>

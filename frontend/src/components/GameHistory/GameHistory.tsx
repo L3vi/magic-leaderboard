@@ -28,8 +28,8 @@ interface GameHistoryData {
 }
 
 // Load game history data
-import gameHistoryRaw from "../../data/game-history.json";
-const gameHistory: GameHistoryData = gameHistoryRaw;
+import gamesRaw from "../../data/games.json";
+import playersRaw from "../../data/players.json";
 
 import GameDetails from "../GameDetails/GameDetails";
 import Modal from "../Modal/Modal";
@@ -40,18 +40,17 @@ const GameHistory: React.FC = () => {
   // Track selected game for modal
   const [selected, setSelected] = useState<string | null>(null);
 
-  // Flatten all games from all events
-  const allGames = useMemo(() => {
-    return gameHistory.events.flatMap(event => event.games.map(game => ({ ...game, eventDate: event.date })));
-  }, []);
+  // Use games.json directly
+  const allGames = useMemo(() => gamesRaw, []);
 
   // Filter and sort games
+  const getPlayerName = (id: string) => playersRaw.find(p => p.id === id)?.name || id;
   const filteredGames = useMemo(() => {
     let games = allGames;
     if (filter.trim()) {
       games = games.filter(game =>
         game.players.some(
-          p => p.name.toLowerCase().includes(filter.toLowerCase()) || p.commander.toLowerCase().includes(filter.toLowerCase())
+          p => getPlayerName(p.playerId).toLowerCase().includes(filter.toLowerCase()) || p.commander.toLowerCase().includes(filter.toLowerCase())
         )
       );
     }
@@ -86,14 +85,25 @@ const GameHistory: React.FC = () => {
         ) : (
           filteredGames.map(game => {
             const winner = game.players.find(p => p.placement === 1);
+            // Map player IDs to names for GameRow
+            const players = game.players.map(p => ({
+              name: getPlayerName(p.playerId),
+              placement: p.placement,
+              commander: p.commander
+            }));
+            const winnerObj = winner ? {
+              name: getPlayerName(winner.playerId),
+              placement: winner.placement,
+              commander: winner.commander
+            } : undefined;
             return (
               <GameRow
                 key={game.id}
                 id={game.id}
                 dateCreated={game.dateCreated}
                 notes={game.notes}
-                players={game.players}
-                winner={winner}
+                players={players}
+                winner={winnerObj}
                 onClick={() => setSelected(game.id)}
               />
             );
@@ -102,14 +112,25 @@ const GameHistory: React.FC = () => {
       </div>
       <Modal isOpen={!!selectedGame} onClose={closeDetails} title="Game Details">
         {selectedGame && (
-          <GameDetails
-            id={selectedGame.id}
-            dateCreated={selectedGame.dateCreated}
-            notes={selectedGame.notes}
-            players={selectedGame.players}
-            winner={selectedGame.players.find(p => p.placement === 1)}
-            onClose={closeDetails}
-          />
+            <GameDetails
+              id={selectedGame.id}
+              dateCreated={selectedGame.dateCreated}
+              notes={selectedGame.notes}
+              players={selectedGame.players.map(p => ({
+                name: getPlayerName(p.playerId),
+                placement: p.placement,
+                commander: p.commander
+              }))}
+              winner={(() => {
+                const winner = selectedGame.players.find(p => p.placement === 1);
+                return winner ? {
+                  name: getPlayerName(winner.playerId),
+                  placement: winner.placement,
+                  commander: winner.commander
+                } : undefined;
+              })()}
+              onClose={closeDetails}
+            />
         )}
       </Modal>
     </section>

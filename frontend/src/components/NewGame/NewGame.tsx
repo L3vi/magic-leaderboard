@@ -60,8 +60,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
               required
             >
               <option value="">Select player</option>
-              {players.map(name => (
-                <option key={name} value={name}>{name}</option>
+              {players.map(player => (
+                <option key={player.id} value={player.id}>{player.name}</option>
               ))}
               <option value="__add__">Add new player…</option>
             </select>
