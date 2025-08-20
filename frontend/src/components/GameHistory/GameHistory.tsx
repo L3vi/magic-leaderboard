@@ -116,7 +116,7 @@ const GameHistory: React.FC = () => {
       </Modal>
     </section>
   );
-// ...existing code...
+  // ...existing code...
 };
 
 export default GameHistory;

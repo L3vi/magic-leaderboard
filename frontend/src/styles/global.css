@@ -6,6 +6,7 @@
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   margin: 0;
@@ -26,6 +27,7 @@ body {
 .hide {
   display: none !important;
 }
+
 .center {
   text-align: center;
 }
@@ -49,7 +51,7 @@ body {
 .tab-btn.active {
   background: var(--accent-light);
   color: var(--accent-dark);
-  box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
 }
 
 .tab-btn:focus {
