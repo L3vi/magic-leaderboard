@@ -13,66 +13,22 @@
   gap: 1.5rem;
   width: 100%;
 }
+
 .game-history-summary-main {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
-.game-history-summary-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-width: 120px;
-}
-.game-history-winner {
-  font-size: 1rem;
-  color: var(--success, #34d399);
-  font-weight: 700;
-}
-.game-history-winner-commander {
-  color: var(--accent);
-  font-weight: 600;
-}
-.game-history-summary {
+
+.game-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 2rem;
 }
-.game-history-date {
-  font-size: 1.1rem;
-  color: var(--accent);
-  font-weight: 600;
-}
-.game-history-players {
-  font-size: 1rem;
-  color: var(--foreground);
-  font-weight: 500;
-}
-.game-history-winner-commander {
-  font-size: 1rem;
-  color: var(--success, #34d399);
-  font-weight: 600;
-}
-.game-history-details-btn {
-  margin-top: 0.5rem;
-  padding: 0.4rem 1.2rem;
-  border-radius: 0.5rem;
-  border: none;
-  background: var(--accent);
-  color: var(--header-bg);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-}
-.game-history-details-btn:hover,
-.game-history-details-btn:focus {
-  background: var(--accent-dark);
-  color: var(--foreground);
-}
-/* ===================== */
-/* Game History Component*/
+
 /* ===================== */
 
 .game-history {
@@ -105,22 +61,6 @@
 .game-history-filter {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--accent-light);
-  font-size: 1rem;
-  width: 100%;
-  max-width: 320px;
-  background: var(--background);
-  color: var(--foreground);
-}
-
-.game-history-content {
-  color: var(--foreground);
-  width: 100%;
-}
-
-.game-history-list {
-  list-style: none;
-  padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -136,10 +76,12 @@
   transition: box-shadow 0.2s, background 0.2s;
   position: relative;
 }
+
 .game-history-game.expanded {
   background: var(--background);
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
+
 .game-history-game:focus {
   box-shadow: 0 0 0 3px var(--accent-light);
 }
@@ -159,210 +101,186 @@
   transition: color 0.18s;
   outline: none;
 }
+
 .game-history-toggle:focus {
   color: var(--accent-dark);
 }
+
 .game-history-toggle-icon {
   font-size: 1.2rem;
   margin-left: 0.5rem;
-  transition: transform 0.2s;
-}
-.game-history-game.expanded .game-history-toggle-icon {
-  transform: rotate(180deg);
-}
 
-.game-history-details {
-  max-height: 1000px;
-  opacity: 1;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
-  overflow: hidden;
-  margin-top: 0.5rem;
-}
-.game-history-game:not(.expanded) .game-history-details {
-  max-height: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.game-history-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 1rem;
-}
-.game-history-date {
-  font-size: 1.1rem;
-  color: var(--accent);
-  font-weight: 600;
-}
-.game-history-notes {
-  font-size: 1rem;
-  color: var(--info, var(--accent));
-  background: rgba(59, 130, 246, 0.08);
-  padding: 0.3rem 0.7rem;
-  border-radius: 0.5rem;
-}
-
-.game-history-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-}
-.game-history-table th,
-.game-history-table td {
-  padding: 0.6rem 0.5rem;
-  text-align: left;
-  font-size: 1rem;
-}
-.game-history-table th {
-  background: var(--accent-dark);
-  color: var(--foreground);
-  font-weight: 600;
-  border-radius: 0.3rem 0.3rem 0 0;
-}
-.game-history-table tr {
-  border-bottom: 1px solid var(--card-border, var(--accent-light));
-}
-.game-history-winner td {
-  color: var(--success, #34d399);
-  font-weight: 700;
-  background: rgba(52, 211, 153, 0.08);
-}
-.game-history-empty {
-  text-align: center;
-  color: var(--danger, #e57373);
-  font-size: 1.2rem;
-  margin-top: 2rem;
-}
-
-.game-history-commanders {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-width: 120px;
-  padding: 2px 0;
-  box-sizing: border-box;
-  height: 60px;
-  background: transparent;
-}
-
-.game-history-commander-img {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  background: #222;
-  border: 2px solid #444;
-  margin: 0 4px;
-  box-sizing: border-box;
-  overflow: hidden;
-  &img {
-    object-fit: cover;
-    border-radius: 0.5rem;
-    display: block;
-  }
-}
-
-.game-history-commander-winner {
-  border: 2.5px solid var(--success, #34d399) !important;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
-}
-
-@media (max-width: 700px) {
-  .game-history-summary-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  .game-history-summary-actions {
-    justify-content: flex-start;
-    min-width: 0;
-    margin-top: 0.5rem;
-  }
-  .game-history {
-    max-width: 100vw;
-    padding: 1rem 0.2rem;
-  }
-  .game-history-title {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-  }
-  .game-history-game {
-    padding: 1rem 0.2rem;
-  }
-  .game-history-table th,
   .game-history-table td {
-    font-size: 0.95rem;
-    padding: 0.4rem 0.2rem;
+    padding: 0.6rem 0.5rem;
+    text-align: left;
+    font-size: 1rem;
   }
+
+  .game-history-table th {
+    background: var(--accent-dark);
+    color: var(--foreground);
+    font-weight: 600;
+    border-radius: 0.3rem 0.3rem 0 0;
+  }
+
+  .game-history-table tr {
+    border-bottom: 1px solid var(--card-border, var(--accent-light));
+  }
+
+  .game-history-winner td {
+    color: var(--success, #34d399);
+    font-weight: 700;
+    background: rgba(52, 211, 153, 0.08);
+  }
+
+  .game-history-empty {
+    text-align: center;
+    color: var(--danger, #e57373);
+    font-size: 1.2rem;
+    margin-top: 2rem;
+  }
+
   .game-history-commanders {
     display: flex;
-    flex-wrap: wrap;
     flex-direction: row;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    max-width: 100vw;
-    height: auto;
-    margin-bottom: 0.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-width: 120px;
+    padding: 2px 0;
+    box-sizing: border-box;
+    height: 60px;
+    background: transparent;
   }
-}
 
-/* ===================== */
-/* Desktop-specific Styles */
-/* ===================== */
-@media (min-width: 900px) {
-  /* Main container */
-  .game-history {
-    max-width: 100vw;
-    width: 100vw;
-    padding: 2.5rem 0;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
+  .game-history-commander-img {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    background: #222;
+    border: 2px solid #444;
+    margin: 0 4px;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    &img {
+      object-fit: cover;
+      border-radius: 0.5rem;
+      display: block;
+    }
   }
-  /* Title */
-  .game-history-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
+
+  .game-history-commander-winner {
+    border: 2.5px solid var(--success, #34d399) !important;
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
   }
-  /* List layout */
-  .game-history-list {
-    gap: 2.5rem;
+
+  @media (max-width: 700px) {
+    .game-history-summary-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+
+    .game-history-summary-actions {
+      justify-content: flex-start;
+      min-width: 0;
+      margin-top: 0.5rem;
+    }
+
+    .game-history {
+      max-width: 100vw;
+      padding: 1rem 0.2rem;
+    }
+
+    .game-history-title {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .game-history-game {
+      padding: 1rem 0.2rem;
+    }
+
+    .game-history-table th,
+    .game-history-table td {
+      font-size: 0.95rem;
+      padding: 0.4rem 0.2rem;
+    }
+
+    .game-history-commanders {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      max-width: 100vw;
+      height: auto;
+      margin-bottom: 0.5rem;
+    }
   }
-  /* Game card */
-  .game-history-game {
-    font-size: 1.5rem;
-    padding: 1.5rem 1vw;
-    border-radius: 0;
-    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
-    background: var(--header-bg);
+
+  /* ===================== */
+  /* Desktop-specific Styles */
+  /* ===================== */
+  @media (min-width: 900px) {
+
+    /* Main container */
+    .game-history {
+      max-width: 100vw;
+      width: 100vw;
+      padding: 2.5rem 0;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
+    }
+
+    /* Title */
+    .game-history-title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* List layout */
+    .game-history-list {
+      gap: 2.5rem;
+    }
+
+    /* Game card */
+    .game-history-game {
+      font-size: 1.5rem;
+      padding: 1.5rem 1vw;
+      border-radius: 0;
+      box-shadow: 0 4px 32px rgba(59, 130, 246, 0.12);
+      background: var(--header-bg);
+    }
+
+    /* Summary row */
+    .game-history-summary-row {
+      gap: 2.5rem;
+      font-size: 1.3rem;
+    }
+
+    /* Summary main */
+    .game-history-summary-main {
+      gap: 0.7rem;
+    }
+
+    /* Details button */
+    .game-history-details-btn {
+      font-size: 1.1rem;
+      padding: 0.6rem 2rem;
+    }
+
+    /* Info text */
+    .game-history-date,
+    .game-history-players,
+    .game-history-winner {
+      font-size: 1.2rem;
+    }
   }
-  /* Summary row */
-  .game-history-summary-row {
-    gap: 2.5rem;
-    font-size: 1.3rem;
-  }
-  /* Summary main */
-  .game-history-summary-main {
-    gap: 0.7rem;
-  }
-  /* Details button */
-  .game-history-details-btn {
-    font-size: 1.1rem;
-    padding: 0.6rem 2rem;
-  }
-  /* Info text */
-  .game-history-date,
-  .game-history-players,
-  .game-history-winner {
-    font-size: 1.2rem;
-  }
-}
