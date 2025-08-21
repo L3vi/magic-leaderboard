@@ -43,7 +43,7 @@
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
   border: 1.5px solid var(--accent-light);
   font-size: 1rem;
-  background: var(--header-bg);
+  background: var(--surface-bg);
   color: var(--accent-dark);
 }
 
@@ -54,7 +54,7 @@
 .game-history-empty {
   text-align: center;
   color: var(--danger, #e57373);
-  background: var(--header-bg);
+  background: var(--surface-bg);
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 1.5rem;

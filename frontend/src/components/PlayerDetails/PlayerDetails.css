@@ -5,7 +5,7 @@
 
 .player-details {
   padding: 1.2rem 0.5rem;
-  background: var(--header-bg);
+  background: var(--surface-bg);
   border-radius: 1rem;
   box-shadow: var(--header-shadow);
   animation: fade-in 0.3s;
@@ -60,7 +60,7 @@
 }
 .player-details-highlight dd {
   background: var(--success, #34d399);
-  color: var(--header-bg);
+  color: var(--surface-bg);
   font-weight: 700;
   box-shadow: 0 0 0 2px var(--success, #34d399);
 }
@@ -78,7 +78,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--header-bg);
+  background: var(--surface-bg);
   border-radius: 0.7rem;
   box-shadow: var(--header-shadow);
   overflow: hidden;
@@ -105,11 +105,11 @@
 }
 .placement-1 {
   background: var(--success, #34d399);
-  color: var(--header-bg);
+  color: var(--surface-bg);
 }
 .placement-2 {
   background: var(--accent-light);
-  color: var(--header-bg);
+  color: var(--surface-bg);
 }
 .placement-3 {
   background: var(--accent-dark);

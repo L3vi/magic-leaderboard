@@ -22,6 +22,8 @@
 :root {
   --background: #18181b;
   --foreground: #eaeaea;
+  --surface-bg: #232326;
+  --surface-border: #222;
   --border: #222;
   --shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
   /* blue shadow */
@@ -39,6 +41,8 @@
   :root {
   --background: #1e293b;
   --foreground: #eaeaea;
+  --surface-bg: #18181b;
+  --surface-border: #222;
   --border: #222;
   --shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
     --accent: #3b82f6;

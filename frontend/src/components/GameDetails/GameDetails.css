@@ -89,7 +89,7 @@
 }
 .game-details-notes {
   margin-top: 1.2rem;
-  background: var(--header-bg);
+  background: var(--surface-bg);
   border-radius: 0.5rem;
   padding: 1rem;
   color: var(--foreground);
