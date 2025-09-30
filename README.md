@@ -45,7 +45,7 @@ magic-leaderboard/
 ### Quick Start (Recommended)
 ```bash
 # Install all dependencies
-npm run install:all
+npm install
 
 # Start both frontend and backend
 npm run dev
