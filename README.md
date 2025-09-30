@@ -18,49 +18,47 @@ A web app to track Magic: The Gathering Commander games and player rankings for 
 - Timestamped games.
 
 ## Tech Stack
-- **Frontend:** React + TypeScript (bundled with Parcel)
+- **Frontend:** React + TypeScript (bundled with Vite)
 - **Backend:** Express + TypeScript
-- **Database:** SQLite
+- **Database:** JSON files (migrating to SQLite)
 
 ## Project Structure
 ```
 magic-leaderboard/
-  backend/
-    src/
-      controllers/
-      models/
-      routes/
-      app.ts
-    package.json
-    tsconfig.json
-  frontend/
-    public/
-      index.html
-      logo.svg
-    src/
-      App.tsx
-      index.tsx
-    package.json
-    tsconfig.json
-  README.md
+  ├── package.json          # Root convenience scripts
+  ├── backend/
+  │   ├── src/api/          # API endpoints
+  │   ├── data/             # JSON data files (source of truth)
+  │   ├── package.json
+  │   └── tsconfig.json
+  ├── frontend/
+  │   ├── src/
+  │   │   ├── components/   # React components
+  │   │   └── data/        # Synced from backend (git-ignored)
+  │   ├── package.json
+  │   └── tsconfig.json
+  └── README.md
 ```
 
 ## Setup
 
-### Backend
+### Quick Start (Recommended)
 ```bash
-cd backend
-npm install
+# Install all dependencies
+npm run install:all
+
+# Start both frontend and backend
 npm run dev
 ```
 
-### Frontend
+### Individual Setup
 ```bash
-cd frontend
-npm install
-npm start
+# Backend only
+cd backend && npm install && npm run dev
+
+# Frontend only  
+cd frontend && npm install && npm run dev
 ```
-Parcel will auto-open the app in your browser.
 
 ## Development Guidelines
 - Use feature branches for new features.
