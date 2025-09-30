@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "React + TypeScript client for Magic Leaderboard.",
   "scripts": {
-    "dev": "vite --open",
-    "build": "vite build",
+    "sync-data": "cp ../backend/data/*.json src/data/",
+    "dev": "npm run sync-data && vite --open",
+    "build": "npm run sync-data && vite build",
     "preview": "vite preview"
   },
   "keywords": [],

@@ -11,3 +11,6 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Synced data files (source is in backend/data/)
+src/data/*.json
