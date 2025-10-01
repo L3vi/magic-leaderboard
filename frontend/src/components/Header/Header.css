@@ -11,9 +11,9 @@
   align-items: stretch;
   justify-content: flex-start;
   padding: 1.5rem 2rem 0.5rem 2rem;
-  background: var(--surface-bg);
-  border-bottom: 1px solid var(--surface-border);
-  box-shadow: var(--header-shadow);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .header-main {

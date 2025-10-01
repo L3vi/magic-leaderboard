@@ -4,17 +4,26 @@
 .main-section {
   width: 100%;
   max-width: var(--desktop-content-max-width);
-  background: var(--background);
+  background: var(--surface);
   margin: 0 auto;
-  border-radius: 0.5rem;
-  box-shadow: none;
-  padding: 0.5rem 0.5rem 0 0.5rem;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
 }
 
 @media (max-width: 767px) {
   .main-section {
+    margin: 1rem;
+    padding: 1rem;
     padding-bottom: 80px;
     /* 64px navbar + extra for safe area */
+  }
+}
+
+@media (min-width: 768px) {
+  .main-section {
+    margin: 2rem auto;
   }
 }
 
@@ -22,22 +31,28 @@
 /* Root Theme Variables  */
 /* ===================== */
 :root {
+  /* Base Colors */
   --background: #18181b;
   --foreground: #eaeaea;
-  --surface-bg: #232326;
-  --surface-border: #222;
-  --border: #222;
-  --shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
-  /* blue shadow */
+  --surface: #232326;
+  --border: #333;
+  
+  /* Accent Colors */
   --accent: #3b82f6;
-  /* Blue for highlights */
   --accent-light: #60a5fa;
   --accent-dark: #1e40af;
-  --navbar-height: 64px;
   
-  /* Desktop Layout System */
-  --desktop-max-width: 1200px;           /* Max width for header and wide containers */
-  --desktop-content-max-width: 1000px;   /* Max width for main content areas */
+  /* Semantic Colors */
+  --success: #34d399;
+  --danger: #e57373;
+  
+  /* Effects */
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(59, 130, 246, 0.08);
+  
+  /* Layout */
+  --navbar-height: 64px;
+  --desktop-max-width: 1200px;
+  --desktop-content-max-width: 1000px;
 }
 
 /* ===================== */
@@ -45,21 +60,10 @@
 /* ===================== */
 @media (prefers-color-scheme: dark) {
   :root {
-  --background: #1e293b;
-  --foreground: #eaeaea;
-  --surface-bg: #18181b;
-  --surface-border: #222;
-  --border: #222;
-  --shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
-    --accent: #3b82f6;
-    --accent-light: #60a5fa;
-    --accent-dark: #1e40af;
-    --success: #34d399;
-    --info: #3b82f6;
-    --danger: #e57373;
-    --text: #f3f4f6;
-    --card-border: #1e40af;
-    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --background: #0f172a;
+    --surface: #1e293b;
+    --border: #334155;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 2px 10px rgba(59, 130, 246, 0.15);
   }
 }
 

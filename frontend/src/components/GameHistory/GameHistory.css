@@ -4,12 +4,13 @@
 
 .game-history {
   width: 100%;
-  max-width: var(--desktop-content-max-width);
-  margin: 0 auto;
-  background: var(--background);
-  border-radius: 0.5rem;
-  box-shadow: none;
-  padding: 0.5rem 0.5rem 0 0.5rem;
+  max-width: var(--desktop-max-width);
+  margin: 1rem auto;
+  background: var(--surface);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
 }
 
 .game-history-title {
@@ -95,10 +96,6 @@
 
 @media (min-width: 900px) {
   .game-history {
-    max-width: 100vw;
-    width: 100vw;
-    padding: 2.5rem 0;
-    margin: 0;
     border-radius: 0;
   }
 
