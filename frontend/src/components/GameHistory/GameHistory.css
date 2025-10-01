@@ -4,7 +4,7 @@
 
 .game-history {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--desktop-content-max-width);
   margin: 0 auto;
   background: var(--background);
   border-radius: 0.5rem;

@@ -32,10 +32,20 @@
     flex-direction: column;
     padding-bottom: 0;
   }
-  .header-nav-desktop {
-    display: block;
-    margin-top: 0.5rem;
+  
+  .header-main {
+    max-width: var(--desktop-max-width);
+    width: 100%;
+    margin: 0 auto;
   }
+  
+  .header-nav-desktop {
+    max-width: var(--desktop-max-width);
+    width: 100%;
+    display: block;
+    margin: 0.5rem auto 0;
+  }
+  
   .nav-bar-mobile {
     display: none !important;
   }

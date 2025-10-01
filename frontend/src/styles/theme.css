@@ -2,6 +2,8 @@
 /* Main Section Unified  */
 /* ===================== */
 .main-section {
+  width: 100%;
+  max-width: var(--desktop-content-max-width);
   background: var(--background);
   margin: 0 auto;
   border-radius: 0.5rem;
@@ -32,6 +34,10 @@
   --accent-light: #60a5fa;
   --accent-dark: #1e40af;
   --navbar-height: 64px;
+  
+  /* Desktop Layout System */
+  --desktop-max-width: 1200px;           /* Max width for header and wide containers */
+  --desktop-content-max-width: 1000px;   /* Max width for main content areas */
 }
 
 /* ===================== */

@@ -106,6 +106,7 @@
 @media (min-width: 900px) {
     .modal-content {
         width: 80vw;
+        max-width: var(--desktop-content-max-width);
         height: 80vh;
         padding: 2.5rem 2rem 2rem 2rem;
         font-size: 1.15rem;
