@@ -87,22 +87,25 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 		return (
 			<>
 				<div className="nav-bar" role="tablist" aria-label="Main Navigation" ref={navRef}>
-					{NAV_ITEMS.filter(item => !item.isFab).map((item, idx) => (
-						<button
-							key={item.label}
-							className={`nav-item${activeTab === item.tab ? " active" : ""}`}
-							aria-label={item.label}
-							aria-selected={activeTab === item.tab}
-							tabIndex={0}
-							role="tab"
-							onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
-							onKeyDown={e => handleKeyDown(e, idx)}
-							ref={el => tabRefs.current[idx] = el}
-						>
-							<span className="nav-icon" aria-hidden="true">{item.icon}</span>
-							<span className="nav-label">{item.label}</span>
-						</button>
-					))}
+					<div className="nav-tab-group">
+						{/* Navigation Items */}
+						{NAV_ITEMS.filter(item => !item.isFab).map((item, idx) => (
+							<button
+								key={item.label}
+								className={`nav-item${activeTab === item.tab ? " active" : ""}`}
+								aria-label={item.label}
+								aria-selected={activeTab === item.tab}
+								tabIndex={0}
+								role="tab"
+								onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
+								onKeyDown={e => handleKeyDown(e, idx)}
+								ref={el => tabRefs.current[idx] = el}
+							>
+								<span className="nav-icon" aria-hidden="true">{item.icon}</span>
+								<span className="nav-label">{item.label}</span>
+							</button>
+						))}
+					</div>
 					{/* Mobile FAB */}
 							<button
 								className="nav-fab"

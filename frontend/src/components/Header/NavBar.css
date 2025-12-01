@@ -28,17 +28,31 @@
   right: 0;
   bottom: 0;
   height: 64px;
-  background: var(--surface-bg, #232326);
-  border-top: 1px solid var(--surface-border, #222);
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   z-index: 100;
+  margin: 10px;
+}
+
+.nav-tab-group {
+  display: flex;
+  flex-shrink: 1;
+  & .nav-item:first-child {
+    border-top-left-radius: 20%;
+    border-bottom-left-radius: 20%;
+    border-right: var(--border) 1px solid;
+  }
+  & .nav-item:last-child {
+    border-top-right-radius: 20%;
+    border-bottom-right-radius: 20%;
+  }
 }
 
 /* Nav item styles */
 .nav-item {
-  background: none;
+  background: var(--surface-bg, #232326);
+  border-top: 1px solid var(--surface-border, #222);
   border: none;
   color: var(--accent, #fbbf24);
   font-size: 1.5rem;
@@ -49,6 +63,8 @@
   padding: 0.5rem 0;
   cursor: pointer;
   transition: color 0.18s;
+  min-width: 80px;
+  padding: 10px;
 }
 
 .nav-item:active,
@@ -65,9 +81,6 @@
 
 /* Floating action button styles */
 .nav-fab {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%) translateY(-30%);
   bottom: 16px;
   background: var(--accent, #fbbf24);
   color: var(--surface-bg, #232326);
