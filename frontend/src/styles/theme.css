@@ -4,19 +4,13 @@
 .main-section {
   width: 100%;
   max-width: var(--desktop-content-max-width);
-  background: var(--surface);
   margin: 0 auto;
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
 }
 
 @media (max-width: 767px) {
   .main-section {
     margin: 1rem;
-    padding: 1rem;
-    padding-bottom: 80px;
+    padding-bottom: 28px;
     /* 64px navbar + extra for safe area */
   }
 }
@@ -37,17 +31,27 @@
   --surface: #232326;
   --border: #333;
   
-  /* Accent Colors */
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --accent-dark: #1e40af;
+  /* Primary Brand - Mystic Purple */
+  --primary: #8b5cf6;
+  --primary-light: #a78bfa;
+  --primary-dark: #7c3aed;
+  
+  /* Accent - Victory Gold */
+  --gold: #fbbf24;
+  --gold-light: #fde68a;
+  --gold-dark: #f59e0b;
+  
+  /* Legacy naming (keep existing code working) */
+  --accent: var(--primary);
+  --accent-light: var(--primary-light);
+  --accent-dark: var(--primary-dark);
   
   /* Semantic Colors */
   --success: #34d399;
   --danger: #e57373;
   
   /* Effects */
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(59, 130, 246, 0.08);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.15);
   
   /* Layout */
   --navbar-height: 64px;
@@ -63,7 +67,7 @@
     --background: #0f172a;
     --surface: #1e293b;
     --border: #334155;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 2px 10px rgba(59, 130, 246, 0.15);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 2px 10px rgba(139, 92, 246, 0.2);
   }
 }
 

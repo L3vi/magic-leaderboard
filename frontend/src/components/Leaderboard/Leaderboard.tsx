@@ -37,14 +37,13 @@ function aggregatePlayers(players: any[], games: any[]): Player[] {
   return Object.values(playerMap);
 }
 
-type SortKey = "name" | "score" | "average" | "gamesPlayed";
+type SortKey = "name" | "score" | "average";
 type SortOrder = "asc" | "desc";
 
 const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
-  average: "Avg Place",
-  gamesPlayed: "Games",
+  average: "Average",
 };
 
 /**

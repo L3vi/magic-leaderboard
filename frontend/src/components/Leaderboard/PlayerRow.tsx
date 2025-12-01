@@ -33,14 +33,13 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, active }) => (
     className={`player-row${active ? ' active' : ''}`}
     role="row"
     tabIndex={0}
-    aria-label={`Player ${player.name}, Score ${player.score}, Avg Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}
+    aria-label={`Player ${player.name}, Score ${player.score}, Average Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}
     onClick={onClick}
     style={onClick ? { cursor: "pointer" } : undefined}
   >
     <span className="leaderboard-col player-name" role="cell">{player.name}</span>
     <span className="leaderboard-col player-score" role="cell">{player.score}</span>
-    <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(2)}</span>
-    <span className="leaderboard-col player-games" role="cell">{player.gamesPlayed}</span>
+    <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(1)}</span>
   </div>
 );
 
