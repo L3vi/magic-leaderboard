@@ -28,13 +28,13 @@
   font-size: 1.6rem;
   font-weight: 800;
   text-align: center;
-  color: var(--accent);
+  color: var(--primary);
   margin: 0;
 }
 
 .game-details-date {
   font-size: 1rem;
-  color: var(--accent-light);
+  color: var(--primary-light);
   margin-left: 1rem;
 }
 
@@ -42,14 +42,14 @@
   background: none;
   border: none;
   font-size: 2rem;
-  color: var(--accent);
+  color: var(--primary);
   cursor: pointer;
   margin-right: 0.5rem;
   transition: color 0.18s;
 }
 
 .game-details-close:hover {
-  color: var(--accent-dark);
+  color: var(--primary-dark);
 }
 
 .game-details-info {
@@ -70,20 +70,20 @@
 .game-details-players-table th,
 .game-details-players-table td {
   padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--accent-light);
+  border-bottom: 1px solid var(--primary-light);
   text-align: left;
 }
 
 .game-details-players-table th {
-  background: var(--accent-dark);
+  background: var(--primary-dark);
   font-weight: 700;
   color: var(--foreground);
 }
 
 .game-details-players-table tr.winner td {
   font-weight: bold;
-  color: var(--accent);
-  background: var(--accent-light);
+  color: var(--primary);
+  background: var(--primary-light);
 }
 
 .player-name {
@@ -93,7 +93,7 @@
 
 .player-commander {
   font-style: italic;
-  color: var(--accent-light);
+  color: var(--primary-light);
 }
 
 .winner-badge {
@@ -112,7 +112,7 @@
 
 .game-details-notes h3 {
   margin-top: 0;
-  color: var(--accent);
+  color: var(--primary);
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -143,6 +143,6 @@
 }
 
 .winner-name {
-  color: var(--color-accent);
+  color: var(--primary);
   font-weight: bold;
 }

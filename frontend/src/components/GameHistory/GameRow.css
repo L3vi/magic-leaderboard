@@ -15,12 +15,12 @@
 }
 
 .game-row:hover {
-    background: var(--accent-light, #e0e7ff);
+    background: var(--primary-light);
     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
 
 .game-row.active {
-    background: var(--accent-light, #e0e7ff);
+    background: var(--primary-light);
     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
 }
 
@@ -37,7 +37,7 @@
 
 .game-row-date {
     font-size: 0.95rem;
-    color: var(--accent);
+    color: var(--primary);
     font-weight: 600;
 }
 

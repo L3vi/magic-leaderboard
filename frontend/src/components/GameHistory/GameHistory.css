@@ -24,8 +24,8 @@
   font-weight: 600;
   font-size: 1rem;
   padding: 0.25rem 0;
-  border-bottom: 1px solid var(--accent-light);
-  color: var(--accent-dark);
+  border-bottom: 1px solid var(--primary-light);
+  color: var(--primary-dark);
   margin-bottom: 0.5rem;
 }
 
@@ -42,10 +42,10 @@
   max-width: 480px;
   width: 100%;
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.18);
-  border: 1.5px solid var(--accent-light);
+  border: 1.5px solid var(--primary-light);
   font-size: 1rem;
-  background: var(--surface-bg);
-  color: var(--accent-dark);
+  background: var(--surface);
+  color: var(--primary-dark);
 }
 
 .game-history-list {
@@ -55,7 +55,7 @@
 .game-history-empty {
   text-align: center;
   color: var(--danger, #e57373);
-  background: var(--surface-bg);
+  background: var(--surface);
   font-size: 1.1rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -76,13 +76,13 @@
 
   .game-history-title {
     font-size: 1.2rem;
-    color: var(--accent);
+    color: var(--primary);
   }
 
   .game-history-header {
     font-size: 1rem;
     padding: 0.5rem 0.25rem;
-    color: var(--accent-dark);
+    color: var(--primary-dark);
   }
 
   .game-row:hover {
@@ -102,13 +102,13 @@
   .game-history-title {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: var(--accent);
+    color: var(--primary);
   }
 
   .game-history-header {
     font-size: 1.5rem;
     padding: 1.25rem 0;
-    color: var(--accent-dark);
+    color: var(--primary-dark);
   }
 
 }

@@ -5,7 +5,7 @@
 
 .player-details {
   padding: 1.2rem 0.5rem;
-  background: var(--surface-bg);
+  background: var(--surface);
   border-radius: 1rem;
   box-shadow: var(--header-shadow);
   animation: fade-in 0.3s;
@@ -13,7 +13,7 @@
 
 .player-details-name {
   font-size: 2rem;
-  color: var(--accent);
+  color: var(--primary);
   margin-bottom: 1.2rem;
   font-weight: 800;
   text-align: center;
@@ -25,7 +25,7 @@
 }
 .player-details-divider {
   border: none;
-  border-top: 2px dashed var(--accent-light);
+  border-top: 2px dashed var(--primary-light);
   margin: 1.2rem 0;
 }
 
@@ -42,7 +42,7 @@
 .player-details-commander-grid dt,
 .player-details-history-grid dt {
   font-size: 1.05rem;
-  color: var(--accent);
+  color: var(--primary);
   font-weight: 600;
   margin-bottom: 0.2rem;
 }
@@ -53,14 +53,14 @@
   color: var(--foreground);
   font-weight: 600;
   margin: 0;
-  background: var(--accent-light);
+  background: var(--primary-light);
   border-radius: 0.5rem;
   padding: 0.2rem 0.7rem;
   display: inline-block;
 }
 .player-details-highlight dd {
   background: var(--success, #34d399);
-  color: var(--surface-bg);
+  color: var(--surface);
   font-weight: 700;
   box-shadow: 0 0 0 2px var(--success, #34d399);
 }
@@ -70,7 +70,7 @@
 }
 .player-details-recent h3 {
   font-size: 1.2rem;
-  color: var(--accent-dark);
+  color: var(--primary-dark);
   margin-bottom: 0.7rem;
   font-weight: 700;
 }
@@ -78,13 +78,13 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--surface-bg);
+  background: var(--surface);
   border-radius: 0.7rem;
   box-shadow: var(--header-shadow);
   overflow: hidden;
 }
 .player-details-recent-table th {
-  background: var(--accent);
+  background: var(--primary);
   color: var(--foreground);
   font-size: 1rem;
   font-weight: 700;
@@ -101,18 +101,18 @@
   border-radius: 0.5rem;
   padding: 0.2rem 0.7rem;
   display: inline-block;
-  border: 1px solid var(--accent-dark);
+  border: 1px solid var(--primary-dark);
 }
 .placement-1 {
   background: var(--success, #34d399);
-  color: var(--surface-bg);
+  color: var(--surface);
 }
 .placement-2 {
-  background: var(--accent-light);
-  color: var(--surface-bg);
+  background: var(--primary-light);
+  color: var(--surface);
 }
 .placement-3 {
-  background: var(--accent-dark);
+  background: var(--primary-dark);
   color: var(--foreground);
 }
 

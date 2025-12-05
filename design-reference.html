@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Leaderboard - Design Reference</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #eaeaea;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 3rem 0 1.5rem 0;
+            color: #8b5cf6;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+            color: #a78bfa;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Color Swatch Grid */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .color-swatch {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+        }
+
+        .color-preview {
+            height: 120px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-info {
+            padding: 1rem;
+        }
+
+        .color-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #fff;
+        }
+
+        .color-hex {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .color-usage {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Palette Sections */
+        .palette-section {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .palette-option {
+            background: #0f0f0f;
+            border: 2px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: border-color 0.3s;
+        }
+
+        .palette-option:hover {
+            border-color: #8b5cf6;
+        }
+
+        /* Color Scale Display */
+        .color-scale {
+            display: flex;
+            gap: 0;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .scale-swatch {
+            flex: 1;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .scale-swatch:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .scale-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        /* Combination Examples */
+        .combination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .combo-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .combo-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .combo-header {
+            padding: 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .combo-body {
+            padding: 1.5rem;
+        }
+
+        .combo-text {
+            margin-bottom: 0.5rem;
+        }
+
+        .combo-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Usage Examples */
+        .usage-example {
+            background: #232326;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Comparison Section */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .comparison-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-4px);
+        }
+
+        .comparison-hero {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparison-content {
+            padding: 2rem;
+        }
+
+        .comparison-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-colors {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .mini-swatch {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mood-tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+        }
+
+        /* Current Implementation */
+        .current-badge {
+            display: inline-block;
+            background: #34d399;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid #8b5cf6;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+
+        code {
+            background: #000;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #a78bfa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Magic Leaderboard Design Reference</h1>
+        <p class="subtitle">Visual color system reference • December 2025 • Private document</p>
+
+        <!-- Current Palette -->
+        <h2>Current Palette <span class="current-badge">IN USE</span></h2>
+        
+        <div class="palette-section">
+            <h3>Primary Brand Colors (Mystic Purple) ✨</h3>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #a78bfa;">Light Purple</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Light</div>
+                        <div class="color-hex">#a78bfa</div>
+                        <div class="color-usage">Hover states, highlights</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #8b5cf6;">Mystic Purple</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary (Main Brand)</div>
+                        <div class="color-hex">#8b5cf6</div>
+                        <div class="color-usage">Primary actions, links, headers</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #7c3aed;">Dark Purple</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Dark</div>
+                        <div class="color-hex">#7c3aed</div>
+                        <div class="color-usage">Active states, pressed buttons</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Accent Colors (Victory Gold) 🏆</h3>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #fde68a; color: #78350f;">Light Gold</div>
+                    <div class="color-info">
+                        <div class="color-name">Gold Light</div>
+                        <div class="color-hex">#fde68a</div>
+                        <div class="color-usage">Subtle gold highlights</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #fbbf24; color: #78350f;">Victory Gold</div>
+                    <div class="color-info">
+                        <div class="color-name">Gold</div>
+                        <div class="color-hex">#fbbf24</div>
+                        <div class="color-usage">Achievements, winners, special moments</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #f59e0b; color: #000;">Dark Gold</div>
+                    <div class="color-info">
+                        <div class="color-name">Gold Dark</div>
+                        <div class="color-hex">#f59e0b</div>
+                        <div class="color-usage">Gold active states</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Semantic Colors</h3>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #34d399;">Success</div>
+                    <div class="color-info">
+                        <div class="color-name">Success Green</div>
+                        <div class="color-hex">#34d399</div>
+                        <div class="color-usage">Wins, positive states, confirmations</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #e57373;">Danger</div>
+                    <div class="color-info">
+                        <div class="color-name">Danger Red</div>
+                        <div class="color-hex">#e57373</div>
+                        <div class="color-usage">Errors, delete actions, warnings</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Neutrals & Backgrounds</h3>
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #0f172a; color: #fff;">
+                    <span>#0f172a</span>
+                    <span class="scale-label">Background</span>
+                </div>
+                <div class="scale-swatch" style="background: #1e293b; color: #fff;">
+                    <span>#1e293b</span>
+                    <span class="scale-label">Surface</span>
+                </div>
+                <div class="scale-swatch" style="background: #334155; color: #fff;">
+                    <span>#334155</span>
+                    <span class="scale-label">Border</span>
+                </div>
+                <div class="scale-swatch" style="background: #94a3b8; color: #000;">
+                    <span>#94a3b8</span>
+                    <span class="scale-label">Text Muted</span>
+                </div>
+                <div class="scale-swatch" style="background: #eaeaea; color: #000;">
+                    <span>#eaeaea</span>
+                    <span class="scale-label">Foreground</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>✨ Simplified Neutral System:</strong> Reduced from 7 to 5 core neutrals for consistency and easier maintenance. All components now use these same variables.
+            </div>
+        </div>
+
+        <!-- Current Usage Examples -->
+        <h3>Current Combinations in Use</h3>
+        <div class="combination-grid">
+            <div class="combo-card">
+                <div class="combo-header" style="background: #232326; color: #eaeaea; border-bottom: 2px solid #8b5cf6;">
+                    Card Header Example
+                </div>
+                <div class="combo-body" style="background: #18181b; color: #eaeaea;">
+                    <div class="combo-text">This is how your mystic design looks</div>
+                    <div class="combo-text" style="color: #94a3b8;">Secondary text in muted gray</div>
+                    <button class="combo-button" style="background: #8b5cf6; color: #fff; border: none;">
+                        Cast Spell
+                    </button>
+                </div>
+            </div>
+
+            <div class="combo-card">
+                <div class="combo-header" style="background: #1e293b; color: #eaeaea;">
+                    Leaderboard Row (Hover)
+                </div>
+                <div class="combo-body" style="background: #a78bfa; color: #3b0764;">
+                    <div class="combo-text" style="font-weight: 600;">Player Name</div>
+                    <div class="combo-text">Wins: 15 • Losses: 3</div>
+                </div>
+            </div>
+
+            <div class="combo-card">
+                <div class="combo-header" style="background: #232326; color: #fbbf24; border-left: 4px solid #fbbf24;">
+                    🏆 Victory State
+                </div>
+                <div class="combo-body" style="background: #18181b; color: #eaeaea;">
+                    <div class="combo-text" style="color: #fbbf24; font-weight: 600;">Champion: PlayerName</div>
+                    <div class="combo-text">Defeated opponent in 3 games</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative Palettes -->
+        <h2>Alternative Palette Options (For Reference)</h2>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">These were considered but you chose the mystic purple/gold above ✨</p>
+
+        <!-- Option A: Magic Purple/Gold -->
+        <div class="palette-option">
+            <h3 style="color: #a78bfa;">Option A: Mystic Magic (Purple + Gold)</h3>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">Enchanting, premium, fantasy-themed aesthetic</p>
+            
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #c4b5fd; color: #2e1065;">
+                    <span>#c4b5fd</span>
+                    <span class="scale-label">400</span>
+                </div>
+                <div class="scale-swatch" style="background: #a78bfa; color: #1e1b4b;">
+                    <span>#a78bfa</span>
+                    <span class="scale-label">Light</span>
+                </div>
+                <div class="scale-swatch" style="background: #8b5cf6; color: #fff;">
+                    <span>#8b5cf6</span>
+                    <span class="scale-label">Primary</span>
+                </div>
+                <div class="scale-swatch" style="background: #7c3aed; color: #fff;">
+                    <span>#7c3aed</span>
+                    <span class="scale-label">Dark</span>
+                </div>
+                <div class="scale-swatch" style="background: #6d28d9; color: #fff;">
+                    <span>#6d28d9</span>
+                    <span class="scale-label">700</span>
+                </div>
+            </div>
+
+            <h4 style="color: #fbbf24; margin-top: 2rem;">Gold Accent</h4>
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #fde68a; color: #78350f;">
+                    <span>#fde68a</span>
+                    <span class="scale-label">Light</span>
+                </div>
+                <div class="scale-swatch" style="background: #fbbf24; color: #000;">
+                    <span>#fbbf24</span>
+                    <span class="scale-label">Gold</span>
+                </div>
+                <div class="scale-swatch" style="background: #f59e0b; color: #000;">
+                    <span>#f59e0b</span>
+                    <span class="scale-label">Amber</span>
+                </div>
+                <div class="scale-swatch" style="background: #d97706; color: #fff;">
+                    <span>#d97706</span>
+                    <span class="scale-label">Dark</span>
+                </div>
+            </div>
+
+            <div class="combination-grid" style="margin-top: 2rem;">
+                <div class="combo-card">
+                    <div class="combo-header" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: #fff;">
+                        Mystical Header
+                    </div>
+                    <div class="combo-body" style="background: #18181b; color: #eaeaea;">
+                        <div class="combo-text">Enchanted leaderboard design</div>
+                        <button class="combo-button" style="background: #8b5cf6; color: #fff; border: none;">
+                            Cast Spell
+                        </button>
+                    </div>
+                </div>
+
+                <div class="combo-card">
+                    <div class="combo-header" style="background: #232326; color: #fbbf24; border-bottom: 3px solid #fbbf24;">
+                        Victory Royale
+                    </div>
+                    <div class="combo-body" style="background: #18181b; color: #eaeaea;">
+                        <div class="combo-text" style="color: #fbbf24; font-weight: 600;">🏆 Champion</div>
+                        <div class="combo-text">Achievement unlocked!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Mood:</strong> Enchanting, premium, mystical, fantasy<br>
+                <strong>Best for:</strong> Magic: The Gathering themed content, emphasizing the fantasy aspect<br>
+                <strong>Vibe:</strong> Think spellbooks, ancient scrolls, magical artifacts
+            </div>
+        </div>
+
+        <!-- Option B: Gaming Teal/Purple -->
+        <div class="palette-option">
+            <h3 style="color: #2dd4bf;">Option B: Esports Energy (Teal + Electric Purple)</h3>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">Dynamic, competitive, modern gaming aesthetic</p>
+            
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #5eead4; color: #042f2e;">
+                    <span>#5eead4</span>
+                    <span class="scale-label">300</span>
+                </div>
+                <div class="scale-swatch" style="background: #2dd4bf; color: #042f2e;">
+                    <span>#2dd4bf</span>
+                    <span class="scale-label">Light</span>
+                </div>
+                <div class="scale-swatch" style="background: #14b8a6; color: #fff;">
+                    <span>#14b8a6</span>
+                    <span class="scale-label">Primary</span>
+                </div>
+                <div class="scale-swatch" style="background: #0d9488; color: #fff;">
+                    <span>#0d9488</span>
+                    <span class="scale-label">Dark</span>
+                </div>
+                <div class="scale-swatch" style="background: #0f766e; color: #fff;">
+                    <span>#0f766e</span>
+                    <span class="scale-label">700</span>
+                </div>
+            </div>
+
+            <h4 style="color: #c084fc; margin-top: 2rem;">Electric Purple Accent</h4>
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #d8b4fe; color: #3b0764;">
+                    <span>#d8b4fe</span>
+                    <span class="scale-label">Light</span>
+                </div>
+                <div class="scale-swatch" style="background: #c084fc; color: #1e1b4b;">
+                    <span>#c084fc</span>
+                    <span class="scale-label">400</span>
+                </div>
+                <div class="scale-swatch" style="background: #a855f7; color: #fff;">
+                    <span>#a855f7</span>
+                    <span class="scale-label">Purple</span>
+                </div>
+                <div class="scale-swatch" style="background: #9333ea; color: #fff;">
+                    <span>#9333ea</span>
+                    <span class="scale-label">Dark</span>
+                </div>
+            </div>
+
+            <div class="combination-grid" style="margin-top: 2rem;">
+                <div class="combo-card">
+                    <div class="combo-header" style="background: linear-gradient(135deg, #14b8a6, #2dd4bf); color: #fff;">
+                        Competitive Edge
+                    </div>
+                    <div class="combo-body" style="background: #18181b; color: #eaeaea;">
+                        <div class="combo-text">High-energy gaming interface</div>
+                        <button class="combo-button" style="background: #14b8a6; color: #fff; border: none;">
+                            Enter Arena
+                        </button>
+                    </div>
+                </div>
+
+                <div class="combo-card">
+                    <div class="combo-header" style="background: #232326; color: #a855f7; border-left: 4px solid #a855f7;">
+                        Rank Up!
+                    </div>
+                    <div class="combo-body" style="background: rgba(168, 85, 247, 0.1); color: #eaeaea;">
+                        <div class="combo-text" style="color: #c084fc; font-weight: 600;">Achievement Unlocked</div>
+                        <div class="combo-text">You're now in the top 10!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Mood:</strong> Energetic, competitive, modern, fast-paced<br>
+                <strong>Best for:</strong> Esports feel, competitive gaming, younger audience<br>
+                <strong>Vibe:</strong> RGB lighting, streaming overlays, tournament brackets
+            </div>
+        </div>
+
+        <!-- Option C: Five Color MTG -->
+        <div class="palette-option">
+            <h3>Option C: Classic MTG Identity (Five Colors)</h3>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">Authentic Magic: The Gathering color philosophy</p>
+            
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #f8f6e8; color: #1a1a1a;">White ☀️</div>
+                    <div class="color-info">
+                        <div class="color-name">Plains - White</div>
+                        <div class="color-hex">#f8f6e8</div>
+                        <div class="color-usage">Order, structure, peace</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #3b82f6;">Blue 💧</div>
+                    <div class="color-info">
+                        <div class="color-name">Island - Blue</div>
+                        <div class="color-hex">#3b82f6</div>
+                        <div class="color-usage">Knowledge, intellect, control</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #1a1a1a;">Black 💀</div>
+                    <div class="color-info">
+                        <div class="color-name">Swamp - Black</div>
+                        <div class="color-hex">#1a1a1a</div>
+                        <div class="color-usage">Ambition, power, death</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #e57373;">Red 🔥</div>
+                    <div class="color-info">
+                        <div class="color-name">Mountain - Red</div>
+                        <div class="color-hex">#e57373</div>
+                        <div class="color-usage">Chaos, passion, freedom</div>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-preview" style="background: #34d399;">Green 🌲</div>
+                    <div class="color-info">
+                        <div class="color-name">Forest - Green</div>
+                        <div class="color-hex">#34d399</div>
+                        <div class="color-usage">Growth, nature, life</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Design Challenge:</strong> Using all five colors as primaries can be chaotic. Consider using them as accents or category indicators instead of primary brand colors. Example: color-code players by their favorite color, or use for different game types.
+            </div>
+
+            <div class="usage-example">
+                <div class="example-header">
+                    <div class="example-badge" style="background: #3b82f6; color: white;">Blue Mage</div>
+                    <div class="example-badge" style="background: #e57373; color: white;">Red Mage</div>
+                    <div class="example-badge" style="background: #34d399; color: #000;">Green Mage</div>
+                </div>
+                <p style="color: #94a3b8;">Example: Use MTG colors as player identity markers or deck archetypes</p>
+            </div>
+        </div>
+
+        <!-- Visual Comparison -->
+        <h2>Side-by-Side Comparison</h2>
+        <div class="comparison-container">
+            <!-- Current Blue -->
+            <div class="comparison-card">
+                <div class="comparison-hero" style="background: linear-gradient(135deg, #1e40af, #3b82f6, #60a5fa);">
+                    Current
+                </div>
+                <div class="comparison-content">
+                    <div class="comparison-title" style="color: #3b82f6;">Professional Blue</div>
+                    <div class="comparison-colors">
+                        <div class="mini-swatch" style="background: #60a5fa;"></div>
+                        <div class="mini-swatch" style="background: #3b82f6;"></div>
+                        <div class="mini-swatch" style="background: #1e40af;"></div>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 1rem 0;">Clean, trustworthy, and professional. Perfect for competitive tracking and serious gaming.</p>
+                    <div>
+                        <span class="mood-tag">Trustworthy</span>
+                        <span class="mood-tag">Professional</span>
+                        <span class="mood-tag">Tech-savvy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purple/Gold -->
+            <div class="comparison-card">
+                <div class="comparison-hero" style="background: linear-gradient(135deg, #6d28d9, #8b5cf6, #a78bfa);">
+                    Option A
+                </div>
+                <div class="comparison-content">
+                    <div class="comparison-title" style="color: #8b5cf6;">Mystic Magic</div>
+                    <div class="comparison-colors">
+                        <div class="mini-swatch" style="background: #a78bfa;"></div>
+                        <div class="mini-swatch" style="background: #8b5cf6;"></div>
+                        <div class="mini-swatch" style="background: #fbbf24;"></div>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 1rem 0;">Enchanting and premium feel. Emphasizes the magical fantasy theme with mystical purple and victorious gold.</p>
+                    <div>
+                        <span class="mood-tag">Mystical</span>
+                        <span class="mood-tag">Premium</span>
+                        <span class="mood-tag">Fantasy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teal/Purple -->
+            <div class="comparison-card">
+                <div class="comparison-hero" style="background: linear-gradient(135deg, #0f766e, #14b8a6, #2dd4bf);">
+                    Option B
+                </div>
+                <div class="comparison-content">
+                    <div class="comparison-title" style="color: #14b8a6;">Esports Energy</div>
+                    <div class="comparison-colors">
+                        <div class="mini-swatch" style="background: #2dd4bf;"></div>
+                        <div class="mini-swatch" style="background: #14b8a6;"></div>
+                        <div class="mini-swatch" style="background: #a855f7;"></div>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin: 1rem 0;">High-energy and competitive. Modern gaming aesthetic with vibrant teal and electric purple accents.</p>
+                    <div>
+                        <span class="mood-tag">Energetic</span>
+                        <span class="mood-tag">Competitive</span>
+                        <span class="mood-tag">Modern</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expanded Blue Scale (Recommendation) -->
+        <h2>Recommended: Expanded Blue System</h2>
+        <div class="palette-section">
+            <p style="color: #94a3b8; margin-bottom: 2rem;">
+                If you love your current blue but want more flexibility, here's a full scale with 9 tones.
+                This gives you precise control for hover states, disabled buttons, loading states, etc.
+            </p>
+
+            <div class="color-scale">
+                <div class="scale-swatch" style="background: #eff6ff; color: #1e3a8a;">
+                    <span>#eff6ff</span>
+                    <span class="scale-label">50</span>
+                </div>
+                <div class="scale-swatch" style="background: #dbeafe; color: #1e40af;">
+                    <span>#dbeafe</span>
+                    <span class="scale-label">100</span>
+                </div>
+                <div class="scale-swatch" style="background: #bfdbfe; color: #1e40af;">
+                    <span>#bfdbfe</span>
+                    <span class="scale-label">200</span>
+                </div>
+                <div class="scale-swatch" style="background: #93c5fd; color: #1e3a8a;">
+                    <span>#93c5fd</span>
+                    <span class="scale-label">300</span>
+                </div>
+                <div class="scale-swatch" style="background: #60a5fa; color: #fff;">
+                    <span>#60a5fa</span>
+                    <span class="scale-label">400</span>
+                </div>
+                <div class="scale-swatch" style="background: #3b82f6; color: #fff;">
+                    <span>#3b82f6</span>
+                    <span class="scale-label">500 ⭐</span>
+                </div>
+                <div class="scale-swatch" style="background: #2563eb; color: #fff;">
+                    <span>#2563eb</span>
+                    <span class="scale-label">600</span>
+                </div>
+                <div class="scale-swatch" style="background: #1d4ed8; color: #fff;">
+                    <span>#1d4ed8</span>
+                    <span class="scale-label">700</span>
+                </div>
+                <div class="scale-swatch" style="background: #1e40af; color: #fff;">
+                    <span>#1e40af</span>
+                    <span class="scale-label">800</span>
+                </div>
+                <div class="scale-swatch" style="background: #1e3a8a; color: #fff;">
+                    <span>#1e3a8a</span>
+                    <span class="scale-label">900</span>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <strong>💡 Pro Tip:</strong> The ⭐ 500 value is your base color. Lighter values (100-400) are for backgrounds and hover states. Darker values (600-900) are for text on light backgrounds and active/pressed states.
+            </div>
+        </div>
+
+        <!-- Design Philosophy -->
+        <h2>Your Design Philosophy ✨</h2>
+        <div class="usage-example">
+            <h3 style="color: #fff; margin-top: 0;">Mystic Magic Theme - Chosen Direction</h3>
+            
+            <div style="margin: 1.5rem 0;">
+                <strong style="color: #8b5cf6;">Purple = Primary Interactive Elements</strong>
+                <div style="color: #94a3b8; margin-left: 1.5rem; margin-top: 0.5rem;">
+                    Use for buttons, links, headers, borders - all the main UI elements
+                </div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <strong style="color: #fbbf24;">Gold = Special Moments</strong>
+                <div style="color: #94a3b8; margin-left: 1.5rem; margin-top: 0.5rem;">
+                    Use sparingly for winners, achievements, celebrations, highlights
+                </div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <strong style="color: #34d399;">Green = Success</strong>
+                <div style="color: #94a3b8; margin-left: 1.5rem; margin-top: 0.5rem;">
+                    Confirmations, positive states
+                </div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <strong style="color: #e57373;">Red = Danger</strong>
+                <div style="color: #94a3b8; margin-left: 1.5rem; margin-top: 0.5rem;">
+                    Errors, delete actions, warnings
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Keep It Simple:</strong> With only a handful of users, you don't need every shade. Your core palette of 3 purples + 3 golds + semantic colors is perfect. Don't overthink it!
+        </div>
+
+        <div class="warning-box" style="margin-top: 3rem;">
+            <strong>Remember:</strong> This is a private reference document. Open it in your browser anytime to visualize color combinations as you work on the redesign. There's no rush to decide—sometimes the best choice reveals itself as you experiment!
+        </div>
+
+        <p style="text-align: center; color: #64748b; margin: 4rem 0 2rem 0; font-size: 0.9rem;">
+            Last updated: December 1, 2025 • Private design reference for L3vi
+        </p>
+    </div>
+</body>
+</html>

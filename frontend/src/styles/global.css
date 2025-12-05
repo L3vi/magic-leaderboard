@@ -81,7 +81,7 @@ body {
 .tab-btn {
   background: none;
   border: none;
-  color: var(--accent);
+  color: var(--primary);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 1rem;
@@ -92,11 +92,11 @@ body {
 }
 
 .tab-btn.active {
-  background: var(--accent-light);
-  color: var(--accent-dark);
+  background: var(--primary-light);
+  color: var(--primary-dark);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
 }
 
 .tab-btn:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--primary);
 }

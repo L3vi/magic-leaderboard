@@ -20,8 +20,8 @@
   font-weight: 600;
   font-size: 1rem;
   padding: 0.25rem 0;
-  border-bottom: 1px solid var(--accent-light);
-  color: var(--accent-dark);
+  border-bottom: 1px solid var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .leaderboard-header span {
@@ -34,13 +34,13 @@
 }
 
 .leaderboard-header span:hover {
-  background: var(--accent-light, #60a5fa);
-  color: var(--accent-dark, #1e40af);
+  background: var(--primary-light);
+  color: var(--primary-dark);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
 }
 
 .leaderboard-header span:active {
-  background: var(--accent-dark, #1e40af);
+  background: var(--primary-dark);
   color: #fff;
   box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
 }

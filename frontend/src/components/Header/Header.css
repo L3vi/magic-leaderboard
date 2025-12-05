@@ -2,7 +2,7 @@
 /* Header Component      */
 /* ===================== */
 .logo-main {
-  fill: var(--accent, #3b82f6);
+  fill: var(--primary);
 }
 
 .header {
@@ -62,7 +62,7 @@
   font-weight: 700;
   margin: 0;
   padding: 0.5rem 1rem;
-  color: var(--accent);
+  color: var(--primary);
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   letter-spacing: 0.02em;
 }
