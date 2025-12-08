@@ -14,6 +14,7 @@ interface GameRowProps {
   players: Player[];
   winner?: Player;
   onClick?: () => void;
+  active?: boolean;
 }
 
 // Global cache for commander images
@@ -109,14 +110,6 @@ const GameRow: React.FC<GameRowProps> = ({
                 }
               >
                 {p.name}
-              </div>
-              <div
-                key={p.commander + idx}
-                style={
-                  isWinner ? { color: "var(--accent)", fontWeight: 700 } : {}
-                }
-              >
-                {p.commander}
               </div>
             </div>
           );
