@@ -1,8 +1,7 @@
 import React, { useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
-import Modal from "../Modal/Modal";
-import PlayerDetails from "../PlayerDetails/PlayerDetails";
-import "./Leaderboard.css";
+import "./Players.css";
 import playersRaw from "../../data/players.json";
 import gamesRaw from "../../data/games.json";
 
@@ -46,17 +45,15 @@ const COLUMN_LABELS: Record<SortKey, string> = {
 };
 
 /**
- * Leaderboard component for the Magic Leaderboard app.
+ * Players component for the Magic Leaderboard app.
  * - Displays sortable player stats in a responsive, accessible layout.
  * - Uses ARIA roles, keyboard navigation, and semantic HTML.
  */
-const Leaderboard: React.FC = () => {
+const Players: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("score");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player | null>(
-    null
-  );
   const headerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // Memoize player aggregation and sorting for performance
   const allPlayers = useMemo(() => aggregatePlayers(playersRaw, gamesRaw), []);
@@ -102,8 +99,8 @@ const Leaderboard: React.FC = () => {
     }
   }
 
-  function handleModalClose() {
-    setSelectedPlayer(null);
+  function handlePlayerClick(player: Player) {
+    navigate(`/players/${encodeURIComponent(player.name)}`);
   }
 
   return (
@@ -146,25 +143,12 @@ const Leaderboard: React.FC = () => {
             key={player.name}
             player={player}
             rank={showTopRankings ? index + 1 : undefined}
-            onClick={() => setSelectedPlayer(player)}
+            onClick={() => handlePlayerClick(player)}
           />
         ))}
       </div>
-      <Modal
-        isOpen={!!selectedPlayer}
-        onClose={handleModalClose}
-        title="Player Details"
-      >
-        {selectedPlayer && (
-          <PlayerDetails
-            player={selectedPlayer}
-            games={gamesRaw}
-            players={playersRaw}
-          />
-        )}
-      </Modal>
     </section>
   );
 };
 
-export default Leaderboard;
+export default Players;

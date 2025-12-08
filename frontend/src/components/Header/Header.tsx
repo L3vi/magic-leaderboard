@@ -12,8 +12,8 @@ import NavBar from "./NavBar";
  */
 interface HeaderProps {
   title?: string;
-  activeTab: "leaderboard" | "games";
-  setActiveTab: (tab: "leaderboard" | "games") => void;
+  activeTab: "players" | "games";
+  setActiveTab: (tab: "players" | "games") => void;
   onNewGame?: () => void;
 }
 

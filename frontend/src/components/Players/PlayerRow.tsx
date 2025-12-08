@@ -1,5 +1,6 @@
 
 import React from "react";
+import { motion } from "framer-motion";
 import "./PlayerRow.css";
 
 /**
@@ -30,18 +31,21 @@ interface PlayerRowProps {
 }
 
 const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, active, rank }) => (
-  <div
+  <motion.div
+    layoutId={`player-${player.name}`}
     className={`player-row${active ? ' active' : ''}${rank === 1 ? ' rank-1' : rank === 2 ? ' rank-2' : rank === 3 ? ' rank-3' : ''}`}
     role="row"
     tabIndex={0}
     aria-label={`Player ${player.name}, Score ${player.score}, Average Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}
     onClick={onClick}
     style={onClick ? { cursor: "pointer" } : undefined}
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
   >
     <span className="leaderboard-col player-name" role="cell">{player.name}</span>
     <span className="leaderboard-col player-score" role="cell">{player.score}</span>
     <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(1)}</span>
-  </div>
+  </motion.div>
 );
 
 export default PlayerRow;

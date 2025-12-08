@@ -8,14 +8,14 @@ import "./NavBar.css";
  * @property setActiveTab - Function to set the active tab.
  */
 interface NavBarProps {
-	activeTab: "leaderboard" | "games";
-	setActiveTab: (tab: "leaderboard" | "games") => void;
+	activeTab: "players" | "games";
+	setActiveTab: (tab: "players" | "games") => void;
 	onNewGame?: () => void;
 }
 
 // Navigation items for the NavBar
 const NAV_ITEMS = [
-	{ label: "Leaderboard", icon: "🏆", tab: "leaderboard" },
+	{ label: "Players", icon: "🏆", tab: "players" },
 	{ label: "Games", icon: "🎲", tab: "games" },
 	{ label: "Add Game", icon: "+", isFab: true },
 ];

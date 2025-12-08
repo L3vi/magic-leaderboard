@@ -1,23 +1,34 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useSwipeable } from "react-swipeable";
+import { AnimatePresence } from "framer-motion";
 import "./styles/global.css";
 import Header from "./components/Header/Header";
-import Leaderboard from "./components/Leaderboard/Leaderboard";
-import GameHistory from "./components/GameHistory/GameHistory";
-import Modal from "./components/Modal/Modal";
+import Players from "./components/Players/Players";
+import Games from "./components/Games/Games";
 import NewGame from "./components/NewGame/NewGame";
+import PlayerDetailsPage from "./pages/PlayerDetailsPage";
+import GameDetailsPage from "./pages/GameDetailsPage";
 
-function App() {
-  const [activeTab, setActiveTab] = useState<'leaderboard' | 'games'>('leaderboard');
+function MainLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isNewGameOpen, setIsNewGameOpen] = useState(false);
+
+  // Determine active tab from URL path
+  const activeTab: 'players' | 'games' = location.pathname.startsWith('/games') ? 'games' : 'players';
+
+  const handleTabChange = (tab: 'players' | 'games') => {
+    navigate(tab === 'players' ? '/players' : '/games');
+  };
 
   // Swipe handlers for tab navigation
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (activeTab === 'leaderboard') setActiveTab('games');
+      if (activeTab === 'players') handleTabChange('games');
     },
     onSwipedRight: () => {
-      if (activeTab === 'games') setActiveTab('leaderboard');
+      if (activeTab === 'games') handleTabChange('players');
     },
     trackMouse: true, // allows swipe with mouse for desktop
   });
@@ -37,18 +48,46 @@ function App() {
 
   return (
     <>
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={handleNewGame} />
+      <Header activeTab={activeTab} setActiveTab={handleTabChange} onNewGame={handleNewGame} />
       <div
         {...swipeHandlers}
-        className={`tab-content${activeTab === 'leaderboard' ? ' slide-in-left' : ' slide-in-right'}`}
+        className={`tab-content${activeTab === 'players' ? ' slide-in-left' : ' slide-in-right'}`}
       >
-        {activeTab === 'leaderboard' && <Leaderboard />}
-        {activeTab === 'games' && <GameHistory />}
+        {activeTab === 'players' && <Players />}
+        {activeTab === 'games' && <Games />}
       </div>
-      <Modal isOpen={isNewGameOpen} onClose={handleCloseNewGame} title="Create New Game">
-        <NewGame onSubmit={handleSubmitNewGame} onCancel={handleCloseNewGame} />
-      </Modal>
+      {isNewGameOpen && (
+        <div className="modal-overlay" onClick={handleCloseNewGame}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <NewGame onSubmit={handleSubmitNewGame} onCancel={handleCloseNewGame} />
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Navigate to="/players" replace />} />
+        <Route path="/players" element={<MainLayout />} />
+        <Route path="/games" element={<MainLayout />} />
+        <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
+        <Route path="/games/:gameId" element={<GameDetailsPage />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AnimatedRoutes />
+    </Router>
   );
 }
 

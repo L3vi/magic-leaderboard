@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import "./GameHistory.css";
+import { useNavigate } from "react-router-dom";
+import "./Games.css";
 import GameRow from "./GameRow";
 
 // TypeScript interfaces for game history data
@@ -31,14 +32,10 @@ interface GameHistoryData {
 import gamesRaw from "../../data/games.json";
 import playersRaw from "../../data/players.json";
 
-import GameDetails from "../GameDetails/GameDetails";
-import Modal from "../Modal/Modal";
-
-const GameHistory: React.FC = () => {
+const Games: React.FC = () => {
   // Filtering state
   const [filter, setFilter] = useState("");
-  // Track selected game for modal
-  const [selected, setSelected] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Use games.json directly
   const allGames = useMemo(() => gamesRaw, []);
@@ -58,12 +55,9 @@ const GameHistory: React.FC = () => {
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   }, [allGames, filter]);
 
-  // Find selected game object
-  const selectedGame = selected
-    ? filteredGames.find(g => g.id === selected)
-    : null;
-
-  const closeDetails = () => { setSelected(null); };
+  function handleGameClick(gameId: string) {
+    navigate(`/games/${gameId}`);
+  }
 
   return (
     <section className="game-history main-section">
@@ -104,37 +98,14 @@ const GameHistory: React.FC = () => {
                 notes={game.notes}
                 players={players}
                 winner={winnerObj}
-                onClick={() => setSelected(game.id)}
+                onClick={() => handleGameClick(game.id)}
               />
             );
           })
         )}
       </div>
-      <Modal isOpen={!!selectedGame} onClose={closeDetails} title="Game Details">
-        {selectedGame && (
-            <GameDetails
-              id={selectedGame.id}
-              dateCreated={selectedGame.dateCreated}
-              notes={selectedGame.notes}
-              players={selectedGame.players.map(p => ({
-                name: getPlayerName(p.playerId),
-                placement: p.placement,
-                commander: p.commander
-              }))}
-              winner={(() => {
-                const winner = selectedGame.players.find(p => p.placement === 1);
-                return winner ? {
-                  name: getPlayerName(winner.playerId),
-                  placement: winner.placement,
-                  commander: winner.commander
-                } : undefined;
-              })()}
-              onClose={closeDetails}
-            />
-        )}
-      </Modal>
     </section>
   );
 };
 
-export default GameHistory;
+export default Games;
