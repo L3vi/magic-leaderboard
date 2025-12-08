@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSwipeable } from "react-swipeable";
 import { motion } from "framer-motion";
@@ -90,13 +90,20 @@ const PlayerDetailsPage: React.FC = () => {
       className="player-details-page" 
       {...swipeHandlers} 
       ref={pageRef}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      transition={{ 
+        layout: { 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 40
+        }
+      }}
     >
       <motion.div 
         className="player-details-page-header"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
+        exit={{ opacity: 0 }}
+        transition={{ delay: 0.15 }}
       >
         <button 
           className="back-button" 
@@ -110,7 +117,8 @@ const PlayerDetailsPage: React.FC = () => {
         className="player-details-page-content"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
+        exit={{ opacity: 0 }}
+        transition={{ delay: 0.2 }}
       >
         <PlayerDetails player={player} games={gamesRaw} players={playersRaw} />
       </motion.div>

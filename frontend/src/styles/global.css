@@ -44,38 +44,6 @@ body {
       var(--navbar-height) + 4px
     ); /* nav bar height + extra for spacing */
   }
-
-  .slide-in-left {
-    animation: slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .slide-in-right {
-    animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  @keyframes slide-in-left {
-    from {
-      transform: translateX(-100vw);
-      opacity: 0.5;
-    }
-
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slide-in-right {
-    from {
-      transform: translateX(100vw);
-      opacity: 0.5;
-    }
-
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
 }
 
 .tab-btn {
@@ -99,4 +67,30 @@ body {
 
 .tab-btn:focus {
   outline: 2px solid var(--primary);
+}
+
+/* ===================== */
+/* Shared Detail Page Styles */
+/* ===================== */
+.back-button {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.back-button:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

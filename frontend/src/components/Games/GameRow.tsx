@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import "./GameRow.css";
 
 interface Player {
@@ -69,7 +70,8 @@ const GameRow: React.FC<GameRowProps> = ({
   onClick,
 }) => {
   return (
-    <div
+    <motion.div
+      layoutId={`game-${id}`}
       className="game-row"
       tabIndex={0}
       aria-label={`Game on ${new Date(dateCreated).toLocaleDateString()}`}
@@ -119,9 +121,8 @@ const GameRow: React.FC<GameRowProps> = ({
               {playerDetails}
             </div>
           );
-        })}
-      </div>
-    </div>
+        })}      </div>
+    </motion.div>
   );
 };
 

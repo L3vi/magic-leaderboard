@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useSwipeable } from "react-swipeable";
 import { AnimatePresence } from "framer-motion";
@@ -6,14 +6,13 @@ import "./styles/global.css";
 import Header from "./components/Header/Header";
 import Players from "./components/Players/Players";
 import Games from "./components/Games/Games";
-import NewGame from "./components/NewGame/NewGame";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
+import NewGamePage from "./pages/NewGamePage";
 
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isNewGameOpen, setIsNewGameOpen] = useState(false);
 
   // Determine active tab from URL path
   const activeTab: 'players' | 'games' = location.pathname.startsWith('/games') ? 'games' : 'players';
@@ -33,36 +32,21 @@ function MainLayout() {
     trackMouse: true, // allows swipe with mouse for desktop
   });
 
-  // Handler to open new game modal
+  // Handler to open new game page
   const handleNewGame = () => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    setIsNewGameOpen(true);
-  };
-  const handleCloseNewGame = () => setIsNewGameOpen(false);
-  const handleSubmitNewGame = (gameData: any) => {
-    // TODO: Add logic to save new game
-    setIsNewGameOpen(false);
+    navigate('/new-game');
   };
 
   return (
     <>
       <Header activeTab={activeTab} setActiveTab={handleTabChange} onNewGame={handleNewGame} />
-      <div
-        {...swipeHandlers}
-        className={`tab-content${activeTab === 'players' ? ' slide-in-left' : ' slide-in-right'}`}
-      >
+      <div {...swipeHandlers} className="tab-content">
         {activeTab === 'players' && <Players />}
         {activeTab === 'games' && <Games />}
       </div>
-      {isNewGameOpen && (
-        <div className="modal-overlay" onClick={handleCloseNewGame}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <NewGame onSubmit={handleSubmitNewGame} onCancel={handleCloseNewGame} />
-          </div>
-        </div>
-      )}
     </>
   );
 }
@@ -71,13 +55,14 @@ function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Navigate to="/players" replace />} />
         <Route path="/players" element={<MainLayout />} />
         <Route path="/games" element={<MainLayout />} />
         <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
         <Route path="/games/:gameId" element={<GameDetailsPage />} />
+        <Route path="/new-game" element={<NewGamePage />} />
       </Routes>
     </AnimatePresence>
   );

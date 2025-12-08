@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSwipeable } from "react-swipeable";
+import { motion } from "framer-motion";
 import GameDetails from "../components/Games/GameDetails";
 import playersRaw from "../data/players.json";
 import gamesRaw from "../data/games.json";
@@ -9,14 +10,10 @@ import "./GameDetailsPage.css";
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const [isClosing, setIsClosing] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      navigate("/games");
-    }, 300); // Match animation duration
+    navigate("/games");
   };
 
   const swipeHandlers = useSwipeable({
@@ -38,7 +35,15 @@ const GameDetailsPage: React.FC = () => {
 
   if (!game) {
     return (
-      <div className={`game-details-page ${isClosing ? 'closing' : ''}`} {...swipeHandlers} ref={pageRef}>
+      <motion.div 
+        className="game-details-page" 
+        {...swipeHandlers} 
+        ref={pageRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <div className="game-details-page-header">
           <button 
             className="back-button" 
@@ -50,7 +55,7 @@ const GameDetailsPage: React.FC = () => {
           <h1>Game Not Found</h1>
         </div>
         <p>The game with ID "{gameId}" could not be found.</p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -69,8 +74,26 @@ const GameDetailsPage: React.FC = () => {
   } : undefined;
 
   return (
-    <div className={`game-details-page ${isClosing ? 'closing' : ''}`} {...swipeHandlers} ref={pageRef}>
-      <div className="game-details-page-header">
+    <motion.div 
+      layoutId={`game-${game.id}`}
+      className="game-details-page" 
+      {...swipeHandlers} 
+      ref={pageRef}
+      transition={{ 
+        layout: { 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 40
+        }
+      }}
+    >
+      <motion.div 
+        className="game-details-page-header"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ delay: 0.15 }}
+      >
         <button 
           className="back-button" 
           onClick={handleClose}
@@ -79,8 +102,14 @@ const GameDetailsPage: React.FC = () => {
           ← Back
         </button>
         <h1>Game Details</h1>
-      </div>
-      <div className="game-details-page-content">
+      </motion.div>
+      <motion.div 
+        className="game-details-page-content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <GameDetails
           id={game.id}
           dateCreated={game.dateCreated}
@@ -89,8 +118,8 @@ const GameDetailsPage: React.FC = () => {
           winner={winnerObj}
           onClose={handleClose}
         />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
