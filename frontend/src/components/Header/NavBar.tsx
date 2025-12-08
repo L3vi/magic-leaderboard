@@ -17,7 +17,7 @@ interface NavBarProps {
 const NAV_ITEMS = [
 	{ label: "Leaderboard", icon: "🏆", tab: "leaderboard" },
 	{ label: "Games", icon: "🎲", tab: "games" },
-	{ label: "Add Game", icon: "➕", isFab: true },
+	{ label: "Add Game", icon: "+", isFab: true },
 ];
 
 /**
@@ -52,7 +52,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 		if (el && navRef.current) {
 			const navRect = navRef.current.getBoundingClientRect();
 			const rect = el.getBoundingClientRect();
-			const inset = 8; // Inset to account for border radius
+			const inset = 6; // Inset to account for border radius
 			setUnderlineStyle({
 				left: rect.left - navRect.left + inset + "px",
 				width: rect.width - (inset * 2) + "px",
