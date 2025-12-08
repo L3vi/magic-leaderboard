@@ -66,6 +66,12 @@
   white-space: nowrap;
 }
 
+.sort-arrow {
+  width: 0.75em;
+  display: inline-block;
+  font-size: 0.75em;
+}
+
 /* ===================== */
 /* Desktop overrides     */
 /* Desktop: 640px+ */

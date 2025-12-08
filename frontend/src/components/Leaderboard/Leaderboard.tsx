@@ -128,11 +128,15 @@ const Leaderboard: React.FC = () => {
             onKeyDown={(e) => handleHeaderKeyDown(e, key as SortKey)}
           >
             {label}
-            {sortKey === key && (
-              <span style={{ marginLeft: 4 }} aria-hidden="true">
-                {sortOrder === "asc" ? "▲" : "▼"}
-              </span>
-            )}
+            <span
+              className="sort-arrow"
+              style={{
+                visibility: sortKey === key ? "visible" : "hidden",
+              }}
+              aria-hidden="true"
+            >
+              {sortOrder === "asc" ? "▲" : "▼"}
+            </span>
           </span>
         ))}
       </div>
