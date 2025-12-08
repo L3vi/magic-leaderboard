@@ -59,10 +59,10 @@
   display: inline-block;
 }
 .player-details-highlight dd {
-  background: var(--success, #34d399);
+  background: var(--accent);
   color: var(--surface);
   font-weight: 700;
-  box-shadow: 0 0 0 2px var(--success, #34d399);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .player-details-recent {
@@ -104,7 +104,7 @@
   border: 1px solid var(--primary-dark);
 }
 .placement-1 {
-  background: var(--success, #34d399);
+  background: var(--accent);
   color: var(--surface);
 }
 .placement-2 {

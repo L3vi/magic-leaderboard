@@ -26,7 +26,8 @@
   display: none;
 }
 
-@media (min-width: 768px) {
+/* Desktop: 640px+ */
+@media (min-width: 640px) {
   .header {
     flex-direction: column;
     padding-bottom: 0;

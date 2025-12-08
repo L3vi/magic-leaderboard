@@ -55,12 +55,6 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 			setUnderlineStyle({
 				left: rect.left - navRect.left + "px",
 				width: rect.width + "px",
-				bottom: "0px",
-				height: "3px",
-				position: "absolute",
-				background: "var(--accent, #b45309)",
-				borderRadius: "2px",
-				transition: "left 0.3s cubic-bezier(.4,0,.2,1), width 0.3s cubic-bezier(.4,0,.2,1), background 0.18s"
 			});
 		}
 	}, [activeTab]);
@@ -114,13 +108,13 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 								role="button"
 								onClick={onNewGame}
 							>
-								➕
+								+
 							</button>
 					<div className="nav-highlight" style={underlineStyle} />
 				</div>
 				{/* Desktop FAB */}
 						<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
-							<span className="nav-fab-icon">➕</span>
+							<span className="nav-fab-icon">+</span>
 							<span className="nav-fab-label">New Game</span>
 						</button>
 			</>

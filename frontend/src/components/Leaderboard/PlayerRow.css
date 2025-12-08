@@ -68,9 +68,10 @@
 }
 
 /* ===================== */
-/* Desktop-specific Styles */
+/* Desktop Styles */
+/* Desktop: 640px+ */
 /* ===================== */
-@media (min-width: 900px) {
+@media (min-width: 640px) {
     .player-row {
         font-size: 1.5rem;
         padding: 1.5rem 1vw;
@@ -86,7 +87,7 @@
 /* ===================== */
 /* Mobile-specific Styles */
 /* ===================== */
-@media (max-width: 600px) {
+@media (max-width: 639px) {
     .player-row {
         font-size: 1.5rem;
         padding: 1.5rem 1vw;

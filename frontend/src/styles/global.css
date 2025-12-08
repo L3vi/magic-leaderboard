@@ -37,7 +37,7 @@ body {
 /* App Tabs Styles        */
 /* ===================== */
 
-@media (max-width: 600px) {
+@media (max-width: 639px) {
   /* Prevent content from being covered by bottom nav bar */
   .tab-content {
     padding-bottom: calc(

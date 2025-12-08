@@ -1,4 +1,16 @@
 /* ===================== */
+/* Breakpoint Strategy   */
+/* ===================== */
+/*
+  Mobile:  0 - 639px
+  Desktop: 640px+
+  
+  Use in media queries:
+  - Mobile: @media (max-width: 639px)
+  - Desktop: @media (min-width: 640px)
+*/
+
+/* ===================== */
 /* Main Section Unified  */
 /* ===================== */
 .main-section {
@@ -7,7 +19,8 @@
   margin: 0 auto;
 }
 
-@media (max-width: 767px) {
+/* Mobile: below 640px */
+@media (max-width: 639px) {
   .main-section {
     margin: 1rem;
     padding-bottom: 28px;
@@ -15,7 +28,8 @@
   }
 }
 
-@media (min-width: 768px) {
+/* Desktop: 640px+ */
+@media (min-width: 640px) {
   .main-section {
     margin: 2rem auto;
   }
@@ -38,9 +52,9 @@
   --primary-dark: #7c3aed;
   
   /* Accent - Victory Gold */
-  --gold: #fbbf24;
-  --gold-light: #fde68a;
-  --gold-dark: #f59e0b;
+  --accent: #fbbf24;
+  --accent-light: #fde68a;
+  --accent-dark: #f59e0b;
   
   /* Semantic Colors */
   --success: #34d399;
@@ -51,8 +65,13 @@
   
   /* Layout */
   --navbar-height: 64px;
+  --header-height: 60px;
   --desktop-max-width: 1200px;
   --desktop-content-max-width: 1000px;
+  
+  /* Breakpoints */
+  --breakpoint-mobile-max: 639px;
+  --breakpoint-desktop: 640px;
 }
 
 /* ===================== */

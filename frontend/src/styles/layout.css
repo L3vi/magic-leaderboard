@@ -19,7 +19,8 @@
 }
 
 /* Responsive padding adjustments */
-@media (min-width: 768px) {
+/* Desktop: 640px+ */
+@media (min-width: 640px) {
   .desktop-container {
     padding: 0 2rem;
   }
