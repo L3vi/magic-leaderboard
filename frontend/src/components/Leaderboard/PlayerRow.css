@@ -22,6 +22,19 @@
     transform: scale(0.98);
 }
 
+/* Top 3 medal backgrounds - subtle */
+.player-row.rank-1 {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, var(--surface) 100%);
+}
+
+.player-row.rank-2 {
+    background: linear-gradient(135deg, rgba(220, 220, 220, 0.25) 0%, var(--surface) 100%);
+}
+
+.player-row.rank-3 {
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, var(--surface) 100%);
+}
+
 .player-row>.player-name {
     text-align: left;
     font-weight: 500;

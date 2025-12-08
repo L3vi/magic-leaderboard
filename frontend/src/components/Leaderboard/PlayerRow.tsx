@@ -26,11 +26,12 @@ interface PlayerRowProps {
   player: Player;
   onClick?: () => void;
   active?: boolean;
+  rank?: number;
 }
 
-const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, active }) => (
+const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, active, rank }) => (
   <div
-    className={`player-row${active ? ' active' : ''}`}
+    className={`player-row${active ? ' active' : ''}${rank === 1 ? ' rank-1' : rank === 2 ? ' rank-2' : rank === 3 ? ' rank-3' : ''}`}
     role="row"
     tabIndex={0}
     aria-label={`Player ${player.name}, Score ${player.score}, Average Place ${player.average.toFixed(2)}, Games ${player.gamesPlayed}`}

@@ -122,10 +122,11 @@ const Leaderboard: React.FC = () => {
         ))}
       </div>
       <div className="leaderboard-list" role="rowgroup">
-        {sortedPlayers.map((player) => (
+        {sortedPlayers.map((player, index) => (
           <PlayerRow
             key={player.name}
             player={player}
+            rank={index + 1}
             onClick={() => setSelectedPlayer(player)}
           />
         ))}
