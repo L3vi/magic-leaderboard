@@ -65,23 +65,6 @@
   }
 }
 
-.leaderboard-col {
-    flex: 1;
-    text-align: right;
-    min-width: 80px;
-    padding: 0 0.5rem;
-    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-    box-sizing: border-box;
-}
-
-.player-name.leaderboard-col {
-    text-align: left;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /* ===================== */
 /* Desktop Styles */
 /* Desktop: 640px+ */
