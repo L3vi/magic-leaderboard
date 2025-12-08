@@ -13,6 +13,7 @@
     color: var(--foreground);
     cursor: pointer;
     transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+    margin: 5px;
 }
 
 .player-row:active {
@@ -89,6 +90,5 @@
     .player-row {
         font-size: 1.5rem;
         padding: 1.5rem 1vw;
-        margin: 5px;
     }
 }
