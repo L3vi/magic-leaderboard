@@ -100,9 +100,8 @@ const GameRow: React.FC<GameRowProps> = ({
           ) : (
             <div key={key} className="game-row-commander-img-placeholder" />
           );
-          return (
-            <div key={p.name + "-container-" + idx} className="game-row-player">
-              {commanderImage}
+          const playerDetails = (
+            <div className="game-row-player-details">
               <div
                 key={p.name + idx}
                 style={
@@ -111,6 +110,20 @@ const GameRow: React.FC<GameRowProps> = ({
               >
                 {p.name}
               </div>
+              <div
+                key={p.commander + idx}
+                style={
+                  isWinner ? { color: "var(--accent)", fontWeight: 700 } : {}
+                }
+              >
+                {p.commander}
+              </div>
+            </div>
+          );
+          return (
+            <div key={p.name + "-container-" + idx} className="game-row-player">
+              {commanderImage}
+              {playerDetails}
             </div>
           );
         })}

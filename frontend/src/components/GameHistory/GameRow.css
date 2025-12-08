@@ -14,6 +14,7 @@
   min-height: 120px;
   gap: 0.75rem;
   flex-direction: column;
+  margin: 5px;
 }
 
 .game-row:hover {
@@ -26,17 +27,6 @@
   color: #fff;
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
   transform: scale(0.98);
-}
-
-.game-row-main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.4rem;
-  flex: 1 1 60%;
-  min-width: 0;
-  text-align: left;
 }
 
 .game-row-date {
@@ -61,25 +51,10 @@
   gap: 0.5rem;
 }
 
-.game-row-winner,
-.game-row-winner-commander {
-  font-size: 0.95rem;
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.game-row-commanders {
+.game-row-player-details {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  height: auto;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
-  max-width: 100%;
-  box-sizing: border-box;
-  background: transparent;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .game-row-commander-img,
@@ -113,46 +88,6 @@
 
 @media (min-width: 640px) {
   .game-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    min-height: 96px;
-    gap: 0;
-  }
-
-  .game-row-main {
-    gap: 0.5rem;
-  }
-
-  .game-row-date,
-  .game-row-players,
-  .game-row-winner,
-  .game-row-winner-commander {
-    font-size: 1.1rem;
-  }
-
-  .game-row-commanders {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-bottom: 0;
-    height: 64px;
-    flex: 0 0 auto;
-    max-width: 40vw;
-  }
-
-  .game-row-commander-img,
-  .game-row-commander-img-placeholder {
-    width: 64px;
-    height: 64px;
-    margin: 0 4px;
-  }
-}
-
-/* Desktop: 640px+ */
-@media (min-width: 640px) {
-  .game-row {
     font-size: 1.5rem;
     padding: 1.5rem 1vw;
   }
@@ -161,30 +96,14 @@
     background: var(--primary-light);
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
   }
-
-  .game-row-main {
-    gap: 0.7rem;
-  }
 }
 
 @media (max-width: 639px) {
   .game-row {
     font-size: 1.5rem;
-    margin: 5px;
   }
 
   .game-row:hover {
     background: none !important;
-  }
-
-  .game-row-main {
-    gap: 0.3rem;
-  }
-
-  .game-row-commanders {
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    max-width: 100%;
-    margin-bottom: 0.5rem;
   }
 }

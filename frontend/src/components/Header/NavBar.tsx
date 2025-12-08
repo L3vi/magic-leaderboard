@@ -52,9 +52,10 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 		if (el && navRef.current) {
 			const navRect = navRef.current.getBoundingClientRect();
 			const rect = el.getBoundingClientRect();
+			const inset = 8; // Inset to account for border radius
 			setUnderlineStyle({
-				left: rect.left - navRect.left + "px",
-				width: rect.width + "px",
+				left: rect.left - navRect.left + inset + "px",
+				width: rect.width - (inset * 2) + "px",
 			});
 		}
 	}, [activeTab]);
@@ -67,10 +68,11 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 			if (el && navRef.current) {
 				const navRect = navRef.current.getBoundingClientRect();
 				const rect = el.getBoundingClientRect();
+				const inset = 8; // Inset to account for border radius
 				setUnderlineStyle(style => ({
 					...style,
-					left: rect.left - navRect.left + "px",
-					width: rect.width + "px"
+					left: rect.left - navRect.left + inset + "px",
+					width: rect.width - (inset * 2) + "px"
 				}));
 			}
 		};
