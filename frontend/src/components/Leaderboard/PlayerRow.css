@@ -58,9 +58,11 @@
     min-width: 48px;
 }
 
-.player-row:hover {
-    background: var(--primary-light);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  .player-row:hover {
+      background: var(--primary-light);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
+  }
 }
 
 .leaderboard-col {

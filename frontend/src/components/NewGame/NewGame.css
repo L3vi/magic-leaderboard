@@ -22,10 +22,14 @@
   transition: background 0.18s;
   align-self: center;
 }
-.remove-player-btn:hover {
-  background: var(--primary);
-  color: #fff;
+
+@media (hover: hover) and (pointer: fine) {
+  .remove-player-btn:hover {
+    background: var(--primary);
+    color: #fff;
+  }
 }
+
 /* NewGame Component Styles */
 
 /* Responsive NewGame form layout */

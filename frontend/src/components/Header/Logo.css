@@ -11,8 +11,10 @@
   margin-right: 1.25rem;
 }
 
-.logo:hover {
-  fill: var(--primary-dark);
-  filter: drop-shadow(0 6px 24px rgba(180,83,9,0.22));
-  transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+  .logo:hover {
+    fill: var(--primary-dark);
+    filter: drop-shadow(0 6px 24px rgba(180,83,9,0.22));
+    transform: scale(1.1);
+  }
 }

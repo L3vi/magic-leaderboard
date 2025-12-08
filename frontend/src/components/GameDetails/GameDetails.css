@@ -48,8 +48,10 @@
   transition: color 0.18s;
 }
 
-.game-details-close:hover {
-  color: var(--primary-dark);
+@media (hover: hover) and (pointer: fine) {
+  .game-details-close:hover {
+    color: var(--primary-dark);
+  }
 }
 
 .game-details-info {

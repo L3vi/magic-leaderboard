@@ -88,7 +88,13 @@
     box-shadow: 0 0 0 0 transparent;
 }
 
-.modal-close:hover,
+@media (hover: hover) and (pointer: fine) {
+  .modal-close:hover {
+      background: rgba(229, 115, 115, 0.18);
+      box-shadow: 0 0 0 2px var(--danger, #e57373);
+  }
+}
+
 .modal-close:focus {
     background: rgba(229, 115, 115, 0.18);
     box-shadow: 0 0 0 2px var(--danger, #e57373);

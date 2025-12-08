@@ -18,9 +18,11 @@
   outline: none; /* Remove focus outline to prevent dark persistent state */
 }
 
-.game-row:hover {
-  background: var(--primary-light);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  .game-row:hover {
+    background: var(--primary-light);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
+  }
 }
 
 .game-row:active {
@@ -95,19 +97,10 @@
     font-size: 1.5rem;
     padding: 1.5rem 1vw;
   }
-
-  .game-row:hover {
-    background: var(--primary-light);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
-  }
 }
 
 @media (max-width: 639px) {
   .game-row {
     font-size: 1.5rem;
-  }
-
-  .game-row:hover {
-    background: none !important;
   }
 }

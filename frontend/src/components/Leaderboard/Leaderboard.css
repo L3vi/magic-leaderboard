@@ -34,10 +34,12 @@
   padding: 0.5rem;
 }
 
-.leaderboard-header span:hover {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .leaderboard-header span:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  }
 }
 
 .leaderboard-header span:active {
@@ -84,9 +86,5 @@
 
   .leaderboard-header {
     font-size: 1.5rem;
-  }
-
-  .player-row:hover {
-    background: none !important;
   }
 }
