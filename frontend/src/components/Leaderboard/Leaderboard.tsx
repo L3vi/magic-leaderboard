@@ -1,4 +1,3 @@
-
 import React, { useMemo, useRef } from "react";
 import PlayerRow, { Player } from "./PlayerRow";
 import Modal from "../Modal/Modal";
@@ -54,7 +53,9 @@ const COLUMN_LABELS: Record<SortKey, string> = {
 const Leaderboard: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("score");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = React.useState<Player | null>(
+    null
+  );
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Memoize player aggregation and sorting for performance
@@ -77,8 +78,16 @@ const Leaderboard: React.FC = () => {
     return players;
   }, [allPlayers, sortKey, sortOrder]);
 
+  // Determine if current sort shows top rankings (medals for score/average descending only)
+  const showTopRankings = useMemo(() => {
+    return (sortKey === "score" || sortKey === "average") && sortOrder === "desc";
+  }, [sortKey, sortOrder]);
+
   // Keyboard navigation for sortable headers
-  const handleHeaderKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>, key: SortKey) => {
+  const handleHeaderKeyDown = (
+    e: React.KeyboardEvent<HTMLSpanElement>,
+    key: SortKey
+  ) => {
     if (e.key === "Enter" || e.key === " " /* space */) {
       handleSort(key);
     }
@@ -103,14 +112,20 @@ const Leaderboard: React.FC = () => {
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
-            className={`leaderboard-col${key === 'name' ? ' player-name' : ''}`}
+            className={`leaderboard-col${key === "name" ? " player-name" : ""}`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"
-            aria-sort={sortKey === key ? (sortOrder === "asc" ? "ascending" : "descending") : undefined}
+            aria-sort={
+              sortKey === key
+                ? sortOrder === "asc"
+                  ? "ascending"
+                  : "descending"
+                : undefined
+            }
             aria-label={`Sort by ${label}`}
             onClick={() => handleSort(key as SortKey)}
-            onKeyDown={e => handleHeaderKeyDown(e, key as SortKey)}
+            onKeyDown={(e) => handleHeaderKeyDown(e, key as SortKey)}
           >
             {label}
             {sortKey === key && (
@@ -126,12 +141,16 @@ const Leaderboard: React.FC = () => {
           <PlayerRow
             key={player.name}
             player={player}
-            rank={index + 1}
+            rank={showTopRankings ? index + 1 : undefined}
             onClick={() => setSelectedPlayer(player)}
           />
         ))}
       </div>
-      <Modal isOpen={!!selectedPlayer} onClose={handleModalClose} title="Player Details">
+      <Modal
+        isOpen={!!selectedPlayer}
+        onClose={handleModalClose}
+        title="Player Details"
+      >
         {selectedPlayer && (
           <PlayerDetails
             player={selectedPlayer}
