@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
     if (isOpen) {
       lastFocusedElement.current = document.activeElement as HTMLElement;
       // Prevent background scroll
-  document.body.classList.add("modal-open");
+      document.body.classList.add("modal-open");
       // Focus the modal content
       contentRef.current?.focus();
       // Escape key to close
@@ -47,7 +47,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
         // Restore focus
         lastFocusedElement.current?.focus();
         // Restore scroll
-  document.body.classList.remove("modal-open");
+        document.body.classList.remove("modal-open");
       };
     }
   }, [isOpen, onClose]);
@@ -79,7 +79,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
         {title && (
           <div className="modal-header">
             <h3 id="modal-title">{title}</h3>
-            <button className="modal-close" onClick={onClose} aria-label="Close modal">×</button>
+            <button
+              className="modal-close"
+              onClick={onClose}
+              aria-label="Close modal"
+            >
+              ×
+            </button>
           </div>
         )}
         <div className="modal-body">{children}</div>
