@@ -55,7 +55,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <AnimatePresence initial={false}>
+    <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Navigate to="/players" replace />} />
         <Route path="/players" element={<MainLayout />} />
