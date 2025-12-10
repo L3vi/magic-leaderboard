@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSwipeable } from "react-swipeable";
 import { motion } from "framer-motion";
+import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import GameDetails from "../components/Games/GameDetails";
 import playersRaw from "../data/players.json";
 import gamesRaw from "../data/games.json";
@@ -10,22 +11,13 @@ import "./GameDetailsPage.css";
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const pageRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
     navigate("/games");
   };
 
-  const swipeHandlers = useSwipeable({
-    onSwipedDown: (eventData) => {
-      // Only trigger if swiping from top area (not mid-scroll)
-      if (pageRef.current && pageRef.current.scrollTop < 50) {
-        handleClose();
-      }
-    },
-    trackTouch: true,
-    trackMouse: false,
-  });
+  useEscapeKey(handleClose);
+  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   // Find game by ID
   const game = gamesRaw.find(g => g.id === gameId);

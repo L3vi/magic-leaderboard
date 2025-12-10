@@ -1,7 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSwipeable } from "react-swipeable";
 import { motion } from "framer-motion";
+import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import { Player } from "../components/Players/PlayerRow";
 import playersRaw from "../data/players.json";
@@ -11,22 +12,13 @@ import "./PlayerDetailsPage.css";
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
-  const pageRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
     navigate("/players");
   };
 
-  const swipeHandlers = useSwipeable({
-    onSwipedDown: (eventData) => {
-      // Only trigger if swiping from top area (not mid-scroll)
-      if (pageRef.current && pageRef.current.scrollTop < 50) {
-        handleClose();
-      }
-    },
-    trackTouch: true,
-    trackMouse: false,
-  });
+  useEscapeKey(handleClose);
+  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   // Find player by name (URL encoded)
   const decodedName = playerName ? decodeURIComponent(playerName) : "";

@@ -1,34 +1,26 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useSwipeable } from "react-swipeable";
 import { motion } from "framer-motion";
+import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css";
 
 const NewGamePage: React.FC = () => {
   const navigate = useNavigate();
-  const pageRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
     navigate("/games");
   };
+
+  useEscapeKey(handleClose);
+  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   const handleSubmit = (gameData: any) => {
     // TODO: Add logic to save new game
     console.log("New game data:", gameData);
     navigate("/games");
   };
-
-  const swipeHandlers = useSwipeable({
-    onSwipedDown: (eventData) => {
-      // Only trigger if swiping from top area (not mid-scroll)
-      if (pageRef.current && pageRef.current.scrollTop < 50) {
-        handleClose();
-      }
-    },
-    trackTouch: true,
-    trackMouse: false,
-  });
 
   return (
     <motion.div 
