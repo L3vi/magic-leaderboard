@@ -37,7 +37,7 @@ function MainLayout() {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    navigate('/new-game');
+    navigate('/new-game', { state: { from: location.pathname } });
   };
 
   return (

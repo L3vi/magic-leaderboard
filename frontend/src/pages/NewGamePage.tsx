@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
@@ -8,9 +8,11 @@ import "./NewGamePage.css";
 
 const NewGamePage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from || '/games';
 
   const handleClose = () => {
-    navigate("/games");
+    navigate(from);
   };
 
   useEscapeKey(handleClose);
@@ -19,7 +21,7 @@ const NewGamePage: React.FC = () => {
   const handleSubmit = (gameData: any) => {
     // TODO: Add logic to save new game
     console.log("New game data:", gameData);
-    navigate("/games");
+    navigate(from);
   };
 
   return (
