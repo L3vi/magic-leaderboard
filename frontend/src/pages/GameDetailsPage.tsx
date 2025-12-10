@@ -39,9 +39,9 @@ const GameDetailsPage: React.FC = () => {
         className="game-details-page" 
         {...swipeHandlers} 
         ref={pageRef}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2 }}
       >
         <div className="game-details-page-header">
@@ -75,25 +75,15 @@ const GameDetailsPage: React.FC = () => {
 
   return (
     <motion.div 
-      layoutId={`game-${game.id}`}
       className="game-details-page" 
       {...swipeHandlers} 
       ref={pageRef}
-      transition={{ 
-        layout: { 
-          type: "spring", 
-          stiffness: 400, 
-          damping: 40
-        }
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2 }}
     >
-      <motion.div 
-        className="game-details-page-header"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ delay: 0.15 }}
-      >
+      <div className="game-details-page-header">
         <button 
           className="back-button" 
           onClick={handleClose}
@@ -102,14 +92,8 @@ const GameDetailsPage: React.FC = () => {
           ← Back
         </button>
         <h1>Game Details</h1>
-      </motion.div>
-      <motion.div 
-        className="game-details-page-content"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ delay: 0.2 }}
-      >
+      </div>
+      <div className="game-details-page-content">
         <GameDetails
           id={game.id}
           dateCreated={game.dateCreated}
@@ -118,7 +102,7 @@ const GameDetailsPage: React.FC = () => {
           winner={winnerObj}
           onClose={handleClose}
         />
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

@@ -64,9 +64,9 @@ const PlayerDetailsPage: React.FC = () => {
         className="player-details-page" 
         {...swipeHandlers} 
         ref={pageRef}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2 }}
       >
         <div className="player-details-page-header">
@@ -86,25 +86,15 @@ const PlayerDetailsPage: React.FC = () => {
 
   return (
     <motion.div 
-      layoutId={`player-${player.name}`}
       className="player-details-page" 
       {...swipeHandlers} 
       ref={pageRef}
-      transition={{ 
-        layout: { 
-          type: "spring", 
-          stiffness: 400, 
-          damping: 40
-        }
-      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.2 }}
     >
-      <motion.div 
-        className="player-details-page-header"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ delay: 0.15 }}
-      >
+      <div className="player-details-page-header">
         <button 
           className="back-button" 
           onClick={handleClose}
@@ -112,16 +102,10 @@ const PlayerDetailsPage: React.FC = () => {
         >
           ← Back
         </button>
-      </motion.div>
-      <motion.div 
-        className="player-details-page-content"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ delay: 0.2 }}
-      >
+      </div>
+      <div className="player-details-page-content">
         <PlayerDetails player={player} games={gamesRaw} players={playersRaw} />
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
