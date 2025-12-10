@@ -6,8 +6,10 @@
   bottom: 0;
   background: var(--surface);
   overflow-y: auto;
+  overflow-x: hidden;
   z-index: 100;
   color: var(--foreground);
+  will-change: transform, opacity;
 }
 
 .player-details-page-header {
