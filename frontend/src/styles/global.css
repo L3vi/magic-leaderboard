@@ -14,6 +14,15 @@ body {
   overflow-x: hidden;
 }
 
+/* Prevent scrolling when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+html.modal-open {
+  overflow: hidden;
+}
+
 body {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   background: var(--background);

@@ -17,9 +17,19 @@ const GameDetailsPage: React.FC = () => {
 
   // Disable body scroll when this page is open
   React.useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('modal-open');
+    document.body.classList.add('modal-open');
+
+    // Prevent scroll gestures from being registered
+    const preventScroll = (e: Event) => e.preventDefault();
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    document.addEventListener('wheel', preventScroll, { passive: false });
+
     return () => {
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('modal-open');
+      document.body.classList.remove('modal-open');
+      document.removeEventListener('touchmove', preventScroll);
+      document.removeEventListener('wheel', preventScroll);
     };
   }, []);
 
