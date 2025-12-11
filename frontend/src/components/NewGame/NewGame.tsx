@@ -102,7 +102,7 @@ type CommanderAutocompleteProps = {
 };
 
 const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
-  const [results, setResults] = useState<{ name: string; id: string }[]>([]);
+  const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -141,7 +141,11 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       .then(res => res.json())
       .then(data => {
         if (data.data && Array.isArray(data.data)) {
-          setResults(data.data.slice(0, 10).map((card: any) => ({ name: card.name, id: card.id })));
+          setResults(data.data.slice(0, 10).map((card: any) => ({ 
+            name: card.name, 
+            id: card.id,
+            image: card.image_uris?.small || card.image_uris?.normal || undefined
+          })));
           setShowDropdown(true);
         } else {
           setResults([]);
@@ -226,6 +230,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
                 key={card.id}
                 onMouseDown={() => handleSelect(card.name)}
               >
+                {card.image && (
+                  <img src={card.image} alt={card.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', background: '#eee' }} />
+                )}
                 <span>{card.name}</span>
               </li>
             ))}
