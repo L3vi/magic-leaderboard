@@ -1,43 +1,126 @@
+
 import React, { useState, useEffect } from 'react';
-type NewGameProps = {
-  onSubmit: (gameData: any) => void;
-  onCancel?: () => void;
-};
 import { usePlayers } from "./usePlayers";
 import gamesData from '../../data/games.json';
 import "./NewGame.css";
-// CommanderAutocomplete is now a simple input
+
+// CommanderAutocomplete is now a Scryfall-powered autocomplete
 type CommanderAutocompleteProps = {
   value: string;
   onChange: (val: string) => void;
 };
 
 const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
-  // Stubbed functions for future autocomplete/art logic
-  // const artUrl = useCommanderArt(value); // stub
-  // const results = useScryfallAutocomplete(value); // stub
+  const [results, setResults] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!value) {
+      setResults([]);
+      setShowDropdown(false);
+      setSelectedImage(null);
+      return;
+    }
+    setLoading(true);
+    fetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(value)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.data) {
+          setResults(data.data);
+          setShowDropdown(true);
+        } else {
+          setResults([]);
+          setShowDropdown(false);
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setResults([]);
+        setShowDropdown(false);
+        setLoading(false);
+      });
+  }, [value]);
+
+  const handleSelect = (card: any) => {
+    onChange(card.name);
+    setShowDropdown(false);
+    setResults([]);
+    setLoading(true);
+    // Use Scryfall fuzzy endpoint for best match and image
+    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(card.name)}`)
+      .then(res => res.json())
+      .then(data => {
+        setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
+        setLoading(false);
+      })
+      .catch(() => {
+        setSelectedImage(null);
+        setLoading(false);
+      });
+  };
+
+
 
   return (
-    <div className="commander-autocomplete" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      {/* Blank image preview, always shown, rounded square style */}
-      <div
-        className="game-row-commander-img-placeholder"
-        style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
-      >
-        ?
+    <div className="commander-autocomplete" style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+      {/* Commander image preview */}
+      {selectedImage ? (
+        <img
+          src={selectedImage}
+          alt={value}
+          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, objectFit: 'cover', background: '#eee' }}
+        />
+      ) : (
+        <div
+          className="game-row-commander-img-placeholder"
+          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
+        >
+          ?
+        </div>
+      )}
+      <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+        <input
+          type="text"
+          value={value}
+          onChange={e => {
+            onChange(e.target.value);
+            setSelectedImage(null);
+          }}
+          placeholder="Commander name"
+          autoComplete="off"
+          className="field-input"
+          style={{ width: '100%' }}
+          onFocus={() => value && setShowDropdown(true)}
+          onBlur={() => setShowDropdown(false)}
+        />
+        {showDropdown && results.length > 0 && (
+          <ul className="autocomplete-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: 220, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none' }}>
+            {results.map((card: any) => (
+              <li
+                key={card.id}
+                onMouseDown={() => handleSelect(card)}
+              >
+                {card.image_uris?.small && (
+                  <img src={card.image_uris.small} alt={card.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', background: '#eee' }} />
+                )}
+                <span>{card.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {loading && <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', padding: 8, fontSize: 14 }}>Searching…</div>}
       </div>
-      <input
-        type="text"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder="Commander name"
-        autoComplete="off"
-        className="field-input"
-        style={{ flex: 1, minWidth: 0 }}
-      />
     </div>
   );
 };
+
+type NewGameProps = {
+  onSubmit: (gameData: any) => void;
+  onCancel?: () => void;
+};
+
 interface PlayerField {
   playerId: string;
   commander: string;
