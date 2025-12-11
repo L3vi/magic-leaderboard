@@ -101,7 +101,9 @@ const GameRow: React.FC<GameRowProps> = ({
               title={p.commander}
             />
           ) : (
-            <div key={key} className="game-row-commander-img-placeholder" />
+            <div key={key} className="game-row-commander-img-placeholder">
+              ?
+            </div>
           );
           const playerDetails = (
             <div className="game-row-player-details">
