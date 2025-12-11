@@ -22,6 +22,7 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.16",
     "@types/cors": "^2.8.19",
     "framer-motion": "^12.23.25",
     "react": "^18.3.1",

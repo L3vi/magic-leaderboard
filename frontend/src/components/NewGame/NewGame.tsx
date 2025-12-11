@@ -1,5 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { 
+  useFloating, 
+  useInteractions, 
+  useClick, 
+  useDismiss,
+  offset,
+  flip,
+  size
+} from '@floating-ui/react';
 import { usePlayers } from "./usePlayers";
 import gamesData from '../../data/games.json';
 import "./NewGame.css";
@@ -19,7 +28,27 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
   placeholder = 'Select an option'
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { refs, floatingStyles, context } = useFloating({
+    open: showDropdown,
+    onOpenChange: setShowDropdown,
+    middleware: [
+      offset(8),
+      flip({ padding: 8 }),
+      size({
+        apply({ rects, elements }) {
+          Object.assign(elements.floating.style, {
+            width: `${rects.reference.width}px`,
+          });
+        },
+        padding: 8,
+      }),
+    ],
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
   const selectedLabel = options.find(opt => opt.id === value)?.label || '';
 
@@ -28,30 +57,29 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
     setShowDropdown(false);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   return (
-    <div className="static-dropdown" ref={dropdownRef} style={{ position: 'relative' }}>
+    <div>
       <button
+        ref={refs.setReference}
         type="button"
         className="dropdown-trigger field-input"
-        onClick={() => setShowDropdown(!showDropdown)}
         style={{ width: '100%', textAlign: 'left', background: 'var(--surface)', border: '1.5px solid var(--border)', cursor: 'pointer' }}
+        {...getReferenceProps()}
       >
         {selectedLabel || placeholder}
       </button>
       {showDropdown && options.length > 0 && (
-        <ul className="autocomplete-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: 220, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none', zIndex: 10 }}>
+        <ul
+          className="autocomplete-dropdown"
+          ref={refs.setFloating}
+          style={{ 
+            ...floatingStyles, 
+            margin: 0, 
+            padding: 0, 
+            listStyle: 'none'
+          }}
+          {...getFloatingProps()}
+        >
           {options.map((opt) => (
             <li
               key={opt.id}
@@ -67,113 +95,147 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
   );
 };
 
-// CommanderAutocomplete is now a Scryfall-powered autocomplete
+// CommanderAutocomplete - simple text input with card search
 type CommanderAutocompleteProps = {
   value: string;
   onChange: (val: string) => void;
 };
 
 const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<{ name: string; id: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const debounceTimer = useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    if (!value) {
+  const { refs, floatingStyles, context } = useFloating({
+    open: showDropdown,
+    onOpenChange: setShowDropdown,
+    middleware: [
+      offset(8),
+      flip({ padding: 8 }),
+      size({
+        apply({ rects, elements }) {
+          Object.assign(elements.floating.style, {
+            width: `${rects.reference.width}px`,
+          });
+        },
+        padding: 8,
+      }),
+    ],
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+  const searchCommanders = (query: string) => {
+    if (!query.trim()) {
       setResults([]);
       setShowDropdown(false);
-      setSelectedImage(null);
       return;
     }
+
     setLoading(true);
-    fetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(value)}`)
+    fetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(query)}`)
       .then(res => res.json())
       .then(data => {
-        if (data && data.data) {
-          setResults(data.data);
+        if (data.data && Array.isArray(data.data)) {
+          setResults(data.data.slice(0, 10).map((card: any) => ({ name: card.name, id: card.id })));
           setShowDropdown(true);
         } else {
           setResults([]);
-          setShowDropdown(false);
         }
         setLoading(false);
       })
       .catch(() => {
         setResults([]);
-        setShowDropdown(false);
-        setLoading(false);
-      });
-  }, [value]);
-
-  const handleSelect = (card: any) => {
-    onChange(card.name);
-    setShowDropdown(false);
-    setResults([]);
-    setLoading(true);
-    // Use Scryfall fuzzy endpoint for best match and image
-    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(card.name)}`)
-      .then(res => res.json())
-      .then(data => {
-        setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
-        setLoading(false);
-      })
-      .catch(() => {
-        setSelectedImage(null);
         setLoading(false);
       });
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    onChange(val);
+    setSelectedImage(null);
 
+    // Debounce the search
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      searchCommanders(val);
+    }, 300);
+  };
+
+  const handleSelect = (cardName: string) => {
+    onChange(cardName);
+    setShowDropdown(false);
+    setResults([]);
+    
+    // Fetch the card image
+    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`)
+      .then(res => res.json())
+      .then(data => {
+        setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
+      })
+      .catch(() => {
+        setSelectedImage(null);
+      });
+  };
 
   return (
-    <div className="commander-autocomplete" style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+    <div className="commander-autocomplete">
       {/* Commander image preview */}
       {selectedImage ? (
         <img
           src={selectedImage}
           alt={value}
-          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, objectFit: 'cover', background: '#eee' }}
         />
       ) : (
-        <div
-          className="game-row-commander-img-placeholder"
-          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
-        >
+        <div className="game-row-commander-img-placeholder">
           ?
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
         <input
+          ref={refs.setReference}
           type="text"
           value={value}
-          onChange={e => {
-            onChange(e.target.value);
-            setSelectedImage(null);
-          }}
+          onChange={handleInputChange}
           placeholder="Commander name"
           autoComplete="off"
           className="field-input"
           style={{ width: '100%' }}
-          onFocus={() => value && setShowDropdown(true)}
-          onBlur={() => setShowDropdown(false)}
+          {...getReferenceProps()}
         />
         {showDropdown && results.length > 0 && (
-          <ul className="autocomplete-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: 220, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none' }}>
-            {results.map((card: any) => (
+          <ul
+            className="autocomplete-dropdown"
+            ref={refs.setFloating}
+            style={{
+              ...floatingStyles,
+              margin: 0,
+              padding: 0,
+              listStyle: 'none'
+            }}
+            {...getFloatingProps()}
+          >
+            {results.map((card) => (
               <li
                 key={card.id}
-                onMouseDown={() => handleSelect(card)}
+                onMouseDown={() => handleSelect(card.name)}
               >
-                {card.image_uris?.small && (
-                  <img src={card.image_uris.small} alt={card.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', background: '#eee' }} />
-                )}
                 <span>{card.name}</span>
               </li>
             ))}
           </ul>
         )}
-        {loading && <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', padding: 8, fontSize: 14 }}>Searching…</div>}
+        {loading && value && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '8px', fontSize: '14px', marginTop: '8px', borderRadius: '0.5rem', border: '1.5px solid var(--border)' }}>
+            Searching…
+          </div>
+        )}
       </div>
     </div>
   );
