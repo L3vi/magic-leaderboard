@@ -1,5 +1,179 @@
-import React, { useState } from "react";
+// Commander art cache and hook (copied from GameRow)
+const commanderImageCache: Record<string, string> = {};
+function useCommanderArt(commander: string): string {
+  const [imgUrl, setImgUrl] = useState(commanderImageCache[commander] || "");
+  useEffect(() => {
+    if (!commander || !commander.trim()) {
+      setImgUrl("");
+      return;
+    }
+    if (commanderImageCache[commander]) {
+      setImgUrl(commanderImageCache[commander]);
+      return;
+    }
+    let isMounted = true;
+    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        let art = "";
+        if (data.image_uris && data.image_uris.art_crop) {
+          art = data.image_uris.art_crop;
+        } else if (data.card_faces && data.card_faces[0]?.image_uris?.art_crop) {
+          art = data.card_faces[0].image_uris.art_crop;
+        }
+        commanderImageCache[commander] = art;
+        if (isMounted) setImgUrl(art);
+      })
+      .catch(() => {
+        commanderImageCache[commander] = "";
+        if (isMounted) setImgUrl("");
+      });
+    return () => { isMounted = false; };
+  }, [commander]);
+  return imgUrl;
+}
+// CommanderAutocomplete component
+interface CommanderAutocompleteProps {
+  value: string;
+  onChange: (v: string) => void;
+}
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
+  const [input, setInput] = useState(value);
+  const [show, setShow] = useState(false);
+  const results = useScryfallAutocomplete(input);
+  const ref = useRef<HTMLDivElement>(null);
+  const artUrl = useCommanderArt(input);
+
+  useEffect(() => { setInput(value); }, [value]);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setShow(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
+      {artUrl ? (
+        <img
+          src={artUrl}
+          alt={input}
+          className="game-row-commander-img"
+          style={{ width: 48, height: 48, borderRadius: '0.5rem', objectFit: 'cover', marginRight: 8 }}
+        />
+      ) : (
+        <div
+          className="game-row-commander-img-placeholder"
+          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
+        >
+          ?
+        </div>
+      )}
+      <div style={{ flex: 1, position: 'relative' }}>
+        <input
+          type="text"
+          value={input}
+          onChange={e => {
+            setInput(e.target.value);
+            onChange(e.target.value);
+            setShow(true);
+          }}
+          onFocus={() => setShow(true)}
+          placeholder="e.g., Atraxa, Praetors' Voice"
+          required
+          className="field-input"
+          autoComplete="off"
+          style={{ paddingLeft: 8 }}
+        />
+        {show && results.length > 0 && (
+          <ul
+            style={{
+              position: 'absolute',
+              zIndex: 10,
+              background: 'var(--surface)',
+              border: '1.5px solid var(--border)',
+              color: 'var(--foreground)',
+              width: '100%',
+              maxHeight: 180,
+              overflowY: 'auto',
+              margin: 0,
+              padding: 0,
+              listStyle: 'none',
+              left: 0,
+              top: '100%',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.18)'
+            }}
+          >
+            {results.map((name: string) => (
+              <li
+                key={name}
+                style={{
+                  padding: '10px 14px',
+                  cursor: 'pointer',
+                  color: 'var(--foreground)',
+                  background: 'none',
+                  borderBottom: '1px solid var(--border)',
+                  fontSize: '1rem',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+                onMouseDown={() => {
+                  setInput(name);
+                  onChange(name);
+                  setShow(false);
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--primary-dark)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+import React, { useState, useEffect, useRef } from "react";
+
+// Scryfall autocomplete hook
+function useScryfallAutocomplete(query: string) {
+  const [results, setResults] = useState<string[]>([]);
+  useEffect(() => {
+    if (!query || query.length < 2) {
+      setResults([]);
+      return;
+    }
+    let ignore = false;
+    // Only search for cards legal as a commander
+    const search = `is:commander ${query}`;
+    fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(search)}&order=released&unique=cards&include_extras=false&include_multilingual=false&format=json`)
+      .then(res => res.json())
+      .then(data => {
+        if (!ignore && data.data) {
+          // Only show unique names, up to 20 suggestions
+          const names: string[] = [];
+          const seen = new Set();
+          for (const card of data.data) {
+            if (!seen.has(card.name)) {
+              names.push(card.name);
+              seen.add(card.name);
+            }
+            if (names.length >= 20) break;
+          }
+          setResults(names);
+        }
+      });
+    return () => { ignore = true; };
+  }, [query]);
+  return results;
+}
+
+
 import { usePlayers } from "./usePlayers";
+import gamesData from '../../data/games.json';
 import "./NewGame.css";
 
 interface NewGameProps {
@@ -20,15 +194,52 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
-  const [playerFields, setPlayerFields] = useState<PlayerField[]>(
-    Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({ 
-      playerId: '', 
-      commander: '',
-      placement: i + 1,
-      addNew: false, 
-      newName: '' 
-    }))
-  );
+  // Helper to get the 4 players who played least recently
+  function getLeastRecentlyPlayedPlayers() {
+    // Map of playerId to last played date
+    const lastPlayed: Record<string, string> = {};
+    // Go through games in reverse chronological order
+    const sortedGames = [...gamesData].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+    for (const game of sortedGames) {
+      for (const p of game.players) {
+        if (!lastPlayed[p.playerId]) {
+          lastPlayed[p.playerId] = game.dateCreated;
+        }
+      }
+    }
+    // All player IDs from the player list
+    const allPlayers = players.map(p => p.id);
+    // Sort by last played date (oldest first, undefined last)
+    const sortedByLastPlayed = allPlayers
+      .map(pid => ({
+        id: pid,
+        last: lastPlayed[pid] || ''
+      }))
+      .sort((a, b) => {
+        if (!a.last && !b.last) return 0;
+        if (!a.last) return -1;
+        if (!b.last) return 1;
+        return new Date(a.last).getTime() - new Date(b.last).getTime();
+      });
+    return sortedByLastPlayed.slice(0, DEFAULT_PLAYERS).map(p => p.id);
+  }
+
+  const [playerFields, setPlayerFields] = useState<PlayerField[]>([]);
+
+  // On mount, set default player fields to least recently played
+  useEffect(() => {
+    const defaultPlayers = getLeastRecentlyPlayedPlayers();
+    setPlayerFields(
+      Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({
+        playerId: defaultPlayers[i] || '',
+        commander: '',
+        placement: i + 1,
+        addNew: false,
+        newName: ''
+      }))
+    );
+    // eslint-disable-next-line
+  }, [players.length]);
   const [notes, setNotes] = useState("");
 
   const handlePlayerChange = (idx: number, playerId: string) => {
@@ -156,15 +367,11 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
                   )}
                 </label>
 
-                <label className="field-label">
+                <label className="field-label" style={{ position: 'relative' }}>
                   Commander
-                  <input
-                    type="text"
+                  <CommanderAutocomplete
                     value={field.commander}
-                    onChange={e => handleCommanderChange(idx, e.target.value)}
-                    placeholder="e.g., Atraxa, Praetors' Voice"
-                    required
-                    className="field-input"
+                    onChange={val => handleCommanderChange(idx, val)}
                   />
                 </label>
 
