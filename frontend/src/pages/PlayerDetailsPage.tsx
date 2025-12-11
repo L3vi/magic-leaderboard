@@ -5,13 +5,16 @@ import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import { Player } from "../components/Players/PlayerRow";
-import playersRaw from "../data/players.json";
-import gamesRaw from "../data/games.json";
+import { useGames, usePlayers } from "../hooks/useApi";
+import { useSession } from "../context/SessionContext";
 import "./PlayerDetailsPage.css";
 
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
+  const { activeSession } = useSession();
+  const { games: gamesRaw } = useGames(activeSession);
+  const { players: playersRaw } = usePlayers();
 
   const handleClose = () => {
     navigate("/players");
@@ -24,7 +27,7 @@ const PlayerDetailsPage: React.FC = () => {
   const decodedName = playerName ? decodeURIComponent(playerName) : "";
   const playerData = playersRaw.find(p => p.name === decodedName);
 
-  // Calculate player stats
+  // Calculate player stats from session games only
   const player: Player | null = React.useMemo(() => {
     if (!playerData) return null;
 
@@ -48,7 +51,7 @@ const PlayerDetailsPage: React.FC = () => {
       average: gamesPlayed ? totalPlacement / gamesPlayed : 0,
       gamesPlayed,
     };
-  }, [playerData]);
+  }, [playerData, gamesRaw]);
 
   if (!player) {
     return (
@@ -94,6 +97,7 @@ const PlayerDetailsPage: React.FC = () => {
         >
           ← Back
         </button>
+        <h1>{player.name}</h1>
       </div>
       <div className="player-details-page-content">
         <PlayerDetails player={player} games={gamesRaw} players={playersRaw} />
