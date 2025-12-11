@@ -18,10 +18,29 @@ const NewGamePage: React.FC = () => {
   useEscapeKey(handleClose);
   const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
-  const handleSubmit = (gameData: any) => {
-    // TODO: Add logic to save new game
-    console.log("New game data:", gameData);
-    navigate(from);
+  const handleSubmit = async (gameData: any) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/games', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gameData)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        alert(`Error creating game: ${error.error}`);
+        return;
+      }
+      
+      const result = await response.json();
+      console.log("Game created successfully:", result);
+      navigate(from);
+    } catch (error) {
+      console.error("Error submitting game:", error);
+      alert("Failed to save game. Please try again.");
+    }
   };
 
   return (
