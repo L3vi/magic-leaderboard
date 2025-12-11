@@ -239,7 +239,7 @@ select.field-input:focus, select.placement-select:focus {
 /* Notes Input */
 .notes-input {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
   line-height: 1.5;
 }
 

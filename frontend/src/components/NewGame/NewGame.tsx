@@ -485,7 +485,6 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
             onChange={e => setNotes(e.target.value)}
             placeholder="Add notes about this game (e.g., 'Epic 3-hour battle!', 'Anson pulled off an amazing combo win')..."
             className="field-input notes-input"
-            rows={3}
           />
         </label>
       </div>
