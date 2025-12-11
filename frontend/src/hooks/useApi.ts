@@ -23,6 +23,45 @@ export interface Game {
 }
 
 /**
+ * Retry fetch with exponential backoff
+ * Tries up to maxAttempts times with increasing delays
+ */
+async function fetchWithRetry(
+  url: string,
+  maxAttempts: number = 5,
+  initialDelayMs: number = 500
+): Promise<Response> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url, { 
+        signal: AbortSignal.timeout(5000) 
+      });
+      
+      if (response.ok) {
+        return response; // Success on first try or retry
+      }
+      
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      
+      // Don't retry on timeout if it's the last attempt
+      if (attempt < maxAttempts && lastError.name !== 'AbortError') {
+        // Wait before retrying, with exponential backoff
+        const delayMs = initialDelayMs * Math.pow(2, attempt - 1);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+    }
+  }
+  
+  // All retries exhausted
+  throw lastError || new Error('Failed to fetch after retries');
+}
+
+/**
  * Hook to fetch players from the API with fallback to local data
  */
 export const usePlayers = () => {
@@ -35,19 +74,14 @@ export const usePlayers = () => {
     const fetchPlayers = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE}/api/players`, { 
-          signal: AbortSignal.timeout(5000) // 5 second timeout
-        });
-        
-        if (!response.ok) throw new Error('API returned error');
-        
+        const response = await fetchWithRetry(`${API_BASE}/api/players`);
         const data = await response.json();
         setPlayers(data);
         setError(null);
         setIsOffline(false);
       } catch (err) {
         // Fall back to local data
-        console.warn('Could not fetch from API, using local data:', err);
+        console.warn('Could not fetch from API after retries, using local data:', err);
         setPlayers(playersData);
         setIsOffline(true);
         setError(null); // Don't show error if we have fallback data
@@ -75,19 +109,14 @@ export const useGames = (sessionId: string) => {
     const fetchGames = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE}/api/games?session=${sessionId}`, {
-          signal: AbortSignal.timeout(5000) // 5 second timeout
-        });
-        
-        if (!response.ok) throw new Error('API returned error');
-        
+        const response = await fetchWithRetry(`${API_BASE}/api/games?session=${sessionId}`);
         const data = await response.json();
         setGames(data);
         setError(null);
         setIsOffline(false);
       } catch (err) {
         // Fall back to local data (only if current session)
-        console.warn('Could not fetch from API, using local data:', err);
+        console.warn('Could not fetch from API after retries, using local data:', err);
         if (sessionId === '2025-December') {
           setGames(gamesData);
           setIsOffline(true);
