@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import playersData from '../data/players.json';
 import gamesData from '../data/games.json';
 
 const API_BASE = 'http://localhost:3001';
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+
+// Simple cache for API responses
+const cache: Record<string, { data: any; timestamp: number }> = {};
 
 export interface Player {
   id: string;
@@ -20,6 +24,29 @@ export interface Game {
   dateCreated: string;
   notes: string;
   players: GamePlayer[];
+}
+
+/**
+ * Check if cached data is still valid
+ */
+function getCachedData<T>(key: string): T | null {
+  const cached = cache[key];
+  if (!cached) return null;
+  
+  const isExpired = Date.now() - cached.timestamp > CACHE_DURATION_MS;
+  if (isExpired) {
+    delete cache[key];
+    return null;
+  }
+  
+  return cached.data as T;
+}
+
+/**
+ * Store data in cache
+ */
+function setCachedData<T>(key: string, data: T): void {
+  cache[key] = { data, timestamp: Date.now() };
 }
 
 /**
@@ -63,28 +90,47 @@ async function fetchWithRetry(
 
 /**
  * Hook to fetch players from the API with fallback to local data
+ * Caches results for 5 minutes
  */
 export const usePlayers = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(false);
+  const hasAttemptedFetch = useRef(false);
 
   useEffect(() => {
+    // Check cache first
+    const cachedPlayers = getCachedData<Player[]>('players');
+    if (cachedPlayers) {
+      setPlayers(cachedPlayers);
+      setLoading(false);
+      return;
+    }
+
+    // Don't refetch if already attempted
+    if (hasAttemptedFetch.current) {
+      setLoading(false);
+      return;
+    }
+
     const fetchPlayers = async () => {
+      hasAttemptedFetch.current = true;
       try {
         setLoading(true);
         const response = await fetchWithRetry(`${API_BASE}/api/players`);
         const data = await response.json();
         setPlayers(data);
+        setCachedData('players', data);
         setError(null);
         setIsOffline(false);
       } catch (err) {
         // Fall back to local data
         console.warn('Could not fetch from API after retries, using local data:', err);
         setPlayers(playersData);
+        setCachedData('players', playersData);
         setIsOffline(true);
-        setError(null); // Don't show error if we have fallback data
+        setError(null);
       } finally {
         setLoading(false);
       }
@@ -98,35 +144,49 @@ export const usePlayers = () => {
 
 /**
  * Hook to fetch games for a specific session with fallback to local data
+ * Caches results for 5 minutes
  */
 export const useGames = (sessionId: string) => {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(false);
+  const hasAttemptedFetch = useRef(false);
 
   useEffect(() => {
+    // Check cache first
+    const cacheKey = `games-${sessionId}`;
+    const cachedGames = getCachedData<Game[]>(cacheKey);
+    if (cachedGames) {
+      setGames(cachedGames);
+      setLoading(false);
+      return;
+    }
+
+    // Don't refetch if already attempted
+    if (hasAttemptedFetch.current) {
+      setLoading(false);
+      return;
+    }
+
     const fetchGames = async () => {
+      hasAttemptedFetch.current = true;
       try {
         setLoading(true);
         const response = await fetchWithRetry(`${API_BASE}/api/games?session=${sessionId}`);
         const data = await response.json();
         setGames(data);
+        setCachedData(cacheKey, data);
         setError(null);
         setIsOffline(false);
       } catch (err) {
-        // Fall back to local data (only if current session)
+        // Fall back to local data
         console.warn('Could not fetch from API after retries, using local data:', err);
-        if (sessionId === '2025-December') {
-          setGames(gamesData);
-          setIsOffline(true);
-          setError(null); // Don't show error if we have fallback data
-        } else {
-          // For other sessions, we don't have local fallback
-          setGames([]);
-          setIsOffline(true);
-          setError(null);
-        }
+        // For now, only support December 2025
+        setGames(gamesData);
+        setCachedData(cacheKey, gamesData);
+        setIsOffline(true);
+        setError(null);
       } finally {
         setLoading(false);
       }

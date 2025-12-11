@@ -44,9 +44,9 @@ async function fetchWithRetry(
 }
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeSession, setActiveSession] = useState<string>('');
-  const [allSessions, setAllSessions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeSession, setActiveSession] = useState<string>('2025-December');
+  const [allSessions, setAllSessions] = useState<string[]>(['2025-December']);
+  const [loading, setLoading] = useState(false);
 
   // Fetch available sessions and set to latest
   useEffect(() => {
@@ -64,7 +64,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       } catch (err) {
         console.warn('Could not fetch sessions after retries, using defaults:', err);
-        setAllSessions(['2025-December', '2025-May']);
+        // For now, only use December 2025
+        setAllSessions(['2025-December']);
         setActiveSession('2025-December');
       } finally {
         setLoading(false);
