@@ -1,248 +1,170 @@
 import { useState, useEffect, useRef } from 'react';
-import playersData from '../data/players.json';
-import gamesData from '../data/games.json';
-
-const API_BASE = 'http://localhost:3001';
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
-
-// Simple cache for API responses
-const cache: Record<string, { data: any; timestamp: number }> = {};
-
-export interface Player {
-  id: string;
-  name: string;
-}
-
-export interface GamePlayer {
-  playerId: string;
-  placement: number;
-  commander: string;
-}
-
-export interface Game {
-  id: string;
-  dateCreated: string;
-  notes: string;
-  players: GamePlayer[];
-}
-
-/**
- * Check if cached data is still valid
- */
-function getCachedData<T>(key: string): T | null {
-  const cached = cache[key];
-  if (!cached) return null;
-  
-  const isExpired = Date.now() - cached.timestamp > CACHE_DURATION_MS;
-  if (isExpired) {
-    delete cache[key];
-    return null;
-  }
-  
-  return cached.data as T;
-}
-
-/**
- * Store data in cache
- */
-function setCachedData<T>(key: string, data: T): void {
-  cache[key] = { data, timestamp: Date.now() };
-}
-
-/**
- * Clear a specific cache entry
- */
-export function clearCache(key: string): void {
-  delete cache[key];
-}
-
-/**
- * Clear all cache entries
- */
-export function clearAllCache(): void {
-  Object.keys(cache).forEach(key => delete cache[key]);
-}
-
-/**
- * Retry fetch with exponential backoff
- * Tries up to maxAttempts times with increasing delays
- */
-async function fetchWithRetry(
-  url: string,
-  maxAttempts: number = 5,
-  initialDelayMs: number = 500
-): Promise<Response> {
-  let lastError: Error | null = null;
-  
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await fetch(url, { 
-        signal: AbortSignal.timeout(5000) 
-      });
-      
-      if (response.ok) {
-        return response; // Success on first try or retry
-      }
-      
-      lastError = new Error(`HTTP ${response.status}`);
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      
-      // Don't retry on timeout if it's the last attempt
-      if (attempt < maxAttempts && lastError.name !== 'AbortError') {
-        // Wait before retrying, with exponential backoff
-        const delayMs = initialDelayMs * Math.pow(2, attempt - 1);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        continue;
-      }
-    }
-  }
-  
-  // All retries exhausted
-  throw lastError || new Error('Failed to fetch after retries');
-}
+import {
+  fetchPlayers,
+  fetchGames,
+  calculatePlayerScores,
+  addGame as addGameToAPI,
+  Player,
+  Game,
+  PlayerScore,
+  invalidateCache,
+  getGamesLastRefreshTime,
+} from '../services/dataService';
 
 /**
  * Hook to fetch players from the API with fallback to local data
- * Caches results for 5 minutes
+ * Caches results for 1 hour
  */
 export const usePlayers = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isOffline, setIsOffline] = useState(false);
-  const hasAttemptedFetch = useRef(false);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    // Check cache first
-    const cachedPlayers = getCachedData<Player[]>('players');
-    if (cachedPlayers) {
-      setPlayers(cachedPlayers);
-      setLoading(false);
-      return;
-    }
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
 
-    // Don't refetch if already attempted
-    if (hasAttemptedFetch.current) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchPlayers = async () => {
-      hasAttemptedFetch.current = true;
+    const loadPlayers = async () => {
       try {
         setLoading(true);
-        const response = await fetchWithRetry(`${API_BASE}/api/players`);
-        const data = await response.json();
+        const data = await fetchPlayers();
         setPlayers(data);
-        setCachedData('players', data);
         setError(null);
-        setIsOffline(false);
       } catch (err) {
-        // Fall back to local data
-        console.warn('Could not fetch from API after retries, using local data:', err);
-        setPlayers(playersData);
-        setCachedData('players', playersData);
-        setIsOffline(true);
-        setError(null);
+        const message = err instanceof Error ? err.message : 'Failed to load players';
+        setError(message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPlayers();
+    loadPlayers();
   }, []);
 
-  return { players, loading, error, isOffline };
+  return { players, loading, error };
 };
 
 /**
- * Hook to fetch games for a specific session with fallback to local data
- * Caches results for 5 minutes
+ * Hook to fetch games for the current session with fallback to local data
+ * Caches results for 2.5 minutes and auto-refreshes every 2.5 minutes
+ * Provides manual refresh capability via refresh() function
  */
-export const useGames = (sessionId: string) => {
+export const useGames = (sessionId: string = '2025-December') => {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isOffline, setIsOffline] = useState(false);
-  const hasAttemptedFetch = useRef(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const hasInitialized = useRef(false);
+  const autoRefreshTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // Initial load and auto-refresh setup
   useEffect(() => {
-    // Check cache first
-    const cacheKey = `games-${sessionId}`;
-    const cachedGames = getCachedData<Game[]>(cacheKey);
-    if (cachedGames) {
-      setGames(cachedGames);
-      setLoading(false);
-      return;
-    }
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
 
-    // Don't refetch if already attempted
-    if (hasAttemptedFetch.current) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchGames = async () => {
-      hasAttemptedFetch.current = true;
+    const loadGames = async () => {
       try {
         setLoading(true);
-        const response = await fetchWithRetry(`${API_BASE}/api/games?session=${sessionId}`);
-        const data = await response.json();
+        const data = await fetchGames(sessionId);
         setGames(data);
-        setCachedData(cacheKey, data);
+        setLastRefreshed(getGamesLastRefreshTime(sessionId));
         setError(null);
-        setIsOffline(false);
       } catch (err) {
-        // Fall back to local data
-        console.warn('Could not fetch from API after retries, using local data:', err);
-        // For now, only support December 2025
-        setGames(gamesData);
-        setCachedData(cacheKey, gamesData);
-        setIsOffline(true);
-        setError(null);
+        const message = err instanceof Error ? err.message : 'Failed to load games';
+        setError(message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGames();
+    loadGames();
+
+    // Set up auto-refresh every 2.5 minutes
+    autoRefreshTimer.current = setInterval(async () => {
+      try {
+        const data = await fetchGames(sessionId, true); // Force refresh
+        setGames(data);
+        setLastRefreshed(getGamesLastRefreshTime(sessionId));
+      } catch (err) {
+        console.error('Auto-refresh failed:', err);
+      }
+    }, 2.5 * 60 * 1000);
+
+    return () => {
+      if (autoRefreshTimer.current) clearInterval(autoRefreshTimer.current);
+    };
   }, [sessionId]);
 
-  return { games, loading, error };
+  const refresh = async () => {
+    try {
+      setRefreshing(true);
+      const data = await fetchGames(sessionId, true); // Force refresh
+      setGames(data);
+      setLastRefreshed(getGamesLastRefreshTime(sessionId));
+      setError(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to refresh games';
+      setError(message);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  return { games, loading, error, refreshing, lastRefreshed, refresh };
+};
+
+/**
+ * Hook to calculate player scores from games
+ * Automatically recalculates when games change
+ */
+export const usePlayerScores = (sessionId: string = '2025-December') => {
+  const [scores, setScores] = useState<PlayerScore[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { players } = usePlayers();
+  const { games } = useGames(sessionId);
+
+  useEffect(() => {
+    if (players.length === 0 || games.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const playerScores = calculatePlayerScores(players, games);
+      setScores(playerScores);
+      setError(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to calculate scores';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [players, games]);
+
+  return { scores, loading, error };
 };
 
 /**
  * Hook to add a new game
- * Clears games cache after successful creation so list updates immediately
+ * Invalidates games cache after successful creation
  */
-export const useAddGame = (sessionId: string) => {
+export const useAddGame = (sessionId: string = '2025-December') => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addGame = async (gameData: Omit<Game, 'id'>) => {
+  const addGame = async (gameData: any) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/api/games?session=${sessionId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(gameData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create game');
-      }
-      
-      const result = await response.json();
+      const result = await addGameToAPI(gameData, sessionId);
       setError(null);
-      
-      // Clear games cache so next fetch gets fresh data with new game
-      clearCache(`games-${sessionId}`);
-      
-      return result.game;
+      return result;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
+      const message = err instanceof Error ? err.message : 'Failed to add game';
       setError(message);
       throw err;
     } finally {
