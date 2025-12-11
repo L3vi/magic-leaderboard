@@ -3,6 +3,50 @@ import fs from "fs";
 import path from "path";
 import { db } from "../firebase";
 
+// Fetch available sessions from Firebase, sorted by creation date (newest first)
+async function fetchSessionsFromFirebase(): Promise<Array<{id: string, createdAt: string}> | null> {
+  try {
+    const snapshot = await db.collection("sessions").get();
+    if (snapshot.empty) {
+      return null;
+    }
+    const sessions = snapshot.docs
+      .map(doc => ({
+        id: doc.id,
+        createdAt: doc.data().createdAt || new Date().toISOString()
+      }))
+      .sort((a, b) => {
+        const aDate = new Date(a.createdAt).getTime();
+        const bDate = new Date(b.createdAt).getTime();
+        return bDate - aDate; // Most recent first
+      });
+    return sessions;
+  } catch (error) {
+    console.error("Firebase error:", error);
+    return null;
+  }
+}
+
+export async function getSessions(req: Request, res: Response) {
+  let sessions: Array<{id: string, createdAt: string}> | null = null;
+  try {
+    sessions = await fetchSessionsFromFirebase();
+  } catch (e) {
+    // Firebase error, fallback below
+  }
+  
+  if (!sessions) {
+    // Fallback with known sessions
+    sessions = [
+      { id: '2025-December', createdAt: '2025-12-10T00:00:00.000Z' },
+      { id: '2025-May', createdAt: '2025-05-31T23:59:59.000Z' }
+    ];
+  }
+  
+  // Return just the IDs for now, but the first one is the latest
+  res.json(sessions.map(s => s.id));
+}
+
 // Fetch games from Firebase Firestore for a specific session
 async function fetchGamesFromFirebase(sessionId: string): Promise<any[] | null> {
   try {
