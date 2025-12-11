@@ -1,11 +1,27 @@
 import { Request, Response } from "express";
 import path from "path";
 import fs from "fs";
+import { db } from "../firebase";
 
-// Placeholder for Firebase fetch
+// Fetch players from shared global collection
 async function fetchPlayersFromFirebase(): Promise<any[] | null> {
-  // TODO: Replace with actual Firebase logic
-  return null; // Simulate Firebase unavailable
+  try {
+    const snapshot = await db
+      .collection("players")
+      .orderBy("name")
+      .get();
+    if (snapshot.empty) {
+      return null; // No players in Firestore, use fallback
+    }
+    const players = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return players;
+  } catch (error) {
+    console.error("Firebase error:", error);
+    return null; // Fallback to local file
+  }
 }
 
 export async function getPlayers(req: Request, res: Response) {

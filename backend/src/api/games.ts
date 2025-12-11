@@ -1,17 +1,42 @@
 import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
+import { db } from "../firebase";
 
-// Placeholder for Firebase fetch
-async function fetchGamesFromFirebase(): Promise<any[] | null> {
-  // TODO: Replace with actual Firebase logic
-  return null; // Simulate Firebase unavailable
+// Fetch games from Firebase Firestore for a specific session
+async function fetchGamesFromFirebase(sessionId: string): Promise<any[] | null> {
+  try {
+    const snapshot = await db
+      .collection("sessions")
+      .doc(sessionId)
+      .collection("games")
+      .get();
+    if (snapshot.empty) {
+      return null; // No games in Firestore, use fallback
+    }
+    const games: any[] = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    // Sort by dateCreated in descending order
+    games.sort((a: any, b: any) => {
+      const aDate = new Date(a.dateCreated || 0).getTime();
+      const bDate = new Date(b.dateCreated || 0).getTime();
+      return bDate - aDate;
+    });
+    return games;
+  } catch (error) {
+    console.error("Firebase error:", error);
+    return null; // Fallback to local file
+  }
 }
 
 export async function getGames(req: Request, res: Response) {
+  const sessionId = req.query.session as string || "2025-December";
+  
   let games: any[] | null = null;
   try {
-    games = await fetchGamesFromFirebase();
+    games = await fetchGamesFromFirebase(sessionId);
   } catch (e) {
     // Firebase error, fallback below
   }
@@ -29,6 +54,7 @@ export async function getGames(req: Request, res: Response) {
 }
 
 export async function createGame(req: Request, res: Response) {
+  const sessionId = req.query.session as string || "2025-December";
   const { players, notes, dateCreated } = req.body;
   
   // Validate required fields
@@ -43,33 +69,43 @@ export async function createGame(req: Request, res: Response) {
   }
   
   try {
-    const filePath = path.join(__dirname, "../../data/games.json");
-    let games: any[] = [];
-    
-    // Read existing games
-    try {
-      const raw = fs.readFileSync(filePath, "utf-8");
-      games = JSON.parse(raw);
-    } catch (err) {
-      // File doesn't exist or is empty, start with empty array
-      games = [];
-    }
-    
-    // Create new game with ID
     const newGame = {
-      id: Date.now().toString(),
       players,
       notes: notes || "",
       dateCreated: dateCreated || new Date().toISOString()
     };
     
-    // Add to games array
-    games.push(newGame);
-    
-    // Write back to file
-    fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
-    
-    res.status(201).json({ success: true, game: newGame });
+    // Try to save to Firebase first
+    try {
+      const docRef = await db
+        .collection("sessions")
+        .doc(sessionId)
+        .collection("games")
+        .add(newGame);
+      return res.status(201).json({ success: true, game: { id: docRef.id, ...newGame } });
+    } catch (firebaseError) {
+      console.warn("Firebase write failed, falling back to local file:", firebaseError);
+      // Fallback: write to local file
+      const filePath = path.join(__dirname, "../../data/games.json");
+      let games: any[] = [];
+      
+      try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        games = JSON.parse(raw);
+      } catch (err) {
+        games = [];
+      }
+      
+      const gameWithId = {
+        id: Date.now().toString(),
+        ...newGame
+      };
+      
+      games.push(gameWithId);
+      fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
+      
+      return res.status(201).json({ success: true, game: gameWithId });
+    }
   } catch (err) {
     console.error("Error creating game:", err);
     res.status(500).json({ error: "Could not save game." });

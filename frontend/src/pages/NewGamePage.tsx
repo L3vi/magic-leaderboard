@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
+import { useAddGame } from "../hooks/useApi";
+import { useSession } from "../context/SessionContext";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css";
 
@@ -10,6 +12,8 @@ const NewGamePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from || '/games';
+  const { activeSession } = useSession();
+  const { addGame, loading, error } = useAddGame(activeSession);
 
   const handleClose = () => {
     navigate(from);
@@ -20,26 +24,11 @@ const NewGamePage: React.FC = () => {
 
   const handleSubmit = async (gameData: any) => {
     try {
-      const response = await fetch('http://localhost:3001/api/games', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(gameData)
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        alert(`Error creating game: ${error.error}`);
-        return;
-      }
-      
-      const result = await response.json();
-      console.log("Game created successfully:", result);
+      await addGame(gameData);
       navigate(from);
-    } catch (error) {
-      console.error("Error submitting game:", error);
-      alert("Failed to save game. Please try again.");
+    } catch (err) {
+      console.error("Error submitting game:", err);
+      alert(error || "Failed to save game. Please try again.");
     }
   };
 

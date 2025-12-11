@@ -1,11 +1,34 @@
 [
-  { "id": "player-1", "name": "Anson" },
-  { "id": "player-2", "name": "Caleb" },
-  { "id": "player-3", "name": "Danny" },
-  { "id": "player-4", "name": "Jordan" },
-  { "id": "player-5", "name": "Levi" },
-  { "id": "player-6", "name": "Nate" },
-  { "id": "player-7", "name": "Parker" },
-  { "id": "player-8", "name": "Shane" },
-  { "id": "player-9", "name": "Alex" }
+  {
+    "id": "player-anson",
+    "name": "Anson"
+  },
+  {
+    "id": "player-caleb",
+    "name": "Caleb"
+  },
+  {
+    "id": "player-danny",
+    "name": "Danny"
+  },
+  {
+    "id": "player-jordan",
+    "name": "Jordan"
+  },
+  {
+    "id": "player-levi",
+    "name": "Levi"
+  },
+  {
+    "id": "player-nate",
+    "name": "Nate"
+  },
+  {
+    "id": "player-parker",
+    "name": "Parker"
+  },
+  {
+    "id": "player-shane",
+    "name": "Shane"
+  }
 ]

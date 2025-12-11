@@ -9,6 +9,7 @@ import Games from "./components/Games/Games";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
 import NewGamePage from "./pages/NewGamePage";
+import { SessionProvider } from "./context/SessionContext";
 
 function MainLayout() {
   const navigate = useNavigate();
@@ -105,12 +106,14 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/players" replace />} />
-        <Route path="/*" element={<AnimatedRoutes />} />
-      </Routes>
-    </Router>
+    <SessionProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/players" replace />} />
+          <Route path="/*" element={<AnimatedRoutes />} />
+        </Routes>
+      </Router>
+    </SessionProvider>
   );
 }
 

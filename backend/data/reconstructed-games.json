@@ -1,0 +1,929 @@
+{
+  "sessions": {
+    "2025-May": {
+      "name": "May 2025",
+      "description": "Historical season from May 2025 - reconstructed from placement data",
+      "games": [
+        {
+          "id": "game-2025-05-001",
+          "dateCreated": "2025-05-01T10:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-002",
+          "dateCreated": "2025-05-01T11:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-003",
+          "dateCreated": "2025-05-01T12:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-004",
+          "dateCreated": "2025-05-01T13:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-005",
+          "dateCreated": "2025-05-01T14:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-006",
+          "dateCreated": "2025-05-01T15:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-007",
+          "dateCreated": "2025-05-01T16:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-008",
+          "dateCreated": "2025-05-01T17:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-009",
+          "dateCreated": "2025-05-01T18:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-010",
+          "dateCreated": "2025-05-01T19:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-011",
+          "dateCreated": "2025-05-01T20:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-012",
+          "dateCreated": "2025-05-01T21:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-013",
+          "dateCreated": "2025-05-01T22:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-014",
+          "dateCreated": "2025-05-01T23:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-015",
+          "dateCreated": "2025-05-02T00:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-016",
+          "dateCreated": "2025-05-02T01:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-017",
+          "dateCreated": "2025-05-02T02:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-018",
+          "dateCreated": "2025-05-02T03:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-019",
+          "dateCreated": "2025-05-02T04:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.163Z"
+        },
+        {
+          "id": "game-2025-05-020",
+          "dateCreated": "2025-05-02T05:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-021",
+          "dateCreated": "2025-05-02T06:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-022",
+          "dateCreated": "2025-05-02T07:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-jordan",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-levi",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-023",
+          "dateCreated": "2025-05-02T08:00:00.000Z",
+          "notes": "Reconstructed game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-parker",
+              "placement": 2,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 3,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 4,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-024",
+          "dateCreated": "2025-05-02T09:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-025",
+          "dateCreated": "2025-05-02T10:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-026",
+          "dateCreated": "2025-05-02T11:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-shane",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-027",
+          "dateCreated": "2025-05-02T12:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-028",
+          "dateCreated": "2025-05-02T13:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-029",
+          "dateCreated": "2025-05-02T14:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-030",
+          "dateCreated": "2025-05-02T15:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-nate",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-031",
+          "dateCreated": "2025-05-02T16:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-shane",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-032",
+          "dateCreated": "2025-05-02T17:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-033",
+          "dateCreated": "2025-05-02T18:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-anson",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-034",
+          "dateCreated": "2025-05-02T19:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-035",
+          "dateCreated": "2025-05-02T20:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-036",
+          "dateCreated": "2025-05-02T21:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-nate",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-037",
+          "dateCreated": "2025-05-02T22:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-danny",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        },
+        {
+          "id": "game-2025-05-038",
+          "dateCreated": "2025-05-02T23:00:00.000Z",
+          "notes": "Reconstructed 2-player game - placement distribution verified",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "placement": 1,
+              "commander": "Unknown"
+            },
+            {
+              "playerId": "player-caleb",
+              "placement": 2,
+              "commander": "Unknown"
+            }
+          ],
+          "createdAt": "2025-12-11T09:24:55.164Z"
+        }
+      ]
+    },
+    "2025-December": {
+      "name": "December 2025",
+      "description": "Current season - December 2025",
+      "games": []
+    }
+  }
+}

@@ -10,7 +10,7 @@ import {
   size
 } from '@floating-ui/react';
 import { usePlayers } from "./usePlayers";
-import gamesData from '../../data/games.json';
+import { useGames } from "../../hooks/useApi";
 import "./NewGame.css";
 
 // Reusable Static Dropdown with autocomplete styling
@@ -100,9 +100,10 @@ type CommanderAutocompleteProps = {
   value: string;
   onChange: (val: string) => void;
   playerId?: string;
+  games: any[];
 };
 
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId }) => {
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData }) => {
   const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -135,12 +136,12 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   // Load last played commander for this player
   useEffect(() => {
     if (playerId && playerId !== "__add__" && playerId !== "") {
-      const sortedGames = [...gamesData].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
       const commanders: string[] = [];
       let lastCommander: string | null = null;
       
       for (const game of sortedGames) {
-        const playerInGame = game.players.find(p => p.playerId === playerId);
+        const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
         if (playerInGame) {
           // Set the first one we find as the last played
           if (!lastCommander) {
@@ -332,6 +333,7 @@ interface PlayerField {
 
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
   const players = usePlayers();
+  const { games: gamesData } = useGames('2025-December'); // Load from current session
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
@@ -340,7 +342,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
     // Map of playerId to last played date
     const lastPlayed: Record<string, string> = {};
     // Go through games in reverse chronological order
-    const sortedGames = [...gamesData].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+    const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
     for (const game of sortedGames) {
       for (const p of game.players) {
         if (!lastPlayed[p.playerId]) {
@@ -533,6 +535,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
                     value={field.commander}
                     onChange={val => handleCommanderChange(idx, val)}
                     playerId={field.playerId}
+                    games={gamesData}
                   />
                 </label>
               </div>

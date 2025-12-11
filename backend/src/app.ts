@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { getPlayers } from "./api/players";
 import { getGames, createGame } from "./api/games";
+import './firebase'; // Initialize Firebase
 
 const app = express();
 app.use(cors());

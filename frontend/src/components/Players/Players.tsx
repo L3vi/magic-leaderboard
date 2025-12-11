@@ -2,8 +2,8 @@ import React, { useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Players.css";
-import playersRaw from "../../data/players.json";
-import gamesRaw from "../../data/games.json";
+import { usePlayers, useGames } from "../../hooks/useApi";
+import { useSession } from "../../context/SessionContext";
 
 /**
  * Aggregates player stats from all events and games.
@@ -12,6 +12,7 @@ function aggregatePlayers(players: any[], games: any[]): Player[] {
   const playerMap: Record<string, Player & { totalPlacement: number }> = {};
   players.forEach((pl: any) => {
     playerMap[pl.id] = {
+      id: pl.id,
       name: pl.name,
       score: 0,
       average: 0,
@@ -54,9 +55,12 @@ const Players: React.FC = () => {
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const headerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { activeSession } = useSession();
+  const { players: playersData, loading: playersLoading, error: playersError } = usePlayers();
+  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames(activeSession);
 
   // Memoize player aggregation and sorting for performance
-  const allPlayers = useMemo(() => aggregatePlayers(playersRaw, gamesRaw), []);
+  const allPlayers = useMemo(() => aggregatePlayers(playersData, gamesData), [playersData, gamesData]);
   const sortedPlayers = useMemo(() => {
     const players = [...allPlayers];
     if (sortKey === "name") {
@@ -79,6 +83,22 @@ const Players: React.FC = () => {
   const showTopRankings = useMemo(() => {
     return (sortKey === "score" || sortKey === "average") && sortOrder === "desc";
   }, [sortKey, sortOrder]);
+
+  // Show loading state
+  if (playersLoading || gamesLoading) {
+    return <section className="leaderboard main-section">Loading players...</section>;
+  }
+
+  // Show error state
+  if (playersError || gamesError) {
+    return (
+      <section className="leaderboard main-section">
+        <div style={{ color: 'red' }}>
+          Error loading data: {playersError || gamesError}
+        </div>
+      </section>
+    );
+  }
 
   // Keyboard navigation for sortable headers
   const handleHeaderKeyDown = (

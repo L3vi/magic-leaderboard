@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Games.css";
 import GameRow from "./GameRow";
+import { useGames, usePlayers } from "../../hooks/useApi";
+import { useSession } from "../../context/SessionContext";
 
 // TypeScript interfaces for game history data
 interface Player {
@@ -28,20 +30,19 @@ interface GameHistoryData {
   events: Event[];
 }
 
-// Load game history data
-import gamesRaw from "../../data/games.json";
-import playersRaw from "../../data/players.json";
-
 const Games: React.FC = () => {
   // Filtering state
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
+  const { activeSession } = useSession();
+  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames(activeSession);
+  const { players: playersData, loading: playersLoading } = usePlayers();
 
-  // Use games.json directly
-  const allGames = useMemo(() => gamesRaw, []);
+  // Use games data from API
+  const allGames = useMemo(() => gamesData, [gamesData]);
 
   // Filter and sort games
-  const getPlayerName = (id: string) => playersRaw.find(p => p.id === id)?.name || id;
+  const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
   const filteredGames = useMemo(() => {
     let games = allGames;
     if (filter.trim()) {
@@ -53,7 +54,21 @@ const Games: React.FC = () => {
     }
     // Sort by dateCreated, newest first
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
-  }, [allGames, filter]);
+  }, [allGames, filter, playersData]);
+
+  // Show loading state
+  if (gamesLoading || playersLoading) {
+    return <section className="game-history main-section">Loading games...</section>;
+  }
+
+  // Show error state
+  if (gamesError) {
+    return (
+      <section className="game-history main-section">
+        <div style={{ color: 'red' }}>Error loading games: {gamesError}</div>
+      </section>
+    );
+  }
 
   function handleGameClick(gameId: string) {
     navigate(`/games/${gameId}`);
