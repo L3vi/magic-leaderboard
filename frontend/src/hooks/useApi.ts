@@ -50,6 +50,20 @@ function setCachedData<T>(key: string, data: T): void {
 }
 
 /**
+ * Clear a specific cache entry
+ */
+export function clearCache(key: string): void {
+  delete cache[key];
+}
+
+/**
+ * Clear all cache entries
+ */
+export function clearAllCache(): void {
+  Object.keys(cache).forEach(key => delete cache[key]);
+}
+
+/**
  * Retry fetch with exponential backoff
  * Tries up to maxAttempts times with increasing delays
  */
@@ -200,6 +214,7 @@ export const useGames = (sessionId: string) => {
 
 /**
  * Hook to add a new game
+ * Clears games cache after successful creation so list updates immediately
  */
 export const useAddGame = (sessionId: string) => {
   const [loading, setLoading] = useState(false);
@@ -221,6 +236,10 @@ export const useAddGame = (sessionId: string) => {
       
       const result = await response.json();
       setError(null);
+      
+      // Clear games cache so next fetch gets fresh data with new game
+      clearCache(`games-${sessionId}`);
+      
       return result.game;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
