@@ -1,8 +1,71 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePlayers } from "./usePlayers";
 import gamesData from '../../data/games.json';
 import "./NewGame.css";
+
+// Reusable Static Dropdown with autocomplete styling
+type StaticDropdownProps = {
+  value: string;
+  onChange: (val: string) => void;
+  options: { id: string; label: string }[];
+  placeholder?: string;
+};
+
+const StaticDropdown: React.FC<StaticDropdownProps> = ({ 
+  value, 
+  onChange, 
+  options,
+  placeholder = 'Select an option'
+}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedLabel = options.find(opt => opt.id === value)?.label || '';
+
+  const handleSelect = (id: string) => {
+    onChange(id);
+    setShowDropdown(false);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="static-dropdown" ref={dropdownRef} style={{ position: 'relative' }}>
+      <button
+        type="button"
+        className="dropdown-trigger field-input"
+        onClick={() => setShowDropdown(!showDropdown)}
+        style={{ width: '100%', textAlign: 'left', background: 'var(--surface)', border: '1.5px solid var(--border)', cursor: 'pointer' }}
+      >
+        {selectedLabel || placeholder}
+      </button>
+      {showDropdown && options.length > 0 && (
+        <ul className="autocomplete-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, maxHeight: 220, overflowY: 'auto', margin: 0, padding: 0, listStyle: 'none', zIndex: 10 }}>
+          {options.map((opt) => (
+            <li
+              key={opt.id}
+              onMouseDown={() => handleSelect(opt.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <span>{opt.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 // CommanderAutocomplete is now a Scryfall-powered autocomplete
 type CommanderAutocompleteProps = {
@@ -278,51 +341,48 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
               
               <div className="player-field-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', gap: '0.875rem', alignItems: 'flex-end' }}>
-                  <label className="field-label" style={{ flex: 1 }}>
-                    Player Name
-                    {!field.addNew ? (
-                      <select
-                        value={field.playerId}
-                        onChange={e => handlePlayerChange(idx, e.target.value)}
-                        required
-                        className="field-input"
-                      >
-                        <option value="">Select player</option>
-                        {players.map(player => (
-                          <option key={player.id} value={player.id}>{player.name}</option>
-                        ))}
-                        <option value="__add__">+ Add new player…</option>
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        value={field.newName}
-                        onChange={e => handleNewPlayerName(idx, e.target.value)}
-                        placeholder="Enter new player name"
-                        required
-                        className="field-input"
-                        onBlur={() => {
-                          if (field.newName) handlePlayerChange(idx, field.newName);
-                        }}
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <label className="field-label" style={{ marginBottom: 0 }}>
+                      Player Name
+                      {!field.addNew ? (
+                        <StaticDropdown
+                          value={field.playerId}
+                          onChange={(id) => handlePlayerChange(idx, id)}
+                          options={[
+                            ...players.map(p => ({ id: p.id, label: p.name })),
+                            { id: "__add__", label: "+ Add new player…" }
+                          ]}
+                          placeholder="Select player"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={field.newName}
+                          onChange={e => handleNewPlayerName(idx, e.target.value)}
+                          placeholder="Enter new player name"
+                          required
+                          className="field-input"
+                          onBlur={() => {
+                            if (field.newName) handlePlayerChange(idx, field.newName);
+                          }}
+                        />
+                      )}
+                    </label>
+                  </div>
+                  <div style={{ width: '100px', minWidth: '80px', position: 'relative' }}>
+                    <label className="field-label" style={{ marginBottom: 0 }}>
+                      Placement
+                      <StaticDropdown
+                        value={String(field.placement)}
+                        onChange={(val) => handlePlacementChange(idx, parseInt(val))}
+                        options={Array.from({ length: playerFields.length }, (_, i) => ({
+                          id: String(i + 1),
+                          label: String(i + 1)
+                        }))}
+                        placeholder="Placement"
                       />
-                    )}
-                  </label>
-                  <label className="field-label" style={{ width: '100px', minWidth: '80px', marginBottom: 0 }}>
-                    Placement
-                    <select
-                      value={field.placement}
-                      onChange={e => handlePlacementChange(idx, parseInt(e.target.value))}
-                      required
-                      className="field-input placement-select"
-                      style={{ width: '100%' }}
-                    >
-                      {Array.from({ length: playerFields.length }, (_, i) => i + 1).map(num => (
-                        <option key={num} value={num}>
-                          {num}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    </label>
+                  </div>
                 </div>
                 <label className="field-label" style={{ position: 'relative', marginTop: '0.5rem' }}>
                   Commander
