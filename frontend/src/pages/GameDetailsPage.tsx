@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import GameDetails from "../components/Games/GameDetails";
-import playersRaw from "../data/players.json";
-import gamesRaw from "../data/games.json";
+import { useGames, usePlayers } from "../hooks/useApi";
+import { useSession } from "../context/SessionContext";
 import "./GameDetailsPage.css";
 
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const [game, setGame] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { activeSession } = useSession();
+  const { games: gamesData, loading: gamesLoading } = useGames(activeSession);
+  const { players: playersData } = usePlayers();
 
   const handleClose = () => {
     navigate("/games");
@@ -22,41 +22,13 @@ const GameDetailsPage: React.FC = () => {
   useEscapeKey(handleClose);
   const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
-  // Fetch game from API
-  useEffect(() => {
-    const fetchGame = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/games?session=2025-December`);
-        if (!response.ok) throw new Error("Failed to fetch games");
-        const games = await response.json();
-        const foundGame = games.find((g: any) => g.id === gameId);
-        if (foundGame) {
-          setGame(foundGame);
-        } else {
-          // Try local fallback
-          const localGame = gamesRaw.find(g => g.id === gameId);
-          setGame(localGame || null);
-        }
-      } catch (err) {
-        console.error("Error fetching game:", err);
-        // Fallback to local data
-        const localGame = gamesRaw.find(g => g.id === gameId);
-        setGame(localGame || null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    if (gameId) {
-      fetchGame();
-    }
-  }, [gameId]);
-  
-  // Helper to get player name from ID
-  const getPlayerName = (id: string) => playersRaw.find(p => p.id === id)?.name || id;
+  // Find the game from current session
+  const game = gamesData.find((g: any) => g.id === gameId);
 
-  if (loading) {
+  // Helper to get player name from ID
+  const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
+
+  if (gamesLoading) {
     return (
       <motion.div 
         className="game-details-page" 
@@ -102,7 +74,7 @@ const GameDetailsPage: React.FC = () => {
           </button>
           <h1>Game Not Found</h1>
         </div>
-        <p>The game with ID "{gameId}" could not be found.</p>
+        <p>The game with ID "{gameId}" could not be found in this session.</p>
       </motion.div>
     );
   }

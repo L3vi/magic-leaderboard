@@ -1,150 +1,182 @@
-/* Modal styles for GameDetails */
+/* ===================== */
+/* GameDetails Mobile-First */
+/* ===================== */
 
-/* Redesigned GameDetails modal */
 .game-details {
-  background: none;
-  color: var(--foreground);
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  min-width: 0;
-  max-width: none;
-  max-height: none;
-  overflow-y: visible;
-  font-size: 1rem;
-  position: static;
-  animation: none;
-}
-
-.game-details-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ===================== */
+/* Game Summary */
+/* ===================== */
+.game-summary {
+  display: flex;
   justify-content: space-between;
-  margin-bottom: 1.2rem;
-}
-
-.game-details-title {
-  flex: 1;
-  font-size: 1.6rem;
-  font-weight: 800;
-  text-align: center;
-  color: var(--primary);
-  margin: 0;
-}
-
-.game-details-date {
-  font-size: 1rem;
-  color: var(--primary-light);
-  margin-left: 1rem;
-}
-
-.game-details-close {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--primary);
-  cursor: pointer;
-  margin-right: 0.5rem;
-  transition: color 0.18s;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .game-details-close:hover {
-    color: var(--primary-dark);
-  }
-}
-
-.game-details-info {
-  margin-bottom: 1.5rem;
-}
-
-.game-details-players-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-  font-size: 1rem;
+  align-items: center;
   background: var(--background);
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+  border: 1px solid var(--primary-light);
+  border-radius: 0.75rem;
+  padding: 1rem;
 }
 
-.game-details-players-table th,
-.game-details-players-table td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--primary-light);
-  text-align: left;
-}
-
-.game-details-players-table th {
-  background: var(--primary-dark);
-  font-weight: 700;
+.game-date {
+  font-size: 0.95rem;
   color: var(--foreground);
-}
-
-.game-details-players-table tr.winner td {
-  font-weight: bold;
-  color: var(--primary);
-  background: var(--primary-light);
-}
-
-.player-name {
-  margin-right: 0.5rem;
   font-weight: 600;
 }
 
-.player-commander {
-  font-style: italic;
-  color: var(--primary-light);
-}
-
-.winner-badge {
-  margin-left: 0.3rem;
-  font-size: 1.2em;
-}
-
-.game-details-notes {
-  margin-top: 1.2rem;
-  background: var(--header-bg);
+.game-player-count {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  background: rgba(139, 92, 246, 0.1);
+  padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
-  padding: 1rem;
-  color: var(--foreground);
-  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
 }
 
-.game-details-notes h3 {
-  margin-top: 0;
-  color: var(--primary);
-  font-size: 1.1rem;
+/* ===================== */
+/* Section Title */
+/* ===================== */
+.section-title {
+  font-size: 1.125rem;
   font-weight: 700;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
 }
 
-.game-details-notes p {
-  margin-bottom: 0;
-  font-size: 1rem;
+/* ===================== */
+/* Players Section */
+/* ===================== */
+.players-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-@media (max-width: 639px) {
-  .game-details {
-    padding: 1rem 0.2rem 0.5rem 0.2rem;
-    min-width: 0;
-  }
-
-  .game-details-title {
-    font-size: 1.2rem;
-  }
-
-  .game-details-header {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .game-details-date {
-    margin-left: 0;
-  }
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.winner-name {
+.player-card {
+  background: var(--background);
+  border-left: 3px solid var(--primary);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.player-card:hover {
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.player-card.placement-1 {
+  border-left-color: var(--accent);
+  background: rgba(251, 146, 60, 0.05);
+}
+
+.player-card.placement-2 {
+  border-left-color: var(--primary);
+}
+
+.player-card.placement-3 {
+  border-left-color: var(--primary-dark);
+}
+
+.player-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.placement-indicator {
+  font-size: 1.5rem;
+  font-weight: 700;
+  width: 2rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.player-card.placement-1 .placement-indicator {
+  color: var(--accent);
+  font-size: 1.75rem;
+}
+
+.player-card.placement-2 .placement-indicator {
   color: var(--primary);
-  font-weight: bold;
+}
+
+.player-card.placement-3 .placement-indicator {
+  color: var(--primary-dark);
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.player-commander {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ===================== */
+/* Notes Section */
+/* ===================== */
+.notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notes-card {
+  background: var(--background);
+  border: 1px solid var(--primary-light);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.notes-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+/* ===================== */
+/* Tablet & Desktop */
+/* ===================== */
+@media (min-width: 640px) {
+  .game-summary {
+    padding: 1.25rem;
+  }
+
+  .players-list {
+    gap: 0.75rem;
+  }
+
+  .player-card {
+    padding: 1rem;
+  }
+
+  .placement-indicator {
+    width: 2.5rem;
+    font-size: 1.75rem;
+  }
+
+  .notes-card {
+    padding: 1.25rem;
+  }
 }

@@ -16,46 +16,48 @@ interface GameDetailsProps {
   onClose: () => void;
 }
 
-// Optional: If you have a commander art hook, import it
-// import useCommanderArt from "../GameHistory/useCommanderArt";
-
 const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, players, winner, onClose }) => {
+  const sortedPlayers = [...players].sort((a, b) => a.placement - b.placement);
+  
   return (
     <div className="game-details">
-      <div className="game-details-header">
-        <span className="game-details-date">{new Date(dateCreated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</span>
+      {/* Game Date & Summary */}
+      <div className="game-summary">
+        <div className="game-date">
+          {new Date(dateCreated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+        </div>
+        <div className="game-player-count">
+          {players.length} player{players.length !== 1 ? 's' : ''}
+        </div>
       </div>
-      <div className="game-details-info">
-        <table className="game-details-players-table">
-          <thead>
-            <tr>
-              <th>Placement</th>
-              <th>Player</th>
-              <th>Commander</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.map((p, idx) => (
-              <tr key={idx} className={p.placement === 1 ? "winner" : ""}>
-                <td>{p.placement}</td>
-                <td>
-                  <span className="player-name">{p.name}</span>
-                  {p.placement === 1 && <span className="winner-badge" title="Winner">🏆</span>}
-                </td>
-                <td>
-                  {/* If you have commander art, show it here */}
-                  {/* <img src={useCommanderArt(p.commander)} alt={p.commander} className="commander-art" /> */}
-                  <span className="player-commander">{p.commander}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      {/* Players List - Card Based */}
+      <div className="players-section">
+        <div className="section-title">Results</div>
+        <div className="players-list">
+          {sortedPlayers.map((player, idx) => (
+            <div key={idx} className={`player-card placement-${player.placement}`}>
+              <div className="player-card-header">
+                <div className="placement-indicator">
+                  {player.placement === 1 ? '🏆' : `#${player.placement}`}
+                </div>
+                <div className="player-info">
+                  <div className="player-name">{player.name}</div>
+                  <div className="player-commander">{player.commander}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Notes Section */}
       {notes && (
-        <div className="game-details-notes">
-          <h3>Notes</h3>
-          <p>{notes}</p>
+        <div className="notes-section">
+          <div className="section-title">Notes</div>
+          <div className="notes-card">
+            <p>{notes}</p>
+          </div>
         </div>
       )}
     </div>
