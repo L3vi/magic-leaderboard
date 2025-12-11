@@ -4,16 +4,40 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * Restore data from local JSON file to Firebase
+ * UPLOAD DATA TO FIREBASE
  * 
- * This script supports multiple input formats:
- * 1. archived-data/firebase-backup.json (complete backup with sessions)
- * 2. archived-data/master-leaderboard.json (historical data)
- * 3. Custom JSON file via --file parameter
+ * Direction: Firebase (live) → local files
+ * 
+ * What it does:
+ * - Reads from local JSON file (master-leaderboard.json or custom file)
+ * - Uploads ALL data to Firebase Firestore
+ * - Overwrites whatever is currently in Firebase
+ * 
+ * This script supports multiple input files:
+ * 1. archived-data/master-leaderboard.json (PRIMARY)
+ *    → Use this for your "known good" data
+ *    → Contains historical sessions + current season
+ * 
+ * 2. archived-data/firebase-snapshot.json (RECOVERY)
+ *    → Use this to restore from a previous Firebase download
+ *    → Only use if you need to undo recent changes
+ * 
+ * 3. Custom file via --file parameter
+ *    → npm run upload-to-firebase -- --file=path/to/file.json
  * 
  * Usage:
- * npm run restore                    # Uses firebase-backup.json or master-leaderboard.json
- * npm run restore -- --file=path/to/file.json
+ * npm run upload-to-firebase                              # Uses master-leaderboard.json
+ * npm run upload-to-firebase -- --file=path/to/file.json # Uses custom file
+ * 
+ * When to use:
+ * - After updating archived-data/master-leaderboard.json locally
+ * - To sync changes from local files to Firebase
+ * - To restore from a backup (use firebase-snapshot.json)
+ * 
+ * After uploading:
+ * 1. Run: npm run download-from-firebase (to verify upload worked)
+ * 2. Copy backend/data files to frontend/src/data files
+ * 3. Test the app to verify data looks correct
  */
 
 interface Player {
@@ -60,7 +84,7 @@ async function restore() {
       // Try default locations in order (master-leaderboard first for cleaner data)
       const defaultFiles = [
         path.join(__dirname, '../../archived-data/master-leaderboard.json'),
-        path.join(__dirname, '../../archived-data/firebase-backup.json'),
+        path.join(__dirname, '../../archived-data/firebase-snapshot.json'),
       ];
 
       restoreFilePath = '';
@@ -75,8 +99,8 @@ async function restore() {
     if (!restoreFilePath || !fs.existsSync(restoreFilePath)) {
       console.error(`❌ Restore file not found: ${restoreFilePath}`);
       console.error('\nTry one of:');
-      console.error('  1. npm run restore (auto-detects firebase-backup.json or master-leaderboard.json)');
-      console.error('  2. npm run restore -- --file=path/to/file.json');
+      console.error('  1. npm run upload-to-firebase (auto-detects firebase-snapshot.json or master-leaderboard.json)');
+      console.error('  2. npm run upload-to-firebase -- --file=path/to/file.json');
       process.exit(1);
     }
 

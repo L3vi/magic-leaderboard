@@ -3,6 +3,12 @@ import fs from "fs";
 import path from "path";
 import { db } from "../firebase";
 
+// Generate organized game ID: game-YYYY-MM-###
+function generateGameId(sessionId: string, gameCount: number): string {
+  const paddedNumber = String(gameCount + 1).padStart(3, '0');
+  return `game-${sessionId}-${paddedNumber}`;
+}
+
 // Fetch available sessions from Firebase, sorted by creation date (newest first)
 async function fetchSessionsFromFirebase(): Promise<Array<{id: string, createdAt: string}> | null> {
   try {
@@ -113,7 +119,18 @@ export async function createGame(req: Request, res: Response) {
   }
   
   try {
+    // Fetch current game count to generate next ID
+    let currentGames: any[] | null = null;
+    try {
+      currentGames = await fetchGamesFromFirebase(sessionId);
+    } catch (e) {
+      // Error fetching, will fallback
+    }
+    const gameCount = currentGames ? currentGames.length : 0;
+    const gameId = generateGameId(sessionId, gameCount);
+    
     const newGame = {
+      id: gameId,
       players,
       notes: notes || "",
       dateCreated: dateCreated || new Date().toISOString()
@@ -121,12 +138,13 @@ export async function createGame(req: Request, res: Response) {
     
     // Try to save to Firebase first
     try {
-      const docRef = await db
+      await db
         .collection("sessions")
         .doc(sessionId)
         .collection("games")
-        .add(newGame);
-      return res.status(201).json({ success: true, game: { id: docRef.id, ...newGame } });
+        .doc(gameId)
+        .set(newGame);
+      return res.status(201).json({ success: true, game: newGame });
     } catch (firebaseError) {
       console.warn("Firebase write failed, falling back to local file:", firebaseError);
       // Fallback: write to local file
@@ -140,15 +158,10 @@ export async function createGame(req: Request, res: Response) {
         games = [];
       }
       
-      const gameWithId = {
-        id: Date.now().toString(),
-        ...newGame
-      };
-      
-      games.push(gameWithId);
+      games.push(newGame);
       fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
       
-      return res.status(201).json({ success: true, game: gameWithId });
+      return res.status(201).json({ success: true, game: newGame });
     }
   } catch (err) {
     console.error("Error creating game:", err);

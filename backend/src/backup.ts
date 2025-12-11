@@ -4,16 +4,33 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * Backup all data from Firebase to local JSON files
- * This creates a backup of your Firestore database
+ * DOWNLOAD DATA FROM FIREBASE
+ * 
+ * Direction: Firebase (live) ← local files
+ * 
+ * What it does:
+ * - Fetches ALL data from Firebase Firestore
+ * - Saves to archived-data/firebase-snapshot.json
+ * - Saves fallback copies to backend/data/ for API offline mode
  * 
  * Usage:
- * npm run backup
+ * npm run download-from-firebase
  * 
- * Output files:
- * - archived-data/firebase-backup.json (complete backup)
- * - backend/data/players.json (for fallback)
- * - backend/data/games.json (for fallback)
+ * Output files created:
+ * 1. archived-data/firebase-snapshot.json
+ *    → Complete snapshot of everything currently in Firebase
+ *    → Use this to verify Firebase state or as recovery backup
+ * 
+ * 2. backend/data/players.json
+ *    → Player list (used if Firebase is down)
+ * 
+ * 3. backend/data/games.json
+ *    → Games from latest session (used if Firebase is down)
+ * 
+ * When to use:
+ * - After uploading new data to Firebase (npm run upload-to-firebase)
+ * - To verify what's actually stored in Firebase
+ * - Before pushing to production, verify current Firebase state
  */
 
 interface Player {
@@ -98,16 +115,16 @@ async function backup() {
       sessions
     };
 
-    // Step 4: Save to archived-data/firebase-backup.json
+    // Step 4: Save to archived-data/firebase-snapshot.json
     const backupDir = path.join(__dirname, '../../archived-data');
-    const backupPath = path.join(backupDir, 'firebase-backup.json');
+    const backupPath = path.join(backupDir, 'firebase-snapshot.json');
     
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir, { recursive: true });
     }
 
     fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
-    console.log(`✓ Backup saved to: archived-data/firebase-backup.json\n`);
+    console.log(`✓ Backup saved to: archived-data/firebase-snapshot.json\n`);
 
     // Step 5: Save fallback files for frontend/backend
     const dataDir = path.join(__dirname, '../data');
