@@ -12,9 +12,17 @@ const EditGamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const { activeSession } = useSession();
-  const { games, refresh } = useGames(activeSession);
+  const { games, refresh: refreshGames } = useGames(activeSession);
   const { players: playersData } = usePlayers();
   const { updateGame, loading, error } = useUpdateGame(activeSession);
+
+  // Disable body scroll when this page is open
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const handleClose = () => {
     navigate("/games");
@@ -67,8 +75,9 @@ const EditGamePage: React.FC = () => {
   const handleSubmit = async (gameData: any) => {
     try {
       await updateGame(gameId!, gameData);
-      // Refresh games data and wait for it to complete before navigating
-      await refresh();
+      // After update completes, refresh to ensure fresh data
+      await refreshGames();
+      // Navigate back with fresh data loaded
       navigate("/games");
     } catch (err) {
       console.error("Error updating game:", err);

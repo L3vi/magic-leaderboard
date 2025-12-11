@@ -8,67 +8,27 @@ interface SessionContextType {
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
-/**
- * Retry fetch with exponential backoff
- */
-async function fetchWithRetry(
-  url: string,
-  maxAttempts: number = 5,
-  initialDelayMs: number = 500
-): Promise<Response> {
-  let lastError: Error | null = null;
-  
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await fetch(url, { 
-        signal: AbortSignal.timeout(5000) 
-      });
-      
-      if (response.ok) {
-        return response;
-      }
-      
-      lastError = new Error(`HTTP ${response.status}`);
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      
-      if (attempt < maxAttempts && lastError.name !== 'AbortError') {
-        const delayMs = initialDelayMs * Math.pow(2, attempt - 1);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        continue;
-      }
-    }
-  }
-  
-  throw lastError || new Error('Failed to fetch after retries');
-}
-
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeSession, setActiveSession] = useState<string>('2025-December');
   const [allSessions, setAllSessions] = useState<string[]>(['2025-December']);
-  const [loading, setLoading] = useState(false);
 
-  // Fetch available sessions and set to latest
+  // Fetch available sessions on mount
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const response = await fetchWithRetry('http://localhost:3001/api/sessions');
+        const response = await fetch('http://localhost:3001/api/sessions');
         const data = await response.json();
         setAllSessions(data);
         
         // Default to first session (latest, since API sorts by createdAt descending)
         if (data.length > 0) {
           setActiveSession(data[0]);
-        } else {
-          setActiveSession('2025-December'); // fallback
         }
       } catch (err) {
-        console.warn('Could not fetch sessions after retries, using defaults:', err);
-        // For now, only use December 2025
+        console.warn('Could not fetch sessions, using defaults:', err);
+        // Fallback to default session
         setAllSessions(['2025-December']);
         setActiveSession('2025-December');
-      } finally {
-        setLoading(false);
       }
     };
 

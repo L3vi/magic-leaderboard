@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Games.css";
 import GameRow from "./GameRow";
 import { useGames, usePlayers } from "../../hooks/useApi";
@@ -22,8 +22,17 @@ const Games: React.FC = () => {
   // Filtering state
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
-  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames();
+  const location = useLocation();
+  const { games: gamesData, loading: gamesLoading, error: gamesError, refresh } = useGames();
   const { players: playersData, loading: playersLoading } = usePlayers();
+
+  // Refresh games when location changes (after returning from edit page)
+  useEffect(() => {
+    const refreshGames = async () => {
+      await refresh();
+    };
+    refreshGames();
+  }, [location]);
 
   // Use games data from API
   const allGames = useMemo(() => gamesData, [gamesData]);

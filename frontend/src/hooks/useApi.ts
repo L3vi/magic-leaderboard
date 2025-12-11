@@ -5,11 +5,10 @@ import {
   calculatePlayerScores,
   addGame as addGameToAPI,
   updateGame as updateGameToAPI,
+  refetchGames,
   Player,
   Game,
   PlayerScore,
-  invalidateCache,
-  getGamesLastRefreshTime,
 } from '../services/dataService';
 
 /**
@@ -47,20 +46,16 @@ export const usePlayers = () => {
 };
 
 /**
- * Hook to fetch games for the current session with fallback to local data
- * Caches results for 2.5 minutes and auto-refreshes every 2.5 minutes
- * Provides manual refresh capability via refresh() function
+ * Hook to fetch games for the current session
+ * Provides manual refresh function - call it when you need fresh data
  */
 export const useGames = (sessionId: string = '2025-December') => {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const hasInitialized = useRef(false);
-  const autoRefreshTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Initial load and auto-refresh setup
+  // Initial load
   useEffect(() => {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
@@ -70,7 +65,6 @@ export const useGames = (sessionId: string = '2025-December') => {
         setLoading(true);
         const data = await fetchGames(sessionId);
         setGames(data);
-        setLastRefreshed(getGamesLastRefreshTime(sessionId));
         setError(null);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load games';
@@ -81,44 +75,29 @@ export const useGames = (sessionId: string = '2025-December') => {
     };
 
     loadGames();
-
-    // Set up auto-refresh every 2.5 minutes
-    autoRefreshTimer.current = setInterval(async () => {
-      try {
-        const data = await fetchGames(sessionId, true); // Force refresh
-        setGames(data);
-        setLastRefreshed(getGamesLastRefreshTime(sessionId));
-      } catch (err) {
-        console.error('Auto-refresh failed:', err);
-      }
-    }, 2.5 * 60 * 1000);
-
-    return () => {
-      if (autoRefreshTimer.current) clearInterval(autoRefreshTimer.current);
-    };
   }, [sessionId]);
 
+  // Manual refresh function - call this to get fresh data
   const refresh = async () => {
     try {
-      setRefreshing(true);
-      const data = await fetchGames(sessionId, true); // Force refresh
-      setGames(data);
-      setLastRefreshed(getGamesLastRefreshTime(sessionId));
+      setLoading(true);
+      const freshGames = await refetchGames(sessionId);
+      setGames(freshGames);
       setError(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to refresh games';
       setError(message);
     } finally {
-      setRefreshing(false);
+      setLoading(false);
     }
   };
 
-  return { games, loading, error, refreshing, lastRefreshed, refresh };
+  return { games, loading, error, refresh };
 };
 
 /**
  * Hook to calculate player scores from games
- * Automatically recalculates when games change
+ * Recalculates whenever games change
  */
 export const usePlayerScores = (sessionId: string = '2025-December') => {
   const [scores, setScores] = useState<PlayerScore[]>([]);
@@ -128,6 +107,7 @@ export const usePlayerScores = (sessionId: string = '2025-December') => {
   const { players } = usePlayers();
   const { games } = useGames(sessionId);
 
+  // Calculate scores when games or players change
   useEffect(() => {
     if (players.length === 0 || games.length === 0) {
       setLoading(false);
@@ -152,16 +132,19 @@ export const usePlayerScores = (sessionId: string = '2025-December') => {
 
 /**
  * Hook to add a new game
- * Invalidates games cache after successful creation
+ * Optionally refreshes games after successful creation
  */
 export const useAddGame = (sessionId: string = '2025-December') => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { refresh } = useGames(sessionId);
 
   const addGame = async (gameData: any) => {
     try {
       setLoading(true);
       const result = await addGameToAPI(gameData, sessionId);
+      // Refresh games to get latest data
+      await refresh();
       setError(null);
       return result;
     } catch (err) {
@@ -178,16 +161,19 @@ export const useAddGame = (sessionId: string = '2025-December') => {
 
 /**
  * Hook to update an existing game
- * Invalidates games cache after successful update
+ * Optionally refreshes games after successful update
  */
 export const useUpdateGame = (sessionId: string = '2025-December') => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { refresh } = useGames(sessionId);
 
   const updateGame = async (gameId: string, gameData: any) => {
     try {
       setLoading(true);
       const result = await updateGameToAPI(gameId, gameData, sessionId);
+      // Refresh games to get latest data
+      await refresh();
       setError(null);
       return result;
     } catch (err) {

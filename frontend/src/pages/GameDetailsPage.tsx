@@ -15,8 +15,20 @@ const GameDetailsPage: React.FC = () => {
   const { games: gamesData, loading: gamesLoading } = useGames(activeSession);
   const { players: playersData } = usePlayers();
 
+  // Disable body scroll when this page is open
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const handleClose = () => {
     navigate("/games");
+  };
+
+  const handleEdit = async () => {
+    navigate(`/edit-game/${gameId}`);
   };
 
   useEscapeKey(handleClose);
@@ -114,7 +126,7 @@ const GameDetailsPage: React.FC = () => {
         <h1>Game Details</h1>
         <button 
           className="edit-button" 
-          onClick={() => navigate(`/edit-game/${gameId}`)}
+          onClick={handleEdit}
           aria-label="Edit game"
         >
           ✎ Edit

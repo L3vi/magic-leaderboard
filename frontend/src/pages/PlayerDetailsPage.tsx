@@ -16,6 +16,14 @@ const PlayerDetailsPage: React.FC = () => {
   const { games: gamesRaw } = useGames(activeSession);
   const { players: playersRaw } = usePlayers();
 
+  // Disable body scroll when this page is open
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const handleClose = () => {
     navigate("/players");
   };

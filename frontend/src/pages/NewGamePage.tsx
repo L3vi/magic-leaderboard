@@ -13,6 +13,14 @@ const NewGamePage: React.FC = () => {
   const from = (location.state as any)?.from || '/games';
   const { addGame, loading, error } = useAddGame();
 
+  // Disable body scroll when this page is open
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const handleClose = () => {
     navigate(from);
   };
