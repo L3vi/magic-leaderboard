@@ -11,6 +11,7 @@ import {
 } from '@floating-ui/react';
 import { usePlayers } from "./usePlayers";
 import { useGames } from "../../hooks/useApi";
+import { useCommanderArt } from "../../hooks/useCommanderArt";
 import "./NewGame.css";
 
 // Reusable Static Dropdown with autocomplete styling
@@ -112,6 +113,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [previousCommanders, setPreviousCommanders] = useState<string[]>([]);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
+  const artUrl = useCommanderArt(value);
 
   const { refs, floatingStyles, context } = useFloating({
     open: showDropdown,
@@ -133,7 +135,17 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
-  // Load last played commander for this player
+  // Load last played commander for this player and update image when value changes
+  useEffect(() => {
+    if (value && artUrl) {
+      // Use the useCommanderArt hook result for current value
+      setSelectedImage(artUrl);
+    } else if (!value) {
+      setSelectedImage(null);
+    }
+  }, [value, artUrl]);
+
+  // Load last played commander suggestions
   useEffect(() => {
     if (playerId && playerId !== "__add__" && playerId !== "") {
       const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
@@ -147,15 +159,6 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           if (!lastCommander) {
             lastCommander = playerInGame.commander;
             setLastPlayedCommander(playerInGame.commander);
-            // Fetch the image for the last played commander
-            fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(playerInGame.commander)}`)
-              .then(res => res.json())
-              .then(data => {
-                setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
-              })
-              .catch(() => {
-                setSelectedImage(null);
-              });
           }
           // Collect all unique commanders this player has played
           if (!commanders.includes(playerInGame.commander)) {
@@ -228,16 +231,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     onChange(cardName);
     setShowDropdown(false);
     setResults([]);
-    
-    // Fetch the card image
-    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`)
-      .then(res => res.json())
-      .then(data => {
-        setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
-      })
-      .catch(() => {
-        setSelectedImage(null);
-      });
+    // Image will be set automatically via the useEffect that watches artUrl
   };
 
   const handleInputFocus = () => {
