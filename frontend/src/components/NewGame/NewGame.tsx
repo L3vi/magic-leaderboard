@@ -1,186 +1,43 @@
-// Commander art cache and hook (copied from GameRow)
-const commanderImageCache: Record<string, string> = {};
-function useCommanderArt(commander: string): string {
-  const [imgUrl, setImgUrl] = useState(commanderImageCache[commander] || "");
-  useEffect(() => {
-    if (!commander || !commander.trim()) {
-      setImgUrl("");
-      return;
-    }
-    if (commanderImageCache[commander]) {
-      setImgUrl(commanderImageCache[commander]);
-      return;
-    }
-    let isMounted = true;
-    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        let art = "";
-        if (data.image_uris && data.image_uris.art_crop) {
-          art = data.image_uris.art_crop;
-        } else if (data.card_faces && data.card_faces[0]?.image_uris?.art_crop) {
-          art = data.card_faces[0].image_uris.art_crop;
-        }
-        commanderImageCache[commander] = art;
-        if (isMounted) setImgUrl(art);
-      })
-      .catch(() => {
-        commanderImageCache[commander] = "";
-        if (isMounted) setImgUrl("");
-      });
-    return () => { isMounted = false; };
-  }, [commander]);
-  return imgUrl;
-}
-// CommanderAutocomplete component
-interface CommanderAutocompleteProps {
-  value: string;
-  onChange: (v: string) => void;
-}
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
-  const [input, setInput] = useState(value);
-  const [show, setShow] = useState(false);
-  const results = useScryfallAutocomplete(input);
-  const ref = useRef<HTMLDivElement>(null);
-  const artUrl = useCommanderArt(input);
-
-  useEffect(() => { setInput(value); }, [value]);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setShow(false);
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  return (
-    <div ref={ref} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
-      {artUrl ? (
-        <img
-          src={artUrl}
-          alt={input}
-          className="game-row-commander-img"
-          style={{ width: 48, height: 48, borderRadius: '0.5rem', objectFit: 'cover', marginRight: 8 }}
-        />
-      ) : (
-        <div
-          className="game-row-commander-img-placeholder"
-          style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
-        >
-          ?
-        </div>
-      )}
-      <div style={{ flex: 1, position: 'relative' }}>
-        <input
-          type="text"
-          value={input}
-          onChange={e => {
-            setInput(e.target.value);
-            onChange(e.target.value);
-            setShow(true);
-          }}
-          onFocus={() => setShow(true)}
-          placeholder="e.g., Atraxa, Praetors' Voice"
-          required
-          className="field-input"
-          autoComplete="off"
-          style={{ paddingLeft: 8 }}
-        />
-        {show && results.length > 0 && (
-          <ul
-            style={{
-              position: 'absolute',
-              zIndex: 10,
-              background: 'var(--surface)',
-              border: '1.5px solid var(--border)',
-              color: 'var(--foreground)',
-              width: '100%',
-              maxHeight: 180,
-              overflowY: 'auto',
-              margin: 0,
-              padding: 0,
-              listStyle: 'none',
-              left: 0,
-              top: '100%',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)'
-            }}
-          >
-            {results.map((name: string) => (
-              <li
-                key={name}
-                style={{
-                  padding: '10px 14px',
-                  cursor: 'pointer',
-                  color: 'var(--foreground)',
-                  background: 'none',
-                  borderBottom: '1px solid var(--border)',
-                  fontSize: '1rem',
-                  transition: 'background 0.15s, color 0.15s',
-                }}
-                onMouseDown={() => {
-                  setInput(name);
-                  onChange(name);
-                  setShow(false);
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--primary-dark)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-              >
-                {name}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
+import React, { useState, useEffect } from 'react';
+type NewGameProps = {
+  onSubmit: (gameData: any) => void;
+  onCancel?: () => void;
 };
-
-import React, { useState, useEffect, useRef } from "react";
-
-// Scryfall autocomplete hook
-function useScryfallAutocomplete(query: string) {
-  const [results, setResults] = useState<string[]>([]);
-  useEffect(() => {
-    if (!query || query.length < 2) {
-      setResults([]);
-      return;
-    }
-    let ignore = false;
-    // Only search for cards legal as a commander
-    const search = `is:commander ${query}`;
-    fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(search)}&order=released&unique=cards&include_extras=false&include_multilingual=false&format=json`)
-      .then(res => res.json())
-      .then(data => {
-        if (!ignore && data.data) {
-          // Only show unique names, up to 20 suggestions
-          const names: string[] = [];
-          const seen = new Set();
-          for (const card of data.data) {
-            if (!seen.has(card.name)) {
-              names.push(card.name);
-              seen.add(card.name);
-            }
-            if (names.length >= 20) break;
-          }
-          setResults(names);
-        }
-      });
-    return () => { ignore = true; };
-  }, [query]);
-  return results;
-}
-
-
 import { usePlayers } from "./usePlayers";
 import gamesData from '../../data/games.json';
 import "./NewGame.css";
+// CommanderAutocomplete is now a simple input
+type CommanderAutocompleteProps = {
+  value: string;
+  onChange: (val: string) => void;
+};
 
-interface NewGameProps {
-  onSubmit: (gameData: any) => void;
-  onCancel?: () => void;
-}
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
+  // Stubbed functions for future autocomplete/art logic
+  // const artUrl = useCommanderArt(value); // stub
+  // const results = useScryfallAutocomplete(value); // stub
 
+  return (
+    <div className="commander-autocomplete" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* Blank image preview, always shown, rounded square style */}
+      <div
+        className="game-row-commander-img-placeholder"
+        style={{ width: 48, height: 48, borderRadius: '0.5rem', marginRight: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#bbb', background: '#eee' }}
+      >
+        ?
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder="Commander name"
+        autoComplete="off"
+        className="field-input"
+        style={{ flex: 1, minWidth: 0 }}
+      />
+    </div>
+  );
+};
 interface PlayerField {
   playerId: string;
   commander: string;
@@ -336,59 +193,60 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
                 )}
               </div>
               
-              <div className="player-field-group">
-                <label className="field-label">
-                  Player Name
-                  {!field.addNew ? (
+              <div className="player-field-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', gap: '0.875rem', alignItems: 'flex-end' }}>
+                  <label className="field-label" style={{ flex: 1 }}>
+                    Player Name
+                    {!field.addNew ? (
+                      <select
+                        value={field.playerId}
+                        onChange={e => handlePlayerChange(idx, e.target.value)}
+                        required
+                        className="field-input"
+                      >
+                        <option value="">Select player</option>
+                        {players.map(player => (
+                          <option key={player.id} value={player.id}>{player.name}</option>
+                        ))}
+                        <option value="__add__">+ Add new player…</option>
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={field.newName}
+                        onChange={e => handleNewPlayerName(idx, e.target.value)}
+                        placeholder="Enter new player name"
+                        required
+                        className="field-input"
+                        onBlur={() => {
+                          if (field.newName) handlePlayerChange(idx, field.newName);
+                        }}
+                      />
+                    )}
+                  </label>
+                  <label className="field-label" style={{ width: '100px', minWidth: '80px', marginBottom: 0 }}>
+                    Placement
                     <select
-                      value={field.playerId}
-                      onChange={e => handlePlayerChange(idx, e.target.value)}
+                      value={field.placement}
+                      onChange={e => handlePlacementChange(idx, parseInt(e.target.value))}
                       required
-                      className="field-input"
+                      className="field-input placement-select"
+                      style={{ width: '100%' }}
                     >
-                      <option value="">Select player</option>
-                      {players.map(player => (
-                        <option key={player.id} value={player.id}>{player.name}</option>
+                      {Array.from({ length: playerFields.length }, (_, i) => i + 1).map(num => (
+                        <option key={num} value={num}>
+                          {num}
+                        </option>
                       ))}
-                      <option value="__add__">+ Add new player…</option>
                     </select>
-                  ) : (
-                    <input
-                      type="text"
-                      value={field.newName}
-                      onChange={e => handleNewPlayerName(idx, e.target.value)}
-                      placeholder="Enter new player name"
-                      required
-                      className="field-input"
-                      onBlur={() => {
-                        if (field.newName) handlePlayerChange(idx, field.newName);
-                      }}
-                    />
-                  )}
-                </label>
-
-                <label className="field-label" style={{ position: 'relative' }}>
+                  </label>
+                </div>
+                <label className="field-label" style={{ position: 'relative', marginTop: '0.5rem' }}>
                   Commander
                   <CommanderAutocomplete
                     value={field.commander}
                     onChange={val => handleCommanderChange(idx, val)}
                   />
-                </label>
-
-                <label className="field-label">
-                  Placement
-                  <select
-                    value={field.placement}
-                    onChange={e => handlePlacementChange(idx, parseInt(e.target.value))}
-                    required
-                    className="field-input placement-select"
-                  >
-                    {Array.from({ length: playerFields.length }, (_, i) => i + 1).map(num => (
-                      <option key={num} value={num}>
-                        {num === 1 ? '🥇 1st Place' : num === 2 ? '🥈 2nd Place' : num === 3 ? '🥉 3rd Place' : `${num}th Place`}
-                      </option>
-                    ))}
-                  </select>
                 </label>
               </div>
             </div>
