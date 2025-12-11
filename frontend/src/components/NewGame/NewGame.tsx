@@ -108,6 +108,8 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lastPlayedCommander, setLastPlayedCommander] = useState<string | null>(null);
+  const [previousCommanders, setPreviousCommanders] = useState<string[]>([]);
+  const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   const { refs, floatingStyles, context } = useFloating({
@@ -127,30 +129,43 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     ],
   });
 
-  const click = useClick(context);
   const dismiss = useDismiss(context);
-  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+  const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
 
   // Load last played commander for this player
   useEffect(() => {
     if (playerId && playerId !== "__add__" && playerId !== "") {
       const sortedGames = [...gamesData].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      const commanders: string[] = [];
+      let lastCommander: string | null = null;
+      
       for (const game of sortedGames) {
         const playerInGame = game.players.find(p => p.playerId === playerId);
         if (playerInGame) {
-          setLastPlayedCommander(playerInGame.commander);
-          // Fetch the image for the last played commander
-          fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(playerInGame.commander)}`)
-            .then(res => res.json())
-            .then(data => {
-              setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
-            })
-            .catch(() => {
-              setSelectedImage(null);
-            });
-          break;
+          // Set the first one we find as the last played
+          if (!lastCommander) {
+            lastCommander = playerInGame.commander;
+            setLastPlayedCommander(playerInGame.commander);
+            // Fetch the image for the last played commander
+            fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(playerInGame.commander)}`)
+              .then(res => res.json())
+              .then(data => {
+                setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
+              })
+              .catch(() => {
+                setSelectedImage(null);
+              });
+          }
+          // Collect all unique commanders this player has played
+          if (!commanders.includes(playerInGame.commander)) {
+            commanders.push(playerInGame.commander);
+          }
         }
       }
+      setPreviousCommanders(commanders);
+    } else {
+      setPreviousCommanders([]);
+      setLastPlayedCommander(null);
     }
   }, [playerId]);
 
@@ -188,6 +203,17 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     onChange(val);
     setSelectedImage(null);
 
+    // If input is empty, show previous commanders
+    if (!val.trim()) {
+      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setShowDropdown(true);
+      setLoading(false);
+      return;
+    }
+
+    // User has started typing
+    setHasStartedTyping(true);
+
     // Debounce the search
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
@@ -213,6 +239,22 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       });
   };
 
+  const handleInputFocus = () => {
+    // Show previous commanders when input is focused and empty
+    if (!value.trim() && previousCommanders.length > 0) {
+      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setShowDropdown(true);
+    }
+  };
+
+  const handleInputClick = () => {
+    // When clicking an empty input, show previous commanders
+    if (!value.trim() && previousCommanders.length > 0) {
+      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setShowDropdown(true);
+    }
+  };
+
   return (
     <div className="commander-autocomplete">
       {/* Commander image preview */}
@@ -232,7 +274,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           type="text"
           value={value}
           onChange={handleInputChange}
-          placeholder={lastPlayedCommander || "Commander name"}
+          onFocus={handleInputFocus}
+          onClick={handleInputClick}
+          placeholder={hasStartedTyping ? "Find commander" : (lastPlayedCommander || "Commander name")}
           autoComplete="off"
           className="field-input"
           style={{ width: '100%' }}
