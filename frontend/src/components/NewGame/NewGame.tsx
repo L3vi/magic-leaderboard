@@ -321,6 +321,15 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 type NewGameProps = {
   onSubmit: (gameData: any) => void;
   onCancel?: () => void;
+  initialData?: {
+    dateCreated: string;
+    notes: string;
+    players: Array<{
+      playerId: string;
+      commander: string;
+      placement: number;
+    }>;
+  };
 };
 
 interface PlayerField {
@@ -331,7 +340,7 @@ interface PlayerField {
   newName: string;
 }
 
-const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
+const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) => {
   const players = usePlayers();
   const { games: gamesData } = useGames();
   const MIN_PLAYERS = 2;
@@ -369,20 +378,35 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
 
   const [playerFields, setPlayerFields] = useState<PlayerField[]>([]);
 
-  // On mount, set default player fields to least recently played
+  // On mount, set default player fields to least recently played or use initialData
   useEffect(() => {
-    const defaultPlayers = getLeastRecentlyPlayedPlayers();
-    setPlayerFields(
-      Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({
-        playerId: defaultPlayers[i] || '',
-        commander: '',
-        placement: i + 1,
-        addNew: false,
-        newName: ''
-      }))
-    );
+    if (initialData) {
+      // Initialize from provided data
+      setPlayerFields(
+        initialData.players.map(p => ({
+          playerId: p.playerId,
+          commander: p.commander,
+          placement: p.placement,
+          addNew: false,
+          newName: ''
+        }))
+      );
+      setNotes(initialData.notes);
+    } else {
+      // Set default player fields to least recently played
+      const defaultPlayers = getLeastRecentlyPlayedPlayers();
+      setPlayerFields(
+        Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({
+          playerId: defaultPlayers[i] || '',
+          commander: '',
+          placement: i + 1,
+          addNew: false,
+          newName: ''
+        }))
+      );
+    }
     // eslint-disable-next-line
-  }, [players.length]);
+  }, [players.length, initialData]);
   const [notes, setNotes] = useState("");
 
   const handlePlayerChange = (idx: number, playerId: string) => {
@@ -447,7 +471,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
         placement: f.placement
       })),
       notes: notes.trim(),
-      dateCreated: new Date().toISOString()
+      dateCreated: initialData ? initialData.dateCreated : new Date().toISOString()
     };
     
     onSubmit(gameData);
@@ -563,7 +587,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
       </div>
 
       <div className="form-actions">
-        <button type="submit" className="submit-btn">Create Game</button>
+        <button type="submit" className="submit-btn">{initialData ? 'Save Changes' : 'Create Game'}</button>
         {onCancel && (
           <button type="button" onClick={onCancel} className="cancel-btn">
             Cancel

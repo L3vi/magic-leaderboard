@@ -250,3 +250,31 @@ export async function addGame(
     throw error;
   }
 }
+
+/**
+ * Update an existing game
+ */
+export async function updateGame(
+  gameId: string,
+  gameData: any,
+  session: string = '2025-December'
+): Promise<Game> {
+  try {
+    const response = await fetch(`${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(gameData),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const updatedGame = await response.json();
+
+    // Invalidate games cache so next fetch gets fresh data
+    invalidateCache('games', session);
+
+    return updatedGame;
+  } catch (error) {
+    console.error('Error updating game:', error);
+    throw error;
+  }
+}

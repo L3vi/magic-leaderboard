@@ -112,6 +112,13 @@ const GameDetailsPage: React.FC = () => {
           ← Back
         </button>
         <h1>Game Details</h1>
+        <button 
+          className="edit-button" 
+          onClick={() => navigate(`/edit-game/${gameId}`)}
+          aria-label="Edit game"
+        >
+          ✎ Edit
+        </button>
       </div>
       <div className="game-details-page-content">
         <GameDetails

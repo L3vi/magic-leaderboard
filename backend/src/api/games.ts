@@ -168,3 +168,65 @@ export async function createGame(req: Request, res: Response) {
     res.status(500).json({ error: "Could not save game." });
   }
 }
+
+export async function updateGame(req: Request, res: Response) {
+  const sessionId = req.query.session as string || "2025-December";
+  const gameId = req.params.gameId as string;
+  const { players, notes, dateCreated } = req.body;
+  
+  // Validate required fields
+  if (!players || !Array.isArray(players) || players.length < 2) {
+    return res.status(400).json({ error: "Game must have at least 2 players." });
+  }
+  
+  for (const player of players) {
+    if (!player.playerId || !player.commander || player.placement === undefined) {
+      return res.status(400).json({ error: "Each player must have playerId, commander, and placement." });
+    }
+  }
+  
+  try {
+    const updatedGame = {
+      id: gameId,
+      players,
+      notes: notes || "",
+      dateCreated: dateCreated || new Date().toISOString()
+    };
+    
+    // Try to update in Firebase first
+    try {
+      await db
+        .collection("sessions")
+        .doc(sessionId)
+        .collection("games")
+        .doc(gameId)
+        .set(updatedGame);
+      return res.status(200).json({ success: true, game: updatedGame });
+    } catch (firebaseError) {
+      console.warn("Firebase write failed, falling back to local file:", firebaseError);
+      // Fallback: update in local file
+      const filePath = path.join(__dirname, "../../data/games.json");
+      let games: any[] = [];
+      
+      try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        games = JSON.parse(raw);
+      } catch (err) {
+        return res.status(404).json({ error: "Game not found." });
+      }
+      
+      const gameIndex = games.findIndex((g: any) => g.id === gameId);
+      if (gameIndex === -1) {
+        return res.status(404).json({ error: "Game not found." });
+      }
+      
+      games[gameIndex] = updatedGame;
+      fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
+      
+      return res.status(200).json({ success: true, game: updatedGame });
+    }
+  } catch (err) {
+    console.error("Error updating game:", err);
+    res.status(500).json({ error: "Could not update game." });
+  }
+}

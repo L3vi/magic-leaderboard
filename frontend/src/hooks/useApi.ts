@@ -4,6 +4,7 @@ import {
   fetchGames,
   calculatePlayerScores,
   addGame as addGameToAPI,
+  updateGame as updateGameToAPI,
   Player,
   Game,
   PlayerScore,
@@ -173,4 +174,30 @@ export const useAddGame = (sessionId: string = '2025-December') => {
   };
 
   return { addGame, loading, error };
+};
+
+/**
+ * Hook to update an existing game
+ * Invalidates games cache after successful update
+ */
+export const useUpdateGame = (sessionId: string = '2025-December') => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateGame = async (gameId: string, gameData: any) => {
+    try {
+      setLoading(true);
+      const result = await updateGameToAPI(gameId, gameData, sessionId);
+      setError(null);
+      return result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update game';
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateGame, loading, error };
 };
