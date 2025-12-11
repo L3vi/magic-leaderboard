@@ -99,13 +99,15 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
 type CommanderAutocompleteProps = {
   value: string;
   onChange: (val: string) => void;
+  playerId?: string;
 };
 
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange }) => {
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId }) => {
   const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [lastPlayedCommander, setLastPlayedCommander] = useState<string | null>(null);
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   const { refs, floatingStyles, context } = useFloating({
@@ -128,6 +130,29 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const click = useClick(context);
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
+
+  // Load last played commander for this player
+  useEffect(() => {
+    if (playerId && playerId !== "__add__" && playerId !== "") {
+      const sortedGames = [...gamesData].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      for (const game of sortedGames) {
+        const playerInGame = game.players.find(p => p.playerId === playerId);
+        if (playerInGame) {
+          setLastPlayedCommander(playerInGame.commander);
+          // Fetch the image for the last played commander
+          fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(playerInGame.commander)}`)
+            .then(res => res.json())
+            .then(data => {
+              setSelectedImage(data.image_uris?.art_crop || data.image_uris?.normal || null);
+            })
+            .catch(() => {
+              setSelectedImage(null);
+            });
+          break;
+        }
+      }
+    }
+  }, [playerId]);
 
   const searchCommanders = (query: string) => {
     if (!query.trim()) {
@@ -207,7 +232,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           type="text"
           value={value}
           onChange={handleInputChange}
-          placeholder="Commander name"
+          placeholder={lastPlayedCommander || "Commander name"}
           autoComplete="off"
           className="field-input"
           style={{ width: '100%' }}
@@ -463,6 +488,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
                   <CommanderAutocomplete
                     value={field.commander}
                     onChange={val => handleCommanderChange(idx, val)}
+                    playerId={field.playerId}
                   />
                 </label>
               </div>
