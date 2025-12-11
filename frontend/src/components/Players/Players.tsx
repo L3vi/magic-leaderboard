@@ -2,39 +2,7 @@ import React, { useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Players.css";
-import { usePlayers, useGames } from "../../hooks/useApi";
-import { useSession } from "../../context/SessionContext";
-
-/**
- * Aggregates player stats from all events and games.
- */
-function aggregatePlayers(players: any[], games: any[]): Player[] {
-  const playerMap: Record<string, Player & { totalPlacement: number }> = {};
-  players.forEach((pl: any) => {
-    playerMap[pl.id] = {
-      id: pl.id,
-      name: pl.name,
-      score: 0,
-      average: 0,
-      gamesPlayed: 0,
-      totalPlacement: 0,
-    };
-  });
-  games.forEach((game: any) => {
-    game.players.forEach((p: any) => {
-      if (playerMap[p.playerId]) {
-        playerMap[p.playerId].gamesPlayed += 1;
-        playerMap[p.playerId].totalPlacement += p.placement;
-        playerMap[p.playerId].score += Math.max(5 - p.placement, 1);
-      }
-    });
-  });
-  Object.values(playerMap).forEach((p) => {
-    p.average = p.gamesPlayed ? p.totalPlacement / p.gamesPlayed : 0;
-    delete (p as any).totalPlacement;
-  });
-  return Object.values(playerMap);
-}
+import { usePlayerScores } from "../../hooks/useApi";
 
 type SortKey = "name" | "score" | "average";
 type SortOrder = "asc" | "desc";
@@ -55,14 +23,11 @@ const Players: React.FC = () => {
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const headerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { activeSession } = useSession();
-  const { players: playersData, loading: playersLoading, error: playersError } = usePlayers();
-  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames(activeSession);
+  const { scores: scoresData, loading: scoresLoading, error: scoresError } = usePlayerScores();
 
-  // Memoize player aggregation and sorting for performance
-  const allPlayers = useMemo(() => aggregatePlayers(playersData, gamesData), [playersData, gamesData]);
+  // Memoize sorting for performance
   const sortedPlayers = useMemo(() => {
-    const players = [...allPlayers];
+    const players = [...scoresData];
     if (sortKey === "name") {
       players.sort((a, b) =>
         sortOrder === "asc"
@@ -71,13 +36,13 @@ const Players: React.FC = () => {
       );
     } else {
       players.sort((a, b) => {
-        const aValue = a[sortKey as keyof Player] as number;
-        const bValue = b[sortKey as keyof Player] as number;
+        const aValue = a[sortKey as keyof typeof scoresData[0]] as number;
+        const bValue = b[sortKey as keyof typeof scoresData[0]] as number;
         return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       });
     }
     return players;
-  }, [allPlayers, sortKey, sortOrder]);
+  }, [scoresData, sortKey, sortOrder]);
 
   // Determine if current sort shows top rankings (medals for score/average descending only)
   const showTopRankings = useMemo(() => {
@@ -85,16 +50,16 @@ const Players: React.FC = () => {
   }, [sortKey, sortOrder]);
 
   // Show loading state
-  if (playersLoading || gamesLoading) {
+  if (scoresLoading) {
     return <section className="leaderboard main-section">Loading players...</section>;
   }
 
   // Show error state
-  if (playersError || gamesError) {
+  if (scoresError) {
     return (
       <section className="leaderboard main-section">
         <div style={{ color: 'red' }}>
-          Error loading data: {playersError || gamesError}
+          Error loading data: {scoresError}
         </div>
       </section>
     );
@@ -119,8 +84,8 @@ const Players: React.FC = () => {
     }
   }
 
-  function handlePlayerClick(player: Player) {
-    navigate(`/players/${encodeURIComponent(player.name)}`);
+  function handlePlayerClick(playerScore: typeof scoresData[0]) {
+    navigate(`/players/${encodeURIComponent(playerScore.name)}`);
   }
 
   return (
@@ -158,12 +123,17 @@ const Players: React.FC = () => {
         ))}
       </div>
       <div className="leaderboard-list" role="rowgroup">
-        {sortedPlayers.map((player, index) => (
+        {sortedPlayers.map((playerScore, index) => (
           <PlayerRow
-            key={player.name}
-            player={player}
+            key={playerScore.name}
+            player={{
+              name: playerScore.name,
+              score: playerScore.score,
+              average: playerScore.average,
+              gamesPlayed: playerScore.gameCount,
+            }}
             rank={showTopRankings ? index + 1 : undefined}
-            onClick={() => handlePlayerClick(player)}
+            onClick={() => handlePlayerClick(playerScore)}
           />
         ))}
       </div>

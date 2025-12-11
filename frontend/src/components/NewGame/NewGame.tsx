@@ -333,7 +333,7 @@ interface PlayerField {
 
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
   const players = usePlayers();
-  const { games: gamesData } = useGames('2025-December'); // Load from current session
+  const { games: gamesData } = useGames();
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;

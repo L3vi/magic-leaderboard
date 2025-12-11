@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./Games.css";
 import GameRow from "./GameRow";
 import { useGames, usePlayers } from "../../hooks/useApi";
-import { useSession } from "../../context/SessionContext";
 
 // TypeScript interfaces for game history data
 interface Player {
@@ -19,23 +18,11 @@ interface Game {
   players: Player[];
 }
 
-interface Event {
-  id: string;
-  date: string;
-  games: Game[];
-}
-
-interface GameHistoryData {
-  year: number;
-  events: Event[];
-}
-
 const Games: React.FC = () => {
   // Filtering state
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
-  const { activeSession } = useSession();
-  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames(activeSession);
+  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames();
   const { players: playersData, loading: playersLoading } = usePlayers();
 
   // Use games data from API

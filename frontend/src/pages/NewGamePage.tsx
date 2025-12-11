@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useAddGame } from "../hooks/useApi";
-import { useSession } from "../context/SessionContext";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css";
 
@@ -12,8 +11,7 @@ const NewGamePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from || '/games';
-  const { activeSession } = useSession();
-  const { addGame, loading, error } = useAddGame(activeSession);
+  const { addGame, loading, error } = useAddGame();
 
   const handleClose = () => {
     navigate(from);

@@ -36,6 +36,7 @@ export interface PlayerScore {
   score: number;
   placement: number;
   gameCount: number;
+  average: number;
 }
 
 /**
@@ -185,13 +186,16 @@ export function calculatePlayerScores(players: Player[], games: Game[]): PlayerS
     }))
     .sort((a, b) => b.score - a.score);
 
-  // Add placement ranking
+  // Add placement ranking and calculate average placement
   return scores.map((score, index) => ({
     id: score.id,
     name: score.name,
     score: score.score,
     placement: index + 1,
     gameCount: score.gameCount,
+    average: score.gameCount > 0 
+      ? score.placements.reduce((a, b) => a + b, 0) / score.gameCount 
+      : 0,
   }));
 }
 
