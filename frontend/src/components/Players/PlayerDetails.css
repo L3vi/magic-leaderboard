@@ -112,14 +112,31 @@
   border: 1px solid var(--accent);
   border-radius: 0.75rem;
   padding: 1rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.commander-thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.commander-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .commander-name {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
 }
 
 .commander-count {
@@ -207,11 +224,32 @@
   color: var(--foreground);
 }
 
+.game-item-body {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.game-commander-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.game-commander-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .game-commander {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--foreground);
   margin-bottom: 0.25rem;
+  word-wrap: break-word;
 }
 
 .game-notes {

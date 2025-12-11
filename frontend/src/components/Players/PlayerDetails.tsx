@@ -1,5 +1,6 @@
 import React from "react";
 import { Player } from "../Leaderboard/PlayerRow";
+import { useCommanderArt } from "../../hooks/useCommanderArt";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
@@ -73,13 +74,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
 
       {/* Most Played Commander */}
       {mostPlayedCommander && (
-        <div className="commander-section">
-          <div className="section-title">Most Played Commander</div>
-          <div className="commander-card">
-            <div className="commander-name">{mostPlayedCommander[0]}</div>
-            <div className="commander-count">{mostPlayedCommander[1]} game{mostPlayedCommander[1] > 1 ? 's' : ''}</div>
-          </div>
-        </div>
+        <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} />
       )}
 
       {/* Recent Games */}
@@ -90,16 +85,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
             {sortedGames.map(g => {
               const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
               return (
-                <div key={g.id} className={`game-item placement-${p?.placement}`}>
-                  <div className="game-item-header">
-                    <div className="game-date">{new Date(g.dateCreated).toLocaleDateString()}</div>
-                    <div className={`game-placement placement-badge placement-${p?.placement}`}>
-                      {p?.placement === 1 ? '🏆' : `#${p?.placement}`}
-                    </div>
-                  </div>
-                  <div className="game-commander">{p?.commander}</div>
-                  {g.notes && <div className="game-notes">{g.notes}</div>}
-                </div>
+                <GameItemWithImage key={g.id} game={g} player={p} />
               );
             })}
           </div>
@@ -108,5 +94,48 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
     </div>
   );
 };
+
+function MostPlayedCommanderCard({ commander, count }: { commander: string; count: number }) {
+  const artUrl = useCommanderArt(commander);
+
+  return (
+    <div className="commander-section">
+      <div className="section-title">Most Played Commander</div>
+      <div className="commander-card">
+        {artUrl && (
+          <img src={artUrl} alt={commander} className="commander-thumbnail" />
+        )}
+        <div className="commander-info">
+          <div className="commander-name">{commander}</div>
+          <div className="commander-count">{count} game{count > 1 ? 's' : ''}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GameItemWithImage({ game, player }: { game: any; player: any }) {
+  const artUrl = useCommanderArt(player?.commander || "");
+
+  return (
+    <div className={`game-item placement-${player?.placement}`}>
+      <div className="game-item-header">
+        <div className="game-date">{new Date(game.dateCreated).toLocaleDateString()}</div>
+        <div className={`game-placement placement-badge placement-${player?.placement}`}>
+          {player?.placement === 1 ? '🏆' : `#${player?.placement}`}
+        </div>
+      </div>
+      <div className="game-item-body">
+        {artUrl && (
+          <img src={artUrl} alt={player?.commander} className="game-commander-thumb" />
+        )}
+        <div className="game-commander-info">
+          <div className="game-commander">{player?.commander}</div>
+          {game.notes && <div className="game-notes">{game.notes}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default PlayerDetails;

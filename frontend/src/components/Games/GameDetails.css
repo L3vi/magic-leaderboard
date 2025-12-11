@@ -114,6 +114,15 @@
   color: var(--primary-dark);
 }
 
+.player-card-thumbnail {
+  width: 50px;
+  height: 50px;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
 .player-info {
   flex: 1;
   min-width: 0;

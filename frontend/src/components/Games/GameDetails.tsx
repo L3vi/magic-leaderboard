@@ -1,4 +1,5 @@
 import React from "react";
+import { useCommanderArt } from "../../hooks/useCommanderArt";
 import "./GameDetails.css";
 
 interface Player {
@@ -36,17 +37,7 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
         <div className="section-title">Results</div>
         <div className="players-list">
           {sortedPlayers.map((player, idx) => (
-            <div key={idx} className={`player-card placement-${player.placement}`}>
-              <div className="player-card-header">
-                <div className="placement-indicator">
-                  {player.placement === 1 ? '🏆' : `#${player.placement}`}
-                </div>
-                <div className="player-info">
-                  <div className="player-name">{player.name}</div>
-                  <div className="player-commander">{player.commander}</div>
-                </div>
-              </div>
-            </div>
+            <PlayerCardWithImage key={idx} player={player} />
           ))}
         </div>
       </div>
@@ -63,5 +54,26 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
     </div>
   );
 };
+
+function PlayerCardWithImage({ player }: { player: any }) {
+  const artUrl = useCommanderArt(player.commander);
+
+  return (
+    <div className={`player-card placement-${player.placement}`}>
+      <div className="player-card-header">
+        <div className="placement-indicator">
+          {player.placement === 1 ? '🏆' : `#${player.placement}`}
+        </div>
+        {artUrl && (
+          <img src={artUrl} alt={player.commander} className="player-card-thumbnail" />
+        )}
+        <div className="player-info">
+          <div className="player-name">{player.name}</div>
+          <div className="player-commander">{player.commander}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default GameDetails;
