@@ -444,10 +444,15 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel }) => {
                       <StaticDropdown
                         value={String(field.placement)}
                         onChange={(val) => handlePlacementChange(idx, parseInt(val))}
-                        options={Array.from({ length: playerFields.length }, (_, i) => ({
-                          id: String(i + 1),
-                          label: String(i + 1)
-                        }))}
+                        options={Array.from({ length: playerFields.length }, (_, i) => {
+                          const placement = i + 1;
+                          let label = String(placement);
+                          if (placement === 1) label = 'Winner';
+                          else if (placement === 2) label = '2nd';
+                          else if (placement === 3) label = '3rd';
+                          else label = `${placement}th`;
+                          return { id: String(placement), label };
+                        })}
                         placeholder="Placement"
                       />
                     </label>
