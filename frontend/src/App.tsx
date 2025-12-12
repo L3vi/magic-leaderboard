@@ -76,7 +76,7 @@ function MainLayout() {
             initial={{ opacity: 0, x: activeTab === 'players' ? -30 : 30 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: activeTab === 'players' ? -30 : 30 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           >
             {activeTab === 'players' ? <Players /> : <Games />}
           </motion.div>
