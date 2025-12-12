@@ -110,7 +110,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <SessionProvider>
-      <Router>
+      <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
         <Routes>
           <Route path="/" element={<Navigate to="/players" replace />} />
           <Route path="/*" element={<AnimatedRoutes />} />
