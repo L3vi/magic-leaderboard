@@ -31,24 +31,23 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Fetch available sessions on mount
   useEffect(() => {
     const fetchSessions = async () => {
-      if (process.env.NODE_ENV === 'development') {
-        try {
-          const response = await fetch('http://localhost:3001/api/sessions');
-          const data = await response.json();
-          setAllSessions(data);
-          
-          // Default to first session (latest, since API sorts by createdAt descending)
-          if (data.length > 0) {
-            setActiveSession(data[0]);
-          }
-        } catch (err) {
-          console.warn('Could not fetch sessions, using defaults:', err);
-          // Fallback to default session
-          setAllSessions(['2025-December']);
-          setActiveSession('2025-December');
+      try {
+        // Create an abort signal that times out after 1 second in production
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1000);
+        
+        const response = await fetch('http://localhost:3001/api/sessions', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const data = await response.json();
+        setAllSessions(data);
+        
+        // Default to first session (latest, since API sorts by createdAt descending)
+        if (data.length > 0) {
+          setActiveSession(data[0]);
         }
-      } else {
-        // In production, use default sessions
+      } catch (err) {
+        console.warn('Could not fetch sessions, using defaults:', err);
+        // Fallback to default session
         setAllSessions(['2025-December']);
         setActiveSession('2025-December');
       }
