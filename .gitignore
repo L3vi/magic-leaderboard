@@ -17,6 +17,12 @@ dist/
 build/
 *.tsbuildinfo
 
+# Generated data files (synced from archived-data/master-leaderboard.json)
+frontend/src/data/games.json
+frontend/src/data/players.json
+backend/data/games.json
+backend/data/players.json
+
 # IDE and editor files
 .vscode/
 .idea/
