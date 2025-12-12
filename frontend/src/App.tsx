@@ -34,10 +34,13 @@ function MainLayout() {
   });
 
   // Sync activeTab with URL and localStorage
+  // Only update when directly navigating to /players or /games, not to detail pages
   React.useEffect(() => {
-    const pathTab = getTabFromPath(location.pathname);
-    setActiveTab(pathTab);
-    localStorage.setItem('activeTab', pathTab);
+    if (location.pathname === '/players' || location.pathname === '/games') {
+      const pathTab = getTabFromPath(location.pathname);
+      setActiveTab(pathTab);
+      localStorage.setItem('activeTab', pathTab);
+    }
   }, [location.pathname]);
 
   const handleTabChange = (tab: 'players' | 'games') => {
