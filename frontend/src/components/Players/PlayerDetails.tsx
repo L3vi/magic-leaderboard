@@ -9,7 +9,7 @@ interface PlayerDetailsProps {
     id: string;
     dateCreated: string;
     notes?: string;
-    players: Array<{ playerId: string; placement: number; commander: string }>;
+    players: Array<{ playerId: string; placement: number; commander: string | string[] }>;
   }>;
   players: Array<{ id: string; name: string }>;
 }
@@ -22,8 +22,15 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
   const winRate = totalGames ? Math.round((wins / totalGames) * 100) : 0;
   const placements = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.placement || 0);
   const avgPlacement = placements.length ? (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(2) : "-";
-  const commanders = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.commander).filter(Boolean);
-  const commanderCounts = commanders.reduce((acc, c) => { acc[c!] = (acc[c!] || 0) + 1; return acc; }, {} as Record<string, number>);
+  const commanders = gamesForPlayer
+    .map(g => {
+      const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
+      const cmd = p?.commander;
+      return Array.isArray(cmd) ? cmd : (cmd ? [cmd] : []);
+    })
+    .flat()
+    .filter(Boolean);
+  const commanderCounts = commanders.reduce((acc, c) => { acc[c] = (acc[c] || 0) + 1; return acc; }, {} as Record<string, number>);
   const mostPlayedCommander = Object.entries(commanderCounts).sort((a, b) => b[1] - a[1])[0];
   const deckDiversity = new Set(commanders).size;
   const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
@@ -115,7 +122,9 @@ function MostPlayedCommanderCard({ commander, count }: { commander: string; coun
 }
 
 function GameItemWithImage({ game, player }: { game: any; player: any }) {
-  const artUrl = useCommanderArt(player?.commander || "");
+  const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
+  const primaryCommander = commanders[0] || "";
+  const artUrl = useCommanderArt(primaryCommander);
 
   return (
     <div className={`game-item placement-${player?.placement}`}>
@@ -130,7 +139,7 @@ function GameItemWithImage({ game, player }: { game: any; player: any }) {
           <img src={artUrl} alt={player?.commander} className="game-commander-thumb" />
         )}
         <div className="game-commander-info">
-          <div className="game-commander">{player?.commander}</div>
+          <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>
           {game.notes && <div className="game-notes">{game.notes}</div>}
         </div>
       </div>

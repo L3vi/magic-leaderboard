@@ -12,7 +12,7 @@ export interface Player {
 export interface GamePlayer {
   playerId: string;
   placement: number;
-  commander: string;
+  commander: string | string[];
 }
 
 export interface Game {

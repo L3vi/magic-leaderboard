@@ -160,14 +160,16 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       for (const game of sortedGames) {
         const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
         if (playerInGame) {
+          // Handle commander as string or array
+          const cmdString = Array.isArray(playerInGame.commander) ? playerInGame.commander[0] : playerInGame.commander;
           // Set the first one we find as the last played
           if (!lastCommander) {
-            lastCommander = playerInGame.commander;
-            setLastPlayedCommander(playerInGame.commander);
+            lastCommander = cmdString;
+            setLastPlayedCommander(cmdString);
           }
           // Collect all unique commanders this player has played
-          if (!commanders.includes(playerInGame.commander)) {
-            commanders.push(playerInGame.commander);
+          if (!commanders.includes(cmdString)) {
+            commanders.push(cmdString);
           }
         }
       }
