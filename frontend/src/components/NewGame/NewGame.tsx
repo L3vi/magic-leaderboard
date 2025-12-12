@@ -581,7 +581,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                 {field.partnerCommander && (
                   <label className="field-label" style={{ position: 'relative', marginTop: '0.5rem' }}>
                     Partner Commander
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                       <CommanderAutocomplete
                         value={field.partnerCommander}
                         onChange={val => handlePartnerCommanderChange(idx, val)}
@@ -591,16 +591,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                       <button
                         type="button"
                         onClick={() => handlePartnerCommanderChange(idx, '')}
-                        style={{
-                          padding: '0.5rem 0.75rem',
-                          marginTop: '2rem',
-                          background: 'var(--surface)',
-                          border: '1.5px solid var(--border)',
-                          borderRadius: '0.5rem',
-                          cursor: 'pointer',
-                          color: 'var(--text)',
-                          fontSize: '0.9rem'
-                        }}
+                        className="remove-player-btn"
                         title="Remove partner commander"
                       >
                         ×
