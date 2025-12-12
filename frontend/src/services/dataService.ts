@@ -202,10 +202,6 @@ export async function addGame(
   gameData: any,
   session: string = "2025-December"
 ): Promise<Game> {
-  if (!isLocalhost) {
-    throw new Error("Cannot add game in production mode. API is only available on localhost.");
-  }
-
   try {
     const response = await fetch(
       `${API_BASE}/api/games?session=${encodeURIComponent(session)}`,
@@ -233,10 +229,6 @@ export async function updateGame(
   gameData: any,
   session: string = "2025-December"
 ): Promise<Game> {
-  if (!isLocalhost) {
-    throw new Error("Cannot update game in production mode. API is only available on localhost.");
-  }
-
   try {
     const response = await fetch(
       `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
@@ -263,10 +255,6 @@ export async function deleteGame(
   gameId: string,
   session: string = "2025-December"
 ): Promise<void> {
-  if (!isLocalhost) {
-    throw new Error("Cannot delete game in production mode. API is only available on localhost.");
-  }
-
   try {
     const response = await fetch(
       `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
