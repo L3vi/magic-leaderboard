@@ -31,7 +31,9 @@ function MainLayout() {
   // Only update tab when navigating to /players or /games directly
   React.useEffect(() => {
     if (location.pathname === '/players' || location.pathname === '/games') {
-      setActiveTab(getTabFromPath(location.pathname));
+      const tab = getTabFromPath(location.pathname);
+      setActiveTab(tab);
+      localStorage.setItem('activeTab', tab);
     }
   }, [location.pathname]);
 
@@ -108,6 +110,14 @@ function AnimatedRoutes() {
 }
 
 function App() {
+  // Restore the last visited tab from localStorage on app load
+  React.useEffect(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab === 'games' && window.location.pathname === '/') {
+      window.location.pathname = '/games';
+    }
+  }, []);
+
   return (
     <SessionProvider>
       <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
