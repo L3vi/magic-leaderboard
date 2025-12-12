@@ -15,9 +15,10 @@ interface PlayerDetailsProps {
     players: Array<{ playerId: string; placement: number; commander: string | string[] }>;
   }>;
   players: Array<{ id: string; name: string }>;
+  onGameClick?: (gameId: string) => void;
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick }) => {
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
   const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
   const gamesForPlayer = games.filter(g => g.players.some(p => getPlayerName(p.playerId) === player.name));
@@ -113,7 +114,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
               {sortedGames.map(g => {
                 const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
                 return (
-                  <GameItemWithImage key={g.id} game={g} player={p} onCardClick={setSelectedCard} />
+                  <GameItemWithImage key={g.id} game={g} player={p} onCardClick={setSelectedCard} onGameClick={onGameClick} />
                 );
               })}
             </div>
@@ -157,18 +158,22 @@ function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander:
   );
 }
 
-function GameItemWithImage({ game, player, onCardClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
+function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onGameClick?: (gameId: string) => void }) {
   const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
 
   return (
-    <div className={`game-item placement-${player?.placement}`}>
+    <div 
+      className={`game-item placement-${player?.placement}`}
+      onClick={() => onGameClick?.(game.id)}
+      style={{ cursor: onGameClick ? 'pointer' : 'default' }}
+    >
       <div className="game-item-header">
         <div className="game-date">{new Date(game.dateCreated).toLocaleDateString()}</div>
         <div className={`game-placement placement-badge placement-${player?.placement}`}>
           {player?.placement === 1 ? '🏆' : `#${player?.placement}`}
         </div>
       </div>
-      <div className="game-item-body">
+      <div className="game-item-body" onClick={(e) => e.stopPropagation()}>
         <PartnerCommanderDisplay
           commanders={commanders}
           onCardClick={onCardClick}

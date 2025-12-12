@@ -27,6 +27,10 @@ const PlayerDetailsPage: React.FC = () => {
     navigate("/players");
   };
 
+  const handleGameClick = (gameId: string) => {
+    navigate(`/games/${gameId}`);
+  };
+
   useEscapeKey(handleClose);
   const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
@@ -107,7 +111,7 @@ const PlayerDetailsPage: React.FC = () => {
         <h1>{player.name}</h1>
       </div>
       <div className="player-details-page-content">
-        <PlayerDetails player={player} games={gamesRaw} players={playersRaw} />
+        <PlayerDetails player={player} games={gamesRaw} players={playersRaw} onGameClick={handleGameClick} />
       </div>
     </motion.div>
   );
