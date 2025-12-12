@@ -2,7 +2,16 @@ import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 
-const API_BASE = "http://localhost:3001";
+// Get API base URL from environment or construct it from current origin
+const getAPIBase = () => {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:3001';
+  }
+  // In production, API would be on same origin or use environment variable
+  return process.env.VITE_API_BASE || window.location.origin;
+};
+
+const API_BASE = getAPIBase();
 
 // Only try API calls if running on localhost
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';

@@ -39,7 +39,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       try {
-        const response = await fetch('http://localhost:3001/api/sessions');
+        const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3001' : (process.env.VITE_API_BASE || window.location.origin);
+        const response = await fetch(`${apiBase}/api/sessions`);
         const data = await response.json();
         setAllSessions(data);
         
