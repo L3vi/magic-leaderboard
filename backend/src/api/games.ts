@@ -87,15 +87,20 @@ export async function getGames(req: Request, res: Response) {
   let games: any[] | null = null;
   try {
     games = await fetchGamesFromFirebase(sessionId);
+    console.log(`Firebase returned ${games?.length || 0} games for session ${sessionId}`);
   } catch (e) {
-    // Firebase error, fallback below
+    console.log(`Firebase fetch failed for session ${sessionId}, using local fallback:`, e);
   }
   if (!games) {
     // Fallback to local file
     const filePath = path.join(__dirname, "../../data/games.json");
     try {
       const raw = fs.readFileSync(filePath, "utf-8");
-      games = JSON.parse(raw);
+      const allGames = JSON.parse(raw);
+      console.log(`Local file has ${allGames.length} total games, filtering for session ${sessionId}`);
+      // Filter to only games from the requested session
+      games = allGames.filter((g: any) => g.id && g.id.includes(sessionId));
+      console.log(`Filtered to ${games?.length || 0} games for session ${sessionId}`);
     } catch (err) {
       return res.status(500).json({ error: "Could not load games data." });
     }

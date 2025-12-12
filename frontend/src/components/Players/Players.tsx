@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Players.css";
 import { usePlayerScores } from "../../hooks/useApi";
+import { useSession } from "../../context/SessionContext";
 
 type SortKey = "name" | "score" | "average";
 type SortOrder = "asc" | "desc";
@@ -24,6 +25,7 @@ const Players: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const scoresData = usePlayerScores();
+  const { loading } = useSession();
 
   // Memoize sorting for performance
   const sortedPlayers = useMemo(() => {
@@ -50,8 +52,16 @@ const Players: React.FC = () => {
   }, [sortKey, sortOrder]);
 
   // Show loading state
-  if (scoresData.length === 0) {
+  if (loading) {
     return <section className="leaderboard main-section">Loading players...</section>;
+  }
+
+  if (scoresData.length === 0) {
+    return (
+      <section className="leaderboard main-section">
+        <div className="leaderboard-empty">No players found</div>
+      </section>
+    );
   }
 
   // Keyboard navigation for sortable headers

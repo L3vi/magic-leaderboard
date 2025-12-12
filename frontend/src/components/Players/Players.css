@@ -105,3 +105,13 @@
     font-size: 1.5rem;
   }
 }
+.leaderboard-empty {
+  text-align: center;
+  color: var(--danger);
+  background: var(--surface);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
