@@ -47,6 +47,9 @@
   justify-content: center;
   transition: all 0.2s ease;
   z-index: 1001;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 @media (hover: hover) and (pointer: fine) {

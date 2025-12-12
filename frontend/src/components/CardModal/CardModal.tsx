@@ -34,9 +34,9 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
   const modalContent = (
     <div className="card-modal-overlay" onClick={onClose}>
       <div className="card-modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="card-modal-close" onClick={onClose} aria-label="Close card">
+        <div className="card-modal-close" onClick={onClose} role="button" tabIndex={-1} aria-label="Close card">
           ✕
-        </button>
+        </div>
         <img src={imageUrl} alt={cardName} className="card-modal-image" />
       </div>
     </div>
