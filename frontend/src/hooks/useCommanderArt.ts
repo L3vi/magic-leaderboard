@@ -14,6 +14,12 @@ export function useCommanderArt(commander: string): string {
   );
 
   useEffect(() => {
+    // Don't fetch if commander is empty
+    if (!commander || commander.trim() === "") {
+      setImgUrl("");
+      return;
+    }
+
     // Return cached value if available
     if (commanderImageCache[commander]) {
       setImgUrl(commanderImageCache[commander]);
