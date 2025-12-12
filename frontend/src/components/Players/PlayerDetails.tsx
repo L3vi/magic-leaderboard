@@ -161,6 +161,10 @@ function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander:
 function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onGameClick?: (gameId: string) => void }) {
   const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
 
+  const handleCardClick = (card: { name: string; imageUrl: string }) => {
+    onCardClick(card);
+  };
+
   return (
     <div 
       className={`game-item placement-${player?.placement}`}
@@ -173,10 +177,10 @@ function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: a
           {player?.placement === 1 ? '🏆' : `#${player?.placement}`}
         </div>
       </div>
-      <div className="game-item-body" onClick={(e) => e.stopPropagation()}>
+      <div className="game-item-body">
         <PartnerCommanderDisplay
           commanders={commanders}
-          onCardClick={onCardClick}
+          onCardClick={handleCardClick}
           size="small"
           isWinner={player?.placement === 1}
         />
