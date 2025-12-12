@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Player } from "./PlayerRow";
 import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import { useCommanderColors } from "../../hooks/useCommanderColors";
 import CardModal from "../CardModal/CardModal";
 import "./PlayerDetails.css";
 
@@ -38,6 +39,17 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
   const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   const firstGameDate = gamesForPlayer.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
   const lastGameDate = gamesForPlayer.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
+
+  // Calculate color distribution
+  const colorDistribution = React.useMemo(() => {
+    const distribution: Record<string, number> = {};
+    commanders.forEach((commander) => {
+      // We'll fetch colors in a separate component to handle async
+      // For now, store the commander for processing
+      distribution[commander] = (distribution[commander] || 0) + 1;
+    });
+    return distribution;
+  }, [commanders]);
 
   return (
     <>
@@ -85,6 +97,11 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
         {/* Most Played Commander */}
         {mostPlayedCommander && (
           <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} />
+        )}
+
+        {/* Commander Color Distribution */}
+        {commanders.length > 0 && (
+          <CommanderColorDistribution commanders={commanders} />
         )}
 
         {/* Recent Games */}
@@ -167,6 +184,76 @@ function GameItemWithImage({ game, player, onCardClick }: { game: any; player: a
           <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>
           {game.notes && <div className="game-notes">{game.notes}</div>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CommanderColorDistribution({ commanders }: { commanders: string[] }) {
+  // Color names and their hex values for Magic colors
+  const COLOR_MAP: Record<string, { name: string; hex: string }> = {
+    W: { name: 'White', hex: '#F5F5DC' },
+    U: { name: 'Blue', hex: '#0E47A1' },
+    B: { name: 'Black', hex: '#1C1C1C' },
+    R: { name: 'Red', hex: '#D32F2F' },
+    G: { name: 'Green', hex: '#2E7D32' },
+  };
+
+  // Calculate individual color frequency
+  const colorFrequency: Record<string, number> = {};
+  let totalColorCount = 0;
+
+  // We need to fetch colors for each unique commander
+  const uniqueCommanders = [...new Set(commanders)];
+  const colorResults = uniqueCommanders.map((cmd) => ({
+    commander: cmd,
+    colors: useCommanderColors(cmd),
+  }));
+
+  // Build color frequency from fetched colors
+  commanders.forEach((commander) => {
+    const result = colorResults.find((r) => r.commander === commander);
+    if (result && result.colors.length > 0) {
+      result.colors.forEach((color: string) => {
+        colorFrequency[color] = (colorFrequency[color] || 0) + 1;
+        totalColorCount++;
+      });
+    }
+  });
+
+  if (totalColorCount === 0) {
+    return null;
+  }
+
+  // Sort colors by frequency
+  const sortedColors = Object.entries(colorFrequency)
+    .sort((a, b) => b[1] - a[1])
+    .map(([color, count]) => ({
+      code: color,
+      ...COLOR_MAP[color],
+      count,
+      percentage: Math.round((count / totalColorCount) * 100),
+    }));
+
+  return (
+    <div className="commander-color-distribution">
+      <div className="section-title">Color Preferences</div>
+      <div className="color-bars">
+        {sortedColors.map(({ code, name, hex, count, percentage }) => (
+          <div key={code} className="color-bar-item">
+            <div className="color-indicator" style={{ backgroundColor: hex }} title={name} />
+            <div className="color-bar-label">{name}</div>
+            <div className="color-bar-container">
+              <div
+                className="color-bar-fill"
+                style={{ width: `${percentage}%`, backgroundColor: hex }}
+              />
+            </div>
+            <div className="color-bar-count">
+              {count} ({percentage}%)
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
