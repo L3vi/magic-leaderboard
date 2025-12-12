@@ -32,6 +32,10 @@
     {
       "id": "player-shane",
       "name": "Shane"
+    },
+    {
+      "id": "player-cameron",
+      "name": "Cameron"
     }
   ],
   "sessions": {
@@ -960,6 +964,7 @@
       "name": "December 2025",
       "createdAt": "2025-12-10T00:00:00.000Z",
       "description": "Current season - fresh slate for this weekend",
+      "players": ["player-anson", "player-caleb", "player-danny", "player-jordan", "player-levi", "player-nate", "player-parker", "player-cameron"],
       "games": [
         {
           "id": "game-2025-12-001",

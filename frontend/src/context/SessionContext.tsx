@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { fetchPlayers, fetchGames, refetchPlayers, refetchGames, Player, Game } from '../services/dataService';
+import { fetchPlayers, fetchGames, refetchPlayers, refetchGames, Player, Game, fetchPlayersForSession } from '../services/dataService';
 
 interface SessionContextType {
   activeSession: string;
@@ -64,11 +64,15 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         setLoading(true);
         setError(null);
-        const [playersData, gamesData] = await Promise.all([
+        const [allPlayersData, gamesData] = await Promise.all([
           fetchPlayers(),
           fetchGames(activeSession),
         ]);
-        setPlayers(playersData);
+        
+        // Filter players for the active session
+        const sessionPlayersData = await fetchPlayersForSession(allPlayersData, activeSession);
+        
+        setPlayers(sessionPlayersData);
         setGames(gamesData);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load data';
@@ -87,11 +91,15 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       setLoading(true);
       setError(null);
-      const [playersData, gamesData] = await Promise.all([
+      const [allPlayersData, gamesData] = await Promise.all([
         refetchPlayers(),
         refetchGames(activeSession),
       ]);
-      setPlayers(playersData);
+      
+      // Filter players for the active session
+      const sessionPlayersData = await fetchPlayersForSession(allPlayersData, activeSession);
+      
+      setPlayers(sessionPlayersData);
       setGames(gamesData);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to refresh data';

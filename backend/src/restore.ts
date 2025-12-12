@@ -62,6 +62,7 @@ interface Session {
   name: string;
   createdAt: string;
   description: string;
+  players?: string[];
   games: Game[];
 }
 
@@ -138,12 +139,19 @@ async function restore() {
 
         // Create session document
         const sessionRef = db.collection('sessions').doc(sessionId);
-        await sessionRef.set({
+        const sessionData: any = {
           name: session.name,
           createdAt: session.createdAt,
           description: session.description,
           updatedAt: new Date().toISOString()
-        });
+        };
+        
+        // Include players array if it exists
+        if (session.players && session.players.length > 0) {
+          sessionData.players = session.players;
+        }
+        
+        await sessionRef.set(sessionData);
 
         // Restore games for this session
         if (games.length > 0) {

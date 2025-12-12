@@ -9,6 +9,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  getDoc,
 } from "firebase/firestore";
 
 export interface Player {
@@ -27,6 +28,13 @@ export interface Game {
   dateCreated: string;
   notes: string;
   players: GamePlayer[];
+}
+
+export interface SessionMetadata {
+  name: string;
+  description?: string;
+  players?: string[];
+  createdAt: string;
 }
 
 export interface PlayerScore {
@@ -64,6 +72,61 @@ export async function fetchPlayers(): Promise<Player[]> {
   const fallback = playersData as Player[];
   setCache(cacheKey, fallback);
   return fallback;
+}
+
+/**
+ * Fetch session metadata (name, description, player roster, etc.) directly from Firebase
+ */
+export async function fetchSessionMetadata(
+  session: string = "2025-December"
+): Promise<SessionMetadata | null> {
+  try {
+    const sessionDocRef = doc(db, "sessions", session);
+    const docSnapshot = await getDoc(sessionDocRef);
+
+    if (docSnapshot.exists()) {
+      const data = docSnapshot.data();
+      return {
+        name: data.name,
+        description: data.description,
+        players: data.players,
+        createdAt: data.createdAt
+      } as SessionMetadata;
+    }
+
+    console.warn(`Session metadata for ${session} not found`);
+    return null;
+  } catch (error) {
+    console.warn(`Could not fetch session metadata for ${session}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Fetch players for a specific session (filters by session's player roster if available)
+ */
+export async function fetchPlayersForSession(
+  allPlayers: Player[],
+  session: string = "2025-December"
+): Promise<Player[]> {
+  try {
+    const sessionMetadata = await fetchSessionMetadata(session);
+
+    if (sessionMetadata?.players && sessionMetadata.players.length > 0) {
+      // Filter to only players in this session
+      const sessionPlayerIds = new Set(sessionMetadata.players);
+      return allPlayers.filter((p) => sessionPlayerIds.has(p.id));
+    }
+
+    // If no session roster, return all players
+    return allPlayers;
+  } catch (error) {
+    console.warn(
+      `Error filtering players for session ${session}, returning all:`,
+      error
+    );
+    return allPlayers;
+  }
 }
 
 /**

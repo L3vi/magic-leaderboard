@@ -1,5 +1,5 @@
 {
-  "backupDate": "2025-12-11T10:03:06.316Z",
+  "backupDate": "2025-12-12T16:37:24.124Z",
   "players": [
     {
       "id": "player-anson",
@@ -8,6 +8,10 @@
     {
       "id": "player-caleb",
       "name": "Caleb"
+    },
+    {
+      "id": "player-cameron",
+      "name": "Cameron"
     },
     {
       "id": "player-danny",
@@ -39,34 +43,17 @@
       "name": "December 2025",
       "createdAt": "2025-12-10T00:00:00.000Z",
       "description": "Current season - fresh slate for this weekend",
+      "players": [
+        "player-anson",
+        "player-caleb",
+        "player-danny",
+        "player-jordan",
+        "player-levi",
+        "player-nate",
+        "player-parker",
+        "player-cameron"
+      ],
       "games": [
-        {
-          "id": "4eIS8zZ3TwxdjrfaJ4fe",
-          "players": [
-            {
-              "playerId": "player-anson",
-              "commander": "Atraxa, Praetors' Voice",
-              "placement": 1
-            },
-            {
-              "playerId": "player-caleb",
-              "commander": "Abomination of Llanowar",
-              "placement": 2
-            },
-            {
-              "playerId": "player-danny",
-              "commander": "Aang, Airbending Master",
-              "placement": 3
-            },
-            {
-              "playerId": "player-jordan",
-              "commander": "Toph, Greatest Earthbender",
-              "placement": 4
-            }
-          ],
-          "notes": "testing",
-          "dateCreated": "2025-12-11T09:52:31.447Z"
-        },
         {
           "id": "game-2025-12-001",
           "dateCreated": "2025-12-11T18:00:00.000Z",
@@ -93,61 +80,7 @@
               "commander": "Zur the Enchanter"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.613Z"
-        },
-        {
-          "id": "game-2025-December-003",
-          "players": [
-            {
-              "playerId": "player-shane",
-              "commander": "Elesh Norn",
-              "placement": 1
-            },
-            {
-              "playerId": "player-nate",
-              "commander": "Atraxa",
-              "placement": 2
-            },
-            {
-              "playerId": "player-parker",
-              "commander": "Gitrog",
-              "placement": 3
-            },
-            {
-              "playerId": "player-anson",
-              "commander": "Zur",
-              "placement": 4
-            }
-          ],
-          "notes": "Test game",
-          "dateCreated": "2025-12-11T09:55:45.143Z"
-        },
-        {
-          "id": "game-2025-December-004",
-          "players": [
-            {
-              "playerId": "player-shane",
-              "commander": "Elesh Norn",
-              "placement": 1
-            },
-            {
-              "playerId": "player-nate",
-              "commander": "Atraxa",
-              "placement": 2
-            },
-            {
-              "playerId": "player-parker",
-              "commander": "Gitrog",
-              "placement": 3
-            },
-            {
-              "playerId": "player-anson",
-              "commander": "Zur",
-              "placement": 4
-            }
-          ],
-          "notes": "Test game",
-          "dateCreated": "2025-12-11T09:55:50.117Z"
+          "createdAt": "2025-12-12T16:36:53.703Z"
         }
       ]
     },
@@ -182,7 +115,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.611Z"
+          "createdAt": "2025-12-12T16:36:49.600Z"
         },
         {
           "id": "game-2025-05-002",
@@ -210,7 +143,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.683Z"
+          "createdAt": "2025-12-12T16:36:49.701Z"
         },
         {
           "id": "game-2025-05-003",
@@ -238,7 +171,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.769Z"
+          "createdAt": "2025-12-12T16:36:49.784Z"
         },
         {
           "id": "game-2025-05-004",
@@ -266,7 +199,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.846Z"
+          "createdAt": "2025-12-12T16:36:49.878Z"
         },
         {
           "id": "game-2025-05-005",
@@ -294,7 +227,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.922Z"
+          "createdAt": "2025-12-12T16:36:50.033Z"
         },
         {
           "id": "game-2025-05-006",
@@ -322,7 +255,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:51.986Z"
+          "createdAt": "2025-12-12T16:36:50.122Z"
         },
         {
           "id": "game-2025-05-007",
@@ -350,7 +283,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.069Z"
+          "createdAt": "2025-12-12T16:36:50.210Z"
         },
         {
           "id": "game-2025-05-008",
@@ -378,7 +311,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.144Z"
+          "createdAt": "2025-12-12T16:36:50.314Z"
         },
         {
           "id": "game-2025-05-009",
@@ -406,7 +339,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.221Z"
+          "createdAt": "2025-12-12T16:36:50.396Z"
         },
         {
           "id": "game-2025-05-010",
@@ -434,7 +367,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.298Z"
+          "createdAt": "2025-12-12T16:36:50.561Z"
         },
         {
           "id": "game-2025-05-011",
@@ -462,7 +395,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.386Z"
+          "createdAt": "2025-12-12T16:36:50.642Z"
         },
         {
           "id": "game-2025-05-012",
@@ -490,7 +423,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.458Z"
+          "createdAt": "2025-12-12T16:36:50.750Z"
         },
         {
           "id": "game-2025-05-013",
@@ -518,7 +451,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.551Z"
+          "createdAt": "2025-12-12T16:36:50.835Z"
         },
         {
           "id": "game-2025-05-014",
@@ -546,7 +479,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.636Z"
+          "createdAt": "2025-12-12T16:36:50.933Z"
         },
         {
           "id": "game-2025-05-015",
@@ -574,7 +507,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.699Z"
+          "createdAt": "2025-12-12T16:36:51.083Z"
         },
         {
           "id": "game-2025-05-016",
@@ -602,7 +535,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.780Z"
+          "createdAt": "2025-12-12T16:36:51.175Z"
         },
         {
           "id": "game-2025-05-017",
@@ -630,7 +563,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.866Z"
+          "createdAt": "2025-12-12T16:36:51.261Z"
         },
         {
           "id": "game-2025-05-018",
@@ -658,7 +591,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.942Z"
+          "createdAt": "2025-12-12T16:36:51.355Z"
         },
         {
           "id": "game-2025-05-019",
@@ -686,7 +619,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:52.995Z"
+          "createdAt": "2025-12-12T16:36:51.436Z"
         },
         {
           "id": "game-2025-05-020",
@@ -714,7 +647,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.062Z"
+          "createdAt": "2025-12-12T16:36:51.610Z"
         },
         {
           "id": "game-2025-05-021",
@@ -742,7 +675,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.137Z"
+          "createdAt": "2025-12-12T16:36:51.685Z"
         },
         {
           "id": "game-2025-05-022",
@@ -770,7 +703,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.201Z"
+          "createdAt": "2025-12-12T16:36:51.793Z"
         },
         {
           "id": "game-2025-05-023",
@@ -798,7 +731,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.268Z"
+          "createdAt": "2025-12-12T16:36:51.879Z"
         },
         {
           "id": "game-2025-05-024",
@@ -816,7 +749,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.346Z"
+          "createdAt": "2025-12-12T16:36:51.985Z"
         },
         {
           "id": "game-2025-05-025",
@@ -834,7 +767,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.423Z"
+          "createdAt": "2025-12-12T16:36:52.133Z"
         },
         {
           "id": "game-2025-05-026",
@@ -852,7 +785,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.504Z"
+          "createdAt": "2025-12-12T16:36:52.217Z"
         },
         {
           "id": "game-2025-05-027",
@@ -870,7 +803,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.577Z"
+          "createdAt": "2025-12-12T16:36:52.308Z"
         },
         {
           "id": "game-2025-05-028",
@@ -888,7 +821,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.645Z"
+          "createdAt": "2025-12-12T16:36:52.387Z"
         },
         {
           "id": "game-2025-05-029",
@@ -906,7 +839,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.722Z"
+          "createdAt": "2025-12-12T16:36:52.488Z"
         },
         {
           "id": "game-2025-05-030",
@@ -924,7 +857,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.790Z"
+          "createdAt": "2025-12-12T16:36:52.658Z"
         },
         {
           "id": "game-2025-05-031",
@@ -942,7 +875,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.874Z"
+          "createdAt": "2025-12-12T16:36:52.742Z"
         },
         {
           "id": "game-2025-05-032",
@@ -960,7 +893,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:53.951Z"
+          "createdAt": "2025-12-12T16:36:52.846Z"
         },
         {
           "id": "game-2025-05-033",
@@ -978,7 +911,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.038Z"
+          "createdAt": "2025-12-12T16:36:52.917Z"
         },
         {
           "id": "game-2025-05-034",
@@ -996,7 +929,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.108Z"
+          "createdAt": "2025-12-12T16:36:53.034Z"
         },
         {
           "id": "game-2025-05-035",
@@ -1014,7 +947,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.192Z"
+          "createdAt": "2025-12-12T16:36:53.179Z"
         },
         {
           "id": "game-2025-05-036",
@@ -1032,7 +965,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.269Z"
+          "createdAt": "2025-12-12T16:36:53.264Z"
         },
         {
           "id": "game-2025-05-037",
@@ -1050,7 +983,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.353Z"
+          "createdAt": "2025-12-12T16:36:53.361Z"
         },
         {
           "id": "game-2025-05-038",
@@ -1068,7 +1001,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:48:54.422Z"
+          "createdAt": "2025-12-12T16:36:53.447Z"
         }
       ]
     }

@@ -55,6 +55,7 @@ interface Session {
   name: string;
   createdAt: string;
   description: string;
+  players?: string[];
   games: Game[];
 }
 
@@ -101,6 +102,7 @@ async function backup() {
         name: sessionData.name,
         createdAt: sessionData.createdAt,
         description: sessionData.description,
+        ...(sessionData.players && { players: sessionData.players }),
         games
       };
 
