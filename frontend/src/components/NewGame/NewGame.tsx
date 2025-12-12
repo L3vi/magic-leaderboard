@@ -449,8 +449,16 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
 
   const handlePlayerChange = (idx: number, playerId: string) => {
+    const lastCommander = getLastPlayedCommander(playerId);
     setPlayerFields(fields => fields.map((f, i) =>
-      i === idx ? { ...f, playerId, addNew: playerId === "__add__", newName: playerId === "__add__" ? '' : f.newName } : f
+      i === idx ? { 
+        ...f, 
+        playerId, 
+        addNew: playerId === "__add__", 
+        newName: playerId === "__add__" ? '' : f.newName,
+        lastPlayedCommander: lastCommander,
+        commander: '' // Keep empty to show as placeholder
+      } : f
     ));
   };
 
@@ -486,7 +494,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         partnerCommander: '',
         placement: playerFields.length + 1,
         addNew: false, 
-        newName: '' 
+        newName: '',
+        lastPlayedCommander: ''
       }]);
     }
   };
@@ -514,7 +523,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     }
     
     // Build game data matching the backend structure
-    const gameData = {
+    let gameData = {
       players: validPlayers.map(f => {
         // Use commander if set, otherwise use lastPlayedCommander
         const primaryCommander = f.commander || f.lastPlayedCommander || '';
@@ -529,6 +538,9 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       notes: notes.trim(),
       dateCreated: initialData ? initialData.dateCreated : new Date().toISOString()
     };
+    
+    // Sort players by placement (ascending - 1st place first)
+    gameData.players.sort((a, b) => a.placement - b.placement);
     
     setIsSubmitting(true);
     Promise.resolve(onSubmit(gameData)).finally(() => {
