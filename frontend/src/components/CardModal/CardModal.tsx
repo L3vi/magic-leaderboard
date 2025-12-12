@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { motion } from "framer-motion";
 import "./CardModal.css";
 
 interface CardModalProps {
@@ -32,14 +33,35 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="card-modal-overlay" onClick={onClose}>
-      <div className="card-modal-content" onClick={(e) => e.stopPropagation()}>
+    <motion.div 
+      className="card-modal-overlay" 
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.1 }}
+    >
+      <motion.div 
+        className="card-modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.12, ease: "easeOut" }}
+      >
         <div className="card-modal-close" onClick={onClose} role="button" tabIndex={-1} aria-label="Close card">
           ✕
         </div>
-        <img src={imageUrl} alt={cardName} className="card-modal-image" />
-      </div>
-    </div>
+        <motion.img 
+          src={imageUrl} 
+          alt={cardName} 
+          className="card-modal-image"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15, delay: 0.05 }}
+        />
+      </motion.div>
+    </motion.div>
   );
 
   return ReactDOM.createPortal(modalContent, document.body);
