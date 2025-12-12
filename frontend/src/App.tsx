@@ -73,10 +73,10 @@ function MainLayout() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: activeTab === 'players' ? -20 : 20 }}
+            initial={{ opacity: 0, x: activeTab === 'players' ? -30 : 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: activeTab === 'players' ? -20 : 20 }}
-            transition={{ duration: 0.09, ease: [0.4, 0, 0.2, 1] }}
+            exit={{ opacity: 0, x: activeTab === 'players' ? -30 : 30 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
           >
             {activeTab === 'players' ? <Players /> : <Games />}
           </motion.div>
