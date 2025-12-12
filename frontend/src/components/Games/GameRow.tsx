@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import "./GameRow.css";
 
 interface Player {
@@ -91,26 +92,6 @@ const GameRow: React.FC<GameRowProps> = ({
           const isWinner = winner && p.name === winner.name;
           const key = JSON.stringify(p.commander) + idx;
           
-          // Display commander images/placeholders
-          const commanderImages = commanders.map((cmd, cmdIdx) => {
-            const artUrl = useCommanderArt(cmd);
-            return artUrl ? (
-              <img
-                key={cmd + cmdIdx}
-                src={artUrl}
-                alt={cmd}
-                className={`game-row-commander-img${
-                  isWinner ? " game-row-commander-winner" : ""
-                }`}
-                title={cmd}
-              />
-            ) : (
-              <div key={cmd + cmdIdx} className="game-row-commander-img-placeholder">
-                ?
-              </div>
-            );
-          });
-          
           const playerDetails = (
             <div className="game-row-player-details">
               <div
@@ -126,7 +107,11 @@ const GameRow: React.FC<GameRowProps> = ({
           
           return (
             <div key={p.name + "-container-" + idx} className="game-row-player">
-              {commanderImages}
+              <PartnerCommanderDisplay
+                commanders={commanders}
+                size="small"
+                isWinner={isWinner}
+              />
               {playerDetails}
             </div>
           );

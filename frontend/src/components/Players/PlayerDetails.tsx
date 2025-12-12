@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Player } from "./PlayerRow";
 import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
 import { useCommanderColors } from "../../hooks/useCommanderColors";
+import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
 import "./PlayerDetails.css";
 
@@ -158,9 +159,6 @@ function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander:
 
 function GameItemWithImage({ game, player, onCardClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
   const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
-  const primaryCommander = commanders[0] || "";
-  const artUrl = useCommanderArt(primaryCommander);
-  const fullImageUrl = useCommanderFullImage(primaryCommander);
 
   return (
     <div className={`game-item placement-${player?.placement}`}>
@@ -171,15 +169,12 @@ function GameItemWithImage({ game, player, onCardClick }: { game: any; player: a
         </div>
       </div>
       <div className="game-item-body">
-        {artUrl && (
-          <img
-            src={artUrl}
-            alt={player?.commander}
-            className="game-commander-thumb"
-            style={{ cursor: "pointer" }}
-            onClick={() => onCardClick({ name: primaryCommander, imageUrl: fullImageUrl })}
-          />
-        )}
+        <PartnerCommanderDisplay
+          commanders={commanders}
+          onCardClick={onCardClick}
+          size="small"
+          isWinner={player?.placement === 1}
+        />
         <div className="game-commander-info">
           <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>
           {game.notes && <div className="game-notes">{game.notes}</div>}

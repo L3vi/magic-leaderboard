@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
 import "./GameDetails.css";
 
@@ -77,20 +78,12 @@ function PlayerCardWithImage({ player, onCardClick }: { player: any; onCardClick
           {player.placement === 1 ? '🏆' : `#${player.placement}`}
         </div>
         <div className="player-commanders-images">
-          {commanders.map((cmd: string, idx: number) => {
-            const artUrl = useCommanderArt(cmd);
-            const fullImageUrl = useCommanderFullImage(cmd);
-            return artUrl ? (
-              <img
-                key={idx}
-                src={artUrl}
-                alt={cmd}
-                className="player-card-thumbnail"
-                style={{ cursor: "pointer" }}
-                onClick={() => onCardClick({ name: cmd, imageUrl: fullImageUrl })}
-              />
-            ) : null;
-          })}
+          <PartnerCommanderDisplay
+            commanders={commanders}
+            onCardClick={onCardClick}
+            size="small"
+            isWinner={player.placement === 1}
+          />
         </div>
         <div className="player-info">
           <div className="player-name">{player.name}</div>
