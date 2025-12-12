@@ -9,9 +9,7 @@
     "dev:backend": "npm run dev --prefix backend",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build:frontend": "npm run build --prefix frontend",
-    "build:backend": "npm run build --prefix backend",
-    "build": "npm run build:frontend && npm run build:backend",
-    "sync-data": "npm run sync-data --prefix frontend"
+    "build": "npm run build:frontend"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
