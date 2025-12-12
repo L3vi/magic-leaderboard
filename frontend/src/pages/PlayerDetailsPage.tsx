@@ -5,16 +5,13 @@ import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import { Player } from "../components/Players/PlayerRow";
-import { useGames, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
 import "./PlayerDetailsPage.css";
 
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
-  const { activeSession } = useSession();
-  const { games: gamesRaw } = useGames(activeSession);
-  const { players: playersRaw } = usePlayers();
+  const { games: gamesRaw, players: playersRaw } = useSession();
 
   // Disable body scroll when this page is open
   React.useEffect(() => {

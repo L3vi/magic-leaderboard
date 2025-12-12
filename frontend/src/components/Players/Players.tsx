@@ -23,7 +23,7 @@ const Players: React.FC = () => {
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const headerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { scores: scoresData, loading: scoresLoading, error: scoresError } = usePlayerScores();
+  const scoresData = usePlayerScores();
 
   // Memoize sorting for performance
   const sortedPlayers = useMemo(() => {
@@ -50,19 +50,8 @@ const Players: React.FC = () => {
   }, [sortKey, sortOrder]);
 
   // Show loading state
-  if (scoresLoading) {
+  if (scoresData.length === 0) {
     return <section className="leaderboard main-section">Loading players...</section>;
-  }
-
-  // Show error state
-  if (scoresError) {
-    return (
-      <section className="leaderboard main-section">
-        <div style={{ color: 'red' }}>
-          Error loading data: {scoresError}
-        </div>
-      </section>
-    );
   }
 
   // Keyboard navigation for sortable headers

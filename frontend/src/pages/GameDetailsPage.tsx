@@ -4,16 +4,13 @@ import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import GameDetails from "../components/Games/GameDetails";
-import { useGames, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
 import "./GameDetailsPage.css";
 
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { activeSession } = useSession();
-  const { games: gamesData, loading: gamesLoading } = useGames(activeSession);
-  const { players: playersData } = usePlayers();
+  const { games: gamesData, players: playersData } = useSession();
 
   // Disable body scroll when this page is open
   React.useEffect(() => {
@@ -41,31 +38,6 @@ const GameDetailsPage: React.FC = () => {
 
   // Helper to get player name from ID
   const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
-
-  if (gamesLoading) {
-    return (
-      <motion.div 
-        className="game-details-page" 
-        {...swipeHandlers} 
-        ref={pageRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
-      >
-        <div className="game-details-page-header">
-          <button 
-            className="back-button" 
-            onClick={handleClose}
-            aria-label="Back to games"
-          >
-            ← Back
-          </button>
-        </div>
-        <p>Loading game...</p>
-      </motion.div>
-    );
-  }
 
   if (!game) {
     return (

@@ -1,5 +1,6 @@
 import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
+import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 
 const API_BASE = "http://localhost:3001";
 
@@ -41,27 +42,55 @@ async function fetchAPI<T>(url: string): Promise<T> {
 
 /**
  * Fetch all players from API or fallback to local data
+ * Caches results to avoid redundant fetches during navigation
+ * Call refetchPlayers() to bypass cache and get fresh data
  */
 export async function fetchPlayers(): Promise<Player[]> {
+  const cacheKey = getCacheKey("players");
+  const cached = getFromCache<Player[]>(cacheKey);
+
+  if (cached) {
+    console.log("Using cached players");
+    return cached;
+  }
+
   try {
-    return await fetchAPI<Player[]>(`${API_BASE}/api/players`);
+    const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
+    setCache(cacheKey, data);
+    return data;
   } catch (error) {
     console.error("Error fetching players, using local fallback:", error);
-    return playersData as Player[];
+    const fallback = playersData as Player[];
+    setCache(cacheKey, fallback);
+    return fallback;
   }
 }
 
 /**
  * Fetch games for a session from API or fallback to local data
+ * Caches results to avoid redundant fetches during navigation
+ * Call refetchGames() to bypass cache and get fresh data
  */
 export async function fetchGames(session: string = "2025-December"): Promise<Game[]> {
+  const cacheKey = getCacheKey("games", session);
+  const cached = getFromCache<Game[]>(cacheKey);
+
+  if (cached) {
+    console.log("Using cached games for session:", session);
+    return cached;
+  }
+
   try {
-    return await fetchAPI<Game[]>(
+    const data = await fetchAPI<Game[]>(
       `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
     );
+    setCache(cacheKey, data);
+    return data;
   } catch (error) {
     console.error("Error fetching games, using local fallback:", error);
-    return gamesData as Game[];
+    const fallback = gamesData as Game[];
+    setCache(cacheKey, fallback);
+    return fallback;
   }
 }
 
@@ -127,10 +156,22 @@ export function calculatePlayerScores(
 }
 
 /**
- * Manually refresh all game data - call this when you want fresh data
- * (after adding/updating a game, or when user requests refresh)
+ * Manually refresh all player data - bypasses cache and gets fresh data from API
+ * Call this after creating/updating players or when user explicitly requests refresh
+ */
+export async function refetchPlayers(): Promise<Player[]> {
+  const cacheKey = getCacheKey("players");
+  clearCache(cacheKey);
+  return fetchPlayers();
+}
+
+/**
+ * Manually refresh game data - bypasses cache and gets fresh data from API
+ * Call this after creating/updating a game or when user explicitly requests refresh
  */
 export async function refetchGames(session: string = "2025-December"): Promise<Game[]> {
+  const cacheKey = getCacheKey("games", session);
+  clearCache(cacheKey);
   return fetchGames(session);
 }
 

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
-import { useGames, useUpdateGame, usePlayers } from "../hooks/useApi";
+import { useUpdateGame, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css"; // Reuse NewGamePage styles
@@ -11,10 +11,9 @@ import "./NewGamePage.css"; // Reuse NewGamePage styles
 const EditGamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { activeSession } = useSession();
-  const { games, refresh: refreshGames } = useGames(activeSession);
+  const { games, refreshGamesOnly } = useSession();
   const { players: playersData } = usePlayers();
-  const { updateGame, loading, error } = useUpdateGame(activeSession);
+  const { updateGame, loading, error } = useUpdateGame();
 
   // Disable body scroll when this page is open
   React.useEffect(() => {
@@ -77,8 +76,7 @@ const EditGamePage: React.FC = () => {
   const handleSubmit = async (gameData: any) => {
     try {
       await updateGame(gameId!, gameData);
-      // After update completes, refresh to ensure fresh data
-      await refreshGames();
+      // updateGame already calls refreshGamesOnly internally, so data is updated
       // Navigate back with fresh data loaded
       navigate("/games");
     } catch (err) {

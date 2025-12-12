@@ -23,16 +23,8 @@ const Games: React.FC = () => {
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { games: gamesData, loading: gamesLoading, error: gamesError, refresh } = useGames();
+  const { games: gamesData, loading: gamesLoading, error: gamesError } = useGames();
   const { players: playersData, loading: playersLoading } = usePlayers();
-
-  // Refresh games when location changes (after returning from edit page)
-  useEffect(() => {
-    const refreshGames = async () => {
-      await refresh();
-    };
-    refreshGames();
-  }, [location]);
 
   // Use games data from API
   const allGames = useMemo(() => gamesData, [gamesData]);
