@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Player } from "./PlayerRow";
-import { useCommanderArt } from "../../hooks/useCommanderArt";
+import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import CardModal from "../CardModal/CardModal";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
@@ -15,6 +16,7 @@ interface PlayerDetailsProps {
 }
 
 const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players }) => {
+  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
   const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
   const gamesForPlayer = games.filter(g => g.players.some(p => getPlayerName(p.playerId) === player.name));
   const totalGames = gamesForPlayer.length;
@@ -38,79 +40,95 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players })
   const lastGameDate = gamesForPlayer.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
 
   return (
-    <div className="player-details">
-      {/* Key Stats Cards */}
-      <div className="player-stats-cards">
-        <div className="stat-card stat-card-primary">
-          <div className="stat-label">Score</div>
-          <div className="stat-value">{player.score}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Games</div>
-          <div className="stat-value">{totalGames}</div>
-        </div>
-        <div className="stat-card stat-card-accent">
-          <div className="stat-label">Wins</div>
-          <div className="stat-value">{wins}</div>
-        </div>
-        <div className="stat-card stat-card-accent">
-          <div className="stat-label">Win Rate</div>
-          <div className="stat-value">{winRate}%</div>
-        </div>
-      </div>
-
-      {/* Secondary Stats */}
-      <div className="player-secondary-stats">
-        <div className="secondary-stat">
-          <div className="secondary-stat-label">Avg Placement</div>
-          <div className="secondary-stat-value">{avgPlacement}</div>
-        </div>
-        <div className="secondary-stat">
-          <div className="secondary-stat-label">Decks Played</div>
-          <div className="secondary-stat-value">{deckDiversity}</div>
-        </div>
-        <div className="secondary-stat">
-          <div className="secondary-stat-label">First Game</div>
-          <div className="secondary-stat-value">{firstGameDate}</div>
-        </div>
-        <div className="secondary-stat">
-          <div className="secondary-stat-label">Last Game</div>
-          <div className="secondary-stat-value">{lastGameDate}</div>
-        </div>
-      </div>
-
-      {/* Most Played Commander */}
-      {mostPlayedCommander && (
-        <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} />
-      )}
-
-      {/* Recent Games */}
-      {sortedGames.length > 0 && (
-        <div className="recent-games-section">
-          <div className="section-title">Recent Games</div>
-          <div className="games-list">
-            {sortedGames.map(g => {
-              const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
-              return (
-                <GameItemWithImage key={g.id} game={g} player={p} />
-              );
-            })}
+    <>
+      <div className="player-details">
+        {/* Key Stats Cards */}
+        <div className="player-stats-cards">
+          <div className="stat-card stat-card-primary">
+            <div className="stat-label">Score</div>
+            <div className="stat-value">{player.score}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-label">Games</div>
+            <div className="stat-value">{totalGames}</div>
+          </div>
+          <div className="stat-card stat-card-accent">
+            <div className="stat-label">Wins</div>
+            <div className="stat-value">{wins}</div>
+          </div>
+          <div className="stat-card stat-card-accent">
+            <div className="stat-label">Win Rate</div>
+            <div className="stat-value">{winRate}%</div>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Secondary Stats */}
+        <div className="player-secondary-stats">
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Avg Placement</div>
+            <div className="secondary-stat-value">{avgPlacement}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Decks Played</div>
+            <div className="secondary-stat-value">{deckDiversity}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">First Game</div>
+            <div className="secondary-stat-value">{firstGameDate}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Last Game</div>
+            <div className="secondary-stat-value">{lastGameDate}</div>
+          </div>
+        </div>
+
+        {/* Most Played Commander */}
+        {mostPlayedCommander && (
+          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} />
+        )}
+
+        {/* Recent Games */}
+        {sortedGames.length > 0 && (
+          <div className="recent-games-section">
+            <div className="section-title">Recent Games</div>
+            <div className="games-list">
+              {sortedGames.map(g => {
+                const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
+                return (
+                  <GameItemWithImage key={g.id} game={g} player={p} onCardClick={setSelectedCard} />
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <CardModal
+        isOpen={!!selectedCard}
+        imageUrl={selectedCard?.imageUrl || ""}
+        cardName={selectedCard?.name || ""}
+        onClose={() => setSelectedCard(null)}
+      />
+    </>
   );
 };
 
-function MostPlayedCommanderCard({ commander, count }: { commander: string; count: number }) {
+function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander: string; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
   const artUrl = useCommanderArt(commander);
+  const fullImageUrl = useCommanderFullImage(commander);
 
   return (
     <div className="commander-section">
       <div className="section-title">Most Played Commander</div>
       <div className="commander-card">
         {artUrl && (
-          <img src={artUrl} alt={commander} className="commander-thumbnail" />
+          <img
+            src={artUrl}
+            alt={commander}
+            className="commander-thumbnail"
+            style={{ cursor: "pointer" }}
+            onClick={() => onCardClick({ name: commander, imageUrl: fullImageUrl })}
+          />
         )}
         <div className="commander-info">
           <div className="commander-name">{commander}</div>
@@ -121,10 +139,11 @@ function MostPlayedCommanderCard({ commander, count }: { commander: string; coun
   );
 }
 
-function GameItemWithImage({ game, player }: { game: any; player: any }) {
+function GameItemWithImage({ game, player, onCardClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
   const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
   const primaryCommander = commanders[0] || "";
   const artUrl = useCommanderArt(primaryCommander);
+  const fullImageUrl = useCommanderFullImage(primaryCommander);
 
   return (
     <div className={`game-item placement-${player?.placement}`}>
@@ -136,7 +155,13 @@ function GameItemWithImage({ game, player }: { game: any; player: any }) {
       </div>
       <div className="game-item-body">
         {artUrl && (
-          <img src={artUrl} alt={player?.commander} className="game-commander-thumb" />
+          <img
+            src={artUrl}
+            alt={player?.commander}
+            className="game-commander-thumb"
+            style={{ cursor: "pointer" }}
+            onClick={() => onCardClick({ name: primaryCommander, imageUrl: fullImageUrl })}
+          />
         )}
         <div className="game-commander-info">
           <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>

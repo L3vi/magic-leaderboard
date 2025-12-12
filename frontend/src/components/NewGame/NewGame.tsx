@@ -11,7 +11,8 @@ import {
 } from '@floating-ui/react';
 import { usePlayers } from "./usePlayers";
 import { useGames } from "../../hooks/useApi";
-import { useCommanderArt } from "../../hooks/useCommanderArt";
+import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
 
 // Reusable Static Dropdown with autocomplete styling
@@ -103,9 +104,10 @@ type CommanderAutocompleteProps = {
   playerId?: string;
   games: any[];
   defaultCommander?: string;
+  onCardClick?: (card: { name: string; imageUrl: string }) => void;
 };
 
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander }) => {
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander, onCardClick }) => {
   const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -115,7 +117,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
   const artUrl = useCommanderArt(value);
+  const fullImageUrl = useCommanderFullImage(value);
   const defaultArtUrl = useCommanderArt(defaultCommander || '');
+  const defaultFullImageUrl = useCommanderFullImage(defaultCommander || '');
 
   const { refs, floatingStyles, context } = useFloating({
     open: showDropdown,
@@ -264,6 +268,12 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
         <img
           src={selectedImage}
           alt={value}
+          style={{ cursor: onCardClick ? "pointer" : "default" }}
+          onClick={() => {
+            if (onCardClick && value) {
+              onCardClick({ name: value, imageUrl: fullImageUrl });
+            }
+          }}
         />
       ) : (
         <div className="game-row-commander-img-placeholder">
@@ -436,6 +446,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     // eslint-disable-next-line
   }, [players.length, initialData]);
   const [notes, setNotes] = useState("");
+  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
 
   const handlePlayerChange = (idx: number, playerId: string) => {
     setPlayerFields(fields => fields.map((f, i) =>
@@ -531,7 +542,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   };
 
   return (
-    <form className="new-game-form" onSubmit={handleSubmit}>
+    <>
+      <form className="new-game-form" onSubmit={handleSubmit}>
       <div className="form-section">
         <h3 className="section-title">Players & Results</h3>
         <div className="players-list">
@@ -609,6 +621,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     playerId={field.playerId}
                     games={gamesData}
                     defaultCommander={field.lastPlayedCommander}
+                    onCardClick={setSelectedCard}
                   />
                 </label>
                 {field.partnerCommander && (
@@ -620,6 +633,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                         onChange={val => handlePartnerCommanderChange(idx, val)}
                         playerId={field.playerId}
                         games={gamesData}
+                        onCardClick={setSelectedCard}
                       />
                       <button
                         type="button"
@@ -701,6 +715,14 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         )}
       </div>
     </form>
+    
+    <CardModal
+      isOpen={!!selectedCard}
+      imageUrl={selectedCard?.imageUrl || ""}
+      cardName={selectedCard?.name || ""}
+      onClose={() => setSelectedCard(null)}
+    />
+    </>
   );
 };
 
