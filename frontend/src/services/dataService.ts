@@ -2,6 +2,8 @@ import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 
+// Only attempt to fetch from local backend in development
+const USE_API = process.env.NODE_ENV === 'development';
 const API_BASE = "http://localhost:3001";
 
 export interface Player {
@@ -54,16 +56,19 @@ export async function fetchPlayers(): Promise<Player[]> {
     return cached;
   }
 
-  try {
-    const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
-    setCache(cacheKey, data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching players, using local fallback:", error);
-    const fallback = playersData as Player[];
-    setCache(cacheKey, fallback);
-    return fallback;
+  if (USE_API) {
+    try {
+      const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
+      setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching players, using local fallback:", error);
+    }
   }
+  
+  const fallback = playersData as Player[];
+  setCache(cacheKey, fallback);
+  return fallback;
 }
 
 /**
@@ -80,18 +85,21 @@ export async function fetchGames(session: string = "2025-December"): Promise<Gam
     return cached;
   }
 
-  try {
-    const data = await fetchAPI<Game[]>(
-      `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
-    );
-    setCache(cacheKey, data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching games, using local fallback:", error);
-    const fallback = gamesData as Game[];
-    setCache(cacheKey, fallback);
-    return fallback;
+  if (USE_API) {
+    try {
+      const data = await fetchAPI<Game[]>(
+        `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
+      );
+      setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching games, using local fallback:", error);
+    }
   }
+  
+  const fallback = gamesData as Game[];
+  setCache(cacheKey, fallback);
+  return fallback;
 }
 
 /**
