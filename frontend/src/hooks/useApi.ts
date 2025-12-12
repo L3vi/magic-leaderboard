@@ -32,18 +32,33 @@ export const useGames = (sessionId?: string) => {
 /**
  * Hook to calculate player scores from games
  * Recalculates whenever games or players change (automatically uses context data)
+ * Returns all players even if there are no games (with zero scores)
  */
 export const usePlayerScores = () => {
   const [scores, setScores] = useState<PlayerScore[]>([]);
   const { players, games } = useSession();
 
   useEffect(() => {
-    if (players.length === 0 || games.length === 0) {
+    if (players.length === 0) {
       setScores([]);
       return;
     }
 
     try {
+      // If there are no games, return all players with zero scores
+      if (games.length === 0) {
+        const emptyScores = players.map((player, index) => ({
+          id: player.id,
+          name: player.name,
+          score: 0,
+          placement: index + 1,
+          gameCount: 0,
+          average: 0,
+        }));
+        setScores(emptyScores);
+        return;
+      }
+
       const playerScores = calculatePlayerScores(players, games);
       setScores(playerScores);
     } catch (err) {

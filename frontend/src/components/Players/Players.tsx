@@ -56,14 +56,6 @@ const Players: React.FC = () => {
     return <section className="leaderboard main-section">Loading players...</section>;
   }
 
-  if (scoresData.length === 0) {
-    return (
-      <section className="leaderboard main-section">
-        <div className="leaderboard-empty">No players found</div>
-      </section>
-    );
-  }
-
   // Keyboard navigation for sortable headers
   const handleHeaderKeyDown = (
     e: React.KeyboardEvent<HTMLSpanElement>,
