@@ -133,7 +133,7 @@ const EditGamePage: React.FC = () => {
           disabled={isDeleting}
           aria-label="Delete game"
         >
-          {isDeleting ? "Deleting..." : "🗑 Delete"}
+          {isDeleting ? "Deleting..." : "Delete"}
         </button>
       </div>
       <div className="new-game-page-content">
