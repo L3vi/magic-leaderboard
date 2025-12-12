@@ -193,11 +193,11 @@ export async function addGame(
     );
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const newGame = await response.json();
+    const result = await response.json();
 
     // Hook will handle refreshing all data after this returns
 
-    return newGame;
+    return result.game || result;
   } catch (error) {
     console.error("Error adding game:", error);
     throw error;
@@ -223,11 +223,11 @@ export async function updateGame(
     );
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const updatedGame = await response.json();
+    const result = await response.json();
 
     // Hook will handle refreshing all data after this returns
 
-    return updatedGame;
+    return result.game || result;
   } catch (error) {
     console.error("Error updating game:", error);
     throw error;

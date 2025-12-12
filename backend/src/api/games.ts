@@ -119,15 +119,48 @@ export async function createGame(req: Request, res: Response) {
   }
   
   try {
-    // Fetch current game count to generate next ID
-    let currentGames: any[] | null = null;
+    // Fetch current games and local file to determine next ID
+    let allGames: any[] = [];
+    
+    // Try Firebase first
     try {
-      currentGames = await fetchGamesFromFirebase(sessionId);
+      const firebaseGames = await fetchGamesFromFirebase(sessionId);
+      if (firebaseGames) {
+        allGames = firebaseGames;
+      }
     } catch (e) {
-      // Error fetching, will fallback
+      // Will try local file
     }
-    const gameCount = currentGames ? currentGames.length : 0;
-    const gameId = generateGameId(sessionId, gameCount);
+    
+    // Also check local file to ensure we don't duplicate IDs
+    const filePath = path.join(__dirname, "../../data/games.json");
+    try {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const localGames = JSON.parse(raw) as any[];
+      // Filter to only games from this session
+      const sessionGames = localGames.filter((g: any) => g.id && g.id.includes(sessionId));
+      // Merge with Firebase games, avoiding duplicates by ID
+      const gameIds = new Set(allGames.map((g: any) => g.id));
+      for (const game of sessionGames) {
+        if (!gameIds.has(game.id)) {
+          allGames.push(game);
+        }
+      }
+    } catch (err) {
+      // Local file doesn't exist or is invalid, continue with Firebase games
+    }
+    
+    // Generate ID based on actual game count
+    const gameCount = allGames.length;
+    let gameId = generateGameId(sessionId, gameCount);
+    
+    // Safety check: if ID already exists, increment until we find a unique one
+    const existingIds = new Set(allGames.map((g: any) => g.id));
+    let counter = gameCount;
+    while (existingIds.has(gameId)) {
+      counter++;
+      gameId = generateGameId(sessionId, counter);
+    }
     
     const newGame = {
       id: gameId,
@@ -148,7 +181,6 @@ export async function createGame(req: Request, res: Response) {
     } catch (firebaseError) {
       console.warn("Firebase write failed, falling back to local file:", firebaseError);
       // Fallback: write to local file
-      const filePath = path.join(__dirname, "../../data/games.json");
       let games: any[] = [];
       
       try {
@@ -158,8 +190,20 @@ export async function createGame(req: Request, res: Response) {
         games = [];
       }
       
-      games.push(newGame);
-      fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
+      // Filter to only games from this session, add the new game, then write back
+      const sessionGames = games.filter((g: any) => g.id && g.id.includes(sessionId));
+      const gameIds = new Set(sessionGames.map((g: any) => g.id));
+      
+      // Only add if not already in session games (extra safety check)
+      if (!gameIds.has(gameId)) {
+        sessionGames.push(newGame);
+      }
+      
+      // If file had games from other sessions, preserve them; otherwise just use session games
+      const otherSessionGames = games.filter((g: any) => !g.id || !g.id.includes(sessionId));
+      const finalGames = [...otherSessionGames, ...sessionGames];
+      
+      fs.writeFileSync(filePath, JSON.stringify(finalGames, null, 2));
       
       return res.status(201).json({ success: true, game: newGame });
     }
