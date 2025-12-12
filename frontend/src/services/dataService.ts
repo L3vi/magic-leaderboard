@@ -2,8 +2,10 @@ import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 
-// Only use API in development - production will fail fast and use fallback
 const API_BASE = "http://localhost:3001";
+
+// Only try API calls if running on localhost
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export interface Player {
   id: string;
@@ -55,21 +57,20 @@ export async function fetchPlayers(): Promise<Player[]> {
     return cached;
   }
 
-  try {
-    // Create an abort signal that times out after 1 second in production
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    
-    const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
-    clearTimeout(timeoutId);
-    setCache(cacheKey, data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching players, using local fallback:", error);
-    const fallback = playersData as Player[];
-    setCache(cacheKey, fallback);
-    return fallback;
+  // Only try API on localhost
+  if (isLocalhost) {
+    try {
+      const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
+      setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching players from API, using local fallback:", error);
+    }
   }
+
+  const fallback = playersData as Player[];
+  setCache(cacheKey, fallback);
+  return fallback;
 }
 
 /**
@@ -86,23 +87,22 @@ export async function fetchGames(session: string = "2025-December"): Promise<Gam
     return cached;
   }
 
-  try {
-    // Create an abort signal that times out after 1 second in production
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    
-    const data = await fetchAPI<Game[]>(
-      `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
-    );
-    clearTimeout(timeoutId);
-    setCache(cacheKey, data);
-    return data;
-  } catch (error) {
-    console.error("Error fetching games, using local fallback:", error);
-    const fallback = gamesData as Game[];
-    setCache(cacheKey, fallback);
-    return fallback;
+  // Only try API on localhost
+  if (isLocalhost) {
+    try {
+      const data = await fetchAPI<Game[]>(
+        `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
+      );
+      setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching games from API, using local fallback:", error);
+    }
   }
+
+  const fallback = gamesData as Game[];
+  setCache(cacheKey, fallback);
+  return fallback;
 }
 
 /**
@@ -193,27 +193,22 @@ export async function addGame(
   gameData: any,
   session: string = "2025-December"
 ): Promise<Game> {
+  if (!isLocalhost) {
+    throw new Error("Cannot add game in production mode. API is only available on localhost.");
+  }
+
   try {
-    // Create an abort signal that times out after 1 second
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    
     const response = await fetch(
       `${API_BASE}/api/games?session=${encodeURIComponent(session)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(gameData),
-        signal: controller.signal,
       }
     );
-    clearTimeout(timeoutId);
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const result = await response.json();
-
-    // Hook will handle refreshing all data after this returns
-
     return result.game || result;
   } catch (error) {
     console.error("Error adding game:", error);
@@ -229,27 +224,22 @@ export async function updateGame(
   gameData: any,
   session: string = "2025-December"
 ): Promise<Game> {
+  if (!isLocalhost) {
+    throw new Error("Cannot update game in production mode. API is only available on localhost.");
+  }
+
   try {
-    // Create an abort signal that times out after 1 second
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    
     const response = await fetch(
       `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(gameData),
-        signal: controller.signal,
       }
     );
-    clearTimeout(timeoutId);
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const result = await response.json();
-
-    // Hook will handle refreshing all data after this returns
-
     return result.game || result;
   } catch (error) {
     console.error("Error updating game:", error);
@@ -264,24 +254,20 @@ export async function deleteGame(
   gameId: string,
   session: string = "2025-December"
 ): Promise<void> {
+  if (!isLocalhost) {
+    throw new Error("Cannot delete game in production mode. API is only available on localhost.");
+  }
+
   try {
-    // Create an abort signal that times out after 1 second
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1000);
-    
     const response = await fetch(
       `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
       }
     );
-    clearTimeout(timeoutId);
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    // Hook will handle refreshing all data after this returns
   } catch (error) {
     console.error("Error deleting game:", error);
     throw error;

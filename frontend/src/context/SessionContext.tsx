@@ -31,13 +31,15 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Fetch available sessions on mount
   useEffect(() => {
     const fetchSessions = async () => {
+      // Only try API on localhost
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        setAllSessions(['2025-December']);
+        setActiveSession('2025-December');
+        return;
+      }
+
       try {
-        // Create an abort signal that times out after 1 second in production
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000);
-        
-        const response = await fetch('http://localhost:3001/api/sessions', { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const response = await fetch('http://localhost:3001/api/sessions');
         const data = await response.json();
         setAllSessions(data);
         
@@ -47,7 +49,6 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       } catch (err) {
         console.warn('Could not fetch sessions, using defaults:', err);
-        // Fallback to default session
         setAllSessions(['2025-December']);
         setActiveSession('2025-December');
       }
