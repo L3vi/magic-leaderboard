@@ -73,7 +73,7 @@ const PlayerDetailsPage: React.FC = () => {
       >
         <div className="player-details-page-header">
           <button 
-            className="back-button" 
+            className="btn btn-tertiary" 
             onClick={handleClose}
             aria-label="Back to players"
           >
@@ -98,7 +98,7 @@ const PlayerDetailsPage: React.FC = () => {
     >
       <div className="player-details-page-header">
         <button 
-          className="back-button" 
+          className="btn btn-tertiary" 
           onClick={handleClose}
           aria-label="Back to players"
         >

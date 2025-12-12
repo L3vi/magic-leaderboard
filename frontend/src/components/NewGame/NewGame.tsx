@@ -698,7 +698,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       </div>
 
       <div className="form-actions">
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
           {isSubmitting ? (
             <>
               <span className="spinner"></span>
@@ -709,7 +709,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
           )}
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="cancel-btn" disabled={isSubmitting}>
+          <button type="button" onClick={onCancel} className="btn btn-secondary" disabled={isSubmitting}>
             Cancel
           </button>
         )}

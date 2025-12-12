@@ -52,7 +52,7 @@ const GameDetailsPage: React.FC = () => {
       >
         <div className="game-details-page-header">
           <button 
-            className="back-button" 
+            className="btn btn-tertiary" 
             onClick={handleClose}
             aria-label="Back to games"
           >
@@ -91,7 +91,7 @@ const GameDetailsPage: React.FC = () => {
     >
       <div className="game-details-page-header">
         <button 
-          className="back-button" 
+          className="btn btn-tertiary" 
           onClick={handleClose}
           aria-label="Back to games"
         >
@@ -99,7 +99,7 @@ const GameDetailsPage: React.FC = () => {
         </button>
         <h1>Game Details</h1>
         <button 
-          className="edit-button" 
+          className="btn btn-tertiary" 
           onClick={handleEdit}
           aria-label="Edit game"
         >

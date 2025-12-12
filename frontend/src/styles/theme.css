@@ -105,6 +105,12 @@
   --desktop-content-max-width: 1000px;
   --input-height: 48px;
   
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 2rem;
+  
   /* Breakpoints */
   --breakpoint-mobile-max: 639px;
   --breakpoint-desktop: 640px;

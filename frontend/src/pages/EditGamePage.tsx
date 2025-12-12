@@ -50,7 +50,7 @@ const EditGamePage: React.FC = () => {
       >
         <div className="new-game-page-header">
           <button 
-            className="back-button" 
+            className="btn btn-tertiary" 
             onClick={handleClose}
             aria-label="Back to games"
           >
@@ -120,7 +120,7 @@ const EditGamePage: React.FC = () => {
     >
       <div className="new-game-page-header">
         <button 
-          className="back-button" 
+          className="btn btn-tertiary" 
           onClick={handleClose}
           aria-label="Cancel"
         >
@@ -128,7 +128,7 @@ const EditGamePage: React.FC = () => {
         </button>
         <h1>Edit Game</h1>
         <button 
-          className="delete-button" 
+          className="btn btn-danger" 
           onClick={handleDelete}
           disabled={isDeleting}
           aria-label="Delete game"

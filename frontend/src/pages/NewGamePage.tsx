@@ -52,7 +52,7 @@ const NewGamePage: React.FC = () => {
     >
       <div className="new-game-page-header">
         <button 
-          className="back-button" 
+          className="btn btn-tertiary" 
           onClick={handleClose}
           aria-label="Back to games"
         >
