@@ -1,6 +1,17 @@
 import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 // Get API base URL from environment or construct it from current origin
 const getAPIBase = () => {
@@ -83,7 +94,7 @@ export async function fetchPlayers(): Promise<Player[]> {
 }
 
 /**
- * Fetch games for a session from API or fallback to local data
+ * Fetch games for a session from Firebase or fallback to local data
  * Caches results to avoid redundant fetches during navigation
  * Call refetchGames() to bypass cache and get fresh data
  */
@@ -96,22 +107,22 @@ export async function fetchGames(session: string = "2025-December"): Promise<Gam
     return cached;
   }
 
-  // Only try API on localhost
-  if (isLocalhost) {
-    try {
-      const data = await fetchAPI<Game[]>(
-        `${API_BASE}/api/games?session=${encodeURIComponent(session)}`
-      );
-      setCache(cacheKey, data);
-      return data;
-    } catch (error) {
-      console.error("Error fetching games from API, using local fallback:", error);
-    }
-  }
+  try {
+    const gamesCollection = collection(db, "sessions", session, "games");
+    const snapshot = await getDocs(gamesCollection);
+    const games: Game[] = snapshot.docs.map((docSnapshot) => ({
+      id: docSnapshot.id,
+      ...docSnapshot.data(),
+    } as Game));
 
-  const fallback = gamesData as Game[];
-  setCache(cacheKey, fallback);
-  return fallback;
+    setCache(cacheKey, games);
+    return games;
+  } catch (error) {
+    console.error("Error fetching games from Firebase, using local fallback:", error);
+    const fallback = gamesData as Game[];
+    setCache(cacheKey, fallback);
+    return fallback;
+  }
 }
 
 /**
@@ -196,25 +207,26 @@ export async function refetchGames(session: string = "2025-December"): Promise<G
 }
 
 /**
- * Add a new game
+ * Add a new game to Firebase
  */
 export async function addGame(
   gameData: any,
   session: string = "2025-December"
 ): Promise<Game> {
   try {
-    const response = await fetch(
-      `${API_BASE}/api/games?session=${encodeURIComponent(session)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(gameData),
-      }
-    );
+    const gamesCollection = collection(db, "sessions", session, "games");
+    const docRef = await addDoc(gamesCollection, {
+      ...gameData,
+      dateCreated: gameData.dateCreated || new Date().toISOString(),
+    });
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    return result.game || result;
+    // Refetch games to update cache
+    await refetchGames(session);
+
+    return {
+      id: docRef.id,
+      ...gameData,
+    };
   } catch (error) {
     console.error("Error adding game:", error);
     throw error;
@@ -222,7 +234,7 @@ export async function addGame(
 }
 
 /**
- * Update an existing game
+ * Update an existing game in Firebase
  */
 export async function updateGame(
   gameId: string,
@@ -230,18 +242,16 @@ export async function updateGame(
   session: string = "2025-December"
 ): Promise<Game> {
   try {
-    const response = await fetch(
-      `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(gameData),
-      }
-    );
+    const gameDocRef = doc(db, "sessions", session, "games", gameId);
+    await updateDoc(gameDocRef, gameData);
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    return result.game || result;
+    // Refetch games to update cache
+    await refetchGames(session);
+
+    return {
+      id: gameId,
+      ...gameData,
+    };
   } catch (error) {
     console.error("Error updating game:", error);
     throw error;
@@ -256,15 +266,11 @@ export async function deleteGame(
   session: string = "2025-December"
 ): Promise<void> {
   try {
-    const response = await fetch(
-      `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const gameDocRef = doc(db, "sessions", session, "games", gameId);
+    await deleteDoc(gameDocRef);
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    // Refetch games to update cache
+    await refetchGames(session);
   } catch (error) {
     console.error("Error deleting game:", error);
     throw error;
