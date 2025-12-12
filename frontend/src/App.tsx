@@ -24,17 +24,20 @@ function MainLayout() {
     return 'players'; // default
   };
   
-  const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => 
-    getTabFromPath(location.pathname)
-  );
-
-  // Only update tab when navigating to /players or /games directly
-  React.useEffect(() => {
-    if (location.pathname === '/players' || location.pathname === '/games') {
-      const tab = getTabFromPath(location.pathname);
-      setActiveTab(tab);
-      localStorage.setItem('activeTab', tab);
+  const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => {
+    // Check localStorage first
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab === 'games' || savedTab === 'players') {
+      return savedTab;
     }
+    return getTabFromPath(location.pathname);
+  });
+
+  // Sync activeTab with URL and localStorage
+  React.useEffect(() => {
+    const pathTab = getTabFromPath(location.pathname);
+    setActiveTab(pathTab);
+    localStorage.setItem('activeTab', pathTab);
   }, [location.pathname]);
 
   const handleTabChange = (tab: 'players' | 'games') => {
@@ -110,24 +113,22 @@ function AnimatedRoutes() {
 }
 
 function App() {
-  // Restore the last visited tab from localStorage on app load
-  React.useEffect(() => {
-    const savedTab = localStorage.getItem('activeTab');
-    if (savedTab === 'games' && window.location.pathname === '/') {
-      window.location.pathname = '/games';
-    }
-  }, []);
-
   return (
     <SessionProvider>
       <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
         <Routes>
-          <Route path="/" element={<Navigate to="/players" replace />} />
+          <Route path="/" element={<AppRedirect />} />
           <Route path="/*" element={<AnimatedRoutes />} />
         </Routes>
       </Router>
     </SessionProvider>
   );
+}
+
+function AppRedirect() {
+  const savedTab = localStorage.getItem('activeTab');
+  const targetPath = savedTab === 'games' ? '/games' : '/players';
+  return <Navigate to={targetPath} replace />;
 }
 
 export default App;
