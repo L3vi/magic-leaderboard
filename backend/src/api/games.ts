@@ -230,3 +230,46 @@ export async function updateGame(req: Request, res: Response) {
     res.status(500).json({ error: "Could not update game." });
   }
 }
+
+export async function deleteGame(req: Request, res: Response) {
+  const sessionId = req.query.session as string || "2025-December";
+  const gameId = req.params.gameId as string;
+
+  try {
+    // Try to delete from Firebase first
+    try {
+      await db
+        .collection("sessions")
+        .doc(sessionId)
+        .collection("games")
+        .doc(gameId)
+        .delete();
+      return res.status(200).json({ success: true, message: "Game deleted successfully." });
+    } catch (firebaseError) {
+      console.warn("Firebase delete failed, falling back to local file:", firebaseError);
+      // Fallback: delete from local file
+      const filePath = path.join(__dirname, "../../data/games.json");
+      let games: any[] = [];
+
+      try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        games = JSON.parse(raw);
+      } catch (err) {
+        return res.status(404).json({ error: "Game not found." });
+      }
+
+      const gameIndex = games.findIndex((g: any) => g.id === gameId);
+      if (gameIndex === -1) {
+        return res.status(404).json({ error: "Game not found." });
+      }
+
+      games.splice(gameIndex, 1);
+      fs.writeFileSync(filePath, JSON.stringify(games, null, 2));
+
+      return res.status(200).json({ success: true, message: "Game deleted successfully." });
+    }
+  } catch (err) {
+    console.error("Error deleting game:", err);
+    res.status(500).json({ error: "Could not delete game." });
+  }
+}

@@ -5,15 +5,17 @@ import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useUpdateGame, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
+import { deleteGame } from "../services/dataService";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css"; // Reuse NewGamePage styles
 
 const EditGamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { games, refreshGamesOnly } = useSession();
+  const { games, activeSession, refreshGamesOnly } = useSession();
   const { players: playersData } = usePlayers();
   const { updateGame, loading, error } = useUpdateGame();
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   // Disable body scroll when this page is open
   React.useEffect(() => {
@@ -85,6 +87,27 @@ const EditGamePage: React.FC = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!gameId) return;
+    
+    // Confirm deletion
+    if (!window.confirm("Are you sure you want to delete this game? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteGame(gameId, activeSession);
+      // Refresh the games list and navigate back
+      await refreshGamesOnly();
+      navigate("/games");
+    } catch (error) {
+      console.error("Failed to delete game:", error);
+      alert("Failed to delete game. Please try again.");
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <motion.div 
       className="new-game-page" 
@@ -99,11 +122,19 @@ const EditGamePage: React.FC = () => {
         <button 
           className="back-button" 
           onClick={handleClose}
-          aria-label="Back to games"
+          aria-label="Cancel"
         >
-          ← Back
+          ← Cancel
         </button>
         <h1>Edit Game</h1>
+        <button 
+          className="delete-button" 
+          onClick={handleDelete}
+          disabled={isDeleting}
+          aria-label="Delete game"
+        >
+          {isDeleting ? "Deleting..." : "🗑 Delete"}
+        </button>
       </div>
       <div className="new-game-page-content">
         <NewGame 

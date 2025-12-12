@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { getPlayers } from "./api/players";
-import { getGames, createGame, updateGame, getSessions } from "./api/games";
+import { getGames, createGame, updateGame, deleteGame, getSessions } from "./api/games";
 import './firebase'; // Initialize Firebase
 
 const app = express();
@@ -17,6 +17,7 @@ app.get("/api/sessions", getSessions);
 app.get("/api/games", getGames);
 app.post("/api/games", createGame);
 app.put("/api/games/:gameId", updateGame);
+app.delete("/api/games/:gameId", deleteGame);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

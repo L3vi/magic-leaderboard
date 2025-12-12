@@ -233,3 +233,28 @@ export async function updateGame(
     throw error;
   }
 }
+
+/**
+ * Delete an existing game
+ */
+export async function deleteGame(
+  gameId: string,
+  session: string = "2025-December"
+): Promise<void> {
+  try {
+    const response = await fetch(
+      `${API_BASE}/api/games/${gameId}?session=${encodeURIComponent(session)}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    // Hook will handle refreshing all data after this returns
+  } catch (error) {
+    console.error("Error deleting game:", error);
+    throw error;
+  }
+}
