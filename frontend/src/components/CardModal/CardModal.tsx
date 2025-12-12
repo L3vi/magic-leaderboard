@@ -42,6 +42,18 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
       transition={{ duration: 0.1 }}
     >
       <motion.div 
+        className="card-modal-close" 
+        onClick={onClose} 
+        role="button" 
+        tabIndex={-1} 
+        aria-label="Close card"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.1 }}
+      >
+        ✕
+      </motion.div>
+      <motion.div 
         className="card-modal-content" 
         onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, scale: 0.95 }}
@@ -49,9 +61,6 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.12, ease: "easeOut" }}
       >
-        <div className="card-modal-close" onClick={onClose} role="button" tabIndex={-1} aria-label="Close card">
-          ✕
-        </div>
         <motion.img 
           src={imageUrl} 
           alt={cardName} 

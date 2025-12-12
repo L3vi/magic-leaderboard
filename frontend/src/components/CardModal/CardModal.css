@@ -32,8 +32,8 @@
 
 .card-modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: calc(50% - 330px);
+  right: 2rem;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
@@ -46,7 +46,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  z-index: 1001;
+  z-index: 10000;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
