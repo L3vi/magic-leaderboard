@@ -93,7 +93,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 								aria-selected={activeTab === item.tab}
 								tabIndex={0}
 								role="tab"
-								onClick={() => setActiveTab(item.tab as "leaderboard" | "games")}
+							onClick={() => setActiveTab(item.tab as "players" | "games")}
 								onKeyDown={e => handleKeyDown(e, idx)}
 								ref={el => tabRefs.current[idx] = el}
 							>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Player } from "../Leaderboard/PlayerRow";
+import { Player } from "./PlayerRow";
 import { useCommanderArt } from "../../hooks/useCommanderArt";
 import "./PlayerDetails.css";
 
