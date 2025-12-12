@@ -11,11 +11,17 @@ interface Player {
   commander: string;
 }
 
+interface GamePlayer {
+  playerId: string;
+  placement: number;
+  commander: string | string[];
+}
+
 interface Game {
   id: string;
   dateCreated: string;
   notes: string;
-  players: Player[];
+  players: GamePlayer[];
 }
 
 const Games: React.FC = () => {
@@ -31,12 +37,15 @@ const Games: React.FC = () => {
 
   // Filter and sort games
   const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
+  const getCommanderString = (commander: string | string[]) => {
+    return Array.isArray(commander) ? commander.join(' ') : commander;
+  };
   const filteredGames = useMemo(() => {
     let games = allGames;
     if (filter.trim()) {
       games = games.filter(game =>
         game.players.some(
-          p => getPlayerName(p.playerId).toLowerCase().includes(filter.toLowerCase()) || p.commander.toLowerCase().includes(filter.toLowerCase())
+          p => getPlayerName(p.playerId).toLowerCase().includes(filter.toLowerCase()) || getCommanderString(p.commander).toLowerCase().includes(filter.toLowerCase())
         )
       );
     }
