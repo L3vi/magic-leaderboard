@@ -102,9 +102,10 @@ type CommanderAutocompleteProps = {
   onChange: (val: string) => void;
   playerId?: string;
   games: any[];
+  defaultCommander?: string;
 };
 
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData }) => {
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander }) => {
   const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -114,6 +115,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
   const artUrl = useCommanderArt(value);
+  const defaultArtUrl = useCommanderArt(defaultCommander || '');
 
   const { refs, floatingStyles, context } = useFloating({
     open: showDropdown,
@@ -140,10 +142,13 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     if (value && artUrl) {
       // Use the useCommanderArt hook result for current value
       setSelectedImage(artUrl);
+    } else if (!value && defaultCommander && defaultArtUrl) {
+      // Show default commander image if no value but default is set
+      setSelectedImage(defaultArtUrl);
     } else if (!value) {
       setSelectedImage(null);
     }
-  }, [value, artUrl]);
+  }, [value, artUrl, defaultCommander, defaultArtUrl]);
 
   // Load last played commander suggestions
   useEffect(() => {
@@ -333,6 +338,7 @@ interface PlayerField {
   placement: number;
   addNew: boolean;
   newName: string;
+  lastPlayedCommander?: string;
 }
 
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) => {
@@ -342,6 +348,20 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
+  // Helper to get the last played commander for a specific player
+  function getLastPlayedCommander(playerId: string) {
+    if (!playerId) return '';
+    const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+    for (const game of sortedGames) {
+      const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
+      if (playerInGame) {
+        // Return the first commander if it's an array (partner commanders)
+        return Array.isArray(playerInGame.commander) ? playerInGame.commander[0] : playerInGame.commander;
+      }
+    }
+    return '';
+  }
+
   // Helper to get the 4 players who played least recently
   function getLeastRecentlyPlayedPlayers() {
     // Map of playerId to last played date
@@ -397,14 +417,18 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       // Set default player fields to least recently played
       const defaultPlayers = getLeastRecentlyPlayedPlayers();
       setPlayerFields(
-        Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({
-          playerId: defaultPlayers[i] || '',
-          commander: '',
-          partnerCommander: '',
-          placement: i + 1,
-          addNew: false,
-          newName: ''
-        }))
+        Array(DEFAULT_PLAYERS).fill(null).map((_, i) => {
+          const playerId = defaultPlayers[i] || '';
+          return {
+            playerId,
+            commander: '',
+            partnerCommander: '',
+            placement: i + 1,
+            addNew: false,
+            newName: '',
+            lastPlayedCommander: getLastPlayedCommander(playerId)
+          };
+        })
       );
     }
     // eslint-disable-next-line
@@ -466,7 +490,11 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     e.preventDefault();
     
     // Validate all players have required fields
-    const validPlayers = playerFields.filter(f => f.playerId && f.commander);
+    // If commander is empty but lastPlayedCommander exists, use that
+    const validPlayers = playerFields.filter(f => {
+      const commander = f.commander || f.lastPlayedCommander;
+      return f.playerId && commander;
+    });
     if (validPlayers.length < MIN_PLAYERS) {
       alert(`Please add at least ${MIN_PLAYERS} players with commanders`);
       return;
@@ -475,8 +503,10 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     // Build game data matching the backend structure
     const gameData = {
       players: validPlayers.map(f => {
+        // Use commander if set, otherwise use lastPlayedCommander
+        const primaryCommander = f.commander || f.lastPlayedCommander || '';
         // Use array for partners, string for single commander
-        const commander = f.partnerCommander ? [f.commander, f.partnerCommander] : f.commander;
+        const commander = f.partnerCommander ? [primaryCommander, f.partnerCommander] : primaryCommander;
         return {
           playerId: f.playerId,
           commander,
@@ -576,6 +606,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     onChange={val => handleCommanderChange(idx, val)}
                     playerId={field.playerId}
                     games={gamesData}
+                    defaultCommander={field.lastPlayedCommander}
                   />
                 </label>
                 {field.partnerCommander && (
