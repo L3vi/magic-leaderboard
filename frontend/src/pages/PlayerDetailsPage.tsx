@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSwipeToClose } from "../hooks/useSwipeToClose";
+import { useNavigationAnimation } from "../context/NavigationContext";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import { Player } from "../components/Players/PlayerRow";
 import { useSession } from "../context/SessionContext";
@@ -12,6 +13,7 @@ const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
   const { games: gamesRaw, players: playersRaw } = useSession();
+  const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
 
   // Disable body scroll when this page is open
   React.useEffect(() => {
@@ -24,6 +26,7 @@ const PlayerDetailsPage: React.FC = () => {
   }, []);
 
   const handleClose = () => {
+    setSkipAnimation(true);
     navigate(-1);
   };
 
@@ -64,16 +67,33 @@ const PlayerDetailsPage: React.FC = () => {
     };
   }, [playerData, gamesRaw]);
 
+  // Determine animation props based on whether we're navigating back
+  const animationProps = skipAnimationRef.current ? {
+    initial: { opacity: 1, y: 0 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 },
+    transition: { duration: 0 },
+  } : {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 },
+    transition: { duration: 0.15, ease: "easeOut" },
+  };
+
+  // Reset skip animation flag after this component mounts
+  React.useEffect(() => {
+    return () => {
+      setSkipAnimation(false);
+    };
+  }, [setSkipAnimation]);
+
   if (!player) {
     return (
       <motion.div 
         className="player-details-page" 
         {...swipeHandlers} 
         ref={pageRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
+        {...animationProps}
       >
         <div className="player-details-page-header">
           <button 
@@ -95,10 +115,7 @@ const PlayerDetailsPage: React.FC = () => {
       className="player-details-page" 
       {...swipeHandlers} 
       ref={pageRef}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
+      {...animationProps}
     >
       <div className="player-details-page-header">
         <button 
