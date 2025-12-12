@@ -46,6 +46,7 @@
   color: var(--foreground);
   font-weight: 500;
   overflow: auto;
+  touch-action: pan-y; /* Allow vertical scroll only, let horizontal swipes pass through */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }

@@ -16,25 +16,22 @@ function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Determine active tab from URL path, ignoring detail pages
+  // Determine active tab from URL path
   const getTabFromPath = (path: string): 'players' | 'games' => {
     if (path.startsWith('/games')) return 'games';
     if (path.startsWith('/players')) return 'players';
-    // If on a detail page, maintain current tab
-    return 'players'; // default
+    return 'players';
   };
   
   const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => {
-    // Check localStorage first
     const savedTab = localStorage.getItem('activeTab');
     if (savedTab === 'games' || savedTab === 'players') {
-      return savedTab;
+      return savedTab as 'players' | 'games';
     }
     return getTabFromPath(location.pathname);
   });
 
   // Sync activeTab with URL and localStorage
-  // Only update when directly navigating to /players or /games, not to detail pages
   React.useEffect(() => {
     if (location.pathname === '/players' || location.pathname === '/games') {
       const pathTab = getTabFromPath(location.pathname);
@@ -55,7 +52,8 @@ function MainLayout() {
     onSwipedRight: () => {
       if (activeTab === 'games') handleTabChange('players');
     },
-    trackMouse: true, // allows swipe with mouse for desktop
+    trackMouse: true,
+    trackTouch: true,
   });
 
   // Handler to open new game page
@@ -73,10 +71,11 @@ function MainLayout() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: activeTab === 'players' ? -20 : 20 }}
+            initial={{ opacity: 0, x: activeTab === 'players' ? 20 : -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: activeTab === 'players' ? -20 : 20 }}
-            transition={{ duration: 0.1, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+            className="tab-content-inner"
           >
             {activeTab === 'players' ? <Players /> : <Games />}
           </motion.div>

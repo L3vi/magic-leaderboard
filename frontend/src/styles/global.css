@@ -47,13 +47,27 @@ body {
 /* App Tabs Styles        */
 /* ===================== */
 
+.tab-content {
+  /* Full height minus header, will handle navbar in media query */
+  min-height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y; /* Allow vertical scroll, pass horizontal swipes through */
+}
+
 @media (max-width: 639px) {
   /* Prevent content from being covered by bottom nav bar */
   .tab-content {
-    padding-bottom: calc(
-      var(--navbar-height) + 4px
-    ); /* nav bar height + extra for spacing */
+    min-height: calc(100vh - var(--header-height) - var(--navbar-height) - 4px);
+    padding-bottom: 0; /* Remove old padding, use min-height instead */
   }
+}
+
+.tab-content-inner {
+  /* Ensure inner content doesn't prevent swipes */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .tab-btn {
