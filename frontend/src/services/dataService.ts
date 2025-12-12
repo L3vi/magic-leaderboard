@@ -8,24 +8,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  where,
   getDocs,
 } from "firebase/firestore";
-
-// Get API base URL from environment or construct it from current origin
-const getAPIBase = () => {
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    return 'http://localhost:3001';
-  }
-  // In production, API would be on same origin or use environment variable
-  return process.env.VITE_API_BASE || window.location.origin;
-};
-
-const API_BASE = getAPIBase();
-
-// Only try API calls if running on localhost
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export interface Player {
   id: string;
@@ -55,7 +39,7 @@ export interface PlayerScore {
 }
 
 /**
- * Simple fetch with basic error handling
+ * Simple fetch with basic error handling (kept for backwards compatibility)
  */
 async function fetchAPI<T>(url: string): Promise<T> {
   const response = await fetch(url);
@@ -64,7 +48,7 @@ async function fetchAPI<T>(url: string): Promise<T> {
 }
 
 /**
- * Fetch all players from API or fallback to local data
+ * Fetch all players from local fallback data
  * Caches results to avoid redundant fetches during navigation
  * Call refetchPlayers() to bypass cache and get fresh data
  */
@@ -75,17 +59,6 @@ export async function fetchPlayers(): Promise<Player[]> {
   if (cached) {
     console.log("Using cached players");
     return cached;
-  }
-
-  // Only try API on localhost
-  if (isLocalhost) {
-    try {
-      const data = await fetchAPI<Player[]>(`${API_BASE}/api/players`);
-      setCache(cacheKey, data);
-      return data;
-    } catch (error) {
-      console.error("Error fetching players from API, using local fallback:", error);
-    }
   }
 
   const fallback = playersData as Player[];
