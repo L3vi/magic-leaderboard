@@ -24,9 +24,15 @@ function MainLayout() {
     return 'players'; // default
   };
   
-  const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => 
-    getTabFromPath(location.pathname)
-  );
+  const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => {
+    // First check localStorage for saved tab
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab === 'games' || savedTab === 'players') {
+      return savedTab;
+    }
+    // Otherwise use the current path
+    return getTabFromPath(location.pathname);
+  });
 
   // Only update tab when navigating to /players or /games directly
   React.useEffect(() => {
@@ -109,21 +115,26 @@ function AnimatedRoutes() {
   );
 }
 
-function App() {
-  // Restore the last visited tab from localStorage on app load
+function RootNavigator() {
+  const navigate = useNavigate();
+  
   React.useEffect(() => {
     const savedTab = localStorage.getItem('activeTab');
-    if (savedTab === 'games' && window.location.pathname === '/') {
-      window.location.pathname = '/games';
+    if (savedTab === 'games') {
+      navigate('/games', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
+  return <AnimatedRoutes />;
+}
+
+function App() {
   return (
     <SessionProvider>
       <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
         <Routes>
           <Route path="/" element={<Navigate to="/players" replace />} />
-          <Route path="/*" element={<AnimatedRoutes />} />
+          <Route path="/*" element={<RootNavigator />} />
         </Routes>
       </Router>
     </SessionProvider>
