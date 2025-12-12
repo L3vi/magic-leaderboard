@@ -113,15 +113,28 @@ function AnimatedRoutes() {
 }
 
 function App() {
+  const [isReady, setIsReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsReady(true);
+  }, []);
+
   return (
-    <SessionProvider>
-      <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
-        <Routes>
-          <Route path="/" element={<AppRedirect />} />
-          <Route path="/*" element={<AnimatedRoutes />} />
-        </Routes>
-      </Router>
-    </SessionProvider>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isReady ? 1 : 0 }}
+      transition={{ duration: 0.3 }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      <SessionProvider>
+        <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
+          <Routes>
+            <Route path="/" element={<AppRedirect />} />
+            <Route path="/*" element={<AnimatedRoutes />} />
+          </Routes>
+        </Router>
+      </SessionProvider>
+    </motion.div>
   );
 }
 
