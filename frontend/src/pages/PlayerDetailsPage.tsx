@@ -24,7 +24,7 @@ const PlayerDetailsPage: React.FC = () => {
   }, []);
 
   const handleClose = () => {
-    navigate("/players");
+    navigate(-1);
   };
 
   const handleGameClick = (gameId: string) => {

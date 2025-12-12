@@ -23,7 +23,7 @@ const GameDetailsPage: React.FC = () => {
   }, []);
 
   const handleClose = () => {
-    navigate("/games");
+    navigate(-1);
   };
 
   const handleEdit = async () => {
