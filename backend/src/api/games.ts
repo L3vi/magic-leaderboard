@@ -49,8 +49,12 @@ export async function getSessions(req: Request, res: Response) {
     ];
   }
   
+  // Filter out archived sessions from UI
+  const archivedSessions = ['2025-May'];
+  const activeSessions = sessions.filter(s => !archivedSessions.includes(s.id));
+  
   // Return just the IDs for now, but the first one is the latest
-  res.json(sessions.map(s => s.id));
+  res.json(activeSessions.map(s => s.id));
 }
 
 // Fetch games from Firebase Firestore for a specific session
