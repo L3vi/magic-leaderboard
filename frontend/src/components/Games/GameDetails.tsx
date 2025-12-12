@@ -17,9 +17,10 @@ interface GameDetailsProps {
   players: Player[];
   winner?: Player;
   onClose: () => void;
+  onPlayerClick?: (playerName: string) => void;
 }
 
-const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, players, winner, onClose }) => {
+const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, players, winner, onClose, onPlayerClick }) => {
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
   const sortedPlayers = [...players].sort((a, b) => a.placement - b.placement);
   
@@ -41,7 +42,7 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
           <div className="section-title">Results</div>
           <div className="players-list">
             {sortedPlayers.map((player, idx) => (
-              <PlayerCardWithImage key={idx} player={player} onCardClick={setSelectedCard} />
+              <PlayerCardWithImage key={idx} player={player} onCardClick={setSelectedCard} onPlayerClick={onPlayerClick} />
             ))}
           </div>
         </div>
@@ -67,17 +68,21 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
   );
 };
 
-function PlayerCardWithImage({ player, onCardClick }: { player: any; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
+function PlayerCardWithImage({ player, onCardClick, onPlayerClick }: { player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onPlayerClick?: (playerName: string) => void }) {
   const commanders = Array.isArray(player.commander) ? player.commander : [player.commander];
   const commanderText = commanders.join(" // ");
 
   return (
-    <div className={`player-card placement-${player.placement}`}>
+    <div 
+      className={`player-card placement-${player.placement}`}
+      onClick={() => onPlayerClick?.(player.name)}
+      style={{ cursor: onPlayerClick ? 'pointer' : 'default' }}
+    >
       <div className="player-card-header">
         <div className="placement-indicator">
           {player.placement === 1 ? '🏆' : `#${player.placement}`}
         </div>
-        <div className="player-commanders-images">
+        <div className="player-commanders-images" onClick={(e) => e.stopPropagation()}>
           <PartnerCommanderDisplay
             commanders={commanders}
             onCardClick={onCardClick}

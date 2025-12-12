@@ -30,6 +30,10 @@ const GameDetailsPage: React.FC = () => {
     navigate(`/edit-game/${gameId}`);
   };
 
+  const handlePlayerClick = (playerName: string) => {
+    navigate(`/players/${encodeURIComponent(playerName)}`);
+  };
+
   useEscapeKey(handleClose);
   const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
@@ -114,6 +118,7 @@ const GameDetailsPage: React.FC = () => {
           players={players}
           winner={winnerObj}
           onClose={handleClose}
+          onPlayerClick={handlePlayerClick}
         />
       </div>
     </motion.div>
