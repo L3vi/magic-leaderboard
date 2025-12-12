@@ -5,7 +5,7 @@ import "./GameDetails.css";
 interface Player {
   name: string;
   placement: number;
-  commander: string;
+  commander: string | string[];
 }
 
 interface GameDetailsProps {
@@ -56,7 +56,8 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
 };
 
 function PlayerCardWithImage({ player }: { player: any }) {
-  const artUrl = useCommanderArt(player.commander);
+  const commanders = Array.isArray(player.commander) ? player.commander : [player.commander];
+  const commanderText = commanders.join(" // ");
 
   return (
     <div className={`player-card placement-${player.placement}`}>
@@ -64,12 +65,17 @@ function PlayerCardWithImage({ player }: { player: any }) {
         <div className="placement-indicator">
           {player.placement === 1 ? '🏆' : `#${player.placement}`}
         </div>
-        {artUrl && (
-          <img src={artUrl} alt={player.commander} className="player-card-thumbnail" />
-        )}
+        <div className="player-commanders-images">
+          {commanders.map((cmd: string, idx: number) => {
+            const artUrl = useCommanderArt(cmd);
+            return artUrl ? (
+              <img key={idx} src={artUrl} alt={cmd} className="player-card-thumbnail" />
+            ) : null;
+          })}
+        </div>
         <div className="player-info">
           <div className="player-name">{player.name}</div>
-          <div className="player-commander">{player.commander}</div>
+          <div className="player-commander">{commanderText}</div>
         </div>
       </div>
     </div>

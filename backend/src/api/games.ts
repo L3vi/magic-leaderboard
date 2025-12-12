@@ -119,7 +119,14 @@ export async function createGame(req: Request, res: Response) {
   
   for (const player of players) {
     if (!player.playerId || !player.commander || player.placement === undefined) {
-      return res.status(400).json({ error: "Each player must have playerId, commander, and placement." });
+      return res.status(400).json({ error: "Each player must have playerId, commander (string or array for partners), and placement." });
+    }
+    // Validate commander format: string or array of strings
+    if (typeof player.commander !== 'string' && !Array.isArray(player.commander)) {
+      return res.status(400).json({ error: "Commander must be a string or array of strings for partners." });
+    }
+    if (Array.isArray(player.commander) && !player.commander.every((c: any) => typeof c === 'string')) {
+      return res.status(400).json({ error: "All partner commanders must be strings." });
     }
   }
   
@@ -230,7 +237,14 @@ export async function updateGame(req: Request, res: Response) {
   
   for (const player of players) {
     if (!player.playerId || !player.commander || player.placement === undefined) {
-      return res.status(400).json({ error: "Each player must have playerId, commander, and placement." });
+      return res.status(400).json({ error: "Each player must have playerId, commander (string or array for partners), and placement." });
+    }
+    // Validate commander format: string or array of strings
+    if (typeof player.commander !== 'string' && !Array.isArray(player.commander)) {
+      return res.status(400).json({ error: "Commander must be a string or array of strings for partners." });
+    }
+    if (Array.isArray(player.commander) && !player.commander.every((c: any) => typeof c === 'string')) {
+      return res.status(400).json({ error: "All partner commanders must be strings." });
     }
   }
   

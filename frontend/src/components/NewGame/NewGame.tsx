@@ -329,6 +329,7 @@ type NewGameProps = {
 interface PlayerField {
   playerId: string;
   commander: string;
+  partnerCommander: string;
   placement: number;
   addNew: boolean;
   newName: string;
@@ -378,13 +379,18 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     if (initialData) {
       // Initialize from provided data
       setPlayerFields(
-        initialData.players.map(p => ({
-          playerId: p.playerId,
-          commander: p.commander,
-          placement: p.placement,
-          addNew: false,
-          newName: ''
-        }))
+        initialData.players.map(p => {
+          // Handle both string and array commanders
+          const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
+          return {
+            playerId: p.playerId,
+            commander: commanders[0] || '',
+            partnerCommander: commanders[1] || '',
+            placement: p.placement,
+            addNew: false,
+            newName: ''
+          };
+        })
       );
       setNotes(initialData.notes);
     } else {
@@ -394,6 +400,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         Array(DEFAULT_PLAYERS).fill(null).map((_, i) => ({
           playerId: defaultPlayers[i] || '',
           commander: '',
+          partnerCommander: '',
           placement: i + 1,
           addNew: false,
           newName: ''
@@ -416,6 +423,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     ));
   };
 
+  const handlePartnerCommanderChange = (idx: number, partnerCommander: string) => {
+    setPlayerFields(fields => fields.map((f, i) =>
+      i === idx ? { ...f, partnerCommander } : f
+    ));
+  };
+
   const handlePlacementChange = (idx: number, placement: number) => {
     setPlayerFields(fields => fields.map((f, i) =>
       i === idx ? { ...f, placement } : f
@@ -433,6 +446,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       setPlayerFields([...playerFields, { 
         playerId: '', 
         commander: '',
+        partnerCommander: '',
         placement: playerFields.length + 1,
         addNew: false, 
         newName: '' 
@@ -460,11 +474,15 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     
     // Build game data matching the backend structure
     const gameData = {
-      players: validPlayers.map(f => ({
-        playerId: f.playerId,
-        commander: f.commander,
-        placement: f.placement
-      })),
+      players: validPlayers.map(f => {
+        // Use array for partners, string for single commander
+        const commander = f.partnerCommander ? [f.commander, f.partnerCommander] : f.commander;
+        return {
+          playerId: f.playerId,
+          commander,
+          placement: f.placement
+        };
+      }),
       notes: notes.trim(),
       dateCreated: initialData ? initialData.dateCreated : new Date().toISOString()
     };
@@ -560,6 +578,63 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     games={gamesData}
                   />
                 </label>
+                {field.partnerCommander && (
+                  <label className="field-label" style={{ position: 'relative', marginTop: '0.5rem' }}>
+                    Partner Commander
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                      <CommanderAutocomplete
+                        value={field.partnerCommander}
+                        onChange={val => handlePartnerCommanderChange(idx, val)}
+                        playerId={field.playerId}
+                        games={gamesData}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handlePartnerCommanderChange(idx, '')}
+                        style={{
+                          padding: '0.5rem 0.75rem',
+                          marginTop: '2rem',
+                          background: 'var(--surface)',
+                          border: '1.5px solid var(--border)',
+                          borderRadius: '0.5rem',
+                          cursor: 'pointer',
+                          color: 'var(--text)',
+                          fontSize: '0.9rem'
+                        }}
+                        title="Remove partner commander"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </label>
+                )}
+                {!field.partnerCommander && (
+                  <button
+                    type="button"
+                    onClick={() => handlePartnerCommanderChange(idx, ' ')}
+                    style={{
+                      marginTop: '0.5rem',
+                      padding: '0.5rem 0.75rem',
+                      background: 'transparent',
+                      border: '1.5px dashed var(--border)',
+                      borderRadius: '0.5rem',
+                      cursor: 'pointer',
+                      color: 'var(--text-secondary)',
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--accent)';
+                      (e.currentTarget as HTMLButtonElement).style.color = 'var(--accent)';
+                    }}
+                    onMouseOut={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)';
+                      (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)';
+                    }}
+                  >
+                    + Add Partner Commander
+                  </button>
+                )}
               </div>
             </div>
           ))}

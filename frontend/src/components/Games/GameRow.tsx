@@ -5,7 +5,7 @@ import "./GameRow.css";
 interface Player {
   name: string;
   placement: number;
-  commander: string;
+  commander: string | string[];
 }
 
 interface GameRowProps {
@@ -87,24 +87,30 @@ const GameRow: React.FC<GameRowProps> = ({
 
       <div className="game-row-players">
         {players.map((p, idx) => {
-          const artUrl = useCommanderArt(p.commander);
+          const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
           const isWinner = winner && p.name === winner.name;
-          const key = p.commander + idx;
-          const commanderImage = artUrl ? (
-            <img
-              key={key}
-              src={artUrl}
-              alt={p.commander}
-              className={`game-row-commander-img${
-                isWinner ? " game-row-commander-winner" : ""
-              }`}
-              title={p.commander}
-            />
-          ) : (
-            <div key={key} className="game-row-commander-img-placeholder">
-              ?
-            </div>
-          );
+          const key = JSON.stringify(p.commander) + idx;
+          
+          // Display commander images/placeholders
+          const commanderImages = commanders.map((cmd, cmdIdx) => {
+            const artUrl = useCommanderArt(cmd);
+            return artUrl ? (
+              <img
+                key={cmd + cmdIdx}
+                src={artUrl}
+                alt={cmd}
+                className={`game-row-commander-img${
+                  isWinner ? " game-row-commander-winner" : ""
+                }`}
+                title={cmd}
+              />
+            ) : (
+              <div key={cmd + cmdIdx} className="game-row-commander-img-placeholder">
+                ?
+              </div>
+            );
+          });
+          
           const playerDetails = (
             <div className="game-row-player-details">
               <div
@@ -117,9 +123,10 @@ const GameRow: React.FC<GameRowProps> = ({
               </div>
             </div>
           );
+          
           return (
             <div key={p.name + "-container-" + idx} className="game-row-player">
-              {commanderImage}
+              {commanderImages}
               {playerDetails}
             </div>
           );
