@@ -288,18 +288,44 @@ select.field-input:focus, select.placement-select:focus {
   cursor: pointer;
   transition: background 0.18s, transform 0.18s;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .submit-btn:hover {
+  .submit-btn:hover:not(:disabled) {
     background: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
   }
 }
 
-.submit-btn:active {
+.submit-btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .cancel-btn {
@@ -315,10 +341,15 @@ select.field-input:focus, select.placement-select:focus {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .cancel-btn:hover {
+  .cancel-btn:hover:not(:disabled) {
     background: var(--surface);
     border-color: var(--foreground);
   }
+}
+
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ===================== */

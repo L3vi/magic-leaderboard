@@ -128,13 +128,6 @@
   min-width: 0;
 }
 
-.player-name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-}
-
 .player-commander {
   font-size: 0.875rem;
   color: var(--text-muted);

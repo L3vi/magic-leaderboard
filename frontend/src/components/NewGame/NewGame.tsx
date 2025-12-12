@@ -313,7 +313,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 };
 
 type NewGameProps = {
-  onSubmit: (gameData: any) => void;
+  onSubmit: (gameData: any) => void | Promise<void>;
   onCancel?: () => void;
   initialData?: {
     dateCreated: string;
@@ -337,6 +337,7 @@ interface PlayerField {
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) => {
   const players = usePlayers();
   const { games: gamesData } = useGames();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
@@ -468,7 +469,10 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       dateCreated: initialData ? initialData.dateCreated : new Date().toISOString()
     };
     
-    onSubmit(gameData);
+    setIsSubmitting(true);
+    Promise.resolve(onSubmit(gameData)).finally(() => {
+      setIsSubmitting(false);
+    });
   };
 
   const getPlayerName = (playerId: string) => {
@@ -581,9 +585,18 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       </div>
 
       <div className="form-actions">
-        <button type="submit" className="submit-btn">{initialData ? 'Save Changes' : 'Create Game'}</button>
+        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <span className="spinner"></span>
+              {initialData ? 'Saving...' : 'Creating...'}
+            </>
+          ) : (
+            initialData ? 'Save Changes' : 'Create Game'
+          )}
+        </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="cancel-btn">
+          <button type="button" onClick={onCancel} className="cancel-btn" disabled={isSubmitting}>
             Cancel
           </button>
         )}

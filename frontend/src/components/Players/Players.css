@@ -58,13 +58,6 @@
   box-sizing: border-box;
 }
 
-.player-name.leaderboard-col {
-  text-align: left;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .sort-arrow {
   width: 0.75em;
