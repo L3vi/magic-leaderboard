@@ -23,9 +23,11 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.autocomplete-dropdown li:hover {
-  background: var(--primary-dark);
-  color: #fff;
+@media (hover: hover) and (pointer: fine) {
+  .autocomplete-dropdown li:hover {
+    background: var(--primary-dark);
+    color: #fff;
+  }
 }
 
 /* Static Dropdown Trigger Button */
@@ -44,8 +46,10 @@
   position: relative;
 }
 
-.dropdown-trigger:hover {
-  border-color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+  .dropdown-trigger:hover {
+    border-color: var(--primary);
+  }
 }
 
 .dropdown-trigger:focus {

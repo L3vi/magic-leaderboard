@@ -12,15 +12,17 @@
     font-size: 1.1rem;
     color: var(--foreground);
     cursor: pointer;
-    transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+    transition: background 0.18s, box-shadow 0.18s;
     margin: 5px;
 }
 
-.player-row:active {
+@media (hover: hover) and (pointer: fine) {
+  .player-row:active {
     background: var(--primary-dark);
     color: #fff;
     box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
     transform: scale(0.98);
+  }
 }
 
 /* Top 3 medal backgrounds - subtle */

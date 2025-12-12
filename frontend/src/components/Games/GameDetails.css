@@ -22,9 +22,11 @@
   transition: all 0.2s ease;
 }
 
-.game-summary:hover {
-  background: var(--background-elevated);
-  border-color: var(--border-primary);
+@media (hover: hover) and (pointer: fine) {
+  .game-summary:hover {
+    background: var(--background-elevated);
+    border-color: var(--border-primary);
+  }
 }
 
 .game-date {
@@ -77,9 +79,11 @@
   transition: all 0.2s ease;
 }
 
-.player-card:hover {
-  background: var(--background-elevated);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+@media (hover: hover) and (pointer: fine) {
+  .player-card:hover {
+    background: var(--background-elevated);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+  }
 }
 
 .player-card.placement-1 {
@@ -161,9 +165,11 @@
   transition: all 0.2s ease;
 }
 
-.notes-card:hover {
-  border-color: var(--border-primary);
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .notes-card:hover {
+    border-color: var(--border-primary);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.1);
+  }
 }
 
 .notes-card p {

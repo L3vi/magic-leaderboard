@@ -29,10 +29,12 @@
   transition: all 0.2s ease;
 }
 
-.stat-card:hover {
-  border-color: var(--primary);
-  background: var(--background-elevated);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover {
+    border-color: var(--primary);
+    background: var(--background-elevated);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
+  }
 }
 
 .stat-card-primary {
@@ -87,9 +89,11 @@
   transition: all 0.2s ease;
 }
 
-.secondary-stat:hover {
-  background: var(--background-elevated);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .secondary-stat:hover {
+    background: var(--background-elevated);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+  }
 }
 
 .secondary-stat-label {
@@ -187,8 +191,10 @@
   transition: all 0.2s ease;
 }
 
-.game-item:hover {
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .game-item:hover {
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+  }
 }
 
 .game-item.placement-1 {

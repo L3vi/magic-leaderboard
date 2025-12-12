@@ -10,7 +10,7 @@
   font-size: 1.1rem;
   color: var(--foreground);
   cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+  transition: background 0.18s, box-shadow 0.18s;
   min-height: 120px;
   gap: 0.75rem;
   flex-direction: column;
@@ -23,13 +23,13 @@
     background: var(--primary-light);
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
   }
-}
 
-.game-row:active {
-  background: var(--primary-dark);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
-  transform: scale(0.98);
+  .game-row:active {
+    background: var(--primary-dark);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
+    transform: scale(0.98);
+  }
 }
 
 .game-row-date {

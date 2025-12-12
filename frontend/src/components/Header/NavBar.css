@@ -111,13 +111,20 @@
   transition: all 0.18s;
 }
 
-.nav-fab:active,
 .nav-fab:focus {
   background: rgba(124, 58, 237, 0.9);
   border-color: rgba(124, 58, 237, 0.6);
-  transform: translateX(-50%) translateY(-30%) scale(1.08);
   box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4),
     0 0 0 1px rgba(139, 92, 246, 0.3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-fab:active {
+    background: rgba(124, 58, 237, 0.9);
+    border-color: rgba(124, 58, 237, 0.6);
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4),
+      0 0 0 1px rgba(139, 92, 246, 0.3);
+  }
 }
 
 /* Desktop floating action button */
