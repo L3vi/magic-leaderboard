@@ -277,18 +277,17 @@ select.field-input:focus, select.placement-select:focus {
 /* Form Actions */
 .form-actions {
   display: flex;
-  justify-content: space-between;
   gap: 1rem;
   margin-top: 2rem;
   position: sticky;
-  bottom: 0;
+  bottom: 2rem;
   z-index: 1000;
   flex-direction: row-reverse;
-  padding: 1rem;
-  pointer-events: none;
-  width: 100%;
-  padding-left: 1rem;
+  pointer-events: auto;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   padding-right: 2rem;
+  padding-left: 0;
   box-sizing: border-box;
 }
 
@@ -433,18 +432,6 @@ select.field-input:focus, select.placement-select:focus {
 
   .player-entry-header {
     margin-bottom: 1.125rem;
-  }
-
-  .form-actions {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    left: auto;
-    width: auto;
-    padding: 0;
-    justify-content: flex-end;
-    gap: 1rem;
-    flex-direction: row-reverse;
   }
 
   .submit-btn {
