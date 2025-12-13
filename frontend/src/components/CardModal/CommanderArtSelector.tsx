@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CardVariant } from "../../hooks/useCommanderArt";
+import FormActions from "../FormActions/FormActions";
 import "./CommanderArtSelector.css";
 
 interface CommanderArtSelectorProps {
@@ -67,26 +68,6 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
         <div className="art-selector-label">
           Available Art Variants ({variants.length})
         </div>
-        <div className="art-selector-actions">
-          <button
-            type="button"
-            className="art-selector-btn art-selector-btn-cancel"
-            onClick={onCancel}
-            disabled={isSaving}
-            title="Close without saving"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="art-selector-btn art-selector-btn-save"
-            onClick={handleSave}
-            disabled={!selectedVariant || selectedVariant.id === currentVariantId || isSaving}
-            title={selectedVariant?.id === currentVariantId ? "Already saved" : "Save this art as default"}
-          >
-            {isSaving ? "Saving..." : "Save"}
-          </button>
-        </div>
       </div>
       <div className="art-selector-scroll" onScroll={handleScroll}>
         <div className="art-selector-grid">
@@ -128,6 +109,16 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
       {scrollPosition > 0 && (
         <div className="art-selector-hint">← Scroll for more →</div>
       )}
+      <FormActions
+        submitLabel="Save"
+        cancelLabel="Cancel"
+        onSubmit={handleSave}
+        onCancel={onCancel}
+        isSubmitting={isSaving}
+        isDisabled={!selectedVariant || selectedVariant.id === currentVariantId}
+        submitType="button"
+        variant="fixed"
+      />
     </div>
   );
 };

@@ -35,16 +35,6 @@
   letter-spacing: 0.5px;
 }
 
-.art-selector-actions {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  display: flex;
-  gap: 1rem;
-  z-index: 10001;
-  pointer-events: auto;
-}
-
 .art-selector-scroll {
   overflow-x: auto;
   overflow-y: hidden;
@@ -213,73 +203,6 @@
   margin-top: 0.5rem;
 }
 
-.art-selector-btn {
-  border-radius: var(--radius-full);
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.18s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  padding: 0.75rem 1.5rem;
-  flex-shrink: 0;
-  gap: 0.5rem;
-  white-space: nowrap;
-}
-
-.art-selector-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.art-selector-btn-cancel {
-  background: rgba(100, 100, 100, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(100, 100, 100, 0.2);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .art-selector-btn-cancel:not(:disabled):hover {
-    background: rgba(80, 80, 80, 0.8);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(100, 100, 100, 0.3);
-    transform: translateY(-2px);
-  }
-}
-
-.art-selector-btn-cancel:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.art-selector-btn-save {
-  background: rgba(139, 92, 246, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: white;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3), 0 0 0 1px rgba(139, 92, 246, 0.2);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .art-selector-btn-save:not(:disabled):hover {
-    background: rgba(124, 58, 237, 0.9);
-    border-color: rgba(124, 58, 237, 0.6);
-    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.3);
-    transform: translateY(-2px);
-  }
-}
-
-.art-selector-btn-save:active:not(:disabled) {
-  transform: translateY(0);
-}
-
 @media (max-width: 640px) {
   .art-variant-card {
     flex: 0 0 80px;
@@ -289,18 +212,5 @@
   .art-selector-container {
     margin-top: 1rem;
     padding: 0 0.75rem 5.5rem 0.75rem;
-  }
-
-  .art-selector-actions {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    gap: 0.5rem;
-  }
-
-  .art-selector-btn {
-    flex: 1;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
   }
 }

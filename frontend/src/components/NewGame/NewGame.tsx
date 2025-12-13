@@ -9,6 +9,7 @@ import {
   flip,
   size
 } from '@floating-ui/react';
+import FormActions from '../FormActions/FormActions';
 import { usePlayers } from "./usePlayers";
 import { useGames } from "../../hooks/useApi";
 import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
@@ -709,23 +710,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         </label>
       </div>
 
-      <div className="form-actions">
-        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <span className="spinner"></span>
-              {initialData ? 'Saving...' : 'Creating...'}
-            </>
-          ) : (
-            initialData ? 'Save Changes' : 'Create Game'
-          )}
-        </button>
-        {onCancel && (
-          <button type="button" onClick={onCancel} className="btn btn-secondary" disabled={isSubmitting}>
-            Cancel
-          </button>
-        )}
-      </div>
+      <FormActions
+        submitLabel={initialData ? 'Save Changes' : 'Create Game'}
+        loadingText={initialData ? 'Saving...' : 'Creating...'}
+        onCancel={onCancel}
+        isSubmitting={isSubmitting}
+      />
     </form>
     
     <CardModal
