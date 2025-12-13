@@ -1,6 +1,7 @@
 import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
+import { compareArrays, DeltaResult } from "../utils/deltaCompare";
 import { db } from "../firebase";
 import {
   collection,
@@ -320,4 +321,72 @@ export async function deleteGame(
     console.error("Error deleting game:", error);
     throw error;
   }
+}
+
+/**
+ * Asynchronously refresh games with delta detection
+ * Only updates data if there are actual changes
+ * Returns delta information about what changed
+ */
+export async function refreshGamesWithDelta(
+  currentGames: Game[],
+  session: string = "2025-December"
+): Promise<{
+  hasChanges: boolean;
+  newGames: Game[];
+  delta: DeltaResult<Game>;
+}> {
+  const freshGames = await refetchGames(session);
+  const delta = compareArrays(currentGames, freshGames);
+
+  return {
+    hasChanges: delta.hasChanges,
+    newGames: freshGames,
+    delta,
+  };
+}
+
+/**
+ * Asynchronously refresh players with delta detection
+ * Only updates data if there are actual changes
+ * Returns delta information about what changed
+ */
+export async function refreshPlayersWithDelta(
+  currentPlayers: Player[]
+): Promise<{
+  hasChanges: boolean;
+  newPlayers: Player[];
+  delta: DeltaResult<Player>;
+}> {
+  const freshPlayers = await refetchPlayers();
+  const delta = compareArrays(currentPlayers, freshPlayers);
+
+  return {
+    hasChanges: delta.hasChanges,
+    newPlayers: freshPlayers,
+    delta,
+  };
+}
+
+/**
+ * Asynchronously refresh session players with delta detection
+ * Filters players by session and detects changes
+ */
+export async function refreshSessionPlayersWithDelta(
+  currentPlayers: Player[],
+  session: string = "2025-December"
+): Promise<{
+  hasChanges: boolean;
+  newPlayers: Player[];
+  delta: DeltaResult<Player>;
+}> {
+  const allFreshPlayers = await refetchPlayers();
+  const freshSessionPlayers = await fetchPlayersForSession(allFreshPlayers, session);
+  const delta = compareArrays(currentPlayers, freshSessionPlayers);
+
+  return {
+    hasChanges: delta.hasChanges,
+    newPlayers: freshSessionPlayers,
+    delta,
+  };
 }

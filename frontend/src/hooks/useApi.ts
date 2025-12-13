@@ -127,3 +127,63 @@ export const useUpdateGame = () => {
 
   return { updateGame, loading, error };
 };
+
+/**
+ * Hook to add a new game with smart async refresh
+ * Uses smartRefreshGames() for non-blocking background updates
+ * Only re-renders if data actually changed
+ */
+export const useAddGameSmart = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { activeSession, smartRefreshGames } = useSession();
+
+  const addGame = async (gameData: any) => {
+    try {
+      setLoading(true);
+      const result = await addGameToAPI(gameData, activeSession);
+      // Use smart refresh - only updates if data changed, no loading state
+      await smartRefreshGames();
+      setError(null);
+      return result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to add game';
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { addGame, loading, error };
+};
+
+/**
+ * Hook to update an existing game with smart async refresh
+ * Uses smartRefreshGames() for non-blocking background updates
+ * Only re-renders if data actually changed
+ */
+export const useUpdateGameSmart = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { activeSession, smartRefreshGames } = useSession();
+
+  const updateGame = async (gameId: string, gameData: any) => {
+    try {
+      setLoading(true);
+      const result = await updateGameToAPI(gameId, gameData, activeSession);
+      // Use smart refresh - only updates if data changed, no loading state
+      await smartRefreshGames();
+      setError(null);
+      return result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update game';
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateGame, loading, error };
+};
