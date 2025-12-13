@@ -8,7 +8,8 @@
     "download-from-firebase": "ts-node src/backup.ts",
     "upload-to-firebase": "ts-node src/restore.ts",
     "backup": "ts-node src/backup.ts",
-    "restore": "ts-node src/restore.ts"
+    "restore": "ts-node src/restore.ts",
+    "backup-firebase": "ts-node src/scripts/backup-master.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Player } from "./PlayerRow";
-import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference, useCommanderFullImageWithPreference } from "../../hooks/useCommanderArt";
 import { useCommanderColors } from "../../hooks/useCommanderColors";
 import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
-  player: Player;
+  player: Player & { id?: string };
   games: Array<{
     id: string;
     dateCreated: string;
@@ -16,10 +16,12 @@ interface PlayerDetailsProps {
   }>;
   players: Array<{ id: string; name: string }>;
   onGameClick?: (gameId: string) => void;
+  playerId?: string;
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick, playerId: propPlayerId }) => {
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
+  const playerId = propPlayerId || player.id; // Use prop if provided, otherwise use player.id
   const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
   const gamesForPlayer = games.filter(g => g.players.some(p => getPlayerName(p.playerId) === player.name));
   const totalGames = gamesForPlayer.length;
@@ -122,7 +124,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
 
         {/* Most Played Commander */}
         {mostPlayedCommander && (
-          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} />
+          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} playerId={playerId} />
         )}
 
         {/* Commander Color Distribution */}
@@ -156,10 +158,10 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   );
 };
 
-function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
+function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string }) {
   const commanderArray = Array.isArray(commander) ? commander : [commander];
-  const artUrls = commanderArray.map(c => useCommanderArt(c));
-  const fullImageUrls = commanderArray.map(c => useCommanderFullImage(c));
+  const artUrls = commanderArray.map(c => useCommanderArtWithPreference(c, playerId));
+  const fullImageUrls = commanderArray.map(c => useCommanderFullImageWithPreference(c, playerId));
   const commanderName = commanderArray.join(" + ");
 
   return (
@@ -173,7 +175,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander:
             onCardClick={onCardClick}
             size="large"
             isWinner={false}
-            playerId={player.id}
+            playerId={playerId}
           />
         ) : (
           // Single commander display

@@ -4,6 +4,7 @@
   "private": true,
   "description": "Magic: The Gathering Commander game tracker",
   "scripts": {
+    "backup-firebase": "node backup-firebase.js",
     "sync-data": "node sync-data.js",
     "sync-data:may": "node sync-data.js --session=2025-May",
     "sync-data:december": "node sync-data.js --session=2025-December",
@@ -13,7 +14,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build:frontend": "npm run build --prefix frontend",
     "build": "npm run build:frontend",
-    "deploy": "npm run sync-data && npm run build"
+    "deploy": "npm run backup-firebase && npm run sync-data && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

@@ -1,37 +1,23 @@
 import 'dotenv/config';
-import { db } from './firebase';
+import { db } from '../firebase';
 import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * DOWNLOAD DATA FROM FIREBASE
+ * BACKUP FIREBASE TO MASTER LEADERBOARD
  * 
- * Direction: Firebase → local snapshot
+ * Direction: Firebase → archived-data/master-leaderboard.json
  * 
  * What it does:
  * - Fetches ALL data from Firebase Firestore
- * - Saves to archived-data/firebase-snapshot.json (temporary snapshot)
- * - Saves fallback copies to backend/data/ for API offline mode
- * 
- * Note: For persistent master backup, use: npm run backup-firebase
+ * - Saves to archived-data/master-leaderboard.json (master backup)
+ * - Creates timestamped backup copy for version history
  * 
  * Usage:
- * npm run download-from-firebase
+ * npm run backup-firebase
  * 
- * Output files created:
- * 1. archived-data/firebase-snapshot.json
- *    → Current snapshot of everything in Firebase (temporary)
- *    → Use to verify Firebase state or test recovery
- * 
- * 2. backend/data/players.json
- *    → Player list (used if Firebase is down)
- * 
- * 3. backend/data/games.json
- *    → Games from latest session (used if Firebase is down)
- * 
- * When to use:
- * - After verifying what's stored in Firebase
- * - To create fallback files for offline API access
+ * This ensures we always have a safe, current backup of all Firebase data
+ * that can be restored or synced if needed.
  */
 
 interface Player {
@@ -68,9 +54,9 @@ interface BackupData {
   };
 }
 
-async function backup() {
+async function backupToMaster() {
   try {
-    console.log('💾 Creating Firebase snapshot...\n');
+    console.log('💾 Backing up Firebase to master-leaderboard.json...\n');
 
     // Fetch all players
     console.log('👥 Fetching players...');
@@ -79,7 +65,7 @@ async function backup() {
       id: doc.id,
       ...doc.data()
     } as Player));
-    console.log(`   ✓ Downloaded ${players.length} players\n`);
+    console.log(`   ✓ Downloaded ${players.length} players`);
 
     // Fetch all sessions with their games
     console.log('📚 Fetching sessions...');
@@ -118,41 +104,26 @@ async function backup() {
       sessions
     };
 
-    // Save to archived-data/firebase-snapshot.json
-    const backupDir = path.join(__dirname, '../../archived-data');
-    const backupPath = path.join(backupDir, 'firebase-snapshot.json');
-    
-    if (!fs.existsSync(backupDir)) {
-      fs.mkdirSync(backupDir, { recursive: true });
+    // Ensure archived-data directory exists at project root
+    const projectRoot = path.join(__dirname, '../../..');
+    const archivedDir = path.join(projectRoot, 'archived-data');
+    if (!fs.existsSync(archivedDir)) {
+      fs.mkdirSync(archivedDir, { recursive: true });
     }
 
-    fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
-    console.log(`✓ Snapshot saved: archived-data/firebase-snapshot.json\n`);
+    // Save to master-leaderboard.json at root level
+    const masterPath = path.join(archivedDir, 'master-leaderboard.json');
+    fs.writeFileSync(masterPath, JSON.stringify(backupData, null, 2));
+    console.log(`✓ Master backup saved: archived-data/master-leaderboard.json`);
 
-    // Save fallback files for API offline mode
-    const dataDir = path.join(__dirname, '../data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-
-    // Save players.json
-    fs.writeFileSync(
-      path.join(dataDir, 'players.json'),
-      JSON.stringify(players, null, 2)
-    );
-    console.log(`✓ Fallback saved: backend/data/players.json`);
-
-    // Save games.json (latest session)
-    const latestSessionId = Object.keys(sessions).sort().reverse()[0];
-    const latestGames = sessions[latestSessionId]?.games || [];
-    fs.writeFileSync(
-      path.join(dataDir, 'games.json'),
-      JSON.stringify(latestGames, null, 2)
-    );
-    console.log(`✓ Fallback saved: backend/data/games.json (from ${latestSessionId})\n`);
+    // Create timestamped backup for version history
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('Z')[0];
+    const timestampedPath = path.join(archivedDir, `master-leaderboard-${timestamp}.json`);
+    fs.writeFileSync(timestampedPath, JSON.stringify(backupData, null, 2));
+    console.log(`✓ Timestamped backup: archived-data/master-leaderboard-${timestamp}.json\n`);
 
     // Summary
-    console.log('✅ Snapshot complete!\n');
+    console.log('✅ Backup complete!\n');
     console.log('📊 Summary:');
     console.log(`   Players: ${players.length}`);
     console.log(`   Sessions: ${Object.keys(sessions).length}`);
@@ -163,9 +134,9 @@ async function backup() {
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Snapshot failed:', error);
+    console.error('❌ Backup failed:', error);
     process.exit(1);
   }
 }
 
-backup();
+backupToMaster();

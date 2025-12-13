@@ -30,13 +30,19 @@ const CardModal: React.FC<CardModalProps> = ({
 }) => {
   const [displayedImageUrl, setDisplayedImageUrl] = useState(imageUrl);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentPreference, setCurrentPreference] = useState<any>(undefined);
   const variants = useCommanderVariants(cardName);
   const { triggerRefresh } = useArtPreferenceRefresh();
 
-  // Get current saved preference for this player's commander
-  const currentPreference = playerId
-    ? getCommanderArtPreference(playerId, cardName)
-    : undefined;
+  // Load current saved preference for this player's commander
+  React.useEffect(() => {
+    if (playerId && cardName) {
+      getCommanderArtPreference(playerId, cardName).then(preference => {
+        setCurrentPreference(preference);
+      });
+    }
+  }, [playerId, cardName]);
+
   const currentPreferenceId = currentPreference?.variantId;
 
   const swipeHandlers = useSwipeable({
@@ -63,8 +69,12 @@ const CardModal: React.FC<CardModalProps> = ({
 
     try {
       setIsSaving(true);
-      // Save to localStorage
-      saveCommanderArtPreference(playerId, cardName, variant);
+      console.log(`🎨 Saving art variant for ${cardName}...`);
+      
+      // Save to Firebase
+      await saveCommanderArtPreference(playerId, cardName, variant);
+
+      console.log(`✅ Art preference saved successfully`);
 
       // Clear cache to force re-fetch with new preference
       clearCommanderCache(cardName);
@@ -81,7 +91,7 @@ const CardModal: React.FC<CardModalProps> = ({
         onClose();
       }, 300);
     } catch (error) {
-      console.error("Failed to save art preference:", error);
+      console.error("❌ Failed to save art preference:", error);
       setIsSaving(false);
     }
   };

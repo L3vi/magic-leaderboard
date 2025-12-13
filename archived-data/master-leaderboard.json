@@ -1,5 +1,5 @@
 {
-  "backupDate": "2025-12-11T09:27:59.467Z",
+  "backupDate": "2025-12-13T07:47:12.127Z",
   "players": [
     {
       "id": "player-anson",
@@ -8,6 +8,10 @@
     {
       "id": "player-caleb",
       "name": "Caleb"
+    },
+    {
+      "id": "player-cameron",
+      "name": "Cameron"
     },
     {
       "id": "player-danny",
@@ -32,13 +36,489 @@
     {
       "id": "player-shane",
       "name": "Shane"
-    },
-    {
-      "id": "player-cameron",
-      "name": "Cameron"
     }
   ],
   "sessions": {
+    "2025-December": {
+      "name": "December 2025",
+      "createdAt": "2025-12-10T00:00:00.000Z",
+      "description": "Current season - fresh slate for this weekend",
+      "players": [
+        "player-anson",
+        "player-caleb",
+        "player-danny",
+        "player-jordan",
+        "player-levi",
+        "player-nate",
+        "player-parker",
+        "player-cameron"
+      ],
+      "games": [
+        {
+          "id": "1GyaGNb5A7qM86mnwexC",
+          "players": [
+            {
+              "playerId": "player-nate",
+              "commander": "Starscream, Power Hungry // Starscream, Seeker Leader",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Nekusar, the Mindrazer",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Ian Malcolm, Chaotician",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-12T22:05:28.652Z"
+        },
+        {
+          "id": "2JN2loOYOm1cg4jRtB5H",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "commander": "Giada, Font of Hope",
+              "placement": 1
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Isshin, Two Heavens as One",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Inniaz, the Gale Force",
+              "placement": 3
+            }
+          ],
+          "notes": "Lots of flying and then not flying and then flying.",
+          "dateCreated": "2025-12-13T06:48:46.494Z"
+        },
+        {
+          "id": "3zShAIudYZzkgsefONHh",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Vivi Ornitier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Shadow the Hedgehog",
+              "placement": 2
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Nekusar, the Mindrazer",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-13T03:09:31.077Z"
+        },
+        {
+          "id": "5n3EFEJKsHZpDjPV5cUh",
+          "dateCreated": "2025-12-13T05:55:24.533Z",
+          "notes": "Epic comeback. Also, Anson was here.",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Captain America, First Avenger",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Tidus, Yuna's Guardian",
+              "placement": 2
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Azula",
+              "placement": 3
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Vorinclex, Monstrous Raider",
+              "placement": 4
+            }
+          ]
+        },
+        {
+          "id": "6upFRdhmL0lypzwHGxLd",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Jodah, the Unifier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Vivi Ornitier",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Bello, Bard of the Brambles",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Urza, Lord High Artificer",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-13T04:21:51.264Z"
+        },
+        {
+          "id": "8ZHZrprkK4nJD571gULf",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": [
+                "Atreus, Impulsive Son",
+                "Kratos, Stoic Father"
+              ],
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Lathiel, the Bounteous Dawn",
+              "placement": 2
+            },
+            {
+              "playerId": "player-cameron",
+              "commander": "Ezio Auditore da Firenze",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Starscream, Power Hungry // Starscream, Seeker Leader",
+              "placement": 2
+            }
+          ],
+          "notes": "Experience counters? More like.. we all lost the game",
+          "dateCreated": "2025-12-13T01:20:48.967Z"
+        },
+        {
+          "id": "E6UYZCCSimAB9jfK5wip",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "The Pride of Hull Clade",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Rin and Seri, Inseparable",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-13T00:02:20.466Z"
+        },
+        {
+          "id": "Ec0eARZTzUYEbjERQjMQ",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "commander": [
+                "Gilanra, Caller of Wirewood",
+                "Kodama of the East Tree"
+              ],
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Shadow the Hedgehog",
+              "placement": 2
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Tannuk, Memorial Ensign",
+              "placement": 3
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Rin and Seri, Inseparable",
+              "placement": 3
+            }
+          ],
+          "dateCreated": "2025-12-12T23:00:30.937Z",
+          "notes": "Green stomp."
+        },
+        {
+          "id": "GY3ccimIMNePXlpX7us8",
+          "dateCreated": "2025-12-12T20:13:38.920Z",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Isshin, Two Heavens as One",
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Arabella, Abandoned Doll",
+              "placement": 2
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Nekusar, the Mindrazer",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Lo and Li, Royal Advisors",
+              "placement": 3
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 3
+            }
+          ],
+          "notes": "Nekusar ping + mindcrank from mill deck = the largest graveyards.\n\nAlso Parker sacrificed a evolving wilds and forgot to look for a land. We call that a pro gamer move."
+        },
+        {
+          "id": "fxkXMrNFEMpGGbbXRouM",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "commander": "Betor, Kin to All",
+              "placement": 1
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Anti-Venom, Horrifying Healer",
+              "placement": 2
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Giada, Font of Hope",
+              "placement": 3
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Fire Lord Azula",
+              "placement": 4
+            }
+          ],
+          "notes": "Anson broke his treaty MULTIPLE times and has proven he can't be trusted",
+          "dateCreated": "2025-12-13T00:29:36.570Z"
+        },
+        {
+          "id": "geX7tRuH1DXmaLIzj2cJ",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Toph, the First Metalbender",
+              "placement": 1
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 2
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": [
+                "Haldan, Avid Arcanist",
+                "Pako, Arcane Retriever"
+              ],
+              "placement": 3
+            }
+          ],
+          "notes": "Jordan's deck was absolute 🗑️",
+          "dateCreated": "2025-12-12T22:31:43.612Z"
+        },
+        {
+          "id": "hAZOLKL8QRTubXdtP1kG",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": [
+                "Rograkh, Son of Rohgahh",
+                "Ardenn, Intrepid Archaeologist"
+              ],
+              "placement": 1
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Norman Osborn // Green Goblin",
+              "placement": 3
+            }
+          ],
+          "notes": "Jordan's deck was 🔥",
+          "dateCreated": "2025-12-12T23:05:05.466Z"
+        },
+        {
+          "id": "lqQll7if8p6maAlLpEhM",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "commander": "Miirym, Sentinel Wyrm",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Fire Lord Azula",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Sefris of the Hidden Ways",
+              "placement": 3
+            }
+          ],
+          "notes": "Dragon tribal works",
+          "dateCreated": "2025-12-13T03:55:43.507Z"
+        },
+        {
+          "id": "olaSiUqs0zgDSGhhSs6i",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "commander": "Atla Palani, Nest Tender",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Tidus, Yuna's Guardian",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Choco, Seeker of Paradise",
+              "placement": 3
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Isshin, Two Heavens as One",
+              "placement": 4
+            }
+          ],
+          "notes": "\"Danny pulled it off for me\" - Anson",
+          "dateCreated": "2025-12-13T01:33:35.540Z"
+        },
+        {
+          "id": "unOpdqBdiuliR4xsFVRf",
+          "notes": "",
+          "dateCreated": "2025-12-12T18:31:04.870Z",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Chishiro, the Shattered Blade",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Electro, Assaulting Battery",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Old Stickfingers",
+              "placement": 3
+            }
+          ]
+        },
+        {
+          "id": "wC9P5tvQgyzUxU8l5sYN",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "commander": "Sythis, Harvest's Hand",
+              "placement": 1
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Vivi Ornitier",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Bello, Bard of the Brambles",
+              "placement": 2
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Jodah, the Unifier",
+              "placement": 2
+            }
+          ],
+          "notes": "Levi: \"How much floating mana do I have left?\"\nParker: \"I think 15\"\nJordan: \"Who do you want to get 2nd?\"",
+          "dateCreated": "2025-12-13T03:04:21.712Z"
+        },
+        {
+          "id": "y0dJpkZLXeWiHUgY8qbL",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Giada, Font of Hope",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Miirym, Sentinel Wyrm",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Gimli, Counter of Kills",
+              "placement": 3
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Elesh Norn, Grand Cenobite",
+              "placement": 4
+            }
+          ],
+          "notes": "Jordan almost reverse-killed Levi when he thought Levi could kill Anson and then re-un-reverse killed him.",
+          "dateCreated": "2025-12-13T05:59:11.853Z"
+        },
+        {
+          "id": "zvybB5h9aXQCjAtqsFMF",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Go-Shintai of Life's Origin",
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Ognis, the Dragon's Lash",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Atraxa, Grand Unifier",
+              "placement": 3
+            }
+          ],
+          "notes": "Just a stat boost game",
+          "dateCreated": "2025-12-13T05:05:07.895Z"
+        }
+      ]
+    },
     "2025-May": {
       "name": "May 2025",
       "createdAt": "2025-05-31T23:59:59.000Z",
@@ -70,7 +550,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:49.600Z"
         },
         {
           "id": "game-2025-05-002",
@@ -98,7 +578,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:49.701Z"
         },
         {
           "id": "game-2025-05-003",
@@ -126,7 +606,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:49.784Z"
         },
         {
           "id": "game-2025-05-004",
@@ -154,7 +634,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:49.878Z"
         },
         {
           "id": "game-2025-05-005",
@@ -182,7 +662,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.033Z"
         },
         {
           "id": "game-2025-05-006",
@@ -210,7 +690,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.122Z"
         },
         {
           "id": "game-2025-05-007",
@@ -238,7 +718,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.210Z"
         },
         {
           "id": "game-2025-05-008",
@@ -266,7 +746,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.314Z"
         },
         {
           "id": "game-2025-05-009",
@@ -294,7 +774,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.396Z"
         },
         {
           "id": "game-2025-05-010",
@@ -322,7 +802,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.561Z"
         },
         {
           "id": "game-2025-05-011",
@@ -350,7 +830,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.642Z"
         },
         {
           "id": "game-2025-05-012",
@@ -378,7 +858,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.750Z"
         },
         {
           "id": "game-2025-05-013",
@@ -406,7 +886,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.835Z"
         },
         {
           "id": "game-2025-05-014",
@@ -434,7 +914,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:50.933Z"
         },
         {
           "id": "game-2025-05-015",
@@ -462,7 +942,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.083Z"
         },
         {
           "id": "game-2025-05-016",
@@ -490,7 +970,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.175Z"
         },
         {
           "id": "game-2025-05-017",
@@ -518,7 +998,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.261Z"
         },
         {
           "id": "game-2025-05-018",
@@ -546,7 +1026,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.355Z"
         },
         {
           "id": "game-2025-05-019",
@@ -574,7 +1054,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.436Z"
         },
         {
           "id": "game-2025-05-020",
@@ -602,7 +1082,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.466Z"
+          "createdAt": "2025-12-12T16:36:51.610Z"
         },
         {
           "id": "game-2025-05-021",
@@ -630,7 +1110,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:51.685Z"
         },
         {
           "id": "game-2025-05-022",
@@ -658,7 +1138,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:51.793Z"
         },
         {
           "id": "game-2025-05-023",
@@ -686,7 +1166,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:51.879Z"
         },
         {
           "id": "game-2025-05-024",
@@ -704,7 +1184,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:51.985Z"
         },
         {
           "id": "game-2025-05-025",
@@ -722,7 +1202,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.133Z"
         },
         {
           "id": "game-2025-05-026",
@@ -740,7 +1220,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.217Z"
         },
         {
           "id": "game-2025-05-027",
@@ -758,7 +1238,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.308Z"
         },
         {
           "id": "game-2025-05-028",
@@ -776,7 +1256,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.387Z"
         },
         {
           "id": "game-2025-05-029",
@@ -794,7 +1274,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.488Z"
         },
         {
           "id": "game-2025-05-030",
@@ -812,7 +1292,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.658Z"
         },
         {
           "id": "game-2025-05-031",
@@ -830,7 +1310,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.742Z"
         },
         {
           "id": "game-2025-05-032",
@@ -848,7 +1328,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.846Z"
         },
         {
           "id": "game-2025-05-033",
@@ -866,7 +1346,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:52.917Z"
         },
         {
           "id": "game-2025-05-034",
@@ -884,7 +1364,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:53.034Z"
         },
         {
           "id": "game-2025-05-035",
@@ -902,7 +1382,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:53.179Z"
         },
         {
           "id": "game-2025-05-036",
@@ -920,7 +1400,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:53.264Z"
         },
         {
           "id": "game-2025-05-037",
@@ -938,7 +1418,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
+          "createdAt": "2025-12-12T16:36:53.361Z"
         },
         {
           "id": "game-2025-05-038",
@@ -956,43 +1436,7 @@
               "commander": "Unknown"
             }
           ],
-          "createdAt": "2025-12-11T09:27:59.467Z"
-        }
-      ]
-    },
-    "2025-December": {
-      "name": "December 2025",
-      "createdAt": "2025-12-10T00:00:00.000Z",
-      "description": "Current season - fresh slate for this weekend",
-      "players": ["player-anson", "player-caleb", "player-danny", "player-jordan", "player-levi", "player-nate", "player-parker", "player-cameron"],
-      "games": [
-        {
-          "id": "game-2025-12-001",
-          "dateCreated": "2025-12-11T18:00:00.000Z",
-          "notes": "Season opener - mock game",
-          "players": [
-            {
-              "playerId": "player-shane",
-              "placement": 1,
-              "commander": "Elesh Norn, Mother of Machines"
-            },
-            {
-              "playerId": "player-nate",
-              "placement": 2,
-              "commander": "Atraxa, Praetors' Voice"
-            },
-            {
-              "playerId": "player-parker",
-              "placement": 3,
-              "commander": "The Gitrog Monster"
-            },
-            {
-              "playerId": "player-anson",
-              "placement": 4,
-              "commander": "Zur the Enchanter"
-            }
-          ],
-          "createdAt": "2025-12-11T18:05:00.000Z"
+          "createdAt": "2025-12-12T16:36:53.447Z"
         }
       ]
     }

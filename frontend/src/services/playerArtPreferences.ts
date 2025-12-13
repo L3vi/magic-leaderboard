@@ -1,26 +1,31 @@
 import { CardVariant } from "../hooks/useCommanderArt";
+import { db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export interface PlayerCommanderArt {
   commanderName: string;
   variantId: string;
   artUrl: string;
   fullImageUrl: string;
-  timestamp: number;
+  timestamp: number | string;
 }
 
-// Store preferences in localStorage with player ID as key
-const STORAGE_KEY_PREFIX = "player-commander-art-";
-
 /**
- * Get all saved art preferences for a player
+ * Get all saved art preferences for a player from Firebase
  */
-export function getPlayerArtPreferences(
+export async function getPlayerArtPreferences(
   playerId: string
-): Record<string, PlayerCommanderArt> {
+): Promise<Record<string, PlayerCommanderArt>> {
   try {
-    const key = STORAGE_KEY_PREFIX + playerId;
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : {};
+    const playerRef = doc(db, "players", playerId);
+    const playerDoc = await getDoc(playerRef);
+
+    if (!playerDoc.exists()) {
+      return {};
+    }
+
+    const preferences = playerDoc.data()?.commanderArt || {};
+    return preferences;
   } catch (error) {
     console.error("Failed to load player art preferences:", error);
     return {};
@@ -30,27 +35,26 @@ export function getPlayerArtPreferences(
 /**
  * Get the saved art preference for a specific commander
  */
-export function getCommanderArtPreference(
+export async function getCommanderArtPreference(
   playerId: string,
   commanderName: string
-): PlayerCommanderArt | undefined {
-  const preferences = getPlayerArtPreferences(playerId);
+): Promise<PlayerCommanderArt | undefined> {
+  const preferences = await getPlayerArtPreferences(playerId);
   return preferences[commanderName];
 }
 
 /**
- * Save art preference for a player's commander
+ * Save art preference for a player's commander to Firebase
  */
-export function saveCommanderArtPreference(
+export async function saveCommanderArtPreference(
   playerId: string,
   commanderName: string,
   variant: CardVariant
-): void {
+): Promise<void> {
   try {
-    const key = STORAGE_KEY_PREFIX + playerId;
-    const preferences = getPlayerArtPreferences(playerId);
-
-    preferences[commanderName] = {
+    const playerRef = doc(db, "players", playerId);
+    
+    const artData = {
       commanderName,
       variantId: variant.id,
       artUrl: variant.art,
@@ -58,12 +62,23 @@ export function saveCommanderArtPreference(
       timestamp: Date.now(),
     };
 
-    localStorage.setItem(key, JSON.stringify(preferences));
+    console.log(`📝 Saving art preference:`, { playerId, commanderName, variant: variant.set });
+    
+    await setDoc(
+      playerRef,
+      {
+        commanderArt: {
+          [commanderName]: artData,
+        },
+      },
+      { merge: true }
+    );
+
     console.log(
-      `Saved art preference for ${playerId}'s ${commanderName}: ${variant.set}`
+      `✅ Saved art preference for ${playerId}'s ${commanderName}: ${variant.set}`
     );
   } catch (error) {
-    console.error("Failed to save player art preference:", error);
+    console.error("❌ Failed to save player art preference:", error);
     throw error;
   }
 }
@@ -71,53 +86,45 @@ export function saveCommanderArtPreference(
 /**
  * Clear a player's art preference for a commander
  */
-export function clearCommanderArtPreference(
+export async function clearCommanderArtPreference(
   playerId: string,
   commanderName: string
-): void {
+): Promise<void> {
   try {
-    const key = STORAGE_KEY_PREFIX + playerId;
-    const preferences = getPlayerArtPreferences(playerId);
+    const playerRef = doc(db, "players", playerId);
+    const preferences = await getPlayerArtPreferences(playerId);
+    
     delete preferences[commanderName];
-    localStorage.setItem(key, JSON.stringify(preferences));
+    
+    await setDoc(
+      playerRef,
+      {
+        commanderArt: preferences,
+      },
+      { merge: true }
+    );
   } catch (error) {
     console.error("Failed to clear player art preference:", error);
+    throw error;
   }
 }
 
 /**
  * Clear all art preferences for a player
  */
-export function clearAllPlayerArtPreferences(playerId: string): void {
+export async function clearAllPlayerArtPreferences(playerId: string): Promise<void> {
   try {
-    const key = STORAGE_KEY_PREFIX + playerId;
-    localStorage.removeItem(key);
+    const playerRef = doc(db, "players", playerId);
+    
+    await setDoc(
+      playerRef,
+      {
+        commanderArt: {},
+      },
+      { merge: true }
+    );
   } catch (error) {
     console.error("Failed to clear all player art preferences:", error);
-  }
-}
-
-/**
- * Export all preferences for a player (useful for backup/sync)
- */
-export function exportPlayerArtPreferences(
-  playerId: string
-): Record<string, PlayerCommanderArt> {
-  return getPlayerArtPreferences(playerId);
-}
-
-/**
- * Import preferences for a player (useful for restore/sync)
- */
-export function importPlayerArtPreferences(
-  playerId: string,
-  preferences: Record<string, PlayerCommanderArt>
-): void {
-  try {
-    const key = STORAGE_KEY_PREFIX + playerId;
-    localStorage.setItem(key, JSON.stringify(preferences));
-  } catch (error) {
-    console.error("Failed to import player art preferences:", error);
     throw error;
   }
 }

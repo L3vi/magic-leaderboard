@@ -273,29 +273,37 @@ export function useCommanderArtWithPreference(
       return;
     }
 
-    // Check if player has a saved preference
-    if (playerId) {
-      const preference = getCommanderArtPreference(playerId, commander);
-      if (preference) {
-        setImgUrl(preference.artUrl);
+    let isMounted = true;
+
+    const loadArt = async () => {
+      // Check if player has a saved preference
+      if (playerId) {
+        try {
+          const preference = await getCommanderArtPreference(playerId, commander);
+          if (preference && isMounted) {
+            setImgUrl(preference.artUrl);
+            return;
+          }
+        } catch (error) {
+          console.error("Failed to load art preference:", error);
+        }
+      }
+
+      // Fall back to default art from cache or fetch
+      if (commanderImageCache[commander]) {
+        if (isMounted) setImgUrl(commanderImageCache[commander].art);
         return;
       }
-    }
 
-    // Fall back to default art from cache or fetch
-    if (commanderImageCache[commander]) {
-      setImgUrl(commanderImageCache[commander].art);
-      return;
-    }
-
-    // Fetch from API
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
+      // Fetch from API
+      try {
+        const response = await fetch(
+          `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
+            commander
+          )}`
+        );
+        const data = await response.json();
+        
         let art = "";
         let full = "";
 
@@ -311,12 +319,18 @@ export function useCommanderArtWithPreference(
         }
 
         commanderImageCache[commander] = { art, full };
-        setImgUrl(art);
-      })
-      .catch(() => {
+        if (isMounted) setImgUrl(art);
+      } catch (error) {
         commanderImageCache[commander] = { art: "", full: "" };
-        setImgUrl("");
-      });
+        if (isMounted) setImgUrl("");
+      }
+    };
+
+    loadArt();
+
+    return () => {
+      isMounted = false;
+    };
   }, [commander, playerId, refreshTrigger]);
 
   return imgUrl;
@@ -341,29 +355,37 @@ export function useCommanderFullImageWithPreference(
       return;
     }
 
-    // Check if player has a saved preference
-    if (playerId) {
-      const preference = getCommanderArtPreference(playerId, commander);
-      if (preference) {
-        setImgUrl(preference.fullImageUrl);
+    let isMounted = true;
+
+    const loadArt = async () => {
+      // Check if player has a saved preference
+      if (playerId) {
+        try {
+          const preference = await getCommanderArtPreference(playerId, commander);
+          if (preference && isMounted) {
+            setImgUrl(preference.fullImageUrl);
+            return;
+          }
+        } catch (error) {
+          console.error("Failed to load art preference:", error);
+        }
+      }
+
+      // Fall back to default art from cache or fetch
+      if (commanderImageCache[commander]) {
+        if (isMounted) setImgUrl(commanderImageCache[commander].full);
         return;
       }
-    }
 
-    // Fall back to default art from cache or fetch
-    if (commanderImageCache[commander]) {
-      setImgUrl(commanderImageCache[commander].full);
-      return;
-    }
-
-    // Fetch from API
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
+      // Fetch from API
+      try {
+        const response = await fetch(
+          `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
+            commander
+          )}`
+        );
+        const data = await response.json();
+        
         let art = "";
         let full = "";
 
@@ -379,12 +401,18 @@ export function useCommanderFullImageWithPreference(
         }
 
         commanderImageCache[commander] = { art, full };
-        setImgUrl(full);
-      })
-      .catch(() => {
+        if (isMounted) setImgUrl(full);
+      } catch (error) {
         commanderImageCache[commander] = { art: "", full: "" };
-        setImgUrl("");
-      });
+        if (isMounted) setImgUrl("");
+      }
+    };
+
+    loadArt();
+
+    return () => {
+      isMounted = false;
+    };
   }, [commander, playerId, refreshTrigger]);
 
   return imgUrl;

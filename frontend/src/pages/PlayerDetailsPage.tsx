@@ -148,7 +148,7 @@ const PlayerDetailsPage: React.FC = () => {
         <h1>{player.name}</h1>
       </div>
       <div className="player-details-page-content">
-        <PlayerDetails player={player} games={gamesRaw} players={playersRaw} onGameClick={handleGameClick} />
+        <PlayerDetails player={player} games={gamesRaw} players={playersRaw} onGameClick={handleGameClick} playerId={playerData?.id} />
       </div>
     </motion.div>
   );
