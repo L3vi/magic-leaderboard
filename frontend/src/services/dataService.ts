@@ -12,6 +12,12 @@ import {
   getDoc,
 } from "firebase/firestore";
 
+export interface CommanderArtPreference {
+  commanderName: string;
+  artVariantId: string;
+  imageUrl: string;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -21,6 +27,7 @@ export interface GamePlayer {
   playerId: string;
   placement: number;
   commander: string | string[];
+  commanderArt?: CommanderArtPreference;
 }
 
 export interface Game {

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import { getCommanderArtPreference } from "../../services/playerArtPreferences";
 import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
 import "./GameDetails.css";
 
 interface Player {
   name: string;
+  playerId?: string;
   placement: number;
   commander: string | string[];
 }
@@ -21,7 +23,7 @@ interface GameDetailsProps {
 }
 
 const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, players, winner, onClose, onPlayerClick }) => {
-  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
+  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string; playerId?: string } | null>(null);
   const sortedPlayers = [...players].sort((a, b) => a.placement - b.placement);
   
   return (
@@ -63,12 +65,13 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
         imageUrl={selectedCard?.imageUrl || ""}
         cardName={selectedCard?.name || ""}
         onClose={() => setSelectedCard(null)}
+        playerId={selectedCard?.playerId}
       />
     </>
   );
 };
 
-function PlayerCardWithImage({ player, onCardClick, onPlayerClick }: { player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onPlayerClick?: (playerName: string) => void }) {
+function PlayerCardWithImage({ player, onCardClick, onPlayerClick }: { player: any; onCardClick: (card: { name: string; imageUrl: string; playerId?: string }) => void; onPlayerClick?: (playerName: string) => void }) {
   const commanders = Array.isArray(player.commander) ? player.commander : [player.commander];
   const commanderText = commanders.join(" // ");
 
@@ -85,9 +88,10 @@ function PlayerCardWithImage({ player, onCardClick, onPlayerClick }: { player: a
         <div className="player-commanders-images" onClick={(e) => e.stopPropagation()}>
           <PartnerCommanderDisplay
             commanders={commanders}
-            onCardClick={onCardClick}
+            onCardClick={(card) => onCardClick({ ...card, playerId: player.playerId })}
             size="small"
             isWinner={player.placement === 1}
+            playerId={player.playerId}
           />
         </div>
         <div className="player-info">

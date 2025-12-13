@@ -87,6 +87,7 @@ const GameDetailsPage: React.FC = () => {
 
   // Map player data for GameDetails component
   const players = game.players.map((p: any) => ({
+    playerId: p.playerId,
     name: getPlayerName(p.playerId),
     placement: p.placement,
     commander: p.commander
@@ -94,6 +95,7 @@ const GameDetailsPage: React.FC = () => {
 
   const winner = game.players.find((p: any) => p.placement === 1);
   const winnerObj = winner ? {
+    playerId: winner.playerId,
     name: getPlayerName(winner.playerId),
     placement: winner.placement,
     commander: winner.commander

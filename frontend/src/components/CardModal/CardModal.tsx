@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
+import { useCommanderVariants, CardVariant } from "../../hooks/useCommanderArt";
+import {
+  getCommanderArtPreference,
+  saveCommanderArtPreference,
+} from "../../services/playerArtPreferences";
+import CommanderArtSelector from "./CommanderArtSelector";
 import "./CardModal.css";
 
 interface CardModalProps {
@@ -9,9 +15,28 @@ interface CardModalProps {
   imageUrl: string;
   cardName: string;
   onClose: () => void;
+  playerId?: string;
+  onArtSelect?: (variant: CardVariant) => void;
 }
 
-const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClose }) => {
+const CardModal: React.FC<CardModalProps> = ({ 
+  isOpen, 
+  imageUrl, 
+  cardName, 
+  onClose,
+  playerId,
+  onArtSelect,
+}) => {
+  const [displayedImageUrl, setDisplayedImageUrl] = useState(imageUrl);
+  const [isSaving, setIsSaving] = useState(false);
+  const variants = useCommanderVariants(cardName);
+
+  // Get current saved preference for this player's commander
+  const currentPreference = playerId
+    ? getCommanderArtPreference(playerId, cardName)
+    : undefined;
+  const currentPreferenceId = currentPreference?.variantId;
+
   const swipeHandlers = useSwipeable({
     onSwipedDown: () => {
       onClose();
@@ -19,6 +44,43 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
     trackTouch: true,
     trackMouse: false,
   });
+
+  React.useEffect(() => {
+    setDisplayedImageUrl(imageUrl);
+  }, [imageUrl, isOpen]);
+
+  const handleVariantSelect = (variant: CardVariant) => {
+    setDisplayedImageUrl(variant.full);
+  };
+
+  const handleSaveVariant = async (variant: CardVariant) => {
+    if (!playerId) {
+      console.warn("No playerId provided, cannot save art preference");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      // Save to localStorage
+      saveCommanderArtPreference(playerId, cardName, variant);
+
+      // Call the callback if provided
+      onArtSelect?.(variant);
+
+      // Close modal after successful save
+      setTimeout(() => {
+        setIsSaving(false);
+        onClose();
+      }, 300);
+    } catch (error) {
+      console.error("Failed to save art preference:", error);
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    onClose();
+  };
 
   React.useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
@@ -58,8 +120,9 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
         tabIndex={-1} 
         aria-label="Close card"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: variants.length > 0 && playerId ? 0 : 1 }}
         transition={{ duration: 0.1 }}
+        style={{ pointerEvents: variants.length > 0 && playerId ? "none" : "auto" }}
       >
         ✕
       </motion.div>
@@ -72,14 +135,26 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
         transition={{ duration: 0.12, ease: "easeOut" }}
       >
         <motion.img 
-          src={imageUrl} 
+          src={displayedImageUrl} 
           alt={cardName} 
           className="card-modal-image"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15, delay: 0.05 }}
+          key={displayedImageUrl}
         />
+        {variants.length > 0 && playerId && (
+          <CommanderArtSelector
+            variants={variants}
+            currentVariantId={currentPreferenceId}
+            onVariantSelect={handleVariantSelect}
+            onSave={handleSaveVariant}
+            onCancel={handleCancel}
+            isLoading={variants.length === 0}
+            isSaving={isSaving}
+          />
+        )}
       </motion.div>
     </motion.div>
   );

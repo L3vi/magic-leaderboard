@@ -1,5 +1,10 @@
 import React from "react";
-import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import { 
+  useCommanderArt, 
+  useCommanderFullImage,
+  useCommanderArtWithPreference,
+  useCommanderFullImageWithPreference
+} from "../../hooks/useCommanderArt";
 import "./PartnerCommanderDisplay.css";
 
 interface PartnerCommanderDisplayProps {
@@ -7,6 +12,7 @@ interface PartnerCommanderDisplayProps {
   onCardClick?: (card: { name: string; imageUrl: string }) => void;
   size?: "small" | "medium" | "large";
   isWinner?: boolean;
+  playerId?: string;
 }
 
 const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
@@ -14,14 +20,19 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   onCardClick,
   size = "medium",
   isWinner = false,
+  playerId,
 }) => {
   // If only one commander, return early
   if (!commanders || commanders.length < 2) {
     const commander = commanders?.[0];
     if (!commander) return null;
     
-    const artUrl = useCommanderArt(commander);
-    const fullImageUrl = useCommanderFullImage(commander);
+    const artUrl = playerId
+      ? useCommanderArtWithPreference(commander, playerId)
+      : useCommanderArt(commander);
+    const fullImageUrl = playerId
+      ? useCommanderFullImageWithPreference(commander, playerId)
+      : useCommanderFullImage(commander);
     
     return (
       <div className={`partner-commander-container size-${size}${isWinner ? " winner" : ""}`}>
@@ -43,10 +54,18 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
 
   // Display first two commanders in a split view
   const [cmd1, cmd2] = commanders;
-  const art1 = useCommanderArt(cmd1);
-  const art2 = useCommanderArt(cmd2);
-  const full1 = useCommanderFullImage(cmd1);
-  const full2 = useCommanderFullImage(cmd2);
+  const art1 = playerId
+    ? useCommanderArtWithPreference(cmd1, playerId)
+    : useCommanderArt(cmd1);
+  const art2 = playerId
+    ? useCommanderArtWithPreference(cmd2, playerId)
+    : useCommanderArt(cmd2);
+  const full1 = playerId
+    ? useCommanderFullImageWithPreference(cmd1, playerId)
+    : useCommanderFullImage(cmd1);
+  const full2 = playerId
+    ? useCommanderFullImageWithPreference(cmd2, playerId)
+    : useCommanderFullImage(cmd2);
 
   return (
     <div className={`partner-commander-container size-${size}${isWinner ? " winner" : ""}`}>
