@@ -182,11 +182,13 @@ export function calculatePlayerScores(
   games.forEach((game) => {
     game.players.forEach((playerInGame) => {
       if (scoreMap[playerInGame.playerId]) {
-        // Placement scoring: 1st = 3 pts, 2nd = 2 pts, 3rd+ = 1 pt
+        // Placement scoring: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th+ = 1 pt
         const points =
           playerInGame.placement === 1
-            ? 3
+            ? 4
             : playerInGame.placement === 2
+            ? 3
+            : playerInGame.placement === 3
             ? 2
             : 1;
 
@@ -208,7 +210,7 @@ export function calculatePlayerScores(
     }))
     .sort((a, b) => b.score - a.score);
 
-  // Add placement ranking and calculate average placement
+  // Add placement ranking and calculate average score per game
   return scores.map((score, index) => ({
     id: score.id,
     name: score.name,
@@ -217,7 +219,7 @@ export function calculatePlayerScores(
     gameCount: score.gameCount,
     average:
       score.gameCount > 0
-        ? score.placements.reduce((a, b) => a + b, 0) / score.gameCount
+        ? score.score / score.gameCount
         : 0,
   }));
 }
