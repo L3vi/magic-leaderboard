@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCommanderArtPreference } from '../services/playerArtPreferences';
+import { useArtPreferenceRefresh } from '../context/ArtPreferenceContext';
 
 // Global cache for commander images
 interface CardImageCache {
@@ -18,6 +19,15 @@ export interface CardVariant {
 
 const commanderImageCache: Record<string, CardImageCache> = {};
 const commanderVariantsCache: Record<string, CardVariant[]> = {};
+
+/**
+ * Clear cache for a specific commander to force re-fetch
+ * Useful after saving a new art preference
+ */
+export function clearCommanderCache(commander: string): void {
+  delete commanderImageCache[commander];
+  delete commanderVariantsCache[commander];
+}
 
 /**
  * Hook to fetch and cache commander card art from Scryfall API
@@ -255,6 +265,7 @@ export function useCommanderArtWithPreference(
   playerId?: string
 ): string {
   const [imgUrl, setImgUrl] = useState<string>("");
+  const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
     if (!commander || commander.trim() === "") {
@@ -306,7 +317,7 @@ export function useCommanderArtWithPreference(
         commanderImageCache[commander] = { art: "", full: "" };
         setImgUrl("");
       });
-  }, [commander, playerId]);
+  }, [commander, playerId, refreshTrigger]);
 
   return imgUrl;
 }
@@ -322,6 +333,7 @@ export function useCommanderFullImageWithPreference(
   playerId?: string
 ): string {
   const [imgUrl, setImgUrl] = useState<string>("");
+  const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
     if (!commander || commander.trim() === "") {
@@ -373,7 +385,7 @@ export function useCommanderFullImageWithPreference(
         commanderImageCache[commander] = { art: "", full: "" };
         setImgUrl("");
       });
-  }, [commander, playerId]);
+  }, [commander, playerId, refreshTrigger]);
 
   return imgUrl;
 }

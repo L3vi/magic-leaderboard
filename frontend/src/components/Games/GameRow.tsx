@@ -111,6 +111,7 @@ const GameRow: React.FC<GameRowProps> = ({
                 commanders={commanders}
                 size="small"
                 isWinner={isWinner}
+                playerId={p.playerId}
               />
               {playerDetails}
             </div>

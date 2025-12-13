@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
-import { useCommanderVariants, CardVariant } from "../../hooks/useCommanderArt";
+import { useCommanderVariants, CardVariant, clearCommanderCache } from "../../hooks/useCommanderArt";
+import { useArtPreferenceRefresh } from "../../context/ArtPreferenceContext";
 import {
   getCommanderArtPreference,
   saveCommanderArtPreference,
@@ -30,6 +31,7 @@ const CardModal: React.FC<CardModalProps> = ({
   const [displayedImageUrl, setDisplayedImageUrl] = useState(imageUrl);
   const [isSaving, setIsSaving] = useState(false);
   const variants = useCommanderVariants(cardName);
+  const { triggerRefresh } = useArtPreferenceRefresh();
 
   // Get current saved preference for this player's commander
   const currentPreference = playerId
@@ -63,6 +65,12 @@ const CardModal: React.FC<CardModalProps> = ({
       setIsSaving(true);
       // Save to localStorage
       saveCommanderArtPreference(playerId, cardName, variant);
+
+      // Clear cache to force re-fetch with new preference
+      clearCommanderCache(cardName);
+
+      // Trigger refresh in all components using the preference hooks
+      triggerRefresh();
 
       // Call the callback if provided
       onArtSelect?.(variant);

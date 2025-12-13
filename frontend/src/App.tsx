@@ -12,6 +12,7 @@ import NewGamePage from "./pages/NewGamePage";
 import EditGamePage from "./pages/EditGamePage";
 import { SessionProvider } from "./context/SessionContext";
 import { NavigationProvider } from "./context/NavigationContext";
+import { ArtPreferenceProvider } from "./context/ArtPreferenceContext";
 
 function MainLayout() {
   const navigate = useNavigate();
@@ -133,12 +134,14 @@ function App() {
     >
       <SessionProvider>
         <NavigationProvider>
-          <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
-            <Routes>
-              <Route path="/" element={<AppRedirect />} />
-              <Route path="/*" element={<AnimatedRoutes />} />
-            </Routes>
-          </Router>
+          <ArtPreferenceProvider>
+            <Router basename={process.env.NODE_ENV === 'production' ? "/magic-leaderboard" : "/"}>
+              <Routes>
+                <Route path="/" element={<AppRedirect />} />
+                <Route path="/*" element={<AnimatedRoutes />} />
+              </Routes>
+            </Router>
+          </ArtPreferenceProvider>
         </NavigationProvider>
       </SessionProvider>
     </motion.div>

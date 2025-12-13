@@ -173,6 +173,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander:
             onCardClick={onCardClick}
             size="large"
             isWinner={false}
+            playerId={player.id}
           />
         ) : (
           // Single commander display
@@ -220,6 +221,7 @@ function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: a
           onCardClick={handleCardClick}
           size="small"
           isWinner={player?.placement === 1}
+          playerId={player?.playerId}
         />
         <div className="game-commander-info">
           <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>
