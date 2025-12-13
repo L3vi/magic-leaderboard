@@ -11,6 +11,7 @@ interface NavBarProps {
 	activeTab: "players" | "games";
 	setActiveTab: (tab: "players" | "games") => void;
 	onNewGame?: () => void;
+	hideNewGameButton?: boolean;
 }
 
 // Navigation items for the NavBar
@@ -27,7 +28,7 @@ const NAV_ITEMS = [
  * - Uses semantic HTML and theme variables.
  */
 
-const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) => {
+const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame, hideNewGameButton = false }) => {
 	const navRef = React.useRef<HTMLDivElement>(null);
 	const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 	const [underlineStyle, setUnderlineStyle] = React.useState<React.CSSProperties>({});
@@ -103,22 +104,26 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame }) =
 						))}
 					</div>
 					{/* Mobile FAB */}
-							<button
-								className="nav-fab"
-								aria-label="Add Game"
-								tabIndex={0}
-								role="button"
-								onClick={onNewGame}
-							>
-								+
-							</button>
+					{!hideNewGameButton && (
+						<button
+							className="nav-fab"
+							aria-label="Add Game"
+							tabIndex={0}
+							role="button"
+							onClick={onNewGame}
+						>
+							+
+						</button>
+					)}
 					<div className="nav-highlight" style={underlineStyle} />
 				</div>
 				{/* Desktop FAB */}
-						<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
-							<span className="nav-fab-icon">+</span>
-							<span className="nav-fab-label">New Game</span>
-						</button>
+				{!hideNewGameButton && (
+					<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
+						<span className="nav-fab-icon">+</span>
+						<span className="nav-fab-label">New Game</span>
+					</button>
+				)}
 			</>
 		);
 };

@@ -68,7 +68,7 @@ function MainLayout() {
 
   return (
     <>
-      <Header activeTab={activeTab} setActiveTab={handleTabChange} onNewGame={handleNewGame} />
+      <Header activeTab={activeTab} setActiveTab={handleTabChange} onNewGame={handleNewGame} hideNewGameButton={location.pathname.startsWith('/edit-game/')} />
       <div {...swipeHandlers} className="tab-content">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div

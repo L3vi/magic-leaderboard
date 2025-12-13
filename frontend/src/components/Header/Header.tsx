@@ -15,6 +15,7 @@ interface HeaderProps {
   activeTab: "players" | "games";
   setActiveTab: (tab: "players" | "games") => void;
   onNewGame?: () => void;
+  hideNewGameButton?: boolean;
 }
 
 /**
@@ -28,6 +29,7 @@ const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab,
   onNewGame,
+  hideNewGameButton = false,
 }) => {
   return (
     <header className="header" aria-label="Site Header" role="banner">
@@ -39,11 +41,11 @@ const Header: React.FC<HeaderProps> = ({
       </div>
       {/* Desktop Navigation */}
       <nav className="header-nav-desktop" aria-label="Main Navigation" role="navigation">
-        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} />
+        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} hideNewGameButton={hideNewGameButton} />
       </nav>
       {/* Mobile Navigation */}
       <nav className="nav-bar-mobile" aria-label="Mobile Navigation" role="navigation">
-        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} />
+        <NavBar activeTab={activeTab} setActiveTab={setActiveTab} onNewGame={onNewGame} hideNewGameButton={hideNewGameButton} />
       </nav>
     </header>
   );
