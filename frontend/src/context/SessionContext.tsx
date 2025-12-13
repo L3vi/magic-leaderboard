@@ -85,10 +85,10 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     loadData();
 
-    // Auto-refresh every 5 minutes (300000ms)
+    // Auto-refresh every 30 seconds (30000ms)
     const refreshInterval = setInterval(() => {
       loadData();
-    }, 300000);
+    }, 30000);
 
     return () => clearInterval(refreshInterval);
   }, [activeSession]);
