@@ -434,4 +434,26 @@ select.field-input:focus, select.placement-select:focus {
   .player-entry-header {
     margin-bottom: 1.125rem;
   }
+
+  .form-actions {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    left: auto;
+    width: auto;
+    padding: 0;
+    justify-content: flex-end;
+    gap: 1rem;
+    flex-direction: row-reverse;
+  }
+
+  .submit-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .cancel-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }

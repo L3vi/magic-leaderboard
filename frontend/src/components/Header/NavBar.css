@@ -152,6 +152,11 @@
   transition: all 0.18s;
 }
 
+/* Hide New Game button when modal is open */
+.modal-open .nav-fab-desktop {
+  display: none;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .nav-fab-desktop:hover {
     background: rgba(124, 58, 237, 0.9);
