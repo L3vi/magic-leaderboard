@@ -27,31 +27,47 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   const winRate = totalGames ? Math.round((wins / totalGames) * 100) : 0;
   const placements = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.placement || 0);
   const avgPlacement = placements.length ? (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(2) : "-";
-  const commanders = gamesForPlayer
+  
+  // Get unique deck combinations (treating companion pairs as single decks)
+  const deckCombinations = gamesForPlayer
     .map(g => {
       const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
       const cmd = p?.commander;
-      return Array.isArray(cmd) ? cmd : (cmd ? [cmd] : []);
+      // Create a sortable key for the deck (handles both single commanders and companion pairs)
+      if (Array.isArray(cmd)) {
+        return cmd.sort().join("|");
+      }
+      return cmd || "";
     })
-    .flat()
     .filter(Boolean);
-  const commanderCounts = commanders.reduce((acc, c) => { acc[c] = (acc[c] || 0) + 1; return acc; }, {} as Record<string, number>);
-  const mostPlayedCommander = Object.entries(commanderCounts).sort((a, b) => b[1] - a[1])[0];
-  const deckDiversity = new Set(commanders).size;
+  
+  const uniqueDeckCombinations = new Set(deckCombinations);
+  const deckDiversity = uniqueDeckCombinations.size;
+  
+  // Get deck combination counts for the "most played commander" stat
+  const deckCombinationCounts = deckCombinations.reduce((acc, c) => {
+    acc[c] = (acc[c] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const mostPlayedDeckEntry = Object.entries(deckCombinationCounts).sort((a, b) => b[1] - a[1])[0];
+  const mostPlayedCommander = mostPlayedDeckEntry ? [mostPlayedDeckEntry[0].split("|"), mostPlayedDeckEntry[1]] : undefined;
+  
   const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   const firstGameDate = gamesForPlayer.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
   const lastGameDate = gamesForPlayer.length ? new Date(sortedGames[0].dateCreated).toLocaleDateString() : "-";
 
-  // Calculate color distribution
+  // Calculate color distribution from deck combinations
   const colorDistribution = React.useMemo(() => {
     const distribution: Record<string, number> = {};
-    commanders.forEach((commander) => {
-      // We'll fetch colors in a separate component to handle async
-      // For now, store the commander for processing
-      distribution[commander] = (distribution[commander] || 0) + 1;
+    deckCombinations.forEach((deckCombo) => {
+      // Split the deck combination back into individual commanders for color tracking
+      const commanders = deckCombo.split("|");
+      commanders.forEach((commander) => {
+        distribution[commander] = (distribution[commander] || 0) + 1;
+      });
     });
     return distribution;
-  }, [commanders]);
+  }, [deckCombinations]);
 
   return (
     <>
@@ -79,8 +95,16 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         {/* Secondary Stats */}
         <div className="player-secondary-stats">
           <div className="secondary-stat">
-            <div className="secondary-stat-label">Avg Placement</div>
-            <div className="secondary-stat-value">{avgPlacement}</div>
+            <div className="secondary-stat-label">Avg Score</div>
+            <div className="secondary-stat-value">{player.average.toFixed(2)}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Most Common Place</div>
+            <div className="secondary-stat-value">#{player.mostCommonPlacement}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Time Played</div>
+            <div className="secondary-stat-value">{player.estimatedMinutesPlayed ? `${Math.floor(player.estimatedMinutesPlayed / 60)}h ${player.estimatedMinutesPlayed % 60}m` : '-'}</div>
           </div>
           <div className="secondary-stat">
             <div className="secondary-stat-label">Decks Played</div>
@@ -102,8 +126,8 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         )}
 
         {/* Commander Color Distribution */}
-        {commanders.length > 0 && (
-          <CommanderColorDistribution commanders={commanders} />
+        {deckCombinations.length > 0 && (
+          <CommanderColorDistribution commanders={deckCombinations.flatMap(dc => dc.split("|"))} />
         )}
 
         {/* Recent Games */}
@@ -132,25 +156,38 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   );
 };
 
-function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander: string; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
-  const artUrl = useCommanderArt(commander);
-  const fullImageUrl = useCommanderFullImage(commander);
+function MostPlayedCommanderCard({ commander, count, onCardClick }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void }) {
+  const commanderArray = Array.isArray(commander) ? commander : [commander];
+  const artUrls = commanderArray.map(c => useCommanderArt(c));
+  const fullImageUrls = commanderArray.map(c => useCommanderFullImage(c));
+  const commanderName = commanderArray.join(" + ");
 
   return (
     <div className="commander-section">
       <div className="section-title">Most Played Commander</div>
       <div className="commander-card">
-        {artUrl && (
-          <img
-            src={artUrl}
-            alt={commander}
-            className="commander-thumbnail"
-            style={{ cursor: "pointer" }}
-            onClick={() => onCardClick({ name: commander, imageUrl: fullImageUrl })}
+        {commanderArray.length === 2 ? (
+          // Partner commanders display
+          <PartnerCommanderDisplay
+            commanders={commanderArray}
+            onCardClick={onCardClick}
+            size="large"
+            isWinner={false}
           />
+        ) : (
+          // Single commander display
+          artUrls[0] && (
+            <img
+              src={artUrls[0]}
+              alt={commanderArray[0]}
+              className="commander-thumbnail"
+              style={{ cursor: "pointer" }}
+              onClick={() => onCardClick({ name: commanderArray[0], imageUrl: fullImageUrls[0] })}
+            />
+          )
         )}
         <div className="commander-info">
-          <div className="commander-name">{commander}</div>
+          <div className="commander-name">{commanderName}</div>
           <div className="commander-count">{count} game{count > 1 ? 's' : ''}</div>
         </div>
       </div>
