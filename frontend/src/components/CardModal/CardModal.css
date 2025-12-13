@@ -23,6 +23,19 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
   background: rgba(20, 20, 30, 0.95);
   padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Desktop layout: side-by-side */
+@media (min-width: 1024px) {
+  .card-modal-content {
+    max-width: 95vw;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
+  }
 }
 
 /* Hide scrollbar while keeping scroll functionality */
@@ -42,6 +55,14 @@
   max-height: 85vh;
   object-fit: contain;
   margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .card-modal-image {
+    max-width: 400px;
+    max-height: 600px;
+    flex-shrink: 0;
+  }
 }
 
 .card-modal-close {
