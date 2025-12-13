@@ -1,27 +1,137 @@
 [
   {
     "id": "player-anson",
-    "name": "Anson"
+    "name": "Anson",
+    "commanderArt": {
+      "Atla Palani, Nest Tender": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
+        "commanderName": "Atla Palani, Nest Tender",
+        "variantId": "c2559933-958b-4dfd-a037-3778b914f319-sld",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
+        "timestamp": 1765613631171
+      },
+      "Betor, Kin to All": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
+        "commanderName": "Betor, Kin to All",
+        "variantId": "f1969dec-4d6b-493a-8233-76faf8fa3cea-tdm",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
+        "timestamp": 1765646465578
+      }
+    }
   },
   {
     "id": "player-caleb",
-    "name": "Caleb"
+    "name": "Caleb",
+    "commanderArt": {
+      "Fire Lord Azula": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/1/e/1ea7248c-e4b3-4776-8e6a-cba06da2d6cc.jpg?1764122401",
+        "commanderName": "Fire Lord Azula",
+        "variantId": "1ea7248c-e4b3-4776-8e6a-cba06da2d6cc-tla",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/1/e/1ea7248c-e4b3-4776-8e6a-cba06da2d6cc.jpg?1764122401",
+        "timestamp": 1765652837734
+      }
+    }
   },
   {
     "id": "player-cameron",
-    "name": "Cameron"
+    "name": "Cameron",
+    "commanderArt": {
+      "Test Commander": {
+        "commanderName": "Test Commander",
+        "variantId": "v1",
+        "artUrl": "http://test.com/art.jpg",
+        "fullImageUrl": "http://test.com/full.jpg",
+        "timestamp": 1765612348792
+      },
+      "Test": {
+        "commanderName": "Test",
+        "variantId": "v1",
+        "artUrl": "http://test.com/art.jpg",
+        "fullImageUrl": "http://test.com/full.jpg",
+        "timestamp": 1765612388719
+      },
+      "Omnath": {
+        "fullImageUrl": "https://example.com/full.jpg",
+        "commanderName": "Omnath",
+        "variantId": "c21-001",
+        "artUrl": "https://example.com/art.jpg",
+        "timestamp": 1765612673087
+      },
+      "Ezio Auditore da Firenze": {
+        "commanderName": "Ezio Auditore da Firenze",
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/0/7/07ce00ad-acb5-4418-9ea1-50eaf2273242.jpg?1721424786",
+        "variantId": "07ce00ad-acb5-4418-9ea1-50eaf2273242-acr",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/0/7/07ce00ad-acb5-4418-9ea1-50eaf2273242.jpg?1721424786",
+        "timestamp": 1765613391085
+      }
+    }
   },
   {
     "id": "player-danny",
-    "name": "Danny"
+    "name": "Danny",
+    "commanderArt": {
+      "Vivi Ornitier": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/a/d/ada6aeb6-8c9f-4498-9326-b4da0fcb19a3.jpg?1750668593",
+        "commanderName": "Vivi Ornitier",
+        "variantId": "ada6aeb6-8c9f-4498-9326-b4da0fcb19a3-fin",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/a/d/ada6aeb6-8c9f-4498-9326-b4da0fcb19a3.jpg?1750668593",
+        "timestamp": 1765613918659
+      }
+    }
   },
   {
     "id": "player-jordan",
-    "name": "Jordan"
+    "name": "Jordan",
+    "commanderArt": {
+      "Isshin, Two Heavens as One": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/a/0/a062a004-984e-4b62-960c-af7288f7a3e9.jpg?1735031380",
+        "commanderName": "Isshin, Two Heavens as One",
+        "variantId": "a062a004-984e-4b62-960c-af7288f7a3e9-neo",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/a/0/a062a004-984e-4b62-960c-af7288f7a3e9.jpg?1735031380",
+        "timestamp": 1765614723978
+      }
+    }
   },
   {
     "id": "player-levi",
-    "name": "Levi"
+    "name": "Levi",
+    "commanderArt": {
+      "Toluz, Clever Conductor": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/e/6/e6da6284-1577-4bc2-85dd-5984aea72ac6.jpg?1664415763",
+        "commanderName": "Toluz, Clever Conductor",
+        "variantId": "e6da6284-1577-4bc2-85dd-5984aea72ac6-snc",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/e/6/e6da6284-1577-4bc2-85dd-5984aea72ac6.jpg?1664415763",
+        "timestamp": 1765620375057
+      },
+      "Gimli, Counter of Kills": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/b/7/b72c5bd1-cca1-4735-b4fc-7a5182fb8cd6.jpg?1686971005",
+        "commanderName": "Gimli, Counter of Kills",
+        "variantId": "b72c5bd1-cca1-4735-b4fc-7a5182fb8cd6-ltr",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/b/7/b72c5bd1-cca1-4735-b4fc-7a5182fb8cd6.jpg?1686971005",
+        "timestamp": 1765620391791
+      },
+      "Sythis, Harvest's Hand": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/2/8/2832a541-bd8d-4793-abb4-3d76f0df257c.jpg?1748265345",
+        "commanderName": "Sythis, Harvest's Hand",
+        "variantId": "2832a541-bd8d-4793-abb4-3d76f0df257c-sld",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/2/8/2832a541-bd8d-4793-abb4-3d76f0df257c.jpg?1748265345",
+        "timestamp": 1765620403391
+      },
+      "Lathiel, the Bounteous Dawn": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/f/b/fb721716-1027-4c2c-a156-30fb6a939e82.jpg?1682200780",
+        "commanderName": "Lathiel, the Bounteous Dawn",
+        "variantId": "fb721716-1027-4c2c-a156-30fb6a939e82-mul",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/f/b/fb721716-1027-4c2c-a156-30fb6a939e82.jpg?1682200780",
+        "timestamp": 1765620424735
+      },
+      "Old Stickfingers": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/d/3/d3a0dc21-c202-4cef-9e67-26b9dd24d565.jpg?1682717002",
+        "commanderName": "Old Stickfingers",
+        "variantId": "d3a0dc21-c202-4cef-9e67-26b9dd24d565-mid",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/d/3/d3a0dc21-c202-4cef-9e67-26b9dd24d565.jpg?1682717002",
+        "timestamp": 1765620455727
+      }
+    }
   },
   {
     "id": "player-nate",
@@ -29,7 +139,16 @@
   },
   {
     "id": "player-parker",
-    "name": "Parker"
+    "name": "Parker",
+    "commanderArt": {
+      "Fire Lord Zuko": {
+        "fullImageUrl": "https://cards.scryfall.io/normal/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
+        "commanderName": "Fire Lord Zuko",
+        "variantId": "0c457a8b-8d56-474d-b788-c058a9882fdd-tla",
+        "artUrl": "https://cards.scryfall.io/art_crop/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
+        "timestamp": 1765620465228
+      }
+    }
   },
   {
     "id": "player-shane",
