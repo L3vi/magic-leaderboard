@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { motion } from "framer-motion";
+import { useSwipeable } from "react-swipeable";
 import "./CardModal.css";
 
 interface CardModalProps {
@@ -11,6 +12,14 @@ interface CardModalProps {
 }
 
 const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClose }) => {
+  const swipeHandlers = useSwipeable({
+    onSwipedDown: () => {
+      onClose();
+    },
+    trackTouch: true,
+    trackMouse: false,
+  });
+
   React.useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -36,6 +45,7 @@ const CardModal: React.FC<CardModalProps> = ({ isOpen, imageUrl, cardName, onClo
     <motion.div 
       className="card-modal-overlay" 
       onClick={onClose}
+      {...swipeHandlers}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

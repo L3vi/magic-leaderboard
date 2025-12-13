@@ -2,7 +2,6 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useUpdateGame, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
 import { deleteGame } from "../services/dataService";
@@ -32,7 +31,6 @@ const EditGamePage: React.FC = () => {
   };
 
   useEscapeKey(handleClose);
-  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   // Find the game to edit
   const game = games.find((g: any) => g.id === gameId);
@@ -41,8 +39,6 @@ const EditGamePage: React.FC = () => {
     return (
       <motion.div 
         className="new-game-page" 
-        {...swipeHandlers} 
-        ref={pageRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
@@ -111,8 +107,6 @@ const EditGamePage: React.FC = () => {
   return (
     <motion.div 
       className="new-game-page" 
-      {...swipeHandlers} 
-      ref={pageRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}

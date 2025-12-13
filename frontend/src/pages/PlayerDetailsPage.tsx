@@ -2,7 +2,6 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useNavigationAnimation } from "../context/NavigationContext";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import { Player } from "../components/Players/PlayerRow";
@@ -35,7 +34,6 @@ const PlayerDetailsPage: React.FC = () => {
   };
 
   useEscapeKey(handleClose);
-  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   // Find player by name (URL encoded)
   const decodedName = playerName ? decodeURIComponent(playerName) : "";
@@ -117,8 +115,6 @@ const PlayerDetailsPage: React.FC = () => {
     return (
       <motion.div 
         className="player-details-page" 
-        {...swipeHandlers} 
-        ref={pageRef}
         {...animationProps}
       >
         <div className="player-details-page-header">
@@ -139,8 +135,6 @@ const PlayerDetailsPage: React.FC = () => {
   return (
     <motion.div 
       className="player-details-page" 
-      {...swipeHandlers} 
-      ref={pageRef}
       {...animationProps}
     >
       <div className="player-details-page-header">

@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useAddGame } from "../hooks/useApi";
 import NewGame from "../components/NewGame/NewGame";
 import "./NewGamePage.css";
@@ -28,7 +27,6 @@ const NewGamePage: React.FC = () => {
   };
 
   useEscapeKey(handleClose);
-  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   const handleSubmit = async (gameData: any) => {
     try {
@@ -43,8 +41,6 @@ const NewGamePage: React.FC = () => {
   return (
     <motion.div 
       className="new-game-page" 
-      {...swipeHandlers} 
-      ref={pageRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}

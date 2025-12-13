@@ -2,7 +2,6 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useSwipeToClose } from "../hooks/useSwipeToClose";
 import { useNavigationAnimation } from "../context/NavigationContext";
 import GameDetails from "../components/Games/GameDetails";
 import { useSession } from "../context/SessionContext";
@@ -38,7 +37,6 @@ const GameDetailsPage: React.FC = () => {
   };
 
   useEscapeKey(handleClose);
-  const { pageRef, swipeHandlers } = useSwipeToClose(handleClose);
 
   // Find the game from current session
   const game = gamesData.find((g: any) => g.id === gameId);
@@ -70,8 +68,6 @@ const GameDetailsPage: React.FC = () => {
     return (
       <motion.div 
         className="game-details-page" 
-        {...swipeHandlers} 
-        ref={pageRef}
         {...animationProps}
       >
         <div className="game-details-page-header">
@@ -106,8 +102,6 @@ const GameDetailsPage: React.FC = () => {
   return (
     <motion.div 
       className="game-details-page" 
-      {...swipeHandlers} 
-      ref={pageRef}
       {...animationProps}
     >
       <div className="game-details-page-header">
