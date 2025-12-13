@@ -101,6 +101,15 @@
   .game-row {
     font-size: 1.5rem;
     padding: 1.5rem 1vw;
+    min-height: 200px;
+  }
+
+  .game-row-players {
+    gap: 1.5rem;
+  }
+
+  .game-row-player {
+    gap: 0.75rem;
   }
 }
 

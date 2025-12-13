@@ -21,6 +21,11 @@
 .partner-commander-container.size-large {
   width: 120px;
   height: 120px;
+  border-radius: 0.8rem;
+}
+
+.partner-commander-container.size-large.winner {
+  border-width: 3px;
 }
 
 .partner-commander-container.winner {
