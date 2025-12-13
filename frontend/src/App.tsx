@@ -103,12 +103,14 @@ function AnimatedRoutes() {
       {/* Detail pages overlay on top */}
       <AnimatePresence mode="popLayout" initial={false}>
         {isDetailPage && (
-          <Routes location={location} key={location.pathname}>
-            <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
-            <Route path="/games/:gameId" element={<GameDetailsPage />} />
-            <Route path="/new-game" element={<NewGamePage />} />
-            <Route path="/edit-game/:gameId" element={<EditGamePage />} />
-          </Routes>
+          <motion.div key={location.pathname}>
+            <Routes location={location}>
+              <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
+              <Route path="/games/:gameId" element={<GameDetailsPage />} />
+              <Route path="/new-game" element={<NewGamePage />} />
+              <Route path="/edit-game/:gameId" element={<EditGamePage />} />
+            </Routes>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
