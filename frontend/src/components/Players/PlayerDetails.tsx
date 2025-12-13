@@ -153,6 +153,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         imageUrl={selectedCard?.imageUrl || ""}
         cardName={selectedCard?.name || ""}
         onClose={() => setSelectedCard(null)}
+        playerId={playerId}
       />
     </>
   );
