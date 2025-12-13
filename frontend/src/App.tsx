@@ -101,7 +101,7 @@ function AnimatedRoutes() {
       <MainLayout />
       
       {/* Detail pages overlay on top */}
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="popLayout" initial={false}>
         {isDetailPage && (
           <Routes location={location} key={location.pathname}>
             <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
