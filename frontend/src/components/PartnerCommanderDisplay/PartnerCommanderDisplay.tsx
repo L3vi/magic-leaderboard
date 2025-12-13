@@ -42,7 +42,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
             alt={commander}
             className="partner-commander-img"
             style={{ cursor: onCardClick ? "pointer" : "default" }}
-            onClick={() => onCardClick?.({ name: commander, imageUrl: fullImageUrl })}
+            onClick={() => onCardClick?.({ name: commander, imageUrl: fullImageUrl || artUrl })}
             title={commander}
           />
         ) : (
@@ -75,7 +75,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
           alt={cmd1}
           className="partner-commander-img partner-img-1"
           style={{ cursor: onCardClick ? "pointer" : "default" }}
-          onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 })}
+          onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1 })}
           title={cmd1}
         />
       ) : (
@@ -88,7 +88,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
           alt={cmd2}
           className="partner-commander-img partner-img-2"
           style={{ cursor: onCardClick ? "pointer" : "default" }}
-          onClick={() => onCardClick?.({ name: cmd2, imageUrl: full2 })}
+          onClick={() => onCardClick?.({ name: cmd2, imageUrl: full2 || art2 })}
           title={cmd2}
         />
       ) : (
