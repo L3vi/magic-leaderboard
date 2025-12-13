@@ -121,7 +121,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } catch (err) {
           console.error('Error in auto-refresh:', err);
         }
-      }, 30000);
+      }, 10000);
     };
     
     startAutoRefresh();
