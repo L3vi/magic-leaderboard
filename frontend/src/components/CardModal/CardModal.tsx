@@ -39,6 +39,10 @@ const CardModal: React.FC<CardModalProps> = ({
     if (playerId && cardName) {
       getCommanderArtPreference(playerId, cardName).then(preference => {
         setCurrentPreference(preference);
+        // If preference exists, use that image instead of the default
+        if (preference && preference.artUrl) {
+          setDisplayedImageUrl(preference.artUrl);
+        }
       });
     }
   }, [playerId, cardName]);

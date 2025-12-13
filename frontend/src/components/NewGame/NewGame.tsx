@@ -12,7 +12,7 @@ import {
 import FormActions from '../FormActions/FormActions';
 import { usePlayers } from "./usePlayers";
 import { useGames } from "../../hooks/useApi";
-import { useCommanderArt, useCommanderFullImage } from "../../hooks/useCommanderArt";
+import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference } from "../../hooks/useCommanderArt";
 import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
 
@@ -105,7 +105,7 @@ type CommanderAutocompleteProps = {
   playerId?: string;
   games: any[];
   defaultCommander?: string;
-  onCardClick?: (card: { name: string; imageUrl: string }) => void;
+  onCardClick?: (card: { name: string; imageUrl: string; playerId?: string }) => void;
 };
 
 const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander, onCardClick }) => {
@@ -119,6 +119,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const debounceTimer = useRef<NodeJS.Timeout>();
   const artUrl = useCommanderArt(value);
   const fullImageUrl = useCommanderFullImage(value);
+  const preferenceArtUrl = useCommanderArtWithPreference(value, playerId && playerId !== "__add__" && playerId !== "" ? playerId : undefined);
   const defaultArtUrl = useCommanderArt(defaultCommander || '');
   const defaultFullImageUrl = useCommanderFullImage(defaultCommander || '');
 
@@ -144,16 +145,16 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 
   // Load last played commander for this player and update image when value changes
   useEffect(() => {
-    if (value && artUrl) {
-      // Use the useCommanderArt hook result for current value
-      setSelectedImage(artUrl);
+    if (value) {
+      // Use preference art if available, otherwise fall back to default art
+      setSelectedImage(preferenceArtUrl || artUrl);
     } else if (!value && defaultCommander && defaultArtUrl) {
       // Show default commander image if no value but default is set
       setSelectedImage(defaultArtUrl);
     } else if (!value) {
       setSelectedImage(null);
     }
-  }, [value, artUrl, defaultCommander, defaultArtUrl]);
+  }, [value, artUrl, preferenceArtUrl, defaultCommander, defaultArtUrl]);
 
   // Load last played commander suggestions
   useEffect(() => {
@@ -268,11 +269,16 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       {selectedImage ? (
         <img
           src={selectedImage}
-          alt={value}
+          alt={value || defaultCommander || "commander"}
           style={{ cursor: onCardClick ? "pointer" : "default" }}
           onClick={() => {
-            if (onCardClick && value) {
-              onCardClick({ name: value, imageUrl: fullImageUrl });
+            if (onCardClick) {
+              // Use selected value if available, otherwise use default commander
+              const commanderName = value || defaultCommander;
+              const imageUrl = value ? fullImageUrl : defaultFullImageUrl;
+              if (commanderName) {
+                onCardClick({ name: commanderName, imageUrl, playerId });
+              }
             }
           }}
         />
@@ -447,7 +453,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     // eslint-disable-next-line
   }, [players.length, initialData]);
   const [notes, setNotes] = useState("");
-  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
+  const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string; playerId?: string } | null>(null);
 
   const handlePlayerChange = (idx: number, playerId: string) => {
     const lastCommander = getLastPlayedCommander(playerId);
@@ -722,7 +728,14 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       isOpen={!!selectedCard}
       imageUrl={selectedCard?.imageUrl || ""}
       cardName={selectedCard?.name || ""}
+      playerId={selectedCard?.playerId}
       onClose={() => setSelectedCard(null)}
+      onArtSelect={(variant) => {
+        // After selecting art, refresh the component to show updated preference
+        if (selectedCard) {
+          setSelectedCard({ ...selectedCard });
+        }
+      }}
     />
     </>
   );
