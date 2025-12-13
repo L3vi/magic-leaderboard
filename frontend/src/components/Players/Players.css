@@ -105,6 +105,10 @@
   .leaderboard-header {
     font-size: 1.5rem;
   }
+
+  .leaderboard-list {
+    padding-bottom: 6rem;
+  }
 }
 .leaderboard-empty {
   text-align: center;
