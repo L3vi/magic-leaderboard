@@ -5,13 +5,14 @@ import "./Players.css";
 import { usePlayerScores } from "../../hooks/useApi";
 import { useSession } from "../../context/SessionContext";
 
-type SortKey = "name" | "score" | "average";
+type SortKey = "name" | "score" | "average" | "games";
 type SortOrder = "asc" | "desc";
 
 const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
   average: "Average",
+  games: "Games",
 };
 
 /**
@@ -36,6 +37,12 @@ const Players: React.FC = () => {
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name)
       );
+    } else if (sortKey === "games") {
+      players.sort((a, b) => {
+        const aValue = a.gameCount as number;
+        const bValue = b.gameCount as number;
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      });
     } else {
       players.sort((a, b) => {
         const aValue = a[sortKey as keyof typeof scoresData[0]] as number;
@@ -85,7 +92,7 @@ const Players: React.FC = () => {
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
-            className={`leaderboard-col${key === "name" ? " player-name" : ""}`}
+            className={`leaderboard-col${key === "name" ? " player-name" : ""}${key === "games" ? " games-col" : ""}`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"

@@ -115,3 +115,29 @@
   border-radius: 0.5rem;
   padding: 1rem;
 }
+
+/* Numeric columns - center aligned */
+.leaderboard-col.player-score,
+.leaderboard-col.player-average,
+.leaderboard-col.games-col {
+  text-align: center;
+  justify-content: center;
+}
+
+/* Games column - hidden on mobile, visible on desktop */
+@media (max-width: 639px) {
+  .games-col {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 0 !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .games-col {
+    display: flex;
+  }
+}
