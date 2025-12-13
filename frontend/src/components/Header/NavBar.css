@@ -212,7 +212,7 @@
     font-size: 1.1rem;
     flex-direction: row;
     gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
+    padding: 0.75rem 1.75rem;
     background: none;
     border-radius: 8px;
     color: var(--primary);
