@@ -84,6 +84,13 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     loadData();
+
+    // Auto-refresh every 5 minutes (300000ms)
+    const refreshInterval = setInterval(() => {
+      loadData();
+    }, 300000);
+
+    return () => clearInterval(refreshInterval);
   }, [activeSession]);
 
   // Refresh all data (players + games) with fresh API calls
