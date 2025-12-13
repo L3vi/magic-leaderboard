@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /**
- * Sync data from master-leaderboard.json to frontend and backend data directories
+ * Sync data from master-leaderboard.json to frontend data directory
  * Usage: node sync-data.js [--session SESSION_NAME]
  * 
  * This script extracts player and game data for the specified session
- * and writes it to both frontend and backend data directories.
+ * and writes it to the frontend src/data directory.
+ * 
+ * Source of truth: archived-data/master-leaderboard.json
  */
 
 const fs = require('fs');
@@ -16,10 +18,9 @@ const sessionArg = args.find(arg => arg.startsWith('--session='));
 const SESSION = sessionArg ? sessionArg.split('=')[1] : '2025-December';
 
 const MASTER_FILE = path.join(__dirname, 'archived-data', 'master-leaderboard.json');
-const FRONTEND_GAMES = path.join(__dirname, 'frontend', 'src', 'data', 'games.json');
-const FRONTEND_PLAYERS = path.join(__dirname, 'frontend', 'src', 'data', 'players.json');
-const BACKEND_GAMES = path.join(__dirname, 'backend', 'data', 'games.json');
-const BACKEND_PLAYERS = path.join(__dirname, 'backend', 'data', 'players.json');
+const FRONTEND_DATA_DIR = path.join(__dirname, 'frontend', 'src', 'data');
+const FRONTEND_GAMES = path.join(FRONTEND_DATA_DIR, 'games.json');
+const FRONTEND_PLAYERS = path.join(FRONTEND_DATA_DIR, 'players.json');
 
 try {
   console.log(`📂 Reading master leaderboard from ${MASTER_FILE}`);
@@ -43,19 +44,17 @@ try {
   const games = sessionData.games || [];
   console.log(`🎮 Found ${games.length} games for session "${SESSION}"\n`);
 
+  // Ensure frontend data directory exists
+  if (!fs.existsSync(FRONTEND_DATA_DIR)) {
+    fs.mkdirSync(FRONTEND_DATA_DIR, { recursive: true });
+  }
+
   // Write to frontend
   console.log('📝 Writing to frontend...');
   fs.writeFileSync(FRONTEND_PLAYERS, JSON.stringify(players, null, 2));
   console.log(`   ✓ ${FRONTEND_PLAYERS}`);
   fs.writeFileSync(FRONTEND_GAMES, JSON.stringify(games, null, 2));
   console.log(`   ✓ ${FRONTEND_GAMES}`);
-
-  // Write to backend (for dev parity)
-  console.log('📝 Writing to backend...');
-  fs.writeFileSync(BACKEND_PLAYERS, JSON.stringify(players, null, 2));
-  console.log(`   ✓ ${BACKEND_PLAYERS}`);
-  fs.writeFileSync(BACKEND_GAMES, JSON.stringify(games, null, 2));
-  console.log(`   ✓ ${BACKEND_GAMES}`);
 
   console.log('\n✅ Data synced successfully!');
   console.log(`Session: "${SESSION}"`);

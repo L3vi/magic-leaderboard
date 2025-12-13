@@ -10,28 +10,19 @@ import * as path from 'path';
  * 
  * What it does:
  * - Fetches ALL data from Firebase Firestore
- * - Saves to archived-data/firebase-snapshot.json (temporary snapshot)
- * - Saves fallback copies to backend/data/ for API offline mode
- * 
- * Note: For persistent master backup, use: npm run backup-firebase
+ * - Saves to archived-data/firebase-snapshot.json (single source of truth)
  * 
  * Usage:
  * npm run download-from-firebase
  * 
  * Output files created:
  * 1. archived-data/firebase-snapshot.json
- *    → Current snapshot of everything in Firebase (temporary)
- *    → Use to verify Firebase state or test recovery
- * 
- * 2. backend/data/players.json
- *    → Player list (used if Firebase is down)
- * 
- * 3. backend/data/games.json
- *    → Games from latest session (used if Firebase is down)
+ *    → Current snapshot of everything in Firebase
+ *    → Single source of truth for all backed up data
  * 
  * When to use:
  * - After verifying what's stored in Firebase
- * - To create fallback files for offline API access
+ * - To create updated backup of all data
  */
 
 interface Player {
@@ -128,28 +119,6 @@ async function backup() {
 
     fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
     console.log(`✓ Snapshot saved: archived-data/firebase-snapshot.json\n`);
-
-    // Save fallback files for API offline mode
-    const dataDir = path.join(__dirname, '../data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-
-    // Save players.json
-    fs.writeFileSync(
-      path.join(dataDir, 'players.json'),
-      JSON.stringify(players, null, 2)
-    );
-    console.log(`✓ Fallback saved: backend/data/players.json`);
-
-    // Save games.json (latest session)
-    const latestSessionId = Object.keys(sessions).sort().reverse()[0];
-    const latestGames = sessions[latestSessionId]?.games || [];
-    fs.writeFileSync(
-      path.join(dataDir, 'games.json'),
-      JSON.stringify(latestGames, null, 2)
-    );
-    console.log(`✓ Fallback saved: backend/data/games.json (from ${latestSessionId})\n`);
 
     // Summary
     console.log('✅ Snapshot complete!\n');

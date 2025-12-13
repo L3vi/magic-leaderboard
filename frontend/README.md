@@ -15,4 +15,4 @@ React + TypeScript client for Magic Leaderboard.
 
 ## Data Management
 
-The frontend automatically syncs data files from `../backend/data/` before starting development or building. The synced files (`src/data/*.json`) are git-ignored since the backend is the source of truth.
+The frontend automatically syncs data files from `../archived-data/master-leaderboard.json` before starting development or building. The synced files (`src/data/*.json`) are git-ignored since `master-leaderboard.json` is the source of truth.

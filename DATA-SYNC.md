@@ -50,12 +50,6 @@ This explains how data flows between your local files and Firebase, and when to 
   - Documenting Firebase state at a point in time
 - **Don't edit this manually** - it's auto-generated
 
-### `backend/data/players.json` & `backend/data/games.json`
-- **Fallback files** if Firebase is down
-- Auto-created by: `npm run download-from-firebase`
-- Used by: API endpoints when Firebase unavailable
-- **Don't edit manually** - always regenerate after uploading
-
 ## The Workflow
 
 ### Scenario 1: You edited `master-leaderboard.json` locally
@@ -70,10 +64,7 @@ npm run download-from-firebase
 # 3. Inspect the snapshot to confirm
 cat archived-data/firebase-snapshot.json | jq .
 
-# 4. Copy fallback files to frontend
-cp backend/data/{players,games}.json frontend/src/data/
-
-# 5. Test the app
+# 4. Sync frontend data and test
 npm run dev
 ```
 
@@ -86,10 +77,7 @@ npm run upload-to-firebase
 # 2. Verify it worked
 npm run download-from-firebase
 
-# 3. Copy fallback files
-cp backend/data/{players,games}.json frontend/src/data/
-
-# 4. Test the app
+# 3. Test the app
 npm run dev
 ```
 
@@ -116,28 +104,38 @@ local files → copy to frontend → next session loads it
 | Command | Direction | Source | Destination |
 |---------|-----------|--------|-------------|
 | `npm run upload-to-firebase` | → | `master-leaderboard.json` | Firebase |
-| `npm run download-from-firebase` | ← | Firebase | `firebase-snapshot.json` + fallback files |
+| `npm run download-from-firebase` | ← | Firebase | `firebase-snapshot.json` |
+| `npm run dev` (frontend) | → | `master-leaderboard.json` | `frontend/src/data/` |
 
 ## Key Points to Remember
 
 1. **`master-leaderboard.json` is your source of truth**
    - Edit this when you want to change what's in the database
-   - Then run `upload-to-firebase`
+   - Then run `npm run upload-to-firebase`
 
 2. **`firebase-snapshot.json` is auto-generated**
    - Don't edit this, it gets overwritten
    - Use it to see current Firebase state
    - Can restore from it in emergencies
 
-3. **Always sync fallback files after uploading**
-   ```bash
-   npm run upload-to-firebase
-   npm run download-from-firebase
-   cp backend/data/{players,games}.json frontend/src/data/
-   ```
+3. **Frontend syncs data automatically**
+   - `npm run dev` and `npm run build` automatically sync frontend data from `master-leaderboard.json`
+   - No need for manual copying
 
-4. **Test after syncing**
+4. **Single source of truth workflow**
    ```bash
+   # Edit the master file
+   vim archived-data/master-leaderboard.json
+   
+   # Upload to Firebase
+   npm run upload-to-firebase
+   
+   # Verify it worked
+   npm run download-from-firebase
+   
+   # Inspect the snapshot
+   cat archived-data/firebase-snapshot.json | jq .
+   
+   # Frontend syncs automatically when you run dev
    npm run dev
-   # Visit http://localhost:3000
    ```
