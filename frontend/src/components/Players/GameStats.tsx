@@ -9,6 +9,7 @@ interface CommanderStats {
   wins: number;
   averagePlacement: number;
   winRate: number;
+  weightedWinRate?: number;
 }
 
 interface ColorStats {
@@ -260,15 +261,29 @@ const GameStats: React.FC = () => {
       stat.topCommanders = cmdrList;
     });
 
-    // Most played commander
+    // Top commanders sorted by Bayesian weighted average win rate (min 3 plays), take top 5
+    const commanderArray = Object.values(commanderStats).filter((c) => c.playCount >= 3);
+    
+    // Calculate league average win rate for Bayesian weighting
+    const totalCommanderWins = commanderArray.reduce((sum, c) => sum + c.wins, 0);
+    const totalCommanderPlays = commanderArray.reduce((sum, c) => sum + c.playCount, 0);
+    const leagueWinRate = totalCommanderPlays > 0 ? (totalCommanderWins / totalCommanderPlays) * 100 : 50;
+    
+    // Bayesian weighted average: accounts for sample size
+    const minPlayThreshold = 3;
+    const commandersWithWeightedAverage = commanderArray.map((c) => ({
+      ...c,
+      weightedWinRate: (c.playCount * c.winRate + minPlayThreshold * leagueWinRate) / (c.playCount + minPlayThreshold),
+    }));
+    
+    const topCommandersByWinRate = commandersWithWeightedAverage
+      .sort((a, b) => b.weightedWinRate - a.weightedWinRate)
+      .slice(0, 5);
+
+    // Most played commander (for reference, though not shown)
     const sortedByPlay = Object.values(commanderStats).sort((a, b) => b.playCount - a.playCount);
     const mostPlayedCommander = sortedByPlay[0]?.name || "N/A";
     const commanderPlayCount = sortedByPlay[0]?.playCount || 0;
-
-    // Best commander (by win rate, min 3 plays for meaningful average)
-    const bestCmd = Object.values(commanderStats)
-      .filter((c) => c.playCount >= 3)
-      .sort((a, b) => b.winRate - a.winRate)[0];
 
     // Most common color - sort by play count (colors with 0 plays go last)
     const sortedByColor = Object.values(colorStats).sort((a, b) => {
@@ -295,11 +310,11 @@ const GameStats: React.FC = () => {
       mostPlayedCommander,
       commanderPlayCount,
       bestCommander: {
-        name: bestCmd?.name || "N/A",
-        winRate: bestCmd?.winRate || 0,
-        playCount: bestCmd?.playCount || 0,
+        name: topCommandersByWinRate[0]?.name || "N/A",
+        winRate: topCommandersByWinRate[0]?.winRate || 0,
+        playCount: topCommandersByWinRate[0]?.playCount || 0,
       },
-      commanderStats: sortedByPlay.slice(0, 5),
+      commanderStats: topCommandersByWinRate,
       colorStats: sortedByColor,
       mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
       mostCommonColorCode,
@@ -344,90 +359,20 @@ const GameStats: React.FC = () => {
         </div>
       </div>
 
-      {/* Commander Stats */}
-      <div className="stats-section">
-        <h3>Commander Performance</h3>
-        
-        {stats.bestCommander.name !== "N/A" && (
-          <div className="stats-grid">
-            <div className="stat-card full-width best-commander">
-              <div className="stat-label">Best Performing Commander</div>
-              <div className="stat-value commander-name">{stats.bestCommander.name}</div>
-              <div className="stat-subtext">
-                {stats.bestCommander.winRate.toFixed(0)}% win rate ({stats.bestCommander.playCount} plays)
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="commander-list">
-          <div className="commander-list-header">
-            <span>Top Commanders</span>
-          </div>
-          {stats.commanderStats.length > 0 ? (
-            <div className="commander-thumbnails-grid">
-              {stats.commanderStats.map((cmd, idx) => (
-                <CommanderThumbnail 
-                  key={idx}
-                  name={cmd.name}
-                  rank={idx + 1}
-                  playCount={cmd.playCount}
-                  wins={cmd.wins}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="commander-row empty">No commander data</div>
-          )}
-        </div>
-      </div>
-
       {/* Color Stats */}
       <div className="stats-section">
         <h3>Color Distribution & Performance</h3>
-        <div className="color-stats-expanded">
+        <div className="color-stats-simple">
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => {
               return (
-                <div key={idx} className={`color-detail-card color-${color.color.toLowerCase()}`}>
-                  {/* Header */}
-                  <div className="color-detail-header">
-                    <div className="color-badge-large">{COLOR_MAP[color.color] || color.color}</div>
-                    <div className="color-detail-title-section">
-                      <div className="color-plays-count">{color.playCount} play{color.playCount !== 1 ? "s" : ""}</div>
-                      <div className="color-record-large">{color.wins} win{color.wins !== 1 ? "s" : ""} • {color.playCount - color.wins} loss{color.playCount - color.wins !== 1 ? "es" : ""}</div>
-                    </div>
+                <div key={idx} className={`color-stat-card color-${color.color.toLowerCase()}`}>
+                  <div className="color-stat-header">
+                    <div className="color-stat-name">{COLOR_MAP[color.color] || color.color}</div>
+                    <div className="color-stat-plays">{color.playCount}p</div>
                   </div>
-                  
-                  {/* Main Stats */}
-                  <div className="color-detail-stats">
-                    <div className="stat-box">
-                      <div className="stat-box-label">Win Rate</div>
-                      <div className="stat-box-value">{color.winRate.toFixed(1)}%</div>
-                    </div>
-                    <div className="stat-box">
-                      <div className="stat-box-label">Avg Placement</div>
-                      <div className="stat-box-value">{(color.averagePlacement || 0).toFixed(2)}</div>
-                    </div>
-                  </div>
-                  
-                  {/* Top Commanders */}
-                  {color.topCommanders && color.topCommanders.length > 0 && (
-                    <div className="color-detail-commanders">
-                      <div className="commanders-label">Top Commanders</div>
-                      <div className="commanders-list">
-                        {color.topCommanders.map((cmd, cmdIdx) => (
-                          <CommanderThumbnail 
-                            key={cmdIdx} 
-                            name={cmd.name} 
-                            rank={cmdIdx + 1} 
-                            playCount={cmd.playCount}
-                            wins={cmd.wins}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div className="color-stat-record">{color.wins}W • {color.playCount - color.wins}L</div>
+                  <div className="color-stat-rate">{color.winRate.toFixed(0)}%</div>
                 </div>
               );
             })
