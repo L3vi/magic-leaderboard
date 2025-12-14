@@ -1,9 +1,39 @@
 {
-  "backupDate": "2025-12-13T19:18:48.848Z",
+  "backupDate": "2025-12-14T21:10:19.699Z",
   "players": [
     {
       "id": "player-anson",
-      "name": "Anson"
+      "name": "Anson",
+      "commanderArt": {
+        "Miirym, Sentinel Wyrm": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/9/6/96f0daf2-36c5-4b3e-ab81-7317682a406b.jpg?1674138826",
+          "commanderName": "Miirym, Sentinel Wyrm",
+          "variantId": "96f0daf2-36c5-4b3e-ab81-7317682a406b-clb",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/9/6/96f0daf2-36c5-4b3e-ab81-7317682a406b.jpg?1674138826",
+          "timestamp": 1765665173151
+        },
+        "Atla Palani, Nest Tender": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
+          "commanderName": "Atla Palani, Nest Tender",
+          "variantId": "c2559933-958b-4dfd-a037-3778b914f319-sld",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
+          "timestamp": 1765665208869
+        },
+        "Betor, Kin to All": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
+          "commanderName": "Betor, Kin to All",
+          "variantId": "f1969dec-4d6b-493a-8233-76faf8fa3cea-tdm",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
+          "timestamp": 1765665220683
+        },
+        "Vorinclex, Monstrous Raider": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/f/6/f6db03ef-db89-43c4-89b4-d48e0620e101.jpg?1631055228",
+          "commanderName": "Vorinclex, Monstrous Raider",
+          "variantId": "f6db03ef-db89-43c4-89b4-d48e0620e101-khm",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/f/6/f6db03ef-db89-43c4-89b4-d48e0620e101.jpg?1631055228",
+          "timestamp": 1765665246278
+        }
+      }
     },
     {
       "id": "player-caleb",
@@ -23,15 +53,56 @@
     },
     {
       "id": "player-levi",
-      "name": "Levi"
+      "name": "Levi",
+      "commanderArt": {
+        "Karona, False God": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/0/3/03988a88-090d-4daf-bb0a-ca0dabee917f.jpg?1759032798",
+          "commanderName": "Karona, False God",
+          "variantId": "03988a88-090d-4daf-bb0a-ca0dabee917f-sld",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/0/3/03988a88-090d-4daf-bb0a-ca0dabee917f.jpg?1759032798",
+          "timestamp": 1765674358809
+        },
+        "Grimgrin, Corpse-Born": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/a/8/a8648734-ed6c-471f-91a1-6b710bbaf370.jpg?1562835166",
+          "commanderName": "Grimgrin, Corpse-Born",
+          "variantId": "a8648734-ed6c-471f-91a1-6b710bbaf370-isd",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/a/8/a8648734-ed6c-471f-91a1-6b710bbaf370.jpg?1562835166",
+          "timestamp": 1765684669794
+        },
+        "Abuelo, Ancestral Echo": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/e/0/e0bcc6f3-bae4-485c-82da-56c15c97c7f8.jpg?1699044750",
+          "commanderName": "Abuelo, Ancestral Echo",
+          "variantId": "e0bcc6f3-bae4-485c-82da-56c15c97c7f8-lci",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/e/0/e0bcc6f3-bae4-485c-82da-56c15c97c7f8.jpg?1699044750",
+          "timestamp": 1765690288435
+        }
+      }
     },
     {
       "id": "player-nate",
-      "name": "Nate"
+      "name": "Nate",
+      "commanderArt": {
+        "Jodah, the Unifier": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/4/1/416429e0-4b7e-43d1-8126-16ab679b6e39.jpg?1674074009",
+          "commanderName": "Jodah, the Unifier",
+          "variantId": "416429e0-4b7e-43d1-8126-16ab679b6e39-dmu",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/4/1/416429e0-4b7e-43d1-8126-16ab679b6e39.jpg?1674074009",
+          "timestamp": 1765730189023
+        }
+      }
     },
     {
       "id": "player-parker",
-      "name": "Parker"
+      "name": "Parker",
+      "commanderArt": {
+        "Fire Lord Zuko": {
+          "fullImageUrl": "https://cards.scryfall.io/normal/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
+          "commanderName": "Fire Lord Zuko",
+          "variantId": "0c457a8b-8d56-474d-b788-c058a9882fdd-tla",
+          "artUrl": "https://cards.scryfall.io/art_crop/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
+          "timestamp": 1765674369289
+        }
+      }
     },
     {
       "id": "player-shane",
@@ -76,6 +147,36 @@
             }
           ],
           "createdAt": "2025-12-13T19:14:51.665Z"
+        },
+        {
+          "id": "1kRGOsZzL5Jz9Q3amzao",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Saruman, the White Hand",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Círdan the Shipwright",
+              "placement": 2
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": [
+                "Frodo, Adventurous Hobbit",
+                "Sam, Loyal Attendant"
+              ],
+              "placement": 3
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Éowyn, Shieldmaiden",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T07:11:02.756Z"
         },
         {
           "id": "2JN2loOYOm1cg4jRtB5H",
@@ -211,6 +312,55 @@
           "createdAt": "2025-12-13T19:14:52.416Z"
         },
         {
+          "id": "8nT0TVOrQSXrySdjq7my",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "The First Sliver",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Toph, the First Metalbender",
+              "placement": 2
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Isshin, Two Heavens as One",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T07:59:01.552Z"
+        },
+        {
+          "id": "DyJGwxXeBL9qdFdf8rJL",
+          "dateCreated": "2025-12-14T05:28:52.917Z",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "commander": "Ms. Bumbleflower",
+              "placement": 1
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Giada, Font of Hope",
+              "placement": 2
+            },
+            {
+              "playerId": "player-cameron",
+              "commander": "Kaust, Eyes of the Glade",
+              "placement": 3
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Fire Lord Azula",
+              "placement": 4
+            }
+          ],
+          "notes": "Authority of consuls is bullshit. Jordan must be stacking the deck.yet despite all odds anson got it"
+        },
+        {
           "id": "E6UYZCCSimAB9jfK5wip",
           "dateCreated": "2025-12-13T00:02:20.466Z",
           "notes": "",
@@ -265,6 +415,28 @@
           "createdAt": "2025-12-13T19:14:52.706Z"
         },
         {
+          "id": "Ed327zCq2tltcyP5gRCX",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Zada, Hedron Grinder",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Tidus, Yuna's Guardian",
+              "placement": 2
+            },
+            {
+              "playerId": "player-cameron",
+              "commander": "Ezio Auditore da Firenze",
+              "placement": 3
+            }
+          ],
+          "notes": "Caleb: \"Zada? What does he do?\"\n\nAnson: \"You guys should kill him.\"",
+          "dateCreated": "2025-12-14T04:12:41.706Z"
+        },
+        {
           "id": "GY3ccimIMNePXlpX7us8",
           "dateCreated": "2025-12-12T20:13:38.920Z",
           "notes": "Nekusar ping + mindcrank from mill deck = the largest graveyards.\n\nAlso Parker sacrificed a evolving wilds and forgot to look for a land. We call that a pro gamer move.",
@@ -298,6 +470,90 @@
           "createdAt": "2025-12-13T19:14:52.885Z"
         },
         {
+          "id": "GaBDlnCWVpwZ5xZYH68n",
+          "players": [
+            {
+              "playerId": "player-anson",
+              "commander": "Ms. Bumbleflower",
+              "placement": 1
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Eriette of the Charmed Apple",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Strong, the Brutish Thespian",
+              "placement": 3
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Sefris of the Hidden Ways",
+              "placement": 4
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T09:05:16.545Z"
+        },
+        {
+          "id": "HiFI1zt8k2qE118ayIEs",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": [
+                "Ardenn, Intrepid Archaeologist",
+                "Rograkh, Son of Rohgahh"
+              ],
+              "placement": 1
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Wick, the Whorled Mind",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Vivi Ornitier",
+              "placement": 3
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Voja, Jaws of the Conclave",
+              "placement": 4
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-13T19:20:20.342Z"
+        },
+        {
+          "id": "KJyKk2Gcx2iGoLHC2UmG",
+          "players": [
+            {
+              "playerId": "player-jordan",
+              "commander": "Vivi Ornitier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Nekusar, the Mindrazer",
+              "placement": 2
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Karona, False God",
+              "placement": 4
+            }
+          ],
+          "dateCreated": "2025-12-14T01:11:15.479Z",
+          "notes": "Vivi vivi’d"
+        },
+        {
           "id": "NHHT6937vIuNhxT8gjBk",
           "players": [
             {
@@ -325,6 +581,33 @@
           "dateCreated": "2025-12-13T18:16:36.094Z"
         },
         {
+          "id": "USBFQofgmzY4fFQWt9Ur",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Toph, the First Metalbender",
+              "placement": 1
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Shay Cormac",
+              "placement": 2
+            },
+            {
+              "playerId": "player-cameron",
+              "commander": "Ezio Auditore da Firenze",
+              "placement": 3
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Isshin, Two Heavens as One",
+              "placement": 4
+            }
+          ],
+          "dateCreated": "2025-12-14T00:59:12.332Z",
+          "notes": "SECRET TUNNEL, SECRET TUNNEL! Through the mountain! Secret secret secret secret tunnel!"
+        },
+        {
           "id": "YWkdI2vDzl91HdUg8w0t",
           "players": [
             {
@@ -350,6 +633,66 @@
           ],
           "notes": "",
           "dateCreated": "2025-12-13T08:30:59.324Z"
+        },
+        {
+          "id": "Yv7VeIC0ke7eQ5nz9dE8",
+          "notes": "Zuko turned to the dark side again and became the archnemesis.. and won.",
+          "dateCreated": "2025-12-14T05:32:04.559Z",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Fire Lord Zuko",
+              "placement": 1
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Norman Osborn // Green Goblin",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Abuelo, Ancestral Echo",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Atraxa, Grand Unifier",
+              "placement": 2
+            }
+          ]
+        },
+        {
+          "id": "ZWCAsFrJBL9XtgpjPo96",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Voja, Jaws of the Conclave",
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Ghired, Mirror of the Wilds",
+              "placement": 2
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": [
+                "Ardenn, Intrepid Archaeologist",
+                "Rograkh, Son of Rohgahh"
+              ],
+              "placement": 3
+            },
+            {
+              "playerId": "player-anson",
+              "commander": [
+                "Yoshimaru, Ever Faithful",
+                "Ardenn, Intrepid Archaeologist"
+              ],
+              "placement": 4
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T00:26:25.190Z"
         },
         {
           "id": "bYqefwalWgkqW5hzgSzg",
@@ -380,6 +723,50 @@
           ],
           "notes": "",
           "dateCreated": "2025-12-13T08:21:18.718Z"
+        },
+        {
+          "id": "cYKejctzH7Vjk79WbsYj",
+          "players": [
+            {
+              "playerId": "player-nate",
+              "commander": "Jodah, the Unifier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "The Jolly Balloon Man",
+              "placement": 2
+            },
+            {
+              "playerId": "player-parker",
+              "commander": "Edgar Markov",
+              "placement": 3
+            }
+          ],
+          "notes": "Somehow on the last turn 6 life ended up as enough to commit murders",
+          "dateCreated": "2025-12-14T06:58:49.162Z"
+        },
+        {
+          "id": "faQpaKUaPL4jmpjyt1cM",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Vivi Ornitier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-jordan",
+              "commander": "Go-Shintai of Life's Origin",
+              "placement": 2
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Captain America, First Avenger",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T08:41:13.171Z"
         },
         {
           "id": "fxkXMrNFEMpGGbbXRouM",
@@ -436,6 +823,28 @@
           "createdAt": "2025-12-13T19:14:53.180Z"
         },
         {
+          "id": "goPfKN15eBcxwUV5qSQs",
+          "players": [
+            {
+              "playerId": "player-parker",
+              "commander": "Tivit, Seller of Secrets",
+              "placement": 1
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Strong, the Brutish Thespian",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Miirym, Sentinel Wyrm",
+              "placement": 3
+            }
+          ],
+          "notes": "I think we got a clue what a treasure this deck is. Because we died to ping damage from treasures and clues",
+          "dateCreated": "2025-12-14T06:08:13.759Z"
+        },
+        {
           "id": "hAZOLKL8QRTubXdtP1kG",
           "dateCreated": "2025-12-12T23:05:05.466Z",
           "notes": "Jordan's deck was 🔥",
@@ -460,6 +869,55 @@
             }
           ],
           "createdAt": "2025-12-13T19:14:53.327Z"
+        },
+        {
+          "id": "iA2MHieDAOGXjYVLpadi",
+          "players": [
+            {
+              "playerId": "player-danny",
+              "commander": "Captain America, First Avenger",
+              "placement": 1
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Grimgrin, Corpse-Born",
+              "placement": 2
+            },
+            {
+              "playerId": "player-nate",
+              "commander": "Bello, Bard of the Brambles",
+              "placement": 3
+            }
+          ],
+          "notes": "",
+          "dateCreated": "2025-12-14T03:59:41.040Z"
+        },
+        {
+          "id": "isjyGrBOi4MkiR9jx12E",
+          "players": [
+            {
+              "playerId": "player-nate",
+              "commander": "Jodah, the Unifier",
+              "placement": 1
+            },
+            {
+              "playerId": "player-caleb",
+              "commander": "Tidus, Yuna's Guardian",
+              "placement": 2
+            },
+            {
+              "playerId": "player-danny",
+              "commander": "Captain America, First Avenger",
+              "placement": 2
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "Gor Muldrak, Amphinologist",
+              "placement": 2
+            }
+          ],
+          "dateCreated": "2025-12-14T16:38:26.137Z",
+          "notes": "Levi misplayed and we all died"
         },
         {
           "id": "lqQll7if8p6maAlLpEhM",
@@ -566,6 +1024,33 @@
             }
           ],
           "createdAt": "2025-12-13T19:14:53.789Z"
+        },
+        {
+          "id": "vmi7tfh1ALLVlmdgpdT6",
+          "players": [
+            {
+              "playerId": "player-caleb",
+              "commander": "Fire Lord Azula",
+              "placement": 1
+            },
+            {
+              "playerId": "player-anson",
+              "commander": "Betor, Kin to All",
+              "placement": 2
+            },
+            {
+              "playerId": "player-cameron",
+              "commander": "Éowyn, Shieldmaiden",
+              "placement": 3
+            },
+            {
+              "playerId": "player-levi",
+              "commander": "The Pride of Hull Clade",
+              "placement": 3
+            }
+          ],
+          "notes": "Turns out two toughness-matters decks make the game go very long.",
+          "dateCreated": "2025-12-13T19:27:50.690Z"
         },
         {
           "id": "wC9P5tvQgyzUxU8l5sYN",
