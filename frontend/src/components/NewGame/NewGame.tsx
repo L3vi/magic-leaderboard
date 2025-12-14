@@ -106,15 +106,16 @@ type CommanderAutocompleteProps = {
   games: any[];
   defaultCommander?: string;
   onCardClick?: (card: { name: string; imageUrl: string; playerId?: string }) => void;
+  onPartnerSelect?: (partnerCommander: string) => void;
 };
 
-const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander, onCardClick }) => {
-  const [results, setResults] = useState<{ name: string; id: string; image?: string }[]>([]);
+const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, onChange, playerId, games: gamesData, defaultCommander, onCardClick, onPartnerSelect }) => {
+  const [results, setResults] = useState<{ name: string; id: string; image?: string; partnerCommander?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lastPlayedCommander, setLastPlayedCommander] = useState<string | null>(null);
-  const [previousCommanders, setPreviousCommanders] = useState<string[]>([]);
+  const [previousCommanders, setPreviousCommanders] = useState<{ name: string; partnerCommander?: string }[]>([]);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
   const artUrl = useCommanderArt(value);
@@ -160,22 +161,32 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   useEffect(() => {
     if (playerId && playerId !== "__add__" && playerId !== "") {
       const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
-      const commanders: string[] = [];
+      const commanders: { name: string; partnerCommander?: string }[] = [];
       let lastCommander: string | null = null;
       
       for (const game of sortedGames) {
         const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
         if (playerInGame) {
           // Handle commander as string or array
-          const cmdString = Array.isArray(playerInGame.commander) ? playerInGame.commander[0] : playerInGame.commander;
+          const isArray = Array.isArray(playerInGame.commander);
+          let cmdString = isArray ? playerInGame.commander[0] : playerInGame.commander;
+          let partnerCmd = isArray && playerInGame.commander.length > 1 ? playerInGame.commander[1] : undefined;
+          
+          // Normalize partner order (sort alphabetically to ensure consistent ordering)
+          if (partnerCmd) {
+            const sorted = [cmdString, partnerCmd].sort();
+            cmdString = sorted[0];
+            partnerCmd = sorted[1];
+          }
+          
           // Set the first one we find as the last played
           if (!lastCommander) {
             lastCommander = cmdString;
             setLastPlayedCommander(cmdString);
           }
-          // Collect all unique commanders this player has played
-          if (!commanders.includes(cmdString)) {
-            commanders.push(cmdString);
+          // Collect all unique commanders this player has played (with normalized partners)
+          if (!commanders.find(c => c.name === cmdString && c.partnerCommander === partnerCmd)) {
+            commanders.push({ name: cmdString, partnerCommander: partnerCmd });
           }
         }
       }
@@ -222,7 +233,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 
     // If input is empty, show previous commanders
     if (!val.trim()) {
-      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
       setShowDropdown(true);
       setLoading(false);
       return;
@@ -240,17 +251,21 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     }, 300);
   };
 
-  const handleSelect = (cardName: string) => {
+  const handleSelect = (cardName: string, partnerCommander?: string) => {
     onChange(cardName);
     setShowDropdown(false);
     setResults([]);
+    // Call the partner select callback if partner commander exists
+    if (partnerCommander && onPartnerSelect) {
+      onPartnerSelect(partnerCommander);
+    }
     // Image will be set automatically via the useEffect that watches artUrl
   };
 
   const handleInputFocus = () => {
     // Show previous commanders when input is focused and empty
     if (!value.trim() && previousCommanders.length > 0) {
-      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
       setShowDropdown(true);
     }
   };
@@ -258,7 +273,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const handleInputClick = () => {
     // When clicking an empty input, show previous commanders
     if (!value.trim() && previousCommanders.length > 0) {
-      setResults(previousCommanders.map(name => ({ name, id: name })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
       setShowDropdown(true);
     }
   };
@@ -316,12 +331,12 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
             {results.map((card) => (
               <li
                 key={card.id}
-                onMouseDown={() => handleSelect(card.name)}
+                onMouseDown={() => handleSelect(card.name, card.partnerCommander)}
               >
                 {card.image && (
                   <img src={card.image} alt={card.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', background: '#eee' }} />
                 )}
-                <span>{card.name}</span>
+                <span>{card.name}{card.partnerCommander ? ` // ${card.partnerCommander}` : ''}</span>
               </li>
             ))}
           </ul>
@@ -420,7 +435,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       setPlayerFields(
         initialData.players.map(p => {
           // Handle both string and array commanders
-          const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
+          const commanders = Array.isArray(p.commander) ? p.commander.sort() : [p.commander];
           return {
             playerId: p.playerId,
             commander: commanders[0] || '',
@@ -535,10 +550,18 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         // Use commander if set, otherwise use lastPlayedCommander
         const primaryCommander = f.commander || f.lastPlayedCommander || '';
         // Use array for partners, string for single commander
-        const commander = f.partnerCommander ? [primaryCommander, f.partnerCommander] : primaryCommander;
+        if (f.partnerCommander) {
+          // Normalize partner order (sort alphabetically for consistency)
+          const partners = [primaryCommander, f.partnerCommander].sort();
+          return {
+            playerId: f.playerId,
+            commander: partners,
+            placement: f.placement
+          };
+        }
         return {
           playerId: f.playerId,
-          commander,
+          commander: primaryCommander,
           placement: f.placement
         };
       }),
@@ -641,6 +664,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     games={gamesData}
                     defaultCommander={field.lastPlayedCommander}
                     onCardClick={setSelectedCard}
+                    onPartnerSelect={(partner) => {
+                      // Auto-fill partner commander when selecting a commander with partner history
+                      if (!field.partnerCommander || field.partnerCommander.trim() === '') {
+                        handlePartnerCommanderChange(idx, partner);
+                      }
+                    }}
                   />
                 </label>
                 {field.partnerCommander && (
