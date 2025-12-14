@@ -15,6 +15,9 @@ interface ColorStats {
   playCount: number;
   wins: number;
   winRate: number;
+  averagePlacement?: number;
+  totalPlacement?: number;
+  topCommanders?: Array<{ name: string; playCount: number; wins: number }>;
 }
 
 const COLOR_MAP: Record<string, string> = {
@@ -25,31 +28,67 @@ const COLOR_MAP: Record<string, string> = {
   "G": "Green",
 };
 
-// Commander color detection (simplified)
+// Commander color detection
 const getCommanderColors = (commanderName: string): string[] => {
-  // This is a basic implementation - in a real app you'd want a database
   const colorPatterns: Record<string, string[]> = {
     // White
     "Giada": ["W"],
-    "Elspeth": ["W"],
-    "Solemnity": ["W"],
+    "Lathiel": ["W"],
+    "Tannuk": ["W"],
     // Blue
-    "Nekusar": ["U", "R"],
     "Talrand": ["U"],
     "Jace": ["U"],
+    "Urza": ["U"],
+    "Haldan": ["U"],
     // Black
-    "Yawgmoth": ["B", "G"],
+    "Elesh Norn": ["B"],
     "Sheoldred": ["B"],
+    "Sefris": ["B"],
     // Red
     "Starscream": ["R"],
-    "Pia": ["R"],
-    "Gishath": ["R", "G"],
+    "Ognis": ["R"],
+    "Rograkh": ["R"],
+    "Atreus": ["R"],
+    "Fire Lord Zuko": ["R"],
+    "Fire Lord Azula": ["R"],
+    "Gimli": ["R"],
     // Green
-    "Yavimaya": ["G"],
-    // Multi
+    "Sythis": ["G"],
+    "Old Stickfingers": ["G"],
+    "Go-Shintai": ["G"],
+    "Kodama": ["G"],
+    "Gilanra": ["G"],
+    "Toph": ["G"],
+    "Atla Palani": ["G"],
+    // Multi-color
+    "Nekusar": ["U", "R"],
     "Ian Malcolm": ["U", "R"],
     "Inniaz": ["U", "W"],
     "Isshin": ["R", "W"],
+    "Atraxa": ["W", "U", "B", "G"],
+    "Jodah": ["W", "U", "R"],
+    "Yawgmoth": ["B", "G"],
+    "Vorinclex": ["G", "R"],
+    "Miirym": ["R", "G"],
+    "Rin and Seri": ["W", "G"],
+    "Chishiro": ["W", "U", "B"],
+    "Lo and Li": ["W", "U", "B"],
+    "Ardenn": ["W", "R"],
+    "Betor": ["W", "B", "G"],
+    "The Pride of Hull Clade": ["W", "U", "B", "R", "G"],
+    "Pako": ["U", "R", "G"],
+    "Kratos": ["W", "B", "R"],
+    "Choco": ["W", "U", "B", "R", "G"],
+    "Tidus": ["W", "U", "B", "G"],
+    // Additional Marvel/Gaming characters
+    "Anti-Venom": ["W", "B"],
+    "Captain America": ["W", "R"],
+    "Electro": ["U", "R"],
+    "Ezio": ["U", "B", "R"],
+    "Norman Osborn": ["U", "B", "R"],
+    "Shadow": ["U", "B"],
+    "Vivi": ["U", "R"],
+    "Arabella": ["W", "U"],
   };
 
   for (const [key, colors] of Object.entries(colorPatterns)) {
@@ -58,8 +97,8 @@ const getCommanderColors = (commanderName: string): string[] => {
     }
   }
 
-  // Default to blue if not found
-  return ["U"];
+  // Return empty array if not found (will show no color stats)
+  return [];
 };
 
 const GameStats: React.FC = () => {
@@ -118,7 +157,16 @@ const GameStats: React.FC = () => {
 
     // Commander statistics
     const commanderStats: Record<string, CommanderStats> = {};
-    const colorStats: Record<string, ColorStats> = {};
+    const colorStats: Record<string, ColorStats> = {
+      "W": { color: "W", playCount: 0, wins: 0, winRate: 0, totalPlacement: 0, topCommanders: [] },
+      "U": { color: "U", playCount: 0, wins: 0, winRate: 0, totalPlacement: 0, topCommanders: [] },
+      "B": { color: "B", playCount: 0, wins: 0, winRate: 0, totalPlacement: 0, topCommanders: [] },
+      "R": { color: "R", playCount: 0, wins: 0, winRate: 0, totalPlacement: 0, topCommanders: [] },
+      "G": { color: "G", playCount: 0, wins: 0, winRate: 0, totalPlacement: 0, topCommanders: [] },
+    };
+    const colorCommanderStats: Record<string, Record<string, { playCount: number; wins: number }>> = {
+      "W": {}, "U": {}, "B": {}, "R": {}, "G": {}
+    };
     const partnerPairCounts: Record<string, number> = {};
 
     games.forEach((game) => {
@@ -151,17 +199,19 @@ const GameStats: React.FC = () => {
         // Color statistics
         const colors = getCommanderColors(commanders[0]);
         colors.forEach((color) => {
-          if (!colorStats[color]) {
-            colorStats[color] = {
-              color: color,
-              playCount: 0,
-              wins: 0,
-              winRate: 0,
-            };
-          }
           colorStats[color].playCount += 1;
           if (isWinner) {
             colorStats[color].wins += 1;
+          }
+          colorStats[color].totalPlacement! += p.placement;
+          
+          // Track commanders per color
+          if (!colorCommanderStats[color][commanders[0]]) {
+            colorCommanderStats[color][commanders[0]] = { playCount: 0, wins: 0 };
+          }
+          colorCommanderStats[color][commanders[0]].playCount += 1;
+          if (isWinner) {
+            colorCommanderStats[color][commanders[0]].wins += 1;
           }
         });
       });
@@ -174,7 +224,15 @@ const GameStats: React.FC = () => {
     });
 
     Object.values(colorStats).forEach((stat) => {
-      stat.winRate = (stat.wins / stat.playCount) * 100;
+      stat.winRate = stat.playCount > 0 ? (stat.wins / stat.playCount) * 100 : 0;
+      stat.averagePlacement = stat.playCount > 0 ? stat.totalPlacement! / stat.playCount : 0;
+      
+      // Get top 3 commanders for this color
+      const cmdrList = Object.entries(colorCommanderStats[stat.color] || {})
+        .map(([name, data]) => ({ name, ...data }))
+        .sort((a, b) => b.playCount - a.playCount)
+        .slice(0, 3);
+      stat.topCommanders = cmdrList;
     });
 
     // Most played commander
@@ -182,13 +240,18 @@ const GameStats: React.FC = () => {
     const mostPlayedCommander = sortedByPlay[0]?.name || "N/A";
     const commanderPlayCount = sortedByPlay[0]?.playCount || 0;
 
-    // Best commander (by win rate, min 2 plays)
+    // Best commander (by win rate, min 3 plays for meaningful average)
     const bestCmd = Object.values(commanderStats)
-      .filter((c) => c.playCount >= 2)
+      .filter((c) => c.playCount >= 3)
       .sort((a, b) => b.winRate - a.winRate)[0];
 
-    // Most common color
-    const sortedByColor = Object.values(colorStats).sort((a, b) => b.playCount - a.playCount);
+    // Most common color - sort by play count (colors with 0 plays go last)
+    const sortedByColor = Object.values(colorStats).sort((a, b) => {
+      if (a.playCount === 0 && b.playCount === 0) return 0;
+      if (a.playCount === 0) return 1;
+      if (b.playCount === 0) return -1;
+      return b.playCount - a.playCount;
+    });
     const mostCommonColorCode = sortedByColor[0]?.color || "U";
     const commonColorCount = sortedByColor[0]?.playCount || 0;
 
@@ -250,7 +313,7 @@ const GameStats: React.FC = () => {
           </div>
           <div className="stat-card">
             <div className="stat-label">Most Common Color</div>
-            <div className={`stat-value color-badge color-${stats.mostCommonColorCode.toLowerCase()}`}>{stats.mostCommonColor}</div>
+            <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
             <div className="stat-subtext">Played {stats.commonColorCount} times</div>
           </div>
         </div>
@@ -263,7 +326,7 @@ const GameStats: React.FC = () => {
         {stats.bestCommander.name !== "N/A" && (
           <div className="stats-grid">
             <div className="stat-card full-width best-commander">
-              <div className="stat-label">Highest Win Rate Commander</div>
+              <div className="stat-label">Best Performing Commander</div>
               <div className="stat-value commander-name">{stats.bestCommander.name}</div>
               <div className="stat-subtext">
                 {stats.bestCommander.winRate.toFixed(0)}% win rate ({stats.bestCommander.playCount} plays)
@@ -296,43 +359,58 @@ const GameStats: React.FC = () => {
 
       {/* Color Stats */}
       <div className="stats-section">
-        <h3>Color Distribution</h3>
-        <div className="color-stats-grid">
+        <h3>Color Distribution & Performance</h3>
+        <div className="color-stats-expanded">
           {stats.colorStats.length > 0 ? (
-            stats.colorStats.map((color, idx) => (
-              <div key={idx} className={`color-stat-card color-${color.color.toLowerCase()}`}>
-                <div className="color-badge">{COLOR_MAP[color.color] || color.color}</div>
-                <div className="color-meta">
-                  <div className="color-plays">{color.playCount} plays</div>
-                  <div className="color-winrate">
-                    {color.winRate.toFixed(0)}% win rate
+            stats.colorStats.map((color, idx) => {
+              return (
+                <div key={idx} className={`color-detail-card color-${color.color.toLowerCase()}`}>
+                  {/* Header */}
+                  <div className="color-detail-header">
+                    <div className="color-badge-large">{COLOR_MAP[color.color] || color.color}</div>
+                    <div className="color-detail-title-section">
+                      <div className="color-plays-count">{color.playCount} plays</div>
+                      <div className="color-record-large">{color.wins}W-{color.playCount - color.wins}L</div>
+                    </div>
                   </div>
+                  
+                  {/* Main Stats */}
+                  <div className="color-detail-stats">
+                    <div className="stat-box">
+                      <div className="stat-box-label">Win Rate</div>
+                      <div className="stat-box-value">{color.winRate.toFixed(1)}%</div>
+                    </div>
+                    <div className="stat-box">
+                      <div className="stat-box-label">Avg Placement</div>
+                      <div className="stat-box-value">{(color.averagePlacement || 0).toFixed(2)}</div>
+                    </div>
+                  </div>
+                  
+                  {/* Top Commanders */}
+                  {color.topCommanders && color.topCommanders.length > 0 && (
+                    <div className="color-detail-commanders">
+                      <div className="commanders-label">Top Commanders</div>
+                      <div className="commanders-list">
+                        {color.topCommanders.map((cmd, cmdIdx) => (
+                          <div key={cmdIdx} className="commander-item">
+                            <div className="commander-item-rank">{cmdIdx + 1}</div>
+                            <div className="commander-item-info">
+                              <div className="commander-item-name">{cmd.name}</div>
+                              <div className="commander-item-stats">{cmd.playCount}p • {cmd.wins}W</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div>No color data</div>
           )}
         </div>
       </div>
-
-      {/* Partner Pairs */}
-      {stats.partnerPairs.length > 0 && (
-        <div className="stats-section">
-          <h3>Popular Partner Pairs</h3>
-          <div className="partner-pairs-list">
-            {stats.partnerPairs.map((pair, idx) => (
-              <div key={idx} className="partner-pair">
-                <div className="pair-rank">{idx + 1}</div>
-                <div className="pair-info">
-                  <div className="pair-name">{pair.pair}</div>
-                  <div className="pair-count">Played {pair.count} time{pair.count !== 1 ? "s" : ""}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

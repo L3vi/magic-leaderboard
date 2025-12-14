@@ -21,6 +21,13 @@ const commanderImageCache: Record<string, CardImageCache> = {};
 const commanderVariantsCache: Record<string, CardVariant[]> = {};
 
 /**
+ * Export cache reference for external pre-population
+ */
+export function getCommanderImageCache(): Record<string, CardImageCache> {
+  return commanderImageCache;
+}
+
+/**
  * Clear cache for a specific commander to force re-fetch
  * Useful after saving a new art preference
  */
@@ -32,6 +39,7 @@ export function clearCommanderCache(commander: string): void {
 /**
  * Hook to fetch and cache commander card art from Scryfall API
  * Debounced to avoid rate limiting on rapid input changes (e.g., typing in autocomplete)
+ * Only fetches for commanders with 3+ characters
  * @param commander - The commander card name
  * @returns URL of the card art image, or empty string if not found
  */
@@ -42,8 +50,8 @@ export function useCommanderArt(commander: string): string {
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    // Don't fetch if commander is empty
-    if (!commander || commander.trim() === "") {
+    // Don't fetch if commander is empty or too short
+    if (!commander || commander.trim().length < 3) {
       setImgUrl("");
       return;
     }
@@ -107,10 +115,12 @@ export function useCommanderArt(commander: string): string {
   }, [commander]);
 
   return imgUrl;
+}
 
 /**
  * Hook to fetch and cache full commander card images from Scryfall API
  * Debounced to avoid rate limiting on rapid input changes (e.g., typing in autocomplete)
+ * Only fetches for commanders with 3+ characters
  * @param commander - The commander card name
  * @returns URL of the full card image, or empty string if not found
  */
@@ -121,8 +131,8 @@ export function useCommanderFullImage(commander: string): string {
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    // Don't fetch if commander is empty
-    if (!commander || commander.trim() === "") {
+    // Don't fetch if commander is empty or too short
+    if (!commander || commander.trim().length < 3) {
       setImgUrl("");
       return;
     }
@@ -285,6 +295,7 @@ export function useCommanderVariants(commander: string): CardVariant[] {
 /**
  * Hook to fetch commander art with player preference fallback
  * If the player has saved an art preference, it returns that instead
+ * Only fetches for commanders with 3+ characters
  * @param commander - The commander card name
  * @param playerId - Optional player ID to check for saved preferences
  * @returns URL of the card art image
@@ -297,7 +308,7 @@ export function useCommanderArtWithPreference(
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
-    if (!commander || commander.trim() === "") {
+    if (!commander || commander.trim().length < 3) {
       setImgUrl("");
       return;
     }
@@ -367,6 +378,7 @@ export function useCommanderArtWithPreference(
 
 /**
  * Hook to fetch full commander art with player preference fallback
+ * Only fetches for commanders with 3+ characters
  * @param commander - The commander card name
  * @param playerId - Optional player ID to check for saved preferences
  * @returns URL of the full card image
@@ -379,7 +391,7 @@ export function useCommanderFullImageWithPreference(
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
-    if (!commander || commander.trim() === "") {
+    if (!commander || commander.trim().length < 3) {
       setImgUrl("");
       return;
     }

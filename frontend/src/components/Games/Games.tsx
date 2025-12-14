@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Games.css";
 import GameRow from "./GameRow";
 import { useGames, usePlayers } from "../../hooks/useApi";
+import { getCommanderImageCache } from "../../hooks/useCommanderArt";
+import { preFetchCommandersFromGames } from "../../services/commanderPreFetchService";
 
 // TypeScript interfaces for game history data
 interface Player {
@@ -34,6 +36,16 @@ const Games: React.FC = () => {
 
   // Use games data from API
   const allGames = useMemo(() => gamesData, [gamesData]);
+
+  // Pre-fetch all commanders from games on load to populate cache
+  useEffect(() => {
+    if (gamesData.length > 0) {
+      const cache = getCommanderImageCache();
+      preFetchCommandersFromGames(gamesData, cache).catch((error) => {
+        console.error("Error pre-fetching commanders:", error);
+      });
+    }
+  }, [gamesData.length]); // Only run once when games first load
 
   // Filter and sort games
   const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
