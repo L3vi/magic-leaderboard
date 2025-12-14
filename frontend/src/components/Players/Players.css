@@ -124,6 +124,7 @@
 /* Numeric columns - center aligned */
 .leaderboard-col.player-score,
 .leaderboard-col.player-average,
+.leaderboard-col.weighted-avg-col,
 .leaderboard-col.games-col {
   text-align: center;
   justify-content: center;
@@ -141,8 +142,23 @@
   }
 }
 
+/* Weighted average column - hidden on mobile, visible on desktop */
+@media (max-width: 639px) {
+  .weighted-avg-col {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 0 !important;
+  }
+}
+
 @media (min-width: 640px) {
   .games-col {
+    display: flex;
+  }
+  .weighted-avg-col {
     display: flex;
   }
 }

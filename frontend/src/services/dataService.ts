@@ -52,6 +52,7 @@ export interface PlayerScore {
   placement: number;
   gameCount: number;
   average: number;
+  weightedAverage: number;
 }
 
 /**
@@ -171,6 +172,7 @@ export async function fetchGames(session: string = "2025-December"): Promise<Gam
 
 /**
  * Calculate player scores from games
+ * Includes Bayesian weighted average to account for sample size
  */
 export function calculatePlayerScores(
   players: Player[],
@@ -207,28 +209,56 @@ export function calculatePlayerScores(
     });
   });
 
+  // Calculate league average
+  let totalScore = 0;
+  let totalGames = 0;
+  Object.values(scoreMap).forEach((stats) => {
+    totalScore += stats.score;
+    totalGames += stats.gameCount;
+  });
+  const leagueAverage = totalGames > 0 ? totalScore / totalGames : 2.5;
+
+  // Minimum games threshold for weighted average (helps stabilize ratings)
+  const minGamesThreshold = 5;
+
   // Convert to PlayerScore array with placement ranking
   const scores = players
-    .map((player) => ({
-      id: player.id,
-      name: player.name,
-      score: scoreMap[player.id].score,
-      gameCount: scoreMap[player.id].gameCount,
-      placements: scoreMap[player.id].placements,
-    }))
+    .map((player) => {
+      const average =
+        scoreMap[player.id].gameCount > 0
+          ? scoreMap[player.id].score / scoreMap[player.id].gameCount
+          : 0;
+
+      // Bayesian weighted average formula:
+      // (gameCount * average + minGamesThreshold * leagueAverage) / (gameCount + minGamesThreshold)
+      const weightedAverage =
+        scoreMap[player.id].gameCount > 0
+          ? (scoreMap[player.id].gameCount * average +
+              minGamesThreshold * leagueAverage) /
+            (scoreMap[player.id].gameCount + minGamesThreshold)
+          : 0;
+
+      return {
+        id: player.id,
+        name: player.name,
+        score: scoreMap[player.id].score,
+        gameCount: scoreMap[player.id].gameCount,
+        placements: scoreMap[player.id].placements,
+        average,
+        weightedAverage,
+      };
+    })
     .sort((a, b) => b.score - a.score);
 
-  // Add placement ranking and calculate average score per game
+  // Add placement ranking
   return scores.map((score, index) => ({
     id: score.id,
     name: score.name,
     score: score.score,
     placement: index + 1,
     gameCount: score.gameCount,
-    average:
-      score.gameCount > 0
-        ? score.score / score.gameCount
-        : 0,
+    average: score.average,
+    weightedAverage: score.weightedAverage,
   }));
 }
 

@@ -5,13 +5,14 @@ import "./Players.css";
 import { usePlayerScores } from "../../hooks/useApi";
 import { useSession } from "../../context/SessionContext";
 
-type SortKey = "name" | "score" | "average" | "games";
+type SortKey = "name" | "score" | "average" | "weightedAverage" | "games";
 type SortOrder = "asc" | "desc";
 
 const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
   average: "Average",
+  weightedAverage: "Weighted Avg",
   games: "Games",
 };
 
@@ -43,6 +44,12 @@ const Players: React.FC = () => {
         const bValue = b.gameCount as number;
         return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       });
+    } else if (sortKey === "weightedAverage") {
+      players.sort((a, b) => {
+        const aValue = a.weightedAverage as number;
+        const bValue = b.weightedAverage as number;
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      });
     } else {
       players.sort((a, b) => {
         const aValue = a[sortKey as keyof typeof scoresData[0]] as number;
@@ -53,9 +60,9 @@ const Players: React.FC = () => {
     return players;
   }, [scoresData, sortKey, sortOrder]);
 
-  // Determine if current sort shows top rankings (medals for score/average descending only)
+  // Determine if current sort shows top rankings (medals for score/average/weightedAverage descending only)
   const showTopRankings = useMemo(() => {
-    return (sortKey === "score" || sortKey === "average") && sortOrder === "desc";
+    return (sortKey === "score" || sortKey === "average" || sortKey === "weightedAverage") && sortOrder === "desc";
   }, [sortKey, sortOrder]);
 
   // Show loading state
@@ -92,7 +99,7 @@ const Players: React.FC = () => {
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
-            className={`leaderboard-col${key === "name" ? " player-name" : ""}${key === "games" ? " games-col" : ""}`}
+            className={`leaderboard-col${key === "name" ? " player-name" : ""}${key === "games" ? " games-col" : ""}${key === "weightedAverage" ? " weighted-avg-col" : ""}`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"
@@ -128,6 +135,7 @@ const Players: React.FC = () => {
               name: playerScore.name,
               score: playerScore.score,
               average: playerScore.average,
+              weightedAverage: playerScore.weightedAverage,
               gamesPlayed: playerScore.gameCount,
             }}
             rank={showTopRankings ? index + 1 : undefined}

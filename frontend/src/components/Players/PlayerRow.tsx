@@ -9,6 +9,7 @@ import "./PlayerRow.css";
  * @property score - Player's score.
  * @property average - Player's average score per game.
  * @property gamesPlayed - Number of games played.
+ * @property weightedAverage - Bayesian weighted average accounting for sample size.
  * @property mostCommonPlacement - Player's most common placement.
  * @property estimatedMinutesPlayed - Estimated total minutes played based on game gaps.
  */
@@ -17,6 +18,7 @@ export interface Player {
   score: number;
   average: number;
   gamesPlayed: number;
+  weightedAverage?: number;
   mostCommonPlacement?: number;
   estimatedMinutesPlayed?: number;
 }
@@ -46,6 +48,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ player, onClick, rank }) => (
     <span className="leaderboard-col player-name" role="cell">{player.name}</span>
     <span className="leaderboard-col player-score" role="cell">{player.score}</span>
     <span className="leaderboard-col player-average" role="cell">{player.average.toFixed(1)}</span>
+    <span className="leaderboard-col weighted-avg-col" role="cell">{player.weightedAverage !== undefined ? player.weightedAverage.toFixed(2) : "—"}</span>
     <span className="leaderboard-col games-col" role="cell">{player.gamesPlayed}</span>
   </motion.div>
 );
