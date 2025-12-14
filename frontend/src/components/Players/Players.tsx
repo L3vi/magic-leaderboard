@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
+import GameStats from "./GameStats";
 import "./Players.css";
 import { usePlayerScores } from "../../hooks/useApi";
 import { useSession } from "../../context/SessionContext";
@@ -143,6 +144,7 @@ const Players: React.FC = () => {
           />
         ))}
       </div>
+      <GameStats />
     </section>
   );
 };

@@ -1,0 +1,328 @@
+.game-stats {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: var(--surface);
+  border-radius: 0.8rem;
+  border: 1px solid var(--border);
+}
+
+.game-stats h2 {
+  margin: 0 0 2rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stats-section {
+  margin-bottom: 2.5rem;
+}
+
+.stats-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  padding: 1.5rem 1rem;
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.stat-card.best-commander {
+  background: linear-gradient(135deg, var(--background) 0%, rgba(var(--accent-rgb, 0, 255, 150), 0.05) 100%);
+  border-color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.stat-value.commander-name {
+  font-size: 1.25rem;
+  color: var(--text);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.stat-value.color-badge {
+  font-size: 1.5rem;
+  color: var(--text);
+  background: var(--accent);
+  color: var(--background);
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.stat-subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+/* Commander List Styles */
+.commander-list {
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.commander-list-header {
+  padding: 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.commander-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.commander-row:hover:not(.empty) {
+  background: var(--surface);
+}
+
+.commander-row:last-child {
+  border-bottom: none;
+}
+
+.commander-row.empty {
+  justify-content: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.commander-rank {
+  min-width: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--background);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.commander-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.commander-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.commander-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Color Stats Grid */
+.color-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.color-stat-card {
+  padding: 1.5rem 1rem;
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.color-stat-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-badge {
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: var(--background);
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.color-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.color-plays {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.color-winrate {
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Partner Pairs List */
+.partner-pairs-list {
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.partner-pair {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.partner-pair:hover {
+  background: var(--surface);
+}
+
+.partner-pair:last-child {
+  border-bottom: none;
+}
+
+.pair-rank {
+  min-width: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--background);
+  border-radius: 50%;
+  font-weight: 700;
+  margin-right: 1rem;
+}
+
+.pair-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pair-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+  font-size: 0.95rem;
+}
+
+.pair-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .game-stats {
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .color-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-value.commander-name {
+    font-size: 1rem;
+  }
+
+  .commander-row {
+    padding: 0.75rem;
+  }
+
+  .commander-rank {
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+    margin-right: 0.75rem;
+  }
+
+  .pair-rank {
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.75rem;
+  }
+}
+
