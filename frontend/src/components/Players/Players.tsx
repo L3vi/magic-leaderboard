@@ -22,7 +22,7 @@ const COLUMN_LABELS: Record<SortKey, string> = {
  * - Uses ARIA roles, keyboard navigation, and semantic HTML.
  */
 const Players: React.FC = () => {
-  const [sortKey, setSortKey] = React.useState<SortKey>("average");
+  const [sortKey, setSortKey] = React.useState<SortKey>("weightedAverage");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const headerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
