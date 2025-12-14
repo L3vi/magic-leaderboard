@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useSession } from "../../context/SessionContext";
+import { useCommanderArt } from "../../hooks/useCommanderArt";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -100,7 +101,31 @@ const getCommanderColors = (commanderName: string): string[] => {
   // Return empty array if not found (will show no color stats)
   return [];
 };
+// Sub-component to display commander with image
+interface CommanderThumbnailProps {
+  name: string;
+  rank: number;
+  playCount: number;
+  wins: number;
+}
 
+const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, playCount, wins }) => {
+  const imageUrl = useCommanderArt(name);
+  
+  return (
+    <div className="commander-item">
+      {imageUrl && (
+        <div className="commander-item-image">
+          <img src={imageUrl} alt={name} title={name} />
+        </div>
+      )}
+      <div className="commander-item-info">
+        <div className="commander-item-name">{name}</div>
+        <div className="commander-item-stats">{playCount}p • {wins}W</div>
+      </div>
+    </div>
+  );
+};
 const GameStats: React.FC = () => {
   const { games } = useSession();
 
@@ -340,17 +365,17 @@ const GameStats: React.FC = () => {
             <span>Top Commanders</span>
           </div>
           {stats.commanderStats.length > 0 ? (
-            stats.commanderStats.map((cmd, idx) => (
-              <div key={idx} className="commander-row">
-                <div className="commander-rank">{idx + 1}</div>
-                <div className="commander-info">
-                  <div className="commander-name">{cmd.name}</div>
-                  <div className="commander-meta">
-                    {cmd.playCount} play{cmd.playCount !== 1 ? "s" : ""} • {cmd.wins} win{cmd.wins !== 1 ? "s" : ""} ({cmd.winRate.toFixed(0)}%)
-                  </div>
-                </div>
-              </div>
-            ))
+            <div className="commander-thumbnails-grid">
+              {stats.commanderStats.map((cmd, idx) => (
+                <CommanderThumbnail 
+                  key={idx}
+                  name={cmd.name}
+                  rank={idx + 1}
+                  playCount={cmd.playCount}
+                  wins={cmd.wins}
+                />
+              ))}
+            </div>
           ) : (
             <div className="commander-row empty">No commander data</div>
           )}
@@ -369,8 +394,8 @@ const GameStats: React.FC = () => {
                   <div className="color-detail-header">
                     <div className="color-badge-large">{COLOR_MAP[color.color] || color.color}</div>
                     <div className="color-detail-title-section">
-                      <div className="color-plays-count">{color.playCount} plays</div>
-                      <div className="color-record-large">{color.wins}W-{color.playCount - color.wins}L</div>
+                      <div className="color-plays-count">{color.playCount} play{color.playCount !== 1 ? "s" : ""}</div>
+                      <div className="color-record-large">{color.wins} win{color.wins !== 1 ? "s" : ""} • {color.playCount - color.wins} loss{color.playCount - color.wins !== 1 ? "es" : ""}</div>
                     </div>
                   </div>
                   
@@ -392,13 +417,13 @@ const GameStats: React.FC = () => {
                       <div className="commanders-label">Top Commanders</div>
                       <div className="commanders-list">
                         {color.topCommanders.map((cmd, cmdIdx) => (
-                          <div key={cmdIdx} className="commander-item">
-                            <div className="commander-item-rank">{cmdIdx + 1}</div>
-                            <div className="commander-item-info">
-                              <div className="commander-item-name">{cmd.name}</div>
-                              <div className="commander-item-stats">{cmd.playCount}p • {cmd.wins}W</div>
-                            </div>
-                          </div>
+                          <CommanderThumbnail 
+                            key={cmdIdx} 
+                            name={cmd.name} 
+                            rank={cmdIdx + 1} 
+                            playCount={cmd.playCount}
+                            wins={cmd.wins}
+                          />
                         ))}
                       </div>
                     </div>

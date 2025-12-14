@@ -49,7 +49,11 @@
 }
 
 .stat-card.highlight-card {
-  background: linear-gradient(135deg, var(--background) 0%, rgba(var(--accent-rgb, 0, 255, 150), 0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--background) 0%,
+    rgba(var(--accent-rgb, 0, 255, 150), 0.08) 100%
+  );
   border: 2px solid var(--accent);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -64,7 +68,11 @@
 }
 
 .stat-card.best-commander {
-  background: linear-gradient(135deg, var(--background) 0%, rgba(var(--accent-rgb, 0, 255, 150), 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--background) 0%,
+    rgba(var(--accent-rgb, 0, 255, 150), 0.05) 100%
+  );
   border-color: var(--accent);
 }
 
@@ -414,6 +422,28 @@
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.commander-item-image {
+  position: relative;
+  width: 2.5rem;
+  height: 3.5rem;
+  border-radius: 0.2rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.commander-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.2s ease;
+}
+
+.commander-item:hover .commander-item-image img {
+  transform: scale(1.05);
 }
 
 .commander-item-info {
@@ -709,4 +739,3 @@
     font-size: 0.9rem;
   }
 }
-
