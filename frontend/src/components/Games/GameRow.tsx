@@ -19,11 +19,6 @@ interface GameRowProps {
   active?: boolean;
 }
 
-// Helper to detect mobile viewport
-function isMobileView(): boolean {
-  return typeof window !== "undefined" && window.innerWidth < 640;
-}
-
 // Global cache for commander images
 const commanderImageCache: Record<string, string> = {};
 
@@ -114,7 +109,8 @@ const GameRow: React.FC<GameRowProps> = ({
             <div key={p.name + "-container-" + idx} className="game-row-player">
               <PartnerCommanderDisplay
                 commanders={commanders}
-                size={isMobileView() ? "small" : "medium"}
+                responsive={true}
+                playerCount={players.length}
                 isWinner={isWinner}
                 playerId={p.playerId}
               />

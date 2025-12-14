@@ -10,7 +10,9 @@ import "./PartnerCommanderDisplay.css";
 interface PartnerCommanderDisplayProps {
   commanders: string[];
   onCardClick?: (card: { name: string; imageUrl: string }) => void;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "compact" | "medium" | "large";
+  responsive?: boolean; // If true, automatically size based on viewport and player count
+  playerCount?: number; // Required when responsive=true for 4+ player detection
   isWinner?: boolean;
   playerId?: string;
 }
@@ -19,9 +21,25 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   commanders,
   onCardClick,
   size = "medium",
+  responsive = false,
+  playerCount = 1,
   isWinner = false,
   playerId,
 }) => {
+  // Calculate responsive size
+  const getResponsiveSize = (): string => {
+    if (!responsive) return size;
+    
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const is4Plus = playerCount >= 4;
+    
+    if (isMobile) {
+      return is4Plus ? "compact" : "medium";
+    }
+    return "medium"; // desktop
+  };
+  
+  const finalSize = getResponsiveSize();
   // If only one commander, return early
   if (!commanders || commanders.length < 2) {
     const commander = commanders?.[0];
@@ -35,7 +53,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
       : useCommanderFullImage(commander);
     
     return (
-      <div className={`partner-commander-container size-${size}${isWinner ? " winner" : ""}`}>
+      <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
         {artUrl ? (
           <img
             src={artUrl}
@@ -68,7 +86,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
     : useCommanderFullImage(cmd2);
 
   return (
-    <div className={`partner-commander-container size-${size}${isWinner ? " winner" : ""}`}>
+    <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
       {art1 ? (
         <img
           src={art1}

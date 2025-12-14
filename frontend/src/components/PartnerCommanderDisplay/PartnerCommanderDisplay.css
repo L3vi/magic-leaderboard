@@ -13,9 +13,14 @@
   height: 50px;
 }
 
+.partner-commander-container.size-compact {
+  width: 65px;
+  height: 65px;
+}
+
 .partner-commander-container.size-medium {
-  width: 80px;
-  height: 80px;
+  width: 75px;
+  height: 75px;
 }
 
 .partner-commander-container.size-large {
