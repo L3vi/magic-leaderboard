@@ -189,7 +189,7 @@ const GameStats: React.FC = () => {
 
     // Most common color
     const sortedByColor = Object.values(colorStats).sort((a, b) => b.playCount - a.playCount);
-    const mostCommonColor = sortedByColor[0]?.color || "U";
+    const mostCommonColorCode = sortedByColor[0]?.color || "U";
     const commonColorCount = sortedByColor[0]?.playCount || 0;
 
     // Partner pairs
@@ -213,7 +213,8 @@ const GameStats: React.FC = () => {
       },
       commanderStats: sortedByPlay.slice(0, 5),
       colorStats: sortedByColor,
-      mostCommonColor: COLOR_MAP[mostCommonColor] || mostCommonColor,
+      mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
+      mostCommonColorCode,
       commonColorCount,
       partnerPairs,
     };
@@ -249,7 +250,7 @@ const GameStats: React.FC = () => {
           </div>
           <div className="stat-card">
             <div className="stat-label">Most Common Color</div>
-            <div className="stat-value color-badge">{stats.mostCommonColor}</div>
+            <div className={`stat-value color-badge color-${stats.mostCommonColorCode.toLowerCase()}`}>{stats.mostCommonColor}</div>
             <div className="stat-subtext">Played {stats.commonColorCount} times</div>
           </div>
         </div>
@@ -299,7 +300,7 @@ const GameStats: React.FC = () => {
         <div className="color-stats-grid">
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => (
-              <div key={idx} className="color-stat-card">
+              <div key={idx} className={`color-stat-card color-${color.color.toLowerCase()}`}>
                 <div className="color-badge">{COLOR_MAP[color.color] || color.color}</div>
                 <div className="color-meta">
                   <div className="color-plays">{color.playCount} plays</div>

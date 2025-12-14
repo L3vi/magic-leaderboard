@@ -91,6 +91,32 @@
   font-weight: 600;
 }
 
+/* MTG Color Badge Styles for stat-value */
+.stat-value.color-badge.color-w {
+  background: #fffbeb;
+  color: #1f2937;
+}
+
+.stat-value.color-badge.color-u {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.stat-value.color-badge.color-b {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.stat-value.color-badge.color-r {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.stat-value.color-badge.color-g {
+  background: #22c55e;
+  color: #ffffff;
+}
+
 .stat-subtext {
   font-size: 0.875rem;
   color: var(--text-muted);
@@ -189,6 +215,32 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* MTG Color Styles */
+.color-stat-card.color-w {
+  border: 2px solid #fffbeb;
+  background: rgba(255, 251, 235, 0.05);
+}
+
+.color-stat-card.color-u {
+  border: 2px solid #0ea5e9;
+  background: rgba(14, 165, 233, 0.05);
+}
+
+.color-stat-card.color-b {
+  border: 2px solid #1f2937;
+  background: rgba(31, 41, 55, 0.05);
+}
+
+.color-stat-card.color-r {
+  border: 2px solid #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.color-stat-card.color-g {
+  border: 2px solid #22c55e;
+  background: rgba(34, 197, 94, 0.05);
+}
+
 .color-badge {
   font-size: 1.1rem;
   font-weight: 600;
@@ -198,6 +250,32 @@
   border-radius: 0.4rem;
   display: inline-block;
   margin-bottom: 0.75rem;
+}
+
+/* MTG Color Badge Styles */
+.color-stat-card.color-w .color-badge {
+  background: #fffbeb;
+  color: #1f2937;
+}
+
+.color-stat-card.color-u .color-badge {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.color-stat-card.color-b .color-badge {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.color-stat-card.color-r .color-badge {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.color-stat-card.color-g .color-badge {
+  background: #22c55e;
+  color: #ffffff;
 }
 
 .color-meta {
