@@ -1,6 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useSession } from "../../context/SessionContext";
 import { useCommanderArt } from "../../hooks/useCommanderArt";
+import {
+  getCommanderColorsFromScryfall,
+  getCachedCommanderColors,
+  preFetchCommanderColors,
+} from "../../utils/commanderColorCache";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -30,76 +35,16 @@ const COLOR_MAP: Record<string, string> = {
   "G": "Green",
 };
 
-// Commander color detection
+// Commander color detection using Scryfall API (with fallback)
 const getCommanderColors = (commanderName: string): string[] => {
-  const colorPatterns: Record<string, string[]> = {
-    // White
-    "Giada": ["W"],
-    "Lathiel": ["W"],
-    "Tannuk": ["W"],
-    // Blue
-    "Talrand": ["U"],
-    "Jace": ["U"],
-    "Urza": ["U"],
-    "Haldan": ["U"],
-    // Black
-    "Elesh Norn": ["B"],
-    "Sheoldred": ["B"],
-    "Sefris": ["B"],
-    // Red
-    "Starscream": ["R"],
-    "Ognis": ["R"],
-    "Rograkh": ["R"],
-    "Atreus": ["R"],
-    "Fire Lord Zuko": ["R"],
-    "Fire Lord Azula": ["R"],
-    "Gimli": ["R"],
-    // Green
-    "Sythis": ["G"],
-    "Old Stickfingers": ["G"],
-    "Go-Shintai": ["G"],
-    "Kodama": ["G"],
-    "Gilanra": ["G"],
-    "Toph": ["G"],
-    "Atla Palani": ["G"],
-    // Multi-color
-    "Nekusar": ["U", "R"],
-    "Ian Malcolm": ["U", "R"],
-    "Inniaz": ["U", "W"],
-    "Isshin": ["R", "W"],
-    "Atraxa": ["W", "U", "B", "G"],
-    "Jodah": ["W", "U", "R"],
-    "Yawgmoth": ["B", "G"],
-    "Vorinclex": ["G", "R"],
-    "Miirym": ["R", "G"],
-    "Rin and Seri": ["W", "G"],
-    "Chishiro": ["W", "U", "B"],
-    "Lo and Li": ["W", "U", "B"],
-    "Ardenn": ["W", "R"],
-    "Betor": ["W", "B", "G"],
-    "The Pride of Hull Clade": ["W", "U", "B", "R", "G"],
-    "Pako": ["U", "R", "G"],
-    "Kratos": ["W", "B", "R"],
-    "Choco": ["W", "U", "B", "R", "G"],
-    "Tidus": ["W", "U", "B", "G"],
-    // Additional Marvel/Gaming characters
-    "Anti-Venom": ["W", "B"],
-    "Captain America": ["W", "R"],
-    "Electro": ["U", "R"],
-    "Ezio": ["U", "B", "R"],
-    "Norman Osborn": ["U", "B", "R"],
-    "Shadow": ["U", "B"],
-    "Vivi": ["U", "R"],
-    "Arabella": ["W", "U"],
-  };
-
-  for (const [key, colors] of Object.entries(colorPatterns)) {
-    if (commanderName.includes(key)) {
-      return colors;
-    }
+  // Try to get from cache first
+  const cached = getCachedCommanderColors(commanderName);
+  if (cached.length > 0) {
+    return cached;
   }
-
-  // Return empty array if not found (will show no color stats)
+  // If not cached yet, fetch asynchronously (will update on next render)
+  getCommanderColorsFromScryfall(commanderName);
+  // Return empty for now, will refetch when cached
   return [];
 };
 // Sub-component to display commander with image
@@ -129,6 +74,26 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
 };
 const GameStats: React.FC = () => {
   const { games } = useSession();
+  const [colorsLoaded, setColorsLoaded] = useState(false);
+
+  // Pre-fetch all commander colors when component mounts or games change
+  useEffect(() => {
+    if (games.length === 0) return;
+
+    // Extract all unique commanders
+    const uniqueCommanders = new Set<string>();
+    games.forEach((game) => {
+      game.players.forEach((p) => {
+        const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
+        commanders.forEach((cmd) => uniqueCommanders.add(cmd));
+      });
+    });
+
+    // Pre-fetch colors for all commanders
+    preFetchCommanderColors(Array.from(uniqueCommanders)).then(() => {
+      setColorsLoaded(true);
+    });
+  }, [games]);
 
   const stats = useMemo(() => {
     if (games.length === 0) {
@@ -222,16 +187,21 @@ const GameStats: React.FC = () => {
           partnerPairCounts[pair] = (partnerPairCounts[pair] || 0) + 1;
         }
 
-        // Color statistics
-        const colors = getCommanderColors(commanders[0]);
-        colors.forEach((color) => {
+        // Color statistics - get colors from all commanders (for partners) and count each color
+        const allCommanderColors = new Set<string>();
+        commanders.forEach((commander) => {
+          const colors = getCommanderColors(commander);
+          colors.forEach((color) => allCommanderColors.add(color));
+        });
+        
+        allCommanderColors.forEach((color) => {
           colorStats[color].playCount += 1;
           if (isWinner) {
             colorStats[color].wins += 1;
           }
           colorStats[color].totalPlacement! += p.placement;
           
-          // Track commanders per color
+          // Track commanders per color (only the primary/first commander for now)
           if (!colorCommanderStats[color][commanders[0]]) {
             colorCommanderStats[color][commanders[0]] = { playCount: 0, wins: 0 };
           }
@@ -321,7 +291,7 @@ const GameStats: React.FC = () => {
       commonColorCount,
       partnerPairs,
     };
-  }, [games]);
+  }, [games, colorsLoaded]);
 
   return (
     <div className="game-stats">
