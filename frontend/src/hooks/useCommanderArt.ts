@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getCommanderArtPreference } from '../services/playerArtPreferences';
 import { useArtPreferenceRefresh } from '../context/ArtPreferenceContext';
 
@@ -31,6 +31,7 @@ export function clearCommanderCache(commander: string): void {
 
 /**
  * Hook to fetch and cache commander card art from Scryfall API
+ * Debounced to avoid rate limiting on rapid input changes (e.g., typing in autocomplete)
  * @param commander - The commander card name
  * @returns URL of the card art image, or empty string if not found
  */
@@ -38,6 +39,7 @@ export function useCommanderArt(commander: string): string {
   const [imgUrl, setImgUrl] = useState(
     commanderImageCache[commander]?.art || ""
   );
+  const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     // Don't fetch if commander is empty
@@ -52,50 +54,63 @@ export function useCommanderArt(commander: string): string {
       return;
     }
 
-    let isMounted = true;
+    // Debounce the API call (500ms delay to match typical typing speed)
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
 
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        let art = "";
-        let full = "";
+    debounceTimer.current = setTimeout(() => {
+      let isMounted = true;
 
-        // Try to get art crop from image_uris
-        if (data.image_uris && data.image_uris.art_crop) {
-          art = data.image_uris.art_crop;
-          full = data.image_uris.normal || data.image_uris.large || "";
-        }
-        // Fall back to card faces for double-faced cards
-        else if (
-          data.card_faces &&
-          data.card_faces[0]?.image_uris?.art_crop
-        ) {
-          art = data.card_faces[0].image_uris.art_crop;
-          full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
-        }
+      fetch(
+        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
+          commander
+        )}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          let art = "";
+          let full = "";
 
-        commanderImageCache[commander] = { art, full };
-        if (isMounted) setImgUrl(art);
-      })
-      .catch(() => {
-        commanderImageCache[commander] = { art: "", full: "" }; // cache failure
-        if (isMounted) setImgUrl("");
-      });
+          // Try to get art crop from image_uris
+          if (data.image_uris && data.image_uris.art_crop) {
+            art = data.image_uris.art_crop;
+            full = data.image_uris.normal || data.image_uris.large || "";
+          }
+          // Fall back to card faces for double-faced cards
+          else if (
+            data.card_faces &&
+            data.card_faces[0]?.image_uris?.art_crop
+          ) {
+            art = data.card_faces[0].image_uris.art_crop;
+            full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
+          }
+
+          commanderImageCache[commander] = { art, full };
+          if (isMounted) setImgUrl(art);
+        })
+        .catch(() => {
+          commanderImageCache[commander] = { art: "", full: "" }; // cache failure
+          if (isMounted) setImgUrl("");
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }, 500);
 
     return () => {
-      isMounted = false;
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
     };
   }, [commander]);
 
   return imgUrl;
-}
 
 /**
  * Hook to fetch and cache full commander card images from Scryfall API
+ * Debounced to avoid rate limiting on rapid input changes (e.g., typing in autocomplete)
  * @param commander - The commander card name
  * @returns URL of the full card image, or empty string if not found
  */
@@ -103,6 +118,7 @@ export function useCommanderFullImage(commander: string): string {
   const [imgUrl, setImgUrl] = useState(
     commanderImageCache[commander]?.full || ""
   );
+  const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     // Don't fetch if commander is empty
@@ -117,42 +133,55 @@ export function useCommanderFullImage(commander: string): string {
       return;
     }
 
-    let isMounted = true;
+    // Debounce the API call (500ms delay to match typical typing speed)
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
 
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        let art = "";
-        let full = "";
+    debounceTimer.current = setTimeout(() => {
+      let isMounted = true;
 
-        // Try to get art crop from image_uris
-        if (data.image_uris && data.image_uris.art_crop) {
-          art = data.image_uris.art_crop;
-          full = data.image_uris.normal || data.image_uris.large || "";
-        }
-        // Fall back to card faces for double-faced cards
-        else if (
-          data.card_faces &&
-          data.card_faces[0]?.image_uris?.art_crop
-        ) {
-          art = data.card_faces[0].image_uris.art_crop;
-          full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
-        }
+      fetch(
+        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
+          commander
+        )}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          let art = "";
+          let full = "";
 
-        commanderImageCache[commander] = { art, full };
-        if (isMounted) setImgUrl(full);
-      })
-      .catch(() => {
-        commanderImageCache[commander] = { art: "", full: "" }; // cache failure
-        if (isMounted) setImgUrl("");
-      });
+          // Try to get art crop from image_uris
+          if (data.image_uris && data.image_uris.art_crop) {
+            art = data.image_uris.art_crop;
+            full = data.image_uris.normal || data.image_uris.large || "";
+          }
+          // Fall back to card faces for double-faced cards
+          else if (
+            data.card_faces &&
+            data.card_faces[0]?.image_uris?.art_crop
+          ) {
+            art = data.card_faces[0].image_uris.art_crop;
+            full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
+          }
+
+          commanderImageCache[commander] = { art, full };
+          if (isMounted) setImgUrl(full);
+        })
+        .catch(() => {
+          commanderImageCache[commander] = { art: "", full: "" }; // cache failure
+          if (isMounted) setImgUrl("");
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }, 500);
 
     return () => {
-      isMounted = false;
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
     };
   }, [commander]);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface CommanderColorCache {
   colors: string[];
@@ -18,6 +18,7 @@ const COLOR_NAMES: Record<string, string> = {
 
 /**
  * Hook to fetch and cache commander color identity from Scryfall API
+ * Debounced to avoid rate limiting on rapid input changes
  * @param commander - The commander card name
  * @returns Array of color codes (e.g., ['U', 'B'] for Dimir)
  */
@@ -25,6 +26,7 @@ export function useCommanderColors(commander: string): string[] {
   const [colors, setColors] = useState<string[]>(
     commanderColorCache[commander]?.colors || []
   );
+  const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     // Don't fetch if commander is empty
@@ -39,34 +41,47 @@ export function useCommanderColors(commander: string): string[] {
       return;
     }
 
-    let isMounted = true;
+    // Debounce the API call (500ms delay)
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
 
-    fetch(
-      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-        commander
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (isMounted) {
-          const colorIdentity = data.color_identity || [];
-          commanderColorCache[commander] = {
-            colors: colorIdentity,
-            colorIdentity: colorIdentity.join(''),
-          };
-          setColors(colorIdentity);
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching commander colors:', err);
-        if (isMounted) {
-          commanderColorCache[commander] = { colors: [], colorIdentity: '' };
-          setColors([]);
-        }
-      });
+    debounceTimer.current = setTimeout(() => {
+      let isMounted = true;
+
+      fetch(
+        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
+          commander
+        )}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (isMounted) {
+            const colorIdentity = data.color_identity || [];
+            commanderColorCache[commander] = {
+              colors: colorIdentity,
+              colorIdentity: colorIdentity.join(''),
+            };
+            setColors(colorIdentity);
+          }
+        })
+        .catch((err) => {
+          console.error('Error fetching commander colors:', err);
+          if (isMounted) {
+            commanderColorCache[commander] = { colors: [], colorIdentity: '' };
+            setColors([]);
+          }
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }, 500);
 
     return () => {
-      isMounted = false;
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
     };
   }, [commander]);
 
