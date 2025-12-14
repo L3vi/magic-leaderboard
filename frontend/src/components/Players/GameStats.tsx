@@ -255,12 +255,12 @@ const GameStats: React.FC = () => {
     const mostPlayedCommander = sortedByPlay[0]?.name || "N/A";
     const commanderPlayCount = sortedByPlay[0]?.playCount || 0;
 
-    // Most common color - sort by play count (colors with 0 plays go last)
+    // Most common color - sort by win rate (colors with 0 plays go last)
     const sortedByColor = Object.values(colorStats).sort((a, b) => {
       if (a.playCount === 0 && b.playCount === 0) return 0;
       if (a.playCount === 0) return 1;
       if (b.playCount === 0) return -1;
-      return b.playCount - a.playCount;
+      return b.winRate - a.winRate;
     });
     const mostCommonColorCode = sortedByColor[0]?.color || "U";
     const commonColorCount = sortedByColor[0]?.playCount || 0;
