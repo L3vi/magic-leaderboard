@@ -89,6 +89,26 @@ export interface CardImageCache {
 }
 
 // ============================================================================
+// COLOR/META STATISTICS TYPES
+// ============================================================================
+
+export interface CommanderColorStats {
+  color: string; // Single letter: W, U, B, R, G
+  commanderName: string;
+  plays: number;
+  wins: number;
+  winRate: number;
+}
+
+export interface ColorStatsData {
+  color: string;
+  totalPlays: number;
+  totalWins: number;
+  winRate: number;
+  commanders: CommanderColorStats[];
+}
+
+// ============================================================================
 // UTILITY TYPES
 // ============================================================================
 

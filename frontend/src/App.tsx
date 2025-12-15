@@ -8,6 +8,7 @@ import Players from "./components/Players/Players";
 import Games from "./components/Games/Games";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
+import ColorStatsPage from "./pages/ColorStatsPage";
 import NewGamePage from "./pages/NewGamePage";
 import EditGamePage from "./pages/EditGamePage";
 import { SessionProvider } from "./context/SessionContext";
@@ -93,6 +94,7 @@ function AnimatedRoutes() {
   // Determine if we're on a detail/modal page
   const isDetailPage = location.pathname.startsWith('/players/') || 
                        location.pathname.startsWith('/games/') ||
+                       location.pathname.startsWith('/stats/colors/') ||
                        location.pathname === '/new-game' ||
                        location.pathname.startsWith('/edit-game/');
   
@@ -108,6 +110,7 @@ function AnimatedRoutes() {
             <Routes location={location}>
               <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
               <Route path="/games/:gameId" element={<GameDetailsPage />} />
+              <Route path="/stats/colors/:color" element={<ColorStatsPage />} />
               <Route path="/new-game" element={<NewGamePage />} />
               <Route path="/edit-game/:gameId" element={<EditGamePage />} />
             </Routes>

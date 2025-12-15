@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSession } from "../../context/SessionContext";
 import { useCommanderArt } from "../../hooks/useCommanderArt";
 import {
@@ -73,6 +74,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
   );
 };
 const GameStats: React.FC = () => {
+  const navigate = useNavigate();
   const { games } = useSession();
   const [colorsLoaded, setColorsLoaded] = useState(false);
 
@@ -336,7 +338,18 @@ const GameStats: React.FC = () => {
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => {
               return (
-                <div key={idx} className={`color-stat-card color-${color.color.toLowerCase()}`}>
+                <div
+                  key={idx}
+                  className={`color-stat-card color-${color.color.toLowerCase()}`}
+                  onClick={() => navigate(`/stats/colors/${color.color}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      navigate(`/stats/colors/${color.color}`);
+                    }
+                  }}
+                >
                   <div className="color-stat-header">
                     <div className="color-stat-name">{COLOR_MAP[color.color] || color.color}</div>
                     <div className="color-stat-plays">{color.playCount}p</div>

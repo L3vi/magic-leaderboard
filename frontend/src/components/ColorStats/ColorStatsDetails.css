@@ -1,0 +1,156 @@
+.color-stats-details {
+  padding: 2rem;
+}
+
+.color-stats-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.color-badge-large {
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Stats Summary Section */
+.stats-summary-section {
+  margin-bottom: 2rem;
+}
+
+.stats-summary-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-box {
+  padding: 1.5rem;
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+/* Commanders Section */
+.commanders-section {
+  margin-top: 2rem;
+}
+
+.commanders-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.commanders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+}
+
+.commander-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.commander-stat-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.commander-rank {
+  min-width: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--background);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.commander-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.commander-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.commander-meta {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 639px) {
+  .color-stats-details {
+    padding: 1rem;
+  }
+
+  .stats-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .commander-rank {
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+  }
+}

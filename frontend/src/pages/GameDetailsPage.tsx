@@ -1,34 +1,19 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useNavigationAnimation } from "../context/NavigationContext";
+import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import GameDetails from "../components/Games/GameDetails";
 import { useSession } from "../context/SessionContext";
-import "./GameDetailsPage.css";
 
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const { games: gamesData, players: playersData } = useSession();
-  const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
-
-  // Disable body scroll when this page is open
-  React.useEffect(() => {
-    document.documentElement.classList.add('modal-open');
-    document.body.classList.add('modal-open');
-    return () => {
-      document.documentElement.classList.remove('modal-open');
-      document.body.classList.remove('modal-open');
-    };
-  }, []);
 
   const handleClose = () => {
-    setSkipAnimation(true);
     navigate(-1);
   };
 
-  const handleEdit = async () => {
+  const handleEdit = () => {
     navigate(`/edit-game/${gameId}`);
   };
 
@@ -36,52 +21,19 @@ const GameDetailsPage: React.FC = () => {
     navigate(`/players/${encodeURIComponent(playerName)}`);
   };
 
-  useEscapeKey(handleClose);
-
   // Find the game from current session
   const game = gamesData.find((g: any) => g.id === gameId);
 
   // Helper to get player name from ID
   const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
 
-  // Determine animation props based on whether we're navigating back
-  const animationProps = skipAnimationRef.current ? {
-    initial: { opacity: 1, y: 0 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 20 },
-    transition: { duration: 0 },
-  } : {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 20 },
-    transition: { duration: 0.15, ease: "easeOut" },
-  };
-
-  // Reset skip animation flag after this component mounts
-  React.useEffect(() => {
-    return () => {
-      setSkipAnimation(false);
-    };
-  }, [setSkipAnimation]);
-
   if (!game) {
     return (
-      <motion.div 
-        className="game-details-page" 
-        {...animationProps}
-      >
-        <div className="game-details-page-header">
-          <button 
-            className="btn btn-tertiary" 
-            onClick={handleClose}
-            aria-label="Back to games"
-          >
-            ← Back
-          </button>
-          <h1>Game Not Found</h1>
-        </div>
-        <p>The game with ID "{gameId}" could not be found in this session.</p>
-      </motion.div>
+      <DetailsPageShell
+        title="Game Details"
+        onClose={handleClose}
+        error={`Game with ID "${gameId}" not found`}
+      />
     );
   }
 
@@ -102,39 +54,21 @@ const GameDetailsPage: React.FC = () => {
   } : undefined;
 
   return (
-    <motion.div 
-      className="game-details-page" 
-      {...animationProps}
+    <DetailsPageShell
+      title="Game Details"
+      onClose={handleClose}
+      onEdit={handleEdit}
     >
-      <div className="game-details-page-header">
-        <button 
-          className="btn btn-tertiary" 
-          onClick={handleClose}
-          aria-label="Back to games"
-        >
-          ← Back
-        </button>
-        <h1>Game Details</h1>
-        <button 
-          className="btn btn-tertiary" 
-          onClick={handleEdit}
-          aria-label="Edit game"
-        >
-          ✎ Edit
-        </button>
-      </div>
-      <div className="game-details-page-content">
-        <GameDetails
-          id={game.id}
-          dateCreated={game.dateCreated}
-          notes={game.notes}
-          players={players}
-          winner={winnerObj}
-          onClose={handleClose}
-          onPlayerClick={handlePlayerClick}
-        />
-      </div>
-    </motion.div>
+      <GameDetails
+        id={game.id}
+        dateCreated={game.dateCreated}
+        notes={game.notes}
+        players={players}
+        winner={winnerObj}
+        onClose={handleClose}
+        onPlayerClick={handlePlayerClick}
+      />
+    </DetailsPageShell>
   );
 };
 

@@ -1,39 +1,22 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useNavigationAnimation } from "../context/NavigationContext";
+import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import PlayerDetails from "../components/Players/PlayerDetails";
-import { Player } from "../components/Players/PlayerRow";
+import type { PlayerRowDisplay as Player } from "../types";
 import { useSession } from "../context/SessionContext";
-import "./PlayerDetailsPage.css";
 
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
   const { games: gamesRaw, players: playersRaw } = useSession();
-  const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
-
-  // Disable body scroll when this page is open
-  React.useEffect(() => {
-    document.documentElement.classList.add('modal-open');
-    document.body.classList.add('modal-open');
-    return () => {
-      document.documentElement.classList.remove('modal-open');
-      document.body.classList.remove('modal-open');
-    };
-  }, []);
 
   const handleClose = () => {
-    setSkipAnimation(true);
     navigate(-1);
   };
 
   const handleGameClick = (gameId: string) => {
     navigate(`/games/${gameId}`);
   };
-
-  useEscapeKey(handleClose);
 
   // Find player by name (URL encoded)
   const decodedName = playerName ? decodeURIComponent(playerName) : "";
@@ -87,70 +70,33 @@ const PlayerDetailsPage: React.FC = () => {
       average: gamesPlayed ? score / gamesPlayed : 0,
       gamesPlayed,
       mostCommonPlacement: parseInt(mostCommonPlacement as any),
-      estimatedMinutesPlayed: estimatedMinutes,
+      weightedAverage: gamesPlayed ? score / gamesPlayed : 0,
     };
   }, [playerData, gamesRaw]);
 
-  // Determine animation props based on whether we're navigating back
-  const animationProps = skipAnimationRef.current ? {
-    initial: { opacity: 1, y: 0 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 20 },
-    transition: { duration: 0 },
-  } : {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 20 },
-    transition: { duration: 0.15, ease: "easeOut" },
-  };
-
-  // Reset skip animation flag after this component mounts
-  React.useEffect(() => {
-    return () => {
-      setSkipAnimation(false);
-    };
-  }, [setSkipAnimation]);
-
   if (!player) {
     return (
-      <motion.div 
-        className="player-details-page" 
-        {...animationProps}
-      >
-        <div className="player-details-page-header">
-          <button 
-            className="btn btn-tertiary" 
-            onClick={handleClose}
-            aria-label="Back to players"
-          >
-            ← Back
-          </button>
-          <h1>Player Not Found</h1>
-        </div>
-        <p>The player "{decodedName}" could not be found.</p>
-      </motion.div>
+      <DetailsPageShell
+        title="Player Details"
+        onClose={handleClose}
+        error={`Player "${decodedName}" not found`}
+      />
     );
   }
 
   return (
-    <motion.div 
-      className="player-details-page" 
-      {...animationProps}
+    <DetailsPageShell
+      title={player.name}
+      onClose={handleClose}
     >
-      <div className="player-details-page-header">
-        <button 
-          className="btn btn-tertiary" 
-          onClick={handleClose}
-          aria-label="Back to players"
-        >
-          ← Back
-        </button>
-        <h1>{player.name}</h1>
-      </div>
-      <div className="player-details-page-content">
-        <PlayerDetails player={player} games={gamesRaw} players={playersRaw} onGameClick={handleGameClick} playerId={playerData?.id} />
-      </div>
-    </motion.div>
+      <PlayerDetails 
+        player={player} 
+        games={gamesRaw} 
+        players={playersRaw} 
+        onGameClick={handleGameClick} 
+        playerId={playerData?.id} 
+      />
+    </DetailsPageShell>
   );
 };
 

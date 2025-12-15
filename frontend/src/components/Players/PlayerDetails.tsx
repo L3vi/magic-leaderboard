@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Player } from "./PlayerRow";
 import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference, useCommanderFullImageWithPreference } from "../../hooks/useCommanderArt";
 import { useCommanderColors } from "../../hooks/useCommanderColors";
@@ -20,6 +21,7 @@ interface PlayerDetailsProps {
 }
 
 const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick, playerId: propPlayerId }) => {
+  const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
   const playerId = propPlayerId || player.id; // Use prop if provided, otherwise use player.id
   const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
@@ -129,7 +131,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
 
         {/* Commander Color Distribution */}
         {deckCombinations.length > 0 && (
-          <CommanderColorDistribution commanders={deckCombinations.flatMap(dc => dc.split("|"))} />
+          <CommanderColorDistribution commanders={deckCombinations.flatMap(dc => dc.split("|"))} navigate={navigate} />
         )}
 
         {/* Recent Games */}
@@ -235,7 +237,7 @@ function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: a
   );
 }
 
-function CommanderColorDistribution({ commanders }: { commanders: string[] }) {
+function CommanderColorDistribution({ commanders, navigate }: { commanders: string[]; navigate: (path: string) => void }) {
   // Color names and their hex values for Magic colors
   const COLOR_MAP: Record<string, { name: string; hex: string }> = {
     W: { name: 'White', hex: '#F5F5DC' },
@@ -286,7 +288,18 @@ function CommanderColorDistribution({ commanders }: { commanders: string[] }) {
       <div className="section-title">Color Preferences</div>
       <div className="color-bars">
         {sortedColors.map(({ code, name, hex, count, percentage }) => (
-          <div key={code} className="color-bar-item">
+          <div
+            key={code}
+            className="color-bar-item"
+            onClick={() => navigate(`/stats/colors/${code}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                navigate(`/stats/colors/${code}`);
+              }
+            }}
+          >
             <div className="color-indicator" style={{ backgroundColor: hex }} title={name} />
             <div className="color-bar-label">{name}</div>
             <div className="color-bar-container">
