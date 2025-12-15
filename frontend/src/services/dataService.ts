@@ -3,6 +3,14 @@ import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 import { compareArrays, DeltaResult } from "../utils/deltaCompare";
 import { db } from "../firebase";
+import type {
+  CommanderArtPreference,
+  Player,
+  GamePlayer,
+  Game,
+  SessionMetadata,
+  PlayerScore,
+} from "../types";
 import {
   collection,
   addDoc,
@@ -12,48 +20,6 @@ import {
   getDocs,
   getDoc,
 } from "firebase/firestore";
-
-export interface CommanderArtPreference {
-  commanderName: string;
-  artVariantId: string;
-  imageUrl: string;
-}
-
-export interface Player {
-  id: string;
-  name: string;
-}
-
-export interface GamePlayer {
-  playerId: string;
-  placement: number;
-  commander: string | string[];
-  commanderArt?: CommanderArtPreference;
-}
-
-export interface Game {
-  id: string;
-  dateCreated: string;
-  notes: string;
-  players: GamePlayer[];
-}
-
-export interface SessionMetadata {
-  name: string;
-  description?: string;
-  players?: string[];
-  createdAt: string;
-}
-
-export interface PlayerScore {
-  id: string;
-  name: string;
-  score: number;
-  placement: number;
-  gameCount: number;
-  average: number;
-  weightedAverage: number;
-}
 
 /**
  * Simple fetch with basic error handling (kept for backwards compatibility)
@@ -420,3 +386,6 @@ export async function refreshSessionPlayersWithDelta(
     delta,
   };
 }
+
+// Re-export types for backwards compatibility
+export type { CommanderArtPreference, Player, GamePlayer, Game, SessionMetadata, PlayerScore };

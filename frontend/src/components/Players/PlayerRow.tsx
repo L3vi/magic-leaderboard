@@ -1,27 +1,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import type { PlayerRowDisplay as Player } from "../../types";
 import "./PlayerRow.css";
-
-/**
- * Player interface defines the shape of a leaderboard player.
- * @property name - Player's name.
- * @property score - Player's score.
- * @property average - Player's average score per game.
- * @property gamesPlayed - Number of games played.
- * @property weightedAverage - Bayesian weighted average accounting for sample size.
- * @property mostCommonPlacement - Player's most common placement.
- * @property estimatedMinutesPlayed - Estimated total minutes played based on game gaps.
- */
-export interface Player {
-  name: string;
-  score: number;
-  average: number;
-  gamesPlayed: number;
-  weightedAverage?: number;
-  mostCommonPlacement?: number;
-  estimatedMinutesPlayed?: number;
-}
 
 /**
  * PlayerRow component for the Magic Leaderboard app.

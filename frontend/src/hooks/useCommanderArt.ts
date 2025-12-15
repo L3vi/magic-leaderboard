@@ -1,22 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { getCommanderArtPreference } from '../services/playerArtPreferences';
 import { useArtPreferenceRefresh } from '../context/ArtPreferenceContext';
+import type { CardVariant, CardImageCache } from '../types';
 
 // Global cache for commander images
-interface CardImageCache {
-  art: string;
-  full: string;
-}
-
-export interface CardVariant {
-  id: string;
-  name: string;
-  art: string;
-  full: string;
-  set: string;
-  setName: string;
-}
-
 const commanderImageCache: Record<string, CardImageCache> = {};
 const commanderVariantsCache: Record<string, CardVariant[]> = {};
 
@@ -458,3 +445,7 @@ export function useCommanderFullImageWithPreference(
 
   return imgUrl;
 }
+
+// Re-export types for backwards compatibility
+export type { CardVariant, CardImageCache };
+

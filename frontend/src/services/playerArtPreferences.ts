@@ -1,14 +1,6 @@
-import { CardVariant } from "../hooks/useCommanderArt";
+import type { CardVariant, PlayerCommanderArt } from "../types";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-
-export interface PlayerCommanderArt {
-  commanderName: string;
-  variantId: string;
-  artUrl: string;
-  fullImageUrl: string;
-  timestamp: number | string;
-}
 
 /**
  * Get all saved art preferences for a player from Firebase
@@ -128,3 +120,7 @@ export async function clearAllPlayerArtPreferences(playerId: string): Promise<vo
     throw error;
   }
 }
+
+// Re-export types for backwards compatibility
+export type { PlayerCommanderArt };
+

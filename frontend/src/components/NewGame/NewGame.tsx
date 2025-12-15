@@ -10,7 +10,7 @@ import {
   size
 } from '@floating-ui/react';
 import FormActions from '../FormActions/FormActions';
-import { usePlayers } from "./usePlayers";
+import { usePlayers } from "../../hooks/usePlayers";
 import { useGames } from "../../hooks/useApi";
 import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference } from "../../hooks/useCommanderArt";
 import CardModal from "../CardModal/CardModal";

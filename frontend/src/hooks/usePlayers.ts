@@ -1,4 +1,4 @@
-import { useSession } from '../../context/SessionContext';
+import { useSession } from '../context/SessionContext';
 
 export function usePlayers(): { id: string; name: string }[] {
   const { players } = useSession();

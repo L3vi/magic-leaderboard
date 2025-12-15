@@ -2,15 +2,7 @@
  * Utilities for comparing data and detecting meaningful changes
  */
 
-import { Game, Player } from '../services/dataService';
-
-export interface DeltaResult<T> {
-  hasChanges: boolean;
-  updated: T[];
-  added: T[];
-  removed: T[];
-  unchanged: T[];
-}
+import type { Game, Player, DeltaResult } from '../types';
 
 /**
  * Deep equality check for objects
@@ -151,3 +143,7 @@ export function gamesHaveMeaningfulChanges(
   const delta = compareArrays(oldGames, newGames);
   return delta.hasChanges;
 }
+
+// Re-export types for backwards compatibility
+export type { DeltaResult };
+
