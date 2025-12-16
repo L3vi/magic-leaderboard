@@ -71,6 +71,7 @@ const PlayerDetailsPage: React.FC = () => {
       gamesPlayed,
       mostCommonPlacement: parseInt(mostCommonPlacement as any),
       weightedAverage: gamesPlayed ? score / gamesPlayed : 0,
+      estimatedMinutesPlayed: estimatedMinutes,
     };
   }, [playerData, gamesRaw]);
 

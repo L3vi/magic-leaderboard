@@ -5,6 +5,7 @@ import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference, 
 import { useCommanderColors } from "../../hooks/useCommanderColors";
 import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
+import { formatPlayTime } from "../../utils/formatTime";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
@@ -108,7 +109,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
           </div>
           <div className="secondary-stat">
             <div className="secondary-stat-label">Time Played</div>
-            <div className="secondary-stat-value">{player.estimatedMinutesPlayed ? `${Math.floor(player.estimatedMinutesPlayed / 60)}h ${player.estimatedMinutesPlayed % 60}m` : '-'}</div>
+            <div className="secondary-stat-value">{player.estimatedMinutesPlayed ? formatPlayTime(player.estimatedMinutesPlayed) : '-'}</div>
           </div>
           <div className="secondary-stat">
             <div className="secondary-stat-label">Decks Played</div>

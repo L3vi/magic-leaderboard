@@ -54,6 +54,7 @@ export interface PlayerRowDisplay {
   gamesPlayed: number;
   weightedAverage?: number;
   mostCommonPlacement?: number;
+  estimatedMinutesPlayed?: number;
 }
 
 // ============================================================================

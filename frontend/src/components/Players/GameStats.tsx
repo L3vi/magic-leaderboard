@@ -7,6 +7,7 @@ import {
   getCachedCommanderColors,
   preFetchCommanderColors,
 } from "../../utils/commanderColorCache";
+import { formatPlayTime } from "../../utils/formatTime";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -321,7 +322,7 @@ const GameStats: React.FC = () => {
           </div>
           <div className="stat-card">
             <div className="stat-label">Estimated Total Minutes</div>
-            <div className="stat-value">{stats.totalGameMinutes}</div>
+            <div className="stat-value">{formatPlayTime(stats.totalGameMinutes)}</div>
           </div>
           <div className="stat-card">
             <div className="stat-label">Most Common Color</div>
