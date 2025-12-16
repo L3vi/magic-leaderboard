@@ -7,6 +7,7 @@ import {
   getCachedCommanderColors,
   preFetchCommanderColors,
 } from "../../utils/commanderColorCache";
+import { preFetchCommandersFromGames } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
 import "./GameStats.css";
 
@@ -79,11 +80,14 @@ const GameStats: React.FC = () => {
   const { games } = useSession();
   const [colorsLoaded, setColorsLoaded] = useState(false);
 
-  // Pre-fetch all commander colors when component mounts or games change
+  // Pre-fetch all commander images and colors when component mounts
   useEffect(() => {
     if (games.length === 0) return;
 
-    // Extract all unique commanders
+    // Pre-fetch commander images (only fetches uncached ones)
+    preFetchCommandersFromGames(games);
+
+    // Extract unique commanders for color pre-fetching
     const uniqueCommanders = new Set<string>();
     games.forEach((game) => {
       game.players.forEach((p) => {
@@ -92,7 +96,7 @@ const GameStats: React.FC = () => {
       });
     });
 
-    // Pre-fetch colors for all commanders
+    // Pre-fetch colors (only fetches uncached ones)
     preFetchCommanderColors(Array.from(uniqueCommanders)).then(() => {
       setColorsLoaded(true);
     });

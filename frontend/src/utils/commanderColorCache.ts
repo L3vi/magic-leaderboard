@@ -1,28 +1,37 @@
 /**
- * Commander color identity cache and fetching utility
- * Uses Scryfall API to get accurate color identities
+ * Commander color cache utility
+ * Uses centralized cacheService for persistence and deduplication
  */
 
-const colorCache: Record<string, string[]> = {};
-const fetchingPromises: Record<string, Promise<string[]>> = {};
+import {
+  getColorCache,
+  setColorCache,
+  setColorCacheBatch,
+  getInflightRequest,
+  setInflightRequest,
+  clearInflightRequest,
+} from '../services/cacheService';
 
 /**
  * Fetch commander color identity from Scryfall API
- * Uses local cache and deduplicates in-flight requests
- * @param commanderName - The commander card name (e.g., "Atreus, Impulsive Son")
+ * @param commanderName - The commander card name
  * @returns Array of color codes (e.g., ['W', 'B', 'R'])
  */
 export async function getCommanderColorsFromScryfall(
   commanderName: string
 ): Promise<string[]> {
+  const requestKey = `colors_${commanderName}`;
+
   // Return cached value if available
-  if (colorCache[commanderName]) {
-    return colorCache[commanderName];
+  const cached = getColorCache(commanderName);
+  if (cached !== null) {
+    return cached;
   }
 
   // Return existing fetch promise if already in-flight
-  if (fetchingPromises[commanderName]) {
-    return fetchingPromises[commanderName];
+  const inflightPromise = getInflightRequest(requestKey);
+  if (inflightPromise) {
+    return inflightPromise;
   }
 
   // Create fetch promise
@@ -36,6 +45,7 @@ export async function getCommanderColorsFromScryfall(
 
       if (!response.ok) {
         console.warn(`Scryfall API error for "${commanderName}": ${response.status}`);
+        setColorCache(commanderName, []);
         return [];
       }
 
@@ -44,27 +54,23 @@ export async function getCommanderColorsFromScryfall(
       if (data.data && data.data.length > 0) {
         const card = data.data[0];
         const colors = card.color_identity || [];
-        
-        // Cache the result
-        colorCache[commanderName] = colors;
+        setColorCache(commanderName, colors);
         return colors;
       }
 
-      // No results found
       console.warn(`No Scryfall results for "${commanderName}"`);
-      colorCache[commanderName] = [];
+      setColorCache(commanderName, []);
       return [];
     } catch (error) {
       console.error(`Error fetching colors for "${commanderName}":`, error);
-      colorCache[commanderName] = [];
+      setColorCache(commanderName, []);
       return [];
     } finally {
-      // Clean up in-flight promise after completion
-      delete fetchingPromises[commanderName];
+      clearInflightRequest(requestKey);
     }
   })();
 
-  fetchingPromises[commanderName] = promise;
+  setInflightRequest(requestKey, promise);
   return promise;
 }
 
@@ -74,12 +80,12 @@ export async function getCommanderColorsFromScryfall(
  * @returns Cached color codes or empty array if not cached
  */
 export function getCachedCommanderColors(commanderName: string): string[] {
-  return colorCache[commanderName] || [];
+  const cached = getColorCache(commanderName);
+  return cached || [];
 }
 
 /**
  * Pre-fetch colors for multiple commanders at once
- * Useful for loading a batch of commanders on component mount
  * @param commanderNames - Array of commander names to fetch
  */
 export async function preFetchCommanderColors(
@@ -92,8 +98,10 @@ export async function preFetchCommanderColors(
 }
 
 /**
- * Clear the color cache
+ * Clear the color cache (clears through cacheService)
  */
 export function clearColorCache(): void {
-  Object.keys(colorCache).forEach((key) => delete colorCache[key]);
+  // This is handled by cacheService.clearCache()
+  const cacheService = require('../services/cacheService');
+  cacheService.clearCache();
 }
