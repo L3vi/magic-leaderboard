@@ -37,13 +37,14 @@ const Games: React.FC = () => {
   const allGames = useMemo(() => gamesData, [gamesData]);
 
   // Pre-fetch all commanders from games on load to populate cache
+  // Only re-fetch if game count actually changes (prevents re-fetch on tab switch)
   useEffect(() => {
     if (gamesData.length > 0) {
       preFetchCommandersFromGames(gamesData).catch((error) => {
         console.error("Error pre-fetching commanders:", error);
       });
     }
-  }, [gamesData.length]); // Only run once when games first load
+  }, [gamesData.length]); // Only run when game count changes
 
   // Filter and sort games
   const getPlayerName = (id: string) => playersData.find(p => p.id === id)?.name || id;
