@@ -5,7 +5,7 @@ import { fetchAllDataFromFirebase, saveDataToFile, printBackupSummary } from './
 /**
  * Download data from Firebase to firebase-snapshot.json
  * 
- * Usage: npm run backup
+ * Usage: npm run download-from-firebase
  */
 async function backup() {
   try {

@@ -22,9 +22,8 @@ Express + TypeScript API for Magic Leaderboard.
 
 #### Backup (Download from Firebase)
 ```bash
-npm run backup              # Download to firebase-snapshot.json
-npm run backup-firebase     # Download to master-leaderboard.json with timestamp
-npm run download-from-firebase  # Alias for backup
+npm run download-from-firebase  # Download to firebase-snapshot.json
+npm run backup-firebase         # Download to master-leaderboard.json with timestamp
 ```
 
 #### Restore (Upload to Firebase)

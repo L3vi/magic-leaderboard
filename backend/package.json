@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/app.ts",
-    "backup": "ts-node src/backup.ts",
     "backup-firebase": "ts-node src/scripts/backup-master.ts",
     "download-from-firebase": "ts-node src/backup.ts",
     "restore": "ts-node src/restore.ts",
