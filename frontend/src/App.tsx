@@ -34,6 +34,9 @@ function MainLayout() {
     return getTabFromPath(location.pathname);
   });
 
+  // 1 = navigating right (towards games), -1 = navigating left (towards players)
+  const [direction, setDirection] = React.useState<1 | -1>(1);
+
   // Sync activeTab with URL and localStorage
   React.useEffect(() => {
     if (location.pathname === '/players' || location.pathname === '/games') {
@@ -44,16 +47,17 @@ function MainLayout() {
   }, [location.pathname]);
 
   const handleTabChange = (tab: 'players' | 'games') => {
+    setDirection(tab === 'games' ? 1 : -1);
     navigate(tab === 'players' ? '/players' : '/games');
   };
 
   // Swipe handlers for tab navigation
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (activeTab === 'players') handleTabChange('games');
+      if (activeTab === 'players') handleTabChange('games'); // games is to the right
     },
     onSwipedRight: () => {
-      if (activeTab === 'games') handleTabChange('players');
+      if (activeTab === 'games') handleTabChange('players'); // players is to the left
     },
     trackMouse: true,
     trackTouch: true,
@@ -74,9 +78,9 @@ function MainLayout() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: activeTab === 'players' ? 20 : -20 }}
+            initial={{ opacity: 0, x: direction * 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: activeTab === 'players' ? -20 : 20 }}
+            exit={{ opacity: 0, x: direction * -20 }}
             transition={{ duration: 0.15, ease: "easeInOut" }}
             className="tab-content-inner"
           >
