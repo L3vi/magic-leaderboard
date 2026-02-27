@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - redesign # or your main branch
+      - draft-variant
 
 jobs:
   build-and-deploy:
