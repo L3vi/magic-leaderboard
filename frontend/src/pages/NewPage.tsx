@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
@@ -17,13 +17,19 @@ const NewPage: React.FC = () => {
   const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
   const { addMatch, addDraft } = useCubeEvent();
   const [mode, setMode] = useState<FormMode>("match");
+  const [isExiting, setIsExiting] = useState(false);
 
   const fromPath = (location.state as any)?.from || "/drafts";
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
+    if (isExiting) return;
     setSkipAnimation(true);
-    navigate(fromPath);
-  };
+    setIsExiting(true);
+  }, [isExiting, setSkipAnimation]);
+
+  const handleExitComplete = useCallback(() => {
+    if (isExiting) navigate(fromPath);
+  }, [isExiting, navigate, fromPath]);
 
   useEscapeKey(handleClose);
 
@@ -37,9 +43,22 @@ const NewPage: React.FC = () => {
     };
   }, []);
 
-  const animationProps = skipAnimationRef.current
-    ? { initial: { opacity: 1, y: 0 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: 20 }, transition: { duration: 0 } }
-    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: 20 }, transition: { duration: 0.15, ease: "easeOut" as const } };
+  const shouldSkipEntrance = skipAnimationRef.current;
+
+  const animateState = isExiting
+    ? { opacity: 0, y: 20 }
+    : { opacity: 1, y: 0 };
+
+  const animationProps = {
+    initial: shouldSkipEntrance ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
+    animate: animateState,
+    transition: isExiting
+      ? { duration: 0.15, ease: "easeIn" as const }
+      : shouldSkipEntrance
+        ? { duration: 0 }
+        : { duration: 0.15, ease: "easeOut" as const },
+    onAnimationComplete: handleExitComplete,
+  };
 
   React.useEffect(() => {
     return () => setSkipAnimation(false);

@@ -115,6 +115,17 @@ function AnimatedRoutes() {
                        location.pathname.startsWith('/matches/') ||
                        location.pathname === '/new';
 
+  // Manage modal-open at the route level to avoid flicker between detail pages
+  React.useEffect(() => {
+    if (isDetailPage) {
+      document.documentElement.classList.add("modal-open");
+      document.body.classList.add("modal-open");
+    } else {
+      document.documentElement.classList.remove("modal-open");
+      document.body.classList.remove("modal-open");
+    }
+  }, [isDetailPage]);
+
   return (
     <>
       <MainLayout />
