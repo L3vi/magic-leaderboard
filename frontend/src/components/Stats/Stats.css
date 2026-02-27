@@ -1,5 +1,5 @@
 .stats-page {
-  padding: 0.5rem;
+  padding: 0.75rem;
 }
 
 .stats-empty {
@@ -14,10 +14,10 @@
 }
 
 .stats-section h2 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--foreground);
-  margin: 0 0 0.75rem;
+  margin: 0 0 1rem;
 }
 
 .stats-grid {
@@ -30,7 +30,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 0.875rem;
+  padding: 1.125rem;
   transition: border-color 0.18s;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .stat-value {
-  font-size: 1.75rem;
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--accent);
 }
@@ -74,7 +74,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 0.75rem;
+  padding: 1rem;
   cursor: pointer;
   transition: border-color 0.18s, background 0.15s;
 }
@@ -135,7 +135,7 @@
 
 .gs-color-bar-bg {
   flex: 1;
-  height: 0.625rem;
+  height: 0.75rem;
   background: var(--surface);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -200,8 +200,8 @@
 }
 
 .gs-archetype-pip {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   border: 1px solid var(--border);
 }
@@ -223,7 +223,7 @@
 
 .gs-archetype-bar-bg {
   flex: 1;
-  height: 0.5rem;
+  height: 0.75rem;
   background: var(--surface);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -264,7 +264,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 0.75rem;
+  padding: 1rem;
 }
 
 .gs-cube-name {
@@ -363,7 +363,7 @@
   }
 
   .stat-value {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 
   /* Highlights */
@@ -399,7 +399,7 @@
   }
 
   .gs-color-bar-bg {
-    height: 0.875rem;
+    height: 1rem;
   }
 
   .gs-color-count {
@@ -427,8 +427,8 @@
   }
 
   .gs-archetype-pip {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .gs-archetype-colors {
@@ -437,7 +437,7 @@
   }
 
   .gs-archetype-bar-bg {
-    height: 0.75rem;
+    height: 1rem;
   }
 
   .gs-archetype-record {

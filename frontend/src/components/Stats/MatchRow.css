@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
+  padding: 0.75rem 1rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -22,7 +22,7 @@
 
 .match-row-name {
   flex: 1;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--foreground);
 }
 
@@ -40,7 +40,7 @@
 }
 
 .match-row-score {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--text-muted);
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
@@ -48,16 +48,16 @@
 
 @media (max-width: 639px) {
   .match-row-card {
-    padding: 0.875rem 1rem;
+    padding: 1rem 1.125rem;
     gap: 1rem;
   }
 
   .match-row-name {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
   }
 
   .match-row-score {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
   }
 }
