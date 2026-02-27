@@ -220,6 +220,7 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
       </div>
 
       <FormActions
+        variant="fixed"
         submitLabel="Save Match"
         loadingText="Saving..."
         onCancel={onCancel}

@@ -22,14 +22,17 @@
 /* Variant: Fixed position (e.g., modals) */
 .form-actions-fixed {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 1.5rem;
+  left: 1rem;
+  right: 1rem;
   z-index: 10001;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
+  background: transparent;
+  pointer-events: none;
+  justify-content: space-between;
+}
+
+.form-actions-fixed .btn {
+  pointer-events: auto;
 }
 
 /* Spinner Animation */
@@ -59,18 +62,7 @@
   }
 
   .form-actions-fixed {
-    position: fixed;
     bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    width: auto;
-    gap: 0.75rem;
-    justify-content: space-between;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
   }
 
   .form-actions .btn-primary {

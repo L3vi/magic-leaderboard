@@ -14,7 +14,7 @@ const NewDraft: React.FC<NewDraftProps> = ({ onSubmit, onCancel }) => {
   const { event, players } = useCubeEvent();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCubeId, setSelectedCubeId] = useState(event?.cubes[0]?.id || "");
-  const [playerRows, setPlayerRows] = useState<string[]>([""]);
+  const [playerRows, setPlayerRows] = useState<string[]>(Array(8).fill(""));
 
   const cubeOptions = useMemo(
     () => (event?.cubes || []).map(c => ({ id: c.id, label: c.name })),
@@ -124,6 +124,7 @@ const NewDraft: React.FC<NewDraftProps> = ({ onSubmit, onCancel }) => {
       </div>
 
       <FormActions
+        variant="fixed"
         submitLabel="Create Draft"
         loadingText="Creating..."
         onCancel={onCancel}
