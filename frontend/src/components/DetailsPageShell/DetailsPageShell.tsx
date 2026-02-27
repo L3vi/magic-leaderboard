@@ -7,7 +7,7 @@ import "./DetailsPageShell.css";
 
 interface DetailsPageShellProps {
   title: string;
-  children: ReactNode;
+  children?: ReactNode;
   onClose: () => void;
   onEdit?: () => void;
   loading?: boolean;

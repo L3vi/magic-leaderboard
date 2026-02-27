@@ -1,0 +1,47 @@
+.match-row-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.match-row-card:hover {
+  border-color: var(--primary);
+  background: var(--background-elevated);
+}
+
+.match-row-card:active {
+  transform: scale(0.98);
+}
+
+.match-row-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+}
+
+.match-row-name:first-child {
+  text-align: right;
+}
+
+.match-row-name:last-child {
+  text-align: left;
+}
+
+.match-row-name.winner {
+  font-weight: var(--font-weight-bold);
+  color: var(--accent);
+}
+
+.match-row-score {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}

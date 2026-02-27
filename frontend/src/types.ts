@@ -4,7 +4,7 @@
  */
 
 // ============================================================================
-// GAME & PLAYER DATA TYPES
+// CORE PLAYER TYPE
 // ============================================================================
 
 export interface Player {
@@ -12,101 +12,90 @@ export interface Player {
   name: string;
 }
 
-export interface GamePlayer {
+// ============================================================================
+// CUBE DRAFT EVENT TYPES
+// ============================================================================
+
+export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G';
+
+export const MANA_COLORS: ManaColor[] = ['W', 'U', 'B', 'R', 'G'];
+
+export const MANA_COLOR_NAMES: Record<ManaColor, string> = {
+  W: 'White',
+  U: 'Blue',
+  B: 'Black',
+  R: 'Red',
+  G: 'Green',
+};
+
+export interface Cube {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Draft {
+  id: string;
+  cubeId: string;
+  date: string;
+  players: string[];
+  status: 'in-progress' | 'complete';
+}
+
+export interface MatchPlayer {
   playerId: string;
-  placement: number;
-  commander: string | string[];
-  commanderArt?: CommanderArtPreference;
+  deckColors: ManaColor[];
+  wins: number; // 0, 1, or 2
 }
 
-export interface Game {
+export interface Match {
   id: string;
-  dateCreated: string;
-  notes: string;
-  players: GamePlayer[];
+  draftId: string;
+  date: string;
+  players: [MatchPlayer, MatchPlayer]; // always exactly 2
 }
 
-export interface SessionMetadata {
+export interface CubeEvent {
   name: string;
-  description?: string;
-  players?: string[];
-  createdAt: string;
+  date: string;
+  description: string;
+  players: string[];
+  cubes: Cube[];
+  drafts: Draft[];
+  matches: Match[];
 }
 
 // ============================================================================
-// PLAYER STATISTICS & DISPLAY TYPES
+// STANDINGS & STATISTICS TYPES
 // ============================================================================
 
-export interface PlayerScore {
-  id: string;
-  name: string;
-  score: number;
-  placement: number;
-  gameCount: number;
-  average: number;
-  weightedAverage: number;
+export interface DraftStanding {
+  playerId: string;
+  playerName: string;
+  matchPoints: number;
+  matchRecord: { wins: number; losses: number; draws: number };
+  gameRecord: { wins: number; losses: number };
+  matchWinPct: number;
+  gameWinPct: number;
+  omwPct: number;
+  ogwPct: number;
 }
 
-export interface PlayerRowDisplay {
-  name: string;
-  score: number;
-  average: number;
-  gamesPlayed: number;
-  weightedAverage?: number;
-  mostCommonPlacement?: number;
-  estimatedMinutesPlayed?: number;
-}
-
-// ============================================================================
-// COMMANDER & ART TYPES
-// ============================================================================
-
-export interface CommanderArtPreference {
-  commanderName: string;
-  artVariantId: string;
-  imageUrl: string;
-}
-
-export interface PlayerCommanderArt {
-  commanderName: string;
-  variantId: string;
-  artUrl: string;
-  fullImageUrl: string;
-  timestamp: number | string;
-}
-
-export interface CardVariant {
-  id: string;
-  name: string;
-  art: string;
-  full: string;
-  set: string;
-  setName: string;
-}
-
-export interface CardImageCache {
-  art: string;
-  full: string;
-}
-
-// ============================================================================
-// COLOR/META STATISTICS TYPES
-// ============================================================================
-
-export interface CommanderColorStats {
-  color: string; // Single letter: W, U, B, R, G
-  commanderName: string;
-  plays: number;
-  wins: number;
-  winRate: number;
-}
-
-export interface ColorStatsData {
-  color: string;
-  totalPlays: number;
-  totalWins: number;
-  winRate: number;
-  commanders: CommanderColorStats[];
+export interface PlayerOverallStats {
+  playerId: string;
+  playerName: string;
+  matchesPlayed: number;
+  matchWins: number;
+  matchLosses: number;
+  matchDraws: number;
+  gameWins: number;
+  gameLosses: number;
+  matchWinPct: number;
+  gameWinPct: number;
+  draftsPlayed: number;
+  colorBreakdown: Record<ManaColor, number>;
+  favoriteColor: ManaColor | null;
+  cubesPlayed: string[];
 }
 
 // ============================================================================

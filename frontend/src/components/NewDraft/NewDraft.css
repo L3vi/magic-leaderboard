@@ -1,0 +1,81 @@
+.new-draft-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem;
+  padding-bottom: 100px;
+}
+
+.draft-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.draft-name-display {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.875rem;
+  color: var(--primary-light);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+}
+
+.draft-player-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.draft-player-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.draft-player-dropdown {
+  flex: 1;
+  min-width: 0;
+}
+
+.draft-remove-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.draft-remove-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: rgba(229, 115, 115, 0.1);
+}
+
+.draft-add-btn {
+  background: transparent;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.625rem;
+  color: var(--primary-light);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+
+.draft-add-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-rgba-5);
+}

@@ -1,0 +1,71 @@
+.drafts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.drafts-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: var(--font-size-lg);
+}
+
+/* Draft Row */
+.draft-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.draft-row:hover {
+  border-color: var(--primary);
+  background: var(--background-elevated);
+}
+
+.draft-row:active {
+  transform: scale(0.98);
+}
+
+.draft-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.draft-row-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft-row-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.draft-row-status {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  padding-left: 0.75rem;
+}
+
+.draft-row-status.in-progress {
+  color: var(--success);
+}
+
+.draft-row-status.complete {
+  color: var(--text-muted);
+}
