@@ -108,6 +108,61 @@
   width: 100%;
 }
 
+/* Strategy input */
+.match-strategy-input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  box-sizing: border-box;
+  transition: border-color 0.18s;
+}
+
+.match-strategy-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.match-strategy-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Match notes */
+.match-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.match-notes-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.18s;
+}
+
+.match-notes-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.match-notes-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
 /* Field label */
 .field-label {
   font-size: var(--font-size-sm);

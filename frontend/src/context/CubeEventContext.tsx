@@ -25,7 +25,7 @@ interface CubeEventContextType {
   refreshEvent: () => Promise<void>;
   addDraft: (draft: Omit<Draft, "id">) => Promise<Draft>;
   updateDraftStatus: (draftId: string, status: "in-progress" | "complete") => Promise<void>;
-  addMatch: (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer] }) => Promise<Match>;
+  addMatch: (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }) => Promise<Match>;
   updateMatch: (matchId: string, matchData: Partial<Pick<Match, "draftId" | "players">>) => Promise<void>;
   deleteMatch: (matchId: string) => Promise<void>;
 }
@@ -100,7 +100,7 @@ export const CubeEventProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     await loadData(false);
   }, [eventId, loadData]);
 
-  const addMatch = useCallback(async (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer] }): Promise<Match> => {
+  const addMatch = useCallback(async (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }): Promise<Match> => {
     if (!eventId) throw new Error("No active event");
     const newMatch = await addMatchService(eventId, matchData);
     await loadData(false);

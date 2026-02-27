@@ -51,7 +51,7 @@ const PlayerDetailsPage: React.FC = () => {
       else if (winnerId) matchLosses++;
       else matchDraws++;
 
-      for (const c of pe.deckColors) {
+      for (const c of (pe.deckColors || [])) {
         colorBreakdown[c as ManaColor] = (colorBreakdown[c as ManaColor] || 0) + 1;
       }
 

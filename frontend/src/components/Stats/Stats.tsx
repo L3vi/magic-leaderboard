@@ -29,7 +29,7 @@ const Stats: React.FC = () => {
     const colorCounts: Record<ManaColor, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
     for (const match of event.matches) {
       for (const p of match.players) {
-        for (const c of p.deckColors) {
+        for (const c of (p.deckColors || [])) {
           colorCounts[c] = (colorCounts[c] || 0) + 1;
         }
       }

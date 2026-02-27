@@ -70,7 +70,7 @@ const MatchDetailsPage: React.FC = () => {
               {p1.wins}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-              {p1.deckColors.map(c => (
+              {(p1.deckColors || []).map(c => (
                 <span key={c} style={{
                   fontSize: "var(--font-size-xs)",
                   padding: "0.125rem 0.5rem",
@@ -83,6 +83,11 @@ const MatchDetailsPage: React.FC = () => {
                 </span>
               ))}
             </div>
+            {p1.deckStrategy && (
+              <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", marginTop: "0.375rem", fontStyle: "italic" }}>
+                {p1.deckStrategy}
+              </div>
+            )}
           </div>
 
           <div style={{ display: "flex", alignItems: "center", paddingTop: "1.5rem", color: "var(--text-muted)", fontWeight: 600 }}>
@@ -103,7 +108,7 @@ const MatchDetailsPage: React.FC = () => {
               {p2.wins}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-              {p2.deckColors.map(c => (
+              {(p2.deckColors || []).map(c => (
                 <span key={c} style={{
                   fontSize: "var(--font-size-xs)",
                   padding: "0.125rem 0.5rem",
@@ -116,8 +121,32 @@ const MatchDetailsPage: React.FC = () => {
                 </span>
               ))}
             </div>
+            {p2.deckStrategy && (
+              <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", marginTop: "0.375rem", fontStyle: "italic" }}>
+                {p2.deckStrategy}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Match notes */}
+        {match.notes && (
+          <div style={{
+            marginTop: "1.25rem",
+            padding: "0.75rem",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "var(--font-size-sm)",
+            color: "var(--foreground)",
+            whiteSpace: "pre-wrap",
+          }}>
+            <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.375rem", fontWeight: 600 }}>
+              Notes
+            </div>
+            {match.notes}
+          </div>
+        )}
 
         {/* Link to draft */}
         <div style={{ textAlign: "center", marginTop: "1.5rem" }}>

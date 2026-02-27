@@ -63,7 +63,8 @@ export interface Draft {
 
 export interface MatchPlayer {
   playerId: string;
-  deckColors: ManaColor[];
+  deckColors?: ManaColor[];
+  deckStrategy?: string;
   wins: number;
 }
 
@@ -72,6 +73,7 @@ export interface Match {
   draftId: string;
   date: string;
   players: [MatchPlayer, MatchPlayer];
+  notes?: string;
 }
 
 export interface CubeEvent {

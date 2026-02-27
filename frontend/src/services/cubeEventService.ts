@@ -98,7 +98,7 @@ export async function updateDraftStatus(
  */
 export async function addMatch(
   eventId: string,
-  matchData: { draftId: string; players: [MatchPlayer, MatchPlayer] }
+  matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }
 ): Promise<Match> {
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
@@ -111,6 +111,7 @@ export async function addMatch(
     draftId: matchData.draftId,
     date: new Date().toISOString(),
     players: matchData.players,
+    notes: matchData.notes || "",
   };
 
   await updateDoc(docRef, { matches: [...event.matches, newMatch] });

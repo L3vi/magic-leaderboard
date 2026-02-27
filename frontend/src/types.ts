@@ -44,7 +44,8 @@ export interface Draft {
 
 export interface MatchPlayer {
   playerId: string;
-  deckColors: ManaColor[];
+  deckColors?: ManaColor[];
+  deckStrategy?: string; // e.g. "B/W Flyers", "Red Aggro"
   wins: number; // 0, 1, or 2
 }
 
@@ -53,6 +54,7 @@ export interface Match {
   draftId: string;
   date: string;
   players: [MatchPlayer, MatchPlayer]; // always exactly 2
+  notes?: string; // notable plays, memorable moments, etc.
 }
 
 export interface CubeEvent {

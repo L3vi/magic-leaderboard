@@ -7,7 +7,7 @@ import type { ManaColor, MatchPlayer } from "../../types";
 import "./NewMatch.css";
 
 interface NewMatchProps {
-  onSubmit: (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer] }) => void | Promise<void>;
+  onSubmit: (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }) => void | Promise<void>;
   onCancel?: () => void;
 }
 
@@ -73,9 +73,22 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     for (const match of matches) {
       const entry = match.players.find(p => p.playerId === playerId);
-      if (entry && entry.deckColors.length > 0) return entry.deckColors;
+      if (entry && entry.deckColors && entry.deckColors.length > 0) return entry.deckColors;
     }
     return [];
+  }, [event, selectedDraftId]);
+
+  // Get a player's last used strategy in this draft
+  const getLastStrategy = useCallback((playerId: string): string => {
+    if (!event || !selectedDraftId || !playerId) return "";
+    const matches = event.matches
+      .filter(m => m.draftId === selectedDraftId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    for (const match of matches) {
+      const entry = match.players.find(p => p.playerId === playerId);
+      if (entry && entry.deckStrategy) return entry.deckStrategy;
+    }
+    return "";
   }, [event, selectedDraftId]);
 
   const initDefaults = useCallback(() => {
@@ -84,8 +97,10 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
       p1, p2,
       p1Colors: getLastColors(p1),
       p2Colors: getLastColors(p2),
+      p1Strategy: getLastStrategy(p1),
+      p2Strategy: getLastStrategy(p2),
     };
-  }, [getLeastRecentlyPlayed, getLastColors]);
+  }, [getLeastRecentlyPlayed, getLastColors, getLastStrategy]);
 
   const [player1Id, setPlayer1Id] = useState(() => initDefaults().p1);
   const [player2Id, setPlayer2Id] = useState(() => initDefaults().p2);
@@ -93,6 +108,9 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
   const [player2Wins, setPlayer2Wins] = useState(0);
   const [player1Colors, setPlayer1Colors] = useState<ManaColor[]>(() => initDefaults().p1Colors);
   const [player2Colors, setPlayer2Colors] = useState<ManaColor[]>(() => initDefaults().p2Colors);
+  const [player1Strategy, setPlayer1Strategy] = useState(() => initDefaults().p1Strategy);
+  const [player2Strategy, setPlayer2Strategy] = useState(() => initDefaults().p2Strategy);
+  const [matchNotes, setMatchNotes] = useState("");
 
   // Reset defaults when draft changes
   React.useEffect(() => {
@@ -103,16 +121,21 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
     setPlayer2Wins(0);
     setPlayer1Colors(d.p1Colors);
     setPlayer2Colors(d.p2Colors);
+    setPlayer1Strategy(d.p1Strategy);
+    setPlayer2Strategy(d.p2Strategy);
+    setMatchNotes("");
   }, [selectedDraftId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-fill colors when a player is changed
+  // Auto-fill colors + strategy when a player is changed
   const handlePlayer1Change = (id: string) => {
     setPlayer1Id(id);
     setPlayer1Colors(getLastColors(id));
+    setPlayer1Strategy(getLastStrategy(id));
   };
   const handlePlayer2Change = (id: string) => {
     setPlayer2Id(id);
     setPlayer2Colors(getLastColors(id));
+    setPlayer2Strategy(getLastStrategy(id));
   };
 
   const draftOptions = useMemo(() => {
@@ -159,9 +182,10 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
     const matchData = {
       draftId: selectedDraftId,
       players: [
-        { playerId: player1Id, deckColors: player1Colors, wins: player1Wins },
-        { playerId: player2Id, deckColors: player2Colors, wins: player2Wins },
+        { playerId: player1Id, deckColors: player1Colors, deckStrategy: player1Strategy, wins: player1Wins },
+        { playerId: player2Id, deckColors: player2Colors, deckStrategy: player2Strategy, wins: player2Wins },
       ] as [MatchPlayer, MatchPlayer],
+      notes: matchNotes || undefined,
     };
     try {
       await Promise.resolve(onSubmit(matchData));
@@ -175,6 +199,9 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
         setPlayer2Wins(0);
         setPlayer1Colors(d.p1Colors);
         setPlayer2Colors(d.p2Colors);
+        setPlayer1Strategy(d.p1Strategy);
+        setPlayer2Strategy(d.p2Strategy);
+        setMatchNotes("");
       }, 500);
     } finally {
       setIsSubmitting(false);
@@ -229,6 +256,13 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
           <div className="match-colors-section">
             <ColorCircles selected={player1Colors} onChange={setPlayer1Colors} size="md" />
           </div>
+          <input
+            type="text"
+            className="match-strategy-input"
+            value={player1Strategy}
+            onChange={e => setPlayer1Strategy(e.target.value)}
+            placeholder="Deck strategy"
+          />
         </div>
 
         {/* Divider */}
@@ -267,7 +301,26 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
           <div className="match-colors-section">
             <ColorCircles selected={player2Colors} onChange={setPlayer2Colors} size="md" />
           </div>
+          <input
+            type="text"
+            className="match-strategy-input"
+            value={player2Strategy}
+            onChange={e => setPlayer2Strategy(e.target.value)}
+            placeholder="Deck strategy"
+          />
         </div>
+      </div>
+
+      {/* Match notes */}
+      <div className="match-notes-section">
+        <label className="field-label">Notes</label>
+        <textarea
+          className="match-notes-input"
+          value={matchNotes}
+          onChange={e => setMatchNotes(e.target.value)}
+          placeholder="Notable plays, memorable moments..."
+          rows={2}
+        />
       </div>
 
       <FormActions

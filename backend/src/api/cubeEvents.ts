@@ -113,7 +113,7 @@ export async function updateDraft(req: Request, res: Response) {
  */
 export async function createMatch(req: Request, res: Response) {
   const eventId = req.params.eventId;
-  const { draftId, players } = req.body;
+  const { draftId, players, notes } = req.body;
 
   // Validate draftId
   if (!draftId || typeof draftId !== "string") {
@@ -135,6 +135,7 @@ export async function createMatch(req: Request, res: Response) {
     if (!Array.isArray(player.deckColors) || !player.deckColors.every((c: string) => VALID_COLORS.includes(c as ManaColor))) {
       return res.status(400).json({ error: "deckColors must be an array of valid mana colors (W, U, B, R, G)." });
     }
+    // deckStrategy is optional string, no strict validation needed
   }
 
   // At most one player can have 2 wins
@@ -165,7 +166,11 @@ export async function createMatch(req: Request, res: Response) {
       id: matchId,
       draftId,
       date: new Date().toISOString(),
-      players: [players[0], players[1]],
+      players: [
+        { ...players[0], deckStrategy: players[0].deckStrategy || "" },
+        { ...players[1], deckStrategy: players[1].deckStrategy || "" },
+      ],
+      notes: typeof notes === "string" ? notes : "",
     };
 
     const updatedMatches = [...event.matches, newMatch];
