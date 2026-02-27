@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCubeEvent } from "../../context/CubeEventContext";
 import { calculateDraftStandings, formatPct, getMatchWinner } from "../../utils/standings";
 import type { Player } from "../../types";
@@ -9,6 +10,7 @@ interface DraftDetailsProps {
 }
 
 const DraftDetails: React.FC<DraftDetailsProps> = ({ draftId }) => {
+  const navigate = useNavigate();
   const { event, players, updateDraftStatus } = useCubeEvent();
 
   const draft = useMemo(
@@ -116,7 +118,14 @@ const DraftDetails: React.FC<DraftDetailsProps> = ({ draftId }) => {
               const rightWins = winnerId === p2.playerId ? p1.wins : p2.wins;
 
               return (
-                <div key={match.id} className="draft-match-row">
+                <div
+                  key={match.id}
+                  className="draft-match-row clickable"
+                  onClick={() => navigate(`/matches/${match.id}`)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === "Enter") navigate(`/matches/${match.id}`); }}
+                >
                   <span className={`match-player-name${!isDraw && winnerId ? " winner" : ""}`}>
                     {leftName}
                   </span>

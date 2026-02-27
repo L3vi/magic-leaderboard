@@ -108,12 +108,12 @@ const PlayerDetailsPage: React.FC = () => {
 
   if (!playerData || !stats) {
     return (
-      <DetailsPageShell title="Player" onClose={() => navigate("/players")} error={`Player "${decodedName}" not found`} />
+      <DetailsPageShell title="Player" onClose={() => navigate(-1)} error={`Player "${decodedName}" not found`} />
     );
   }
 
   return (
-    <DetailsPageShell title={playerData.name} onClose={() => navigate("/players")}>
+    <DetailsPageShell title={playerData.name} onClose={() => navigate(-1)}>
       <div className="player-details-cube">
         {/* Key stats */}
         <div className="pd-stats-grid">

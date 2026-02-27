@@ -22,7 +22,7 @@ const DraftDetailsPage: React.FC = () => {
   return (
     <DetailsPageShell
       title={draftDisplayName}
-      onClose={() => navigate("/drafts")}
+      onClose={() => navigate(-1)}
     >
       {draftId && <DraftDetails draftId={draftId} />}
     </DetailsPageShell>

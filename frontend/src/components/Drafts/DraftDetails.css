@@ -149,6 +149,16 @@
   font-size: var(--font-size-sm);
 }
 
+.draft-match-row.clickable {
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.draft-match-row.clickable:hover {
+  border-color: var(--primary);
+  background: var(--primary-rgba-10);
+}
+
 .match-player-name {
   flex: 1;
   color: var(--foreground);
