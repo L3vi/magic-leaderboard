@@ -189,12 +189,17 @@ const MatchDetailsPage: React.FC = () => {
         <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
           {/* Player 1 */}
           <div style={{ flex: 1, textAlign: "center" }}>
-            <div style={{
-              fontSize: "var(--font-size-lg)",
-              fontWeight: !isEditing && winnerId === p1.playerId ? 700 : 400,
-              color: !isEditing && winnerId === p1.playerId ? "var(--accent)" : "var(--foreground)",
-              marginBottom: "0.5rem"
-            }}>
+            <div
+              onClick={!isEditing ? () => navigate(`/players/${encodeURIComponent(p1Name)}`) : undefined}
+              role={!isEditing ? "link" : undefined}
+              style={{
+                fontSize: "var(--font-size-lg)",
+                fontWeight: !isEditing && winnerId === p1.playerId ? 700 : 400,
+                color: !isEditing && winnerId === p1.playerId ? "var(--accent)" : "var(--foreground)",
+                marginBottom: "0.5rem",
+                ...(!isEditing && { cursor: "pointer", textDecoration: "underline", textDecorationColor: "var(--border)", textUnderlineOffset: "0.2em" }),
+              }}
+            >
               {p1Name}
             </div>
             {isEditing ? (
@@ -236,12 +241,17 @@ const MatchDetailsPage: React.FC = () => {
 
           {/* Player 2 */}
           <div style={{ flex: 1, textAlign: "center" }}>
-            <div style={{
-              fontSize: "var(--font-size-lg)",
-              fontWeight: !isEditing && winnerId === p2.playerId ? 700 : 400,
-              color: !isEditing && winnerId === p2.playerId ? "var(--accent)" : "var(--foreground)",
-              marginBottom: "0.5rem"
-            }}>
+            <div
+              onClick={!isEditing ? () => navigate(`/players/${encodeURIComponent(p2Name)}`) : undefined}
+              role={!isEditing ? "link" : undefined}
+              style={{
+                fontSize: "var(--font-size-lg)",
+                fontWeight: !isEditing && winnerId === p2.playerId ? 700 : 400,
+                color: !isEditing && winnerId === p2.playerId ? "var(--accent)" : "var(--foreground)",
+                marginBottom: "0.5rem",
+                ...(!isEditing && { cursor: "pointer", textDecoration: "underline", textDecorationColor: "var(--border)", textUnderlineOffset: "0.2em" }),
+              }}
+            >
               {p2Name}
             </div>
             {isEditing ? (
