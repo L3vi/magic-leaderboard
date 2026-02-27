@@ -7,6 +7,14 @@ import ColorCircles from "../components/ColorCircles/ColorCircles";
 import type { Player, ManaColor } from "../types";
 import { MANA_COLOR_NAMES } from "../types";
 
+const MANA_PILL_STYLES: Record<ManaColor, { bg: string; text: string; border: string }> = {
+  W: { bg: "#fffbeb", text: "#78350f", border: "rgba(255, 251, 235, 0.3)" },
+  U: { bg: "#0ea5e9", text: "#ffffff", border: "rgba(14, 165, 233, 0.3)" },
+  B: { bg: "#4b5563", text: "#e5e7eb", border: "rgba(107, 114, 128, 0.3)" },
+  R: { bg: "#ef4444", text: "#ffffff", border: "rgba(239, 68, 68, 0.3)" },
+  G: { bg: "#22c55e", text: "#ffffff", border: "rgba(34, 197, 94, 0.3)" },
+};
+
 const MatchDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { matchId } = useParams<{ matchId: string }>();
@@ -70,18 +78,22 @@ const MatchDetailsPage: React.FC = () => {
               {p1.wins}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-              {(p1.deckColors || []).map(c => (
-                <span key={c} style={{
-                  fontSize: "var(--font-size-xs)",
-                  padding: "0.125rem 0.5rem",
-                  borderRadius: "var(--radius-full)",
-                  background: "var(--surface)",
-                  border: "1px solid var(--border)",
-                  color: "var(--foreground)"
-                }}>
-                  {MANA_COLOR_NAMES[c]}
-                </span>
-              ))}
+              {(p1.deckColors || []).map(c => {
+                const s = MANA_PILL_STYLES[c];
+                return (
+                  <span key={c} style={{
+                    fontSize: "var(--font-size-xs)",
+                    padding: "0.125rem 0.5rem",
+                    borderRadius: "var(--radius-full)",
+                    background: s.bg,
+                    border: `1px solid ${s.border}`,
+                    color: s.text,
+                    fontWeight: 600,
+                  }}>
+                    {MANA_COLOR_NAMES[c]}
+                  </span>
+                );
+              })}
             </div>
             {p1.deckStrategy && (
               <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", marginTop: "0.375rem", fontStyle: "italic" }}>
@@ -108,18 +120,22 @@ const MatchDetailsPage: React.FC = () => {
               {p2.wins}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "0.25rem", flexWrap: "wrap" }}>
-              {(p2.deckColors || []).map(c => (
-                <span key={c} style={{
-                  fontSize: "var(--font-size-xs)",
-                  padding: "0.125rem 0.5rem",
-                  borderRadius: "var(--radius-full)",
-                  background: "var(--surface)",
-                  border: "1px solid var(--border)",
-                  color: "var(--foreground)"
-                }}>
-                  {MANA_COLOR_NAMES[c]}
-                </span>
-              ))}
+              {(p2.deckColors || []).map(c => {
+                const s = MANA_PILL_STYLES[c];
+                return (
+                  <span key={c} style={{
+                    fontSize: "var(--font-size-xs)",
+                    padding: "0.125rem 0.5rem",
+                    borderRadius: "var(--radius-full)",
+                    background: s.bg,
+                    border: `1px solid ${s.border}`,
+                    color: s.text,
+                    fontWeight: 600,
+                  }}>
+                    {MANA_COLOR_NAMES[c]}
+                  </span>
+                );
+              })}
             </div>
             {p2.deckStrategy && (
               <div style={{ fontSize: "var(--font-size-xs)", color: "var(--text-muted)", marginTop: "0.375rem", fontStyle: "italic" }}>

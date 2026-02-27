@@ -47,7 +47,7 @@ const NewPage: React.FC = () => {
 
   const handleMatchSubmit = async (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }) => {
     await addMatch(matchData);
-    // Stay on form for rapid match entry — NewMatch resets itself
+    navigate(-1);
   };
 
   const handleDraftSubmit = async (draftData: Omit<Draft, "id">) => {

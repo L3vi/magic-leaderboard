@@ -189,20 +189,6 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
     };
     try {
       await Promise.resolve(onSubmit(matchData));
-      // Reset for next match entry — re-calculate defaults from updated data
-      // Small delay so context refreshes first
-      setTimeout(() => {
-        const d = initDefaults();
-        setPlayer1Id(d.p1);
-        setPlayer2Id(d.p2);
-        setPlayer1Wins(0);
-        setPlayer2Wins(0);
-        setPlayer1Colors(d.p1Colors);
-        setPlayer2Colors(d.p2Colors);
-        setPlayer1Strategy(d.p1Strategy);
-        setPlayer2Strategy(d.p2Strategy);
-        setMatchNotes("");
-      }, 500);
     } finally {
       setIsSubmitting(false);
     }
