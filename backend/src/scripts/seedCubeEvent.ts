@@ -47,13 +47,13 @@ async function seedCubeEvent() {
       cubes: [
         {
           id: "cube-jims",
-          name: "Jim's Cube",
-          description: "Jim's cube",
+          name: "DNS Cube",
+          description: "DNS Cube",
         },
         {
           id: "cube-matts",
-          name: "Matt's Cube",
-          description: "Matt's cube",
+          name: "Vintage Cube",
+          description: "Vintage Cube",
         },
       ],
       drafts: [],
