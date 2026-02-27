@@ -33,16 +33,6 @@ const NewPage: React.FC = () => {
 
   useEscapeKey(handleClose);
 
-  // Disable body scroll
-  React.useEffect(() => {
-    document.documentElement.classList.add("modal-open");
-    document.body.classList.add("modal-open");
-    return () => {
-      document.documentElement.classList.remove("modal-open");
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
-
   const shouldSkipEntrance = skipAnimationRef.current;
 
   const animateState = isExiting

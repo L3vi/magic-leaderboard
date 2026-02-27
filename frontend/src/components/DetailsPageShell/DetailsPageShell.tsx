@@ -1,5 +1,4 @@
-import React, { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { ReactNode, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../../hooks/useEscapeKey";
 import { useNavigationAnimation } from "../../context/NavigationContext";
@@ -23,39 +22,38 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
   error,
 }) => {
   const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
+  const [isExiting, setIsExiting] = useState(false);
 
-  // Set skip flag before navigating back so the destination page won't animate
-  const handleClose = () => {
+  // Play exit animation, then navigate back
+  const handleClose = useCallback(() => {
+    if (isExiting) return;
     setSkipAnimation(true);
-    onClose();
-  };
+    setIsExiting(true);
+  }, [isExiting, setSkipAnimation]);
 
-  // Disable body scroll when this page is open
-  React.useEffect(() => {
-    document.documentElement.classList.add("modal-open");
-    document.body.classList.add("modal-open");
-    return () => {
-      document.documentElement.classList.remove("modal-open");
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
+  const handleExitComplete = useCallback(() => {
+    if (isExiting) onClose();
+  }, [isExiting, onClose]);
 
   useEscapeKey(handleClose);
 
-  // Determine animation props based on whether we're navigating back
-  const animationProps = skipAnimationRef.current
-    ? {
-        initial: { opacity: 1, y: 0 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 20 },
-        transition: { duration: 0 },
-      }
-    : {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 20 },
-        transition: { duration: 0.15, ease: "easeOut" },
-      };
+  // Entrance: skip if coming back, otherwise slide up
+  const shouldSkipEntrance = skipAnimationRef.current;
+
+  const animateState = isExiting
+    ? { opacity: 0, y: 20 }
+    : { opacity: 1, y: 0 };
+
+  const animationProps = {
+    initial: shouldSkipEntrance ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
+    animate: animateState,
+    transition: isExiting
+      ? { duration: 0.15, ease: "easeIn" as const }
+      : shouldSkipEntrance
+        ? { duration: 0 }
+        : { duration: 0.15, ease: "easeOut" as const },
+    onAnimationComplete: handleExitComplete,
+  };
 
   // Reset skip animation flag after this component mounts
   React.useEffect(() => {
@@ -111,7 +109,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
       <div className="details-page-header">
         <button
           className="btn btn-tertiary"
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Back to previous page"
         >
           ← Back
