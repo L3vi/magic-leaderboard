@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useCubeEvent } from "../../context/CubeEventContext";
 import StaticDropdown from "../StaticDropdown/StaticDropdown";
 import ColorCircles from "../ColorCircles/ColorCircles";
@@ -30,15 +30,20 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
     [event, selectedDraftId]
   );
 
-  // Players available in selected draft
+  // Players available in selected draft, sorted alphabetically
   const draftPlayers = useMemo(() => {
     if (!selectedDraft) return [];
-    return players.filter(p => selectedDraft.players.includes(p.id));
+    return players
+      .filter(p => selectedDraft.players.includes(p.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [selectedDraft, players]);
 
-  // Default to least recently played players in this draft
-  const getLeastRecentlyPlayed = () => {
-    if (!event || !selectedDraft) return ["", ""];
+  // Get the two least recently played players in this draft
+  const getLeastRecentlyPlayed = useCallback(() => {
+    if (!event || !selectedDraftId) return ["", ""];
+    const draft = event.drafts.find(d => d.id === selectedDraftId);
+    if (!draft) return ["", ""];
+    const draftPlayerIds = draft.players;
     const matches = event.matches.filter(m => m.draftId === selectedDraftId);
     const lastPlayed: Record<string, string> = {};
     const sorted = [...matches].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -49,8 +54,8 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
         }
       }
     }
-    const sortedPlayers = draftPlayers
-      .map(p => ({ id: p.id, last: lastPlayed[p.id] || "" }))
+    const sortedPlayers = draftPlayerIds
+      .map(id => ({ id, last: lastPlayed[id] || "" }))
       .sort((a, b) => {
         if (!a.last && !b.last) return 0;
         if (!a.last) return -1;
@@ -58,26 +63,57 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
         return new Date(a.last).getTime() - new Date(b.last).getTime();
       });
     return [sortedPlayers[0]?.id || "", sortedPlayers[1]?.id || ""];
-  };
+  }, [event, selectedDraftId]);
 
-  const [defaults] = useState(() => getLeastRecentlyPlayed());
-  const [player1Id, setPlayer1Id] = useState(defaults[0]);
-  const [player2Id, setPlayer2Id] = useState(defaults[1]);
+  // Get a player's last used colors in this draft
+  const getLastColors = useCallback((playerId: string): ManaColor[] => {
+    if (!event || !selectedDraftId || !playerId) return [];
+    const matches = event.matches
+      .filter(m => m.draftId === selectedDraftId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    for (const match of matches) {
+      const entry = match.players.find(p => p.playerId === playerId);
+      if (entry && entry.deckColors.length > 0) return entry.deckColors;
+    }
+    return [];
+  }, [event, selectedDraftId]);
+
+  const initDefaults = useCallback(() => {
+    const [p1, p2] = getLeastRecentlyPlayed();
+    return {
+      p1, p2,
+      p1Colors: getLastColors(p1),
+      p2Colors: getLastColors(p2),
+    };
+  }, [getLeastRecentlyPlayed, getLastColors]);
+
+  const [player1Id, setPlayer1Id] = useState(() => initDefaults().p1);
+  const [player2Id, setPlayer2Id] = useState(() => initDefaults().p2);
   const [player1Wins, setPlayer1Wins] = useState(0);
   const [player2Wins, setPlayer2Wins] = useState(0);
-  const [player1Colors, setPlayer1Colors] = useState<ManaColor[]>([]);
-  const [player2Colors, setPlayer2Colors] = useState<ManaColor[]>([]);
+  const [player1Colors, setPlayer1Colors] = useState<ManaColor[]>(() => initDefaults().p1Colors);
+  const [player2Colors, setPlayer2Colors] = useState<ManaColor[]>(() => initDefaults().p2Colors);
 
-  // Reset player defaults when draft changes
+  // Reset defaults when draft changes
   React.useEffect(() => {
-    const [p1, p2] = getLeastRecentlyPlayed();
-    setPlayer1Id(p1);
-    setPlayer2Id(p2);
+    const d = initDefaults();
+    setPlayer1Id(d.p1);
+    setPlayer2Id(d.p2);
     setPlayer1Wins(0);
     setPlayer2Wins(0);
-    setPlayer1Colors([]);
-    setPlayer2Colors([]);
-  }, [selectedDraftId]);
+    setPlayer1Colors(d.p1Colors);
+    setPlayer2Colors(d.p2Colors);
+  }, [selectedDraftId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-fill colors when a player is changed
+  const handlePlayer1Change = (id: string) => {
+    setPlayer1Id(id);
+    setPlayer1Colors(getLastColors(id));
+  };
+  const handlePlayer2Change = (id: string) => {
+    setPlayer2Id(id);
+    setPlayer2Colors(getLastColors(id));
+  };
 
   const draftOptions = useMemo(() => {
     if (!event) return [];
@@ -100,7 +136,7 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
     return Math.max(0, Math.min(2, current + delta));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDraftId) {
       alert("Please select a draft.");
@@ -127,7 +163,22 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
         { playerId: player2Id, deckColors: player2Colors, wins: player2Wins },
       ] as [MatchPlayer, MatchPlayer],
     };
-    Promise.resolve(onSubmit(matchData)).finally(() => setIsSubmitting(false));
+    try {
+      await Promise.resolve(onSubmit(matchData));
+      // Reset for next match entry — re-calculate defaults from updated data
+      // Small delay so context refreshes first
+      setTimeout(() => {
+        const d = initDefaults();
+        setPlayer1Id(d.p1);
+        setPlayer2Id(d.p2);
+        setPlayer1Wins(0);
+        setPlayer2Wins(0);
+        setPlayer1Colors(d.p1Colors);
+        setPlayer2Colors(d.p2Colors);
+      }, 500);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -171,7 +222,7 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
           </div>
           <StaticDropdown
             value={player1Id}
-            onChange={setPlayer1Id}
+            onChange={handlePlayer1Change}
             options={playerOptions}
             placeholder="Select player"
           />
@@ -209,7 +260,7 @@ const NewMatch: React.FC<NewMatchProps> = ({ onSubmit, onCancel }) => {
           </div>
           <StaticDropdown
             value={player2Id}
-            onChange={setPlayer2Id}
+            onChange={handlePlayer2Change}
             options={playerOptions}
             placeholder="Select player"
           />

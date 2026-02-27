@@ -14,7 +14,34 @@ const NewDraft: React.FC<NewDraftProps> = ({ onSubmit, onCancel }) => {
   const { event, players } = useCubeEvent();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCubeId, setSelectedCubeId] = useState(event?.cubes[0]?.id || "");
-  const [playerRows, setPlayerRows] = useState<string[]>(Array(8).fill(""));
+
+  // Pre-fill with the 8 least recently drafted players (so the "next up" group is ready)
+  const [playerRows, setPlayerRows] = useState<string[]>(() => {
+    if (!event) return Array(8).fill("");
+    // Find each player's most recent draft date
+    const lastDrafted: Record<string, string> = {};
+    const sortedDrafts = [...event.drafts].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    for (const draft of sortedDrafts) {
+      for (const pid of draft.players) {
+        if (!lastDrafted[pid]) lastDrafted[pid] = draft.date;
+      }
+    }
+    // Sort all event players: never drafted first, then least recently drafted
+    const sorted = [...event.players].sort((a, b) => {
+      const aDate = lastDrafted[a] || "";
+      const bDate = lastDrafted[b] || "";
+      if (!aDate && !bDate) return 0;
+      if (!aDate) return -1;
+      if (!bDate) return 1;
+      return new Date(aDate).getTime() - new Date(bDate).getTime();
+    });
+    // Take the first 8 (least recent / never played)
+    const rows = sorted.slice(0, 8);
+    while (rows.length < 8) rows.push("");
+    return rows;
+  });
 
   const cubeOptions = useMemo(
     () => (event?.cubes || []).map(c => ({ id: c.id, label: c.name })),
@@ -22,7 +49,9 @@ const NewDraft: React.FC<NewDraftProps> = ({ onSubmit, onCancel }) => {
   );
 
   const playerOptions = useMemo(
-    () => players.map(p => ({ id: p.id, label: p.name })),
+    () => players
+      .map(p => ({ id: p.id, label: p.name }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
     [players]
   );
 
