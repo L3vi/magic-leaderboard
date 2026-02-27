@@ -24,6 +24,12 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
 }) => {
   const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
 
+  // Set skip flag before navigating back so the destination page won't animate
+  const handleClose = () => {
+    setSkipAnimation(true);
+    onClose();
+  };
+
   // Disable body scroll when this page is open
   React.useEffect(() => {
     document.documentElement.classList.add("modal-open");
@@ -34,7 +40,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
     };
   }, []);
 
-  useEscapeKey(onClose);
+  useEscapeKey(handleClose);
 
   // Determine animation props based on whether we're navigating back
   const animationProps = skipAnimationRef.current
@@ -64,7 +70,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
         <div className="details-page-header">
           <button
             className="btn btn-tertiary"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Back"
           >
             ← Back
@@ -85,7 +91,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
         <div className="details-page-header">
           <button
             className="btn btn-tertiary"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Back"
           >
             ← Back
