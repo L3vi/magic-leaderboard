@@ -52,6 +52,14 @@ export async function fetchPlayers(): Promise<Player[]> {
 }
 
 /**
+ * Update a player's name.
+ */
+export async function updatePlayer(playerId: string, name: string): Promise<void> {
+  const docRef = doc(db, "players", playerId);
+  await updateDoc(docRef, { name });
+}
+
+/**
  * Add a new draft to the cube event.
  */
 export async function addDraft(

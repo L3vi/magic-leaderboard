@@ -7,6 +7,7 @@ import {
   addMatch as addMatchService,
   updateMatch as updateMatchService,
   deleteMatch as deleteMatchService,
+  updatePlayer as updatePlayerService,
 } from "../services/cubeEventService";
 import type {
   CubeEvent,
@@ -28,6 +29,7 @@ interface CubeEventContextType {
   addMatch: (matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }) => Promise<Match>;
   updateMatch: (matchId: string, matchData: Partial<Pick<Match, "draftId" | "players" | "notes">>) => Promise<void>;
   deleteMatch: (matchId: string) => Promise<void>;
+  updatePlayer: (playerId: string, name: string) => Promise<void>;
 }
 
 const CubeEventContext = createContext<CubeEventContextType | undefined>(undefined);
@@ -119,6 +121,11 @@ export const CubeEventProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     await loadData(false);
   }, [eventId, loadData]);
 
+  const updatePlayer = useCallback(async (playerId: string, name: string) => {
+    await updatePlayerService(playerId, name);
+    await loadData(false);
+  }, [loadData]);
+
   return (
     <CubeEventContext.Provider
       value={{
@@ -133,6 +140,7 @@ export const CubeEventProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         addMatch,
         updateMatch,
         deleteMatch,
+        updatePlayer,
       }}
     >
       {children}

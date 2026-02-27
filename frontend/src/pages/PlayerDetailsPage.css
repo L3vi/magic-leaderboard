@@ -5,6 +5,11 @@
   padding: 0.25rem;
 }
 
+/* Edit name */
+.pd-edit-name {
+  padding: 0.5rem 0;
+}
+
 /* Stats grid */
 .pd-stats-grid {
   display: grid;

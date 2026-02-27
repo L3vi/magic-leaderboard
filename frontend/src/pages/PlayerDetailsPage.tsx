@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import { useCubeEvent } from "../context/CubeEventContext";
@@ -10,10 +10,54 @@ import "./PlayerDetailsPage.css";
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
-  const { event, players } = useCubeEvent();
+  const { event, players, updatePlayer } = useCubeEvent();
 
   const decodedName = playerName ? decodeURIComponent(playerName) : "";
   const playerData = players.find(p => p.name === decodedName);
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const startEditing = useCallback(() => {
+    if (!playerData) return;
+    setEditName(playerData.name);
+    setIsEditing(true);
+  }, [playerData]);
+
+  const cancelEditing = useCallback(() => {
+    setIsEditing(false);
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    if (!playerData) return;
+    const trimmed = editName.trim();
+    if (!trimmed) {
+      alert("Name cannot be empty.");
+      return;
+    }
+    if (trimmed === playerData.name) {
+      setIsEditing(false);
+      return;
+    }
+    // Check for duplicate names
+    if (players.some(p => p.id !== playerData.id && p.name.toLowerCase() === trimmed.toLowerCase())) {
+      alert("A player with that name already exists.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await updatePlayer(playerData.id, trimmed);
+      setIsEditing(false);
+      // Navigate to the new URL since the route uses playerName
+      navigate(`/players/${encodeURIComponent(trimmed)}`, { replace: true });
+    } catch {
+      alert("Failed to update name. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [playerData, editName, players, updatePlayer, navigate]);
 
   const playerLookup = useMemo(() => {
     const lookup: Record<string, Player> = {};
@@ -113,8 +157,74 @@ const PlayerDetailsPage: React.FC = () => {
   }
 
   return (
-    <DetailsPageShell title={playerData.name} onClose={() => navigate(-1)}>
+    <DetailsPageShell
+      title={playerData.name}
+      onClose={() => navigate(-1)}
+      onEdit={isEditing ? undefined : startEditing}
+    >
       <div className="player-details-cube">
+        {/* Inline name editor */}
+        {isEditing && (
+          <div className="pd-edit-name">
+            <input
+              type="text"
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              autoFocus
+              onKeyDown={e => {
+                if (e.key === "Enter") handleSave();
+                if (e.key === "Escape") cancelEditing();
+              }}
+              style={{
+                width: "100%",
+                padding: "0.5rem 0.75rem",
+                fontSize: "var(--font-size-lg)",
+                fontWeight: 600,
+                background: "var(--surface)",
+                border: "1.5px solid var(--primary)",
+                borderRadius: "var(--radius-sm)",
+                color: "var(--foreground)",
+                textAlign: "center",
+              }}
+            />
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginTop: "0.75rem" }}>
+              <button
+                type="button"
+                onClick={cancelEditing}
+                disabled={isSaving}
+                style={{
+                  background: "transparent",
+                  border: "1.5px solid var(--border)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "0.375rem 1rem",
+                  color: "var(--foreground)",
+                  cursor: "pointer",
+                  fontSize: "var(--font-size-sm)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={isSaving}
+                style={{
+                  background: "var(--primary)",
+                  border: "1.5px solid var(--primary)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "0.375rem 1rem",
+                  color: "#fff",
+                  cursor: isSaving ? "not-allowed" : "pointer",
+                  fontSize: "var(--font-size-sm)",
+                  opacity: isSaving ? 0.5 : 1,
+                }}
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Key stats */}
         <div className="pd-stats-grid">
           <div className="pd-stat-card">
