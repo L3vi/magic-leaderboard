@@ -70,6 +70,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
             ← Back
           </button>
           <h1>{title}</h1>
+          <div style={{ width: 60 }} />
         </div>
         <div className="details-page-content">
           <div className="loading">Loading...</div>
@@ -90,6 +91,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
             ← Back
           </button>
           <h1>{title}</h1>
+          <div style={{ width: 60 }} />
         </div>
         <div className="details-page-content">
           <div className="error">{error}</div>
@@ -109,7 +111,7 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
           ← Back
         </button>
         <h1>{title}</h1>
-        {onEdit && (
+        {onEdit ? (
           <button
             className="btn btn-tertiary"
             onClick={onEdit}
@@ -117,6 +119,8 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
           >
             ✎ Edit
           </button>
+        ) : (
+          <div style={{ width: 60 }} />
         )}
       </div>
       <div className="details-page-content">{children}</div>

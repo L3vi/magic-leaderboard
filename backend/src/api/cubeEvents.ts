@@ -188,7 +188,7 @@ export async function createMatch(req: Request, res: Response) {
  */
 export async function updateMatch(req: Request, res: Response) {
   const { eventId, matchId } = req.params;
-  const { draftId, players } = req.body;
+  const { draftId, players, notes } = req.body;
 
   // Validate players if provided
   if (players) {
@@ -202,8 +202,10 @@ export async function updateMatch(req: Request, res: Response) {
       if (typeof player.wins !== "number" || player.wins < 0 || player.wins > 2) {
         return res.status(400).json({ error: "Each player's wins must be 0, 1, or 2." });
       }
-      if (!Array.isArray(player.deckColors) || !player.deckColors.every((c: string) => VALID_COLORS.includes(c as ManaColor))) {
-        return res.status(400).json({ error: "deckColors must be an array of valid mana colors." });
+      if (player.deckColors !== undefined) {
+        if (!Array.isArray(player.deckColors) || !player.deckColors.every((c: string) => VALID_COLORS.includes(c as ManaColor))) {
+          return res.status(400).json({ error: "deckColors must be an array of valid mana colors." });
+        }
       }
     }
   }
@@ -223,6 +225,7 @@ export async function updateMatch(req: Request, res: Response) {
 
     if (draftId) event.matches[matchIndex].draftId = draftId;
     if (players) event.matches[matchIndex].players = [players[0], players[1]];
+    if (notes !== undefined) event.matches[matchIndex].notes = notes;
 
     await docRef.update({ matches: event.matches });
 

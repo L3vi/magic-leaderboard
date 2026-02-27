@@ -124,7 +124,7 @@ export async function addMatch(
 export async function updateMatch(
   eventId: string,
   matchId: string,
-  matchData: Partial<Pick<Match, "draftId" | "players">>
+  matchData: Partial<Pick<Match, "draftId" | "players" | "notes">>
 ): Promise<void> {
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
@@ -137,6 +137,7 @@ export async function updateMatch(
       ...m,
       ...(matchData.draftId && { draftId: matchData.draftId }),
       ...(matchData.players && { players: matchData.players }),
+      ...(matchData.notes !== undefined && { notes: matchData.notes }),
     };
   });
 
