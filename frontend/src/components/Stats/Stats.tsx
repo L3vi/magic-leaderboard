@@ -320,13 +320,13 @@ const Stats: React.FC = () => {
                   <span className={`gs-color-name color-badge color-${cs.color.toLowerCase()}`}>
                     {MANA_COLOR_NAMES[cs.color]}
                   </span>
+                  <span className="gs-color-count">{cs.count}</span>
                   <div className="gs-color-bar-bg">
                     <div
                       className={`gs-color-bar-fill color-${cs.color.toLowerCase()}`}
                       style={{ width: `${(cs.count / stats.maxColorCount) * 100}%` }}
                     />
                   </div>
-                  <span className="gs-color-count">{cs.count}</span>
                   <span className="gs-color-wr">{cs.matches > 0 ? `${(cs.winPct * 100).toFixed(0)}%` : ""}</span>
                 </div>
               ))}

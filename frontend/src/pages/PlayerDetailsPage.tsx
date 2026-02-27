@@ -388,13 +388,13 @@ const PlayerDetailsPage: React.FC = () => {
               return (
                 <div key={c} className="pd-color-row">
                   <span className={`pd-color-name color-badge color-${c.toLowerCase()}`}>{MANA_COLOR_NAMES[c]}</span>
+                  <span className="pd-color-count">{stats.colorBreakdown[c]}</span>
                   <div className="pd-color-bar-bg">
                     <div
                       className={`pd-color-bar-fill color-${c.toLowerCase()}`}
                       style={{ width: `${stats.matchesPlayed > 0 ? (stats.colorBreakdown[c] / stats.matchesPlayed) * 100 : 0}%` }}
                     />
                   </div>
-                  <span className="pd-color-count">{stats.colorBreakdown[c]}</span>
                   <span className="pd-color-winrate">{wr ? `${(wr.pct * 100).toFixed(0)}%` : ""}</span>
                 </div>
               );
