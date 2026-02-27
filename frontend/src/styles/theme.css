@@ -143,6 +143,20 @@
 }
 
 /* ===================== */
+/* Mobile Typography     */
+/* ===================== */
+@media (max-width: 639px) {
+  :root {
+    --font-size-xs: 0.8125rem;
+    --font-size-sm: 0.9375rem;
+    --font-size-base: 1.0625rem;
+    --font-size-lg: 1.1875rem;
+    --font-size-xl: 1.375rem;
+    --font-size-2xl: 1.625rem;
+  }
+}
+
+/* ===================== */
 /* Body Styles           */
 /* ===================== */
 body {

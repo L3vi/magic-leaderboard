@@ -331,3 +331,154 @@
   flex-direction: column;
   gap: 0.375rem;
 }
+
+/* ==================== Mobile Optimizations ==================== */
+@media (max-width: 639px) {
+  .stats-page {
+    padding: 0.75rem;
+  }
+
+  .stats-section {
+    margin-bottom: 1.75rem;
+  }
+
+  .stats-section h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+    margin-bottom: 0.375rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  /* Highlights */
+  .stats-highlights {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+  }
+
+  .stats-highlight-card {
+    padding: 0.875rem;
+  }
+
+  .stats-hl-label {
+    font-size: var(--font-size-xs);
+    margin-bottom: 0.375rem;
+  }
+
+  .stats-hl-name {
+    font-size: var(--font-size-xl);
+  }
+
+  .stats-hl-detail {
+    font-size: var(--font-size-base);
+  }
+
+  /* Color bars */
+  .gs-color-list {
+    gap: 0.625rem;
+  }
+
+  .gs-color-row {
+    gap: 0.625rem;
+  }
+
+  .gs-color-bar-bg {
+    height: 0.875rem;
+  }
+
+  .gs-color-count {
+    font-size: var(--font-size-base);
+    width: 1.75rem;
+  }
+
+  .gs-color-wr {
+    font-size: var(--font-size-sm);
+    width: 2.75rem;
+  }
+
+  .gs-color-note {
+    font-size: var(--font-size-base);
+  }
+
+  /* Archetypes */
+  .gs-archetype-list {
+    gap: 0.625rem;
+  }
+
+  .gs-archetype-row {
+    gap: 0.625rem;
+    padding: 0.25rem 0;
+  }
+
+  .gs-archetype-pip {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .gs-archetype-colors {
+    width: 5rem;
+    gap: 0.3rem;
+  }
+
+  .gs-archetype-bar-bg {
+    height: 0.75rem;
+  }
+
+  .gs-archetype-record {
+    font-size: var(--font-size-base);
+    width: 3rem;
+  }
+
+  .gs-archetype-pct {
+    font-size: var(--font-size-sm);
+    width: 2.75rem;
+  }
+
+  .gs-archetype-n {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Cubes */
+  .gs-cube-card {
+    padding: 1rem;
+  }
+
+  .gs-cube-name {
+    font-size: var(--font-size-lg);
+    margin-bottom: 0.5rem;
+  }
+
+  .gs-cube-details {
+    font-size: var(--font-size-base);
+    gap: 0.25rem;
+  }
+
+  /* Matches filter */
+  .stats-matches-header {
+    margin-bottom: 1rem;
+  }
+
+  .stats-filter-input {
+    padding: 0.625rem 0.875rem;
+    font-size: var(--font-size-base);
+  }
+
+  .stats-matches-list {
+    gap: 0.5rem;
+  }
+}

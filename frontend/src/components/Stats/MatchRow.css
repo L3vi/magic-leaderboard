@@ -45,3 +45,19 @@
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
 }
+
+@media (max-width: 639px) {
+  .match-row-card {
+    padding: 0.875rem 1rem;
+    gap: 1rem;
+  }
+
+  .match-row-name {
+    font-size: var(--font-size-base);
+  }
+
+  .match-row-score {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+  }
+}
