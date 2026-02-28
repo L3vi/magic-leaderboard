@@ -153,11 +153,9 @@ function App() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: isReady ? 1 : 0 }}
-      transition={{ duration: 0.3 }}
-      style={{ width: '100%', height: '100%' }}
+    <div
+      className="app-root"
+      style={{ opacity: isReady ? 1 : 0, transition: 'opacity 0.3s' }}
     >
       <CubeEventProvider>
         <NavigationProvider>
@@ -169,7 +167,7 @@ function App() {
           </Router>
         </NavigationProvider>
       </CubeEventProvider>
-    </motion.div>
+    </div>
   );
 }
 
