@@ -52,6 +52,7 @@ const Stats: React.FC = () => {
       playerWins: Record<string, number>;
       playerLosses: Record<string, number>;
       playerDraws: Record<string, number>;
+      strategies: Record<string, { wins: number; losses: number; draws: number; total: number }>;
     }> = {};
 
     // Archetype (color pair) stats
@@ -115,6 +116,7 @@ const Stats: React.FC = () => {
             colorWins: { W: 0, U: 0, B: 0, R: 0, G: 0 },
             colorMatchCount: { W: 0, U: 0, B: 0, R: 0, G: 0 },
             playerWins: {}, playerLosses: {}, playerDraws: {},
+            strategies: {},
           };
         }
         const cs = cubeStatsMap[draft.cubeId];
@@ -131,7 +133,7 @@ const Stats: React.FC = () => {
           }
         }
 
-        // Per-cube player tracking
+        // Per-cube player tracking + strategy tracking
         for (const p of match.players) {
           if (!cs.playerWins[p.playerId]) {
             cs.playerWins[p.playerId] = 0;
@@ -141,6 +143,18 @@ const Stats: React.FC = () => {
           if (winnerId === p.playerId) cs.playerWins[p.playerId]++;
           else if (winnerId && winnerId !== p.playerId) cs.playerLosses[p.playerId]++;
           else cs.playerDraws[p.playerId]++;
+
+          // Strategy tracking
+          if (p.deckStrategy) {
+            const sKey = p.deckStrategy.trim();
+            if (sKey) {
+              if (!cs.strategies[sKey]) cs.strategies[sKey] = { wins: 0, losses: 0, draws: 0, total: 0 };
+              cs.strategies[sKey].total++;
+              if (winnerId === p.playerId) cs.strategies[sKey].wins++;
+              else if (winnerId && winnerId !== p.playerId) cs.strategies[sKey].losses++;
+              else cs.strategies[sKey].draws++;
+            }
+          }
         }
       }
 
@@ -224,7 +238,15 @@ const Stats: React.FC = () => {
 
       const topPlayer = cubePlayerStats[0] || null;
 
-      return { ...cs, colorStats, maxColorCount, topPlayer, cubePlayerStats };
+      const cubeStrategies = Object.entries(cs.strategies)
+        .map(([name, s]) => ({
+          name,
+          ...s,
+          winPct: s.total > 0 ? s.wins / s.total : 0,
+        }))
+        .sort((a, b) => b.total - a.total);
+
+      return { ...cs, colorStats, maxColorCount, topPlayer, cubePlayerStats, cubeStrategies };
     });
 
     // Player superlatives (only players with matches)
@@ -380,7 +402,7 @@ const Stats: React.FC = () => {
 
         {/* Color breakdown with win rates */}
         {stats.colorStats.some(c => c.count > 0) && (
-          <Drawer title="Colors">
+          <Drawer title="Colors Played">
             <div className="gs-color-list">
               {stats.colorStats.map(cs => (
                 <div key={cs.color} className="gs-color-row">
@@ -466,7 +488,7 @@ const Stats: React.FC = () => {
                   {/* Color breakdown for this cube */}
                   {cs.colorStats.length > 0 && (
                     <div className="gs-cube-colors">
-                      <span className="gs-cube-sub-label">Colors</span>
+                      <span className="gs-cube-sub-label">Colors Played</span>
                       <div className="gs-cube-color-rows">
                         {cs.colorStats.map(c => (
                           <div key={c.color} className="gs-cube-color-row">
@@ -479,6 +501,25 @@ const Stats: React.FC = () => {
                               />
                             </div>
                             <span className="gs-cube-color-wr">{c.matches > 0 ? `${(c.winPct * 100).toFixed(0)}%` : ""}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Strategies for this cube */}
+                  {cs.cubeStrategies.length > 0 && (
+                    <div className="gs-cube-strategies">
+                      <span className="gs-cube-sub-label">Strategies</span>
+                      <div className="gs-cube-strategy-list">
+                        {cs.cubeStrategies.map(s => (
+                          <div key={s.name} className="gs-cube-strategy-row">
+                            <span className="gs-cube-strategy-name">{s.name}</span>
+                            <span className="gs-cube-strategy-record">{s.wins}-{s.losses}{s.draws > 0 ? `-${s.draws}` : ""}</span>
+                            <div className="gs-archetype-bar-bg">
+                              <div className="gs-archetype-bar-fill" style={{ width: `${s.winPct * 100}%` }} />
+                            </div>
+                            <span className="gs-cube-strategy-pct">{(s.winPct * 100).toFixed(0)}%</span>
                           </div>
                         ))}
                       </div>
