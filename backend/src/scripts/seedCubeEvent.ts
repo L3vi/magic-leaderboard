@@ -12,7 +12,7 @@ const PLAYERS = [
   { id: "player-matt", name: "Matt" },
   { id: "player-levi", name: "Levi" },
   { id: "player-ben", name: "Ben" },
-  { id: "player-4", name: "Jim" },
+  { id: "player-4", name: "Player 15" },
   { id: "player-5", name: "Player 5" },
   { id: "player-6", name: "Player 6" },
   { id: "player-7", name: "Player 7" },
