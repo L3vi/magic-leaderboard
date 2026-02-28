@@ -31,7 +31,15 @@ const Stats: React.FC = () => {
     const colorMatchCount: Record<ManaColor, number> = { W: 0, U: 0, B: 0, R: 0, G: 0 };
 
     // Per-cube stats
-    const cubeStatsMap: Record<string, { name: string; matches: number; games: number; drafts: number }> = {};
+    const cubeStatsMap: Record<string, {
+      name: string; matches: number; games: number; drafts: number;
+      colorCounts: Record<ManaColor, number>;
+      colorWins: Record<ManaColor, number>;
+      colorMatchCount: Record<ManaColor, number>;
+      playerWins: Record<string, number>;
+      playerLosses: Record<string, number>;
+      playerDraws: Record<string, number>;
+    }> = {};
 
     // Archetype (color pair) stats
     const archetypeMap: Record<string, { wins: number; losses: number; draws: number; total: number }> = {};
@@ -88,10 +96,39 @@ const Stats: React.FC = () => {
       if (draft) {
         if (!cubeStatsMap[draft.cubeId]) {
           const cube = event.cubes.find(c => c.id === draft.cubeId);
-          cubeStatsMap[draft.cubeId] = { name: cube?.name || draft.cubeId, matches: 0, games: 0, drafts: 0 };
+          cubeStatsMap[draft.cubeId] = {
+            name: cube?.name || draft.cubeId, matches: 0, games: 0, drafts: 0,
+            colorCounts: { W: 0, U: 0, B: 0, R: 0, G: 0 },
+            colorWins: { W: 0, U: 0, B: 0, R: 0, G: 0 },
+            colorMatchCount: { W: 0, U: 0, B: 0, R: 0, G: 0 },
+            playerWins: {}, playerLosses: {}, playerDraws: {},
+          };
         }
-        cubeStatsMap[draft.cubeId].matches++;
-        cubeStatsMap[draft.cubeId].games += p1.wins + p2.wins;
+        const cs = cubeStatsMap[draft.cubeId];
+        cs.matches++;
+        cs.games += p1.wins + p2.wins;
+
+        // Per-cube color tracking
+        for (const p of match.players) {
+          const colors = (p.deckColors || []) as ManaColor[];
+          for (const c of colors) {
+            cs.colorCounts[c]++;
+            cs.colorMatchCount[c]++;
+            if (winnerId === p.playerId) cs.colorWins[c]++;
+          }
+        }
+
+        // Per-cube player tracking
+        for (const p of match.players) {
+          if (!cs.playerWins[p.playerId]) {
+            cs.playerWins[p.playerId] = 0;
+            cs.playerLosses[p.playerId] = 0;
+            cs.playerDraws[p.playerId] = 0;
+          }
+          if (winnerId === p.playerId) cs.playerWins[p.playerId]++;
+          else if (winnerId && winnerId !== p.playerId) cs.playerLosses[p.playerId]++;
+          else cs.playerDraws[p.playerId]++;
+        }
       }
 
       // Player stats + streak tracking
@@ -154,8 +191,28 @@ const Stats: React.FC = () => {
       .sort((a, b) => b.total - a.total)
       .slice(0, 8);
 
-    // Cube stats array
-    const cubeStats = Object.values(cubeStatsMap);
+    // Cube stats array with enriched data
+    const cubeStats = Object.values(cubeStatsMap).map(cs => {
+      // Top colors by play count
+      const colorStats = MANA_COLORS
+        .map(c => ({ color: c, count: cs.colorCounts[c], wins: cs.colorWins[c], matches: cs.colorMatchCount[c], winPct: cs.colorMatchCount[c] > 0 ? cs.colorWins[c] / cs.colorMatchCount[c] : 0 }))
+        .filter(c => c.count > 0)
+        .sort((a, b) => b.count - a.count);
+      const maxColorCount = Math.max(...colorStats.map(c => c.count), 1);
+
+      // Top players by win rate (min 1 match)
+      const cubePlayerStats = Object.keys(cs.playerWins).map(pid => {
+        const w = cs.playerWins[pid];
+        const l = cs.playerLosses[pid];
+        const d = cs.playerDraws[pid];
+        const total = w + l + d;
+        return { id: pid, name: playerLookup[pid]?.name || pid, wins: w, losses: l, draws: d, total, winPct: total > 0 ? w / total : 0 };
+      }).sort((a, b) => b.winPct - a.winPct || b.wins - a.wins);
+
+      const topPlayer = cubePlayerStats[0] || null;
+
+      return { ...cs, colorStats, maxColorCount, topPlayer, cubePlayerStats };
+    });
 
     // Player superlatives (only players with matches)
     const activePlayers = Object.entries(playerStatsMap)
@@ -367,15 +424,81 @@ const Stats: React.FC = () => {
         {stats.cubeStats.length > 0 && (
           <div className="stats-section">
             <h2>By Cube</h2>
-            <div className="gs-cube-list">
+            <div className="gs-cube-expanded-list">
               {stats.cubeStats.map(cs => (
-                <div key={cs.name} className="gs-cube-card">
-                  <div className="gs-cube-name">{cs.name}</div>
-                  <div className="gs-cube-details">
-                    <span>{cs.drafts} draft{cs.drafts !== 1 ? "s" : ""}</span>
-                    <span>{cs.matches} match{cs.matches !== 1 ? "es" : ""}</span>
-                    <span>{cs.games} game{cs.games !== 1 ? "s" : ""}</span>
+                <div key={cs.name} className="gs-cube-expanded">
+                  <div className="gs-cube-expanded-header">
+                    <div className="gs-cube-name">{cs.name}</div>
+                    <div className="gs-cube-counts">
+                      <span>{cs.drafts} draft{cs.drafts !== 1 ? "s" : ""}</span>
+                      <span>{cs.matches} match{cs.matches !== 1 ? "es" : ""}</span>
+                      <span>{cs.games} game{cs.games !== 1 ? "s" : ""}</span>
+                    </div>
                   </div>
+
+                  {/* Top player for this cube */}
+                  {cs.topPlayer && (
+                    <div className="gs-cube-top-player">
+                      <span className="gs-cube-sub-label">Top Player</span>
+                      <span
+                        className="gs-cube-top-name"
+                        onClick={() => navigate(`/players/${encodeURIComponent(cs.topPlayer!.name)}`)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        {cs.topPlayer.name}
+                      </span>
+                      <span className="gs-cube-top-record">
+                        {cs.topPlayer.wins}-{cs.topPlayer.losses}{cs.topPlayer.draws > 0 ? `-${cs.topPlayer.draws}` : ""}
+                      </span>
+                      <span className="gs-cube-top-pct">{(cs.topPlayer.winPct * 100).toFixed(0)}%</span>
+                    </div>
+                  )}
+
+                  {/* Color breakdown for this cube */}
+                  {cs.colorStats.length > 0 && (
+                    <div className="gs-cube-colors">
+                      <span className="gs-cube-sub-label">Colors</span>
+                      <div className="gs-cube-color-rows">
+                        {cs.colorStats.map(c => (
+                          <div key={c.color} className="gs-cube-color-row">
+                            <span className={`gs-cube-color-pip color-${c.color.toLowerCase()}`} />
+                            <span className="gs-cube-color-count">{c.count}</span>
+                            <div className="gs-cube-color-bar-bg">
+                              <div
+                                className={`gs-color-bar-fill color-${c.color.toLowerCase()}`}
+                                style={{ width: `${(c.count / cs.maxColorCount) * 100}%` }}
+                              />
+                            </div>
+                            <span className="gs-cube-color-wr">{c.matches > 0 ? `${(c.winPct * 100).toFixed(0)}%` : ""}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Leaderboard for this cube */}
+                  {cs.cubePlayerStats.length > 1 && (
+                    <div className="gs-cube-leaderboard">
+                      <span className="gs-cube-sub-label">Standings</span>
+                      <div className="gs-cube-standings">
+                        {cs.cubePlayerStats.map((p, i) => (
+                          <div
+                            key={p.id}
+                            className={`gs-cube-standing-row${i === 0 ? " first" : ""}`}
+                            onClick={() => navigate(`/players/${encodeURIComponent(p.name)}`)}
+                            role="button"
+                            tabIndex={0}
+                          >
+                            <span className="gs-cube-standing-rank">{i + 1}</span>
+                            <span className="gs-cube-standing-name">{p.name}</span>
+                            <span className="gs-cube-standing-record">{p.wins}-{p.losses}{p.draws > 0 ? `-${p.draws}` : ""}</span>
+                            <span className="gs-cube-standing-pct">{(p.winPct * 100).toFixed(0)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

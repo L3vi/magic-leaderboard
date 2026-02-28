@@ -254,32 +254,195 @@
 }
 
 /* ==================== Cube Breakdown ==================== */
-.gs-cube-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
+.gs-cube-expanded-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.gs-cube-card {
+.gs-cube-expanded {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.gs-cube-expanded-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .gs-cube-name {
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
   color: var(--foreground);
+}
+
+.gs-cube-counts {
+  display: flex;
+  gap: 0.75rem;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.gs-cube-sub-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   margin-bottom: 0.375rem;
 }
 
-.gs-cube-details {
+/* Top player */
+.gs-cube-top-player {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gs-cube-top-name {
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+}
+
+.gs-cube-top-record {
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+}
+
+.gs-cube-top-pct {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Per-cube colors */
+.gs-cube-colors {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+}
+
+.gs-cube-color-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.gs-cube-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gs-cube-color-pip {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.gs-cube-color-pip.color-w { background: #fffbeb; }
+.gs-cube-color-pip.color-u { background: #0ea5e9; }
+.gs-cube-color-pip.color-b { background: #6b7280; }
+.gs-cube-color-pip.color-r { background: #ef4444; }
+.gs-cube-color-pip.color-g { background: #22c55e; }
+
+.gs-cube-color-count {
+  width: 1.75rem;
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.gs-cube-color-bar-bg {
+  flex: 1;
+  height: 0.5rem;
+  background: var(--background);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.gs-cube-color-wr {
+  width: 2.25rem;
+  text-align: right;
+  font-size: var(--font-size-xs);
+  color: var(--accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Per-cube leaderboard */
+.gs-cube-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-cube-standings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gs-cube-standing-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gs-cube-standing-row:hover {
+  background: var(--background-elevated);
+}
+
+.gs-cube-standing-row.first .gs-cube-standing-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.gs-cube-standing-rank {
+  width: 1.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.gs-cube-standing-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+}
+
+.gs-cube-standing-record {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.gs-cube-standing-pct {
+  width: 2.25rem;
+  text-align: right;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 /* Matches section */
@@ -455,18 +618,39 @@
   }
 
   /* Cubes */
-  .gs-cube-card {
+  .gs-cube-expanded {
     padding: 1rem;
+    gap: 1rem;
   }
 
   .gs-cube-name {
-    font-size: var(--font-size-lg);
-    margin-bottom: 0.5rem;
+    font-size: var(--font-size-xl);
   }
 
-  .gs-cube-details {
+  .gs-cube-counts {
     font-size: var(--font-size-base);
-    gap: 0.25rem;
+  }
+
+  .gs-cube-color-bar-bg {
+    height: 0.625rem;
+  }
+
+  .gs-cube-color-count {
+    font-size: var(--font-size-sm);
+    width: 2rem;
+  }
+
+  .gs-cube-color-wr {
+    font-size: var(--font-size-sm);
+  }
+
+  .gs-cube-standing-name {
+    font-size: var(--font-size-base);
+  }
+
+  .gs-cube-standing-record,
+  .gs-cube-standing-pct {
+    font-size: var(--font-size-base);
   }
 
   /* Matches filter */
