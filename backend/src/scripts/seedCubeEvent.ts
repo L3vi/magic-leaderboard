@@ -45,16 +45,13 @@ async function seedCubeEvent() {
       description: "Cube Draft weekend - February 2026",
       players: PLAYERS.map(p => p.id),
       cubes: [
-        {
-          id: "cube-jims",
-          name: "DNS Cube",
-          description: "DNS Cube",
-        },
-        {
-          id: "cube-matts",
-          name: "Vintage Cube",
-          description: "Vintage Cube",
-        },
+        { id: "cube-jims", name: "DNS Cube", description: "DNS Cube" },
+        { id: "cube-matts", name: "Vintage Cube", description: "Vintage Cube" },
+        { id: "cube-commander", name: "Commander Cube", description: "Commander Cube" },
+        { id: "cube-fair-vintage", name: "Fair Vintage? Cube", description: "Fair Vintage? Cube" },
+        { id: "cube-final-fantasy", name: "Final Fantasy Draft", description: "Final Fantasy Draft" },
+        { id: "cube-avatar", name: "Avatar Draft", description: "Avatar Draft" },
+        { id: "cube-mtgo", name: "MTGO Cube", description: "MTGO Cube" },
       ],
       drafts: [],
       matches: [],
