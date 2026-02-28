@@ -7,6 +7,19 @@ import { MANA_COLORS, MANA_COLOR_NAMES } from "../../types";
 import MatchRow from "./MatchRow";
 import "./Stats.css";
 
+const Drawer: React.FC<{ title: string; defaultOpen?: boolean; children: React.ReactNode }> = ({ title, defaultOpen = false, children }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="stats-section">
+      <h2 className="stats-drawer-toggle" onClick={() => setOpen(!open)} role="button" tabIndex={0} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setOpen(!open); }}>
+        <span>{title}</span>
+        <span className={`drawer-chevron${open ? " open" : ""}`}>&#9662;</span>
+      </h2>
+      {open && children}
+    </div>
+  );
+};
+
 const Stats: React.FC = () => {
   const navigate = useNavigate();
   const { event, players, loading } = useCubeEvent();
@@ -276,8 +289,7 @@ const Stats: React.FC = () => {
     <div className="main-section">
       <div className="stats-page">
         {/* Overall stats cards */}
-        <div className="stats-section">
-          <h2>Weekend Stats</h2>
+        <Drawer title="Weekend Stats">
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-label">Drafts</div>
@@ -296,12 +308,11 @@ const Stats: React.FC = () => {
               <div className="stat-value">{stats.totalPlayers}</div>
             </div>
           </div>
-        </div>
+        </Drawer>
 
         {/* Player superlatives */}
         {stats.totalMatches > 0 && (
-          <div className="stats-section">
-            <h2>Highlights</h2>
+          <Drawer title="Highlights">
             <div className="stats-highlights">
               {stats.highestWinRate && (
                 <div
@@ -364,13 +375,12 @@ const Stats: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </Drawer>
         )}
 
         {/* Color breakdown with win rates */}
         {stats.colorStats.some(c => c.count > 0) && (
-          <div className="stats-section">
-            <h2>Colors</h2>
+          <Drawer title="Colors">
             <div className="gs-color-list">
               {stats.colorStats.map(cs => (
                 <div key={cs.color} className="gs-color-row">
@@ -393,13 +403,12 @@ const Stats: React.FC = () => {
                 Best win rate: <span className={`color-badge color-${stats.bestWinRateColor.color.toLowerCase()}`}>{MANA_COLOR_NAMES[stats.bestWinRateColor.color]}</span> at {(stats.bestWinRateColor.winPct * 100).toFixed(0)}%
               </div>
             )}
-          </div>
+          </Drawer>
         )}
 
         {/* Top archetypes */}
         {stats.archetypes.length > 0 && (
-          <div className="stats-section">
-            <h2>Top Archetypes</h2>
+          <Drawer title="Top Archetypes">
             <div className="gs-archetype-list">
               {stats.archetypes.map(a => (
                 <div key={a.pair} className="gs-archetype-row">
@@ -417,13 +426,12 @@ const Stats: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </Drawer>
         )}
 
         {/* Per-cube breakdown */}
         {stats.cubeStats.length > 0 && (
-          <div className="stats-section">
-            <h2>By Cube</h2>
+          <Drawer title="By Cube">
             <div className="gs-cube-expanded-list">
               {stats.cubeStats.map(cs => (
                 <div key={cs.name} className="gs-cube-expanded">
@@ -502,21 +510,18 @@ const Stats: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </Drawer>
         )}
 
         {/* Match list */}
-        <div className="stats-matches-section">
-          <div className="stats-matches-header">
-            <h3>Matches</h3>
-            <input
-              type="text"
-              className="stats-filter-input"
-              placeholder="Filter by player..."
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-            />
-          </div>
+        <Drawer title="Matches">
+          <input
+            type="text"
+            className="stats-filter-input stats-filter-standalone"
+            placeholder="Filter by player..."
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+          />
           <div className="stats-matches-list">
             {filteredMatches.length === 0 && (
               <div className="stats-empty">No matches found.</div>
@@ -530,7 +535,7 @@ const Stats: React.FC = () => {
               />
             ))}
           </div>
-        </div>
+        </Drawer>
       </div>
     </div>
   );
