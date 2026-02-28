@@ -13,11 +13,8 @@
 }
 
 .draft-name-display {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 0.625rem 0.875rem;
-  color: var(--primary-light);
+  padding: 0.25rem 0;
+  color: var(--foreground);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
 }
