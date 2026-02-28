@@ -42,7 +42,7 @@ function calculateOverallStats(
     else if (winnerId) matchLosses++;
     else matchDraws++;
 
-    for (const c of playerEntry.deckColors) {
+    for (const c of playerEntry.deckColors || []) {
       colorBreakdown[c as ManaColor] = (colorBreakdown[c as ManaColor] || 0) + 1;
     }
 
