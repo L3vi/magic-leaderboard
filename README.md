@@ -58,3 +58,20 @@ mtg-commander-score-tracker
 ## Contributing
 
 Feel free to submit issues or pull requests if you have suggestions or improvements for the project.
+
+## Deployment
+
+This project uses GitHub Actions to automatically deploy to GitHub Pages.
+
+### How It Works
+- Each branch has its own `.github/workflows/deploy.yml` workflow file
+- When you push to a branch, GitHub reads that branch's workflow file
+- If the workflow's trigger branch matches the branch you pushed to, it deploys
+- **All branches deploy to the same GitHub Pages URL** (last push wins)
+
+### Current Setup
+- **main**: Deploys when `main` is pushed
+- **redesign**: Deploys when `redesign` is pushed
+- **draft-variant**: Deploys when `draft-variant` is pushed
+
+**⚠️ Important**: Pushing to any of these branches will overwrite what's currently live on GitHub Pages. The most recent push determines what's publicly visible.
