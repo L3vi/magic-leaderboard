@@ -1,4 +1,4 @@
-import { db } from "../firebase";
+import { db, authReady } from "../firebase";
 import {
   collection,
   getDocs,
@@ -55,6 +55,7 @@ export async function fetchPlayers(): Promise<Player[]> {
  * Update a player's name.
  */
 export async function updatePlayer(playerId: string, name: string): Promise<void> {
+  await authReady;
   const docRef = doc(db, "players", playerId);
   await updateDoc(docRef, { name });
 }
@@ -66,6 +67,7 @@ export async function addDraft(
   eventId: string,
   draft: Omit<Draft, "id">
 ): Promise<Draft> {
+  await authReady;
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) throw new Error("Cube event not found");
@@ -89,6 +91,7 @@ export async function updateDraftStatus(
   draftId: string,
   status: "in-progress" | "complete"
 ): Promise<void> {
+  await authReady;
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) throw new Error("Cube event not found");
@@ -108,6 +111,7 @@ export async function addMatch(
   eventId: string,
   matchData: { draftId: string; players: [MatchPlayer, MatchPlayer]; notes?: string }
 ): Promise<Match> {
+  await authReady;
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) throw new Error("Cube event not found");
@@ -134,6 +138,7 @@ export async function updateMatch(
   matchId: string,
   matchData: Partial<Pick<Match, "draftId" | "players" | "notes">>
 ): Promise<void> {
+  await authReady;
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) throw new Error("Cube event not found");
@@ -159,6 +164,7 @@ export async function deleteMatch(
   eventId: string,
   matchId: string
 ): Promise<void> {
+  await authReady;
   const docRef = doc(db, COLLECTION, eventId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) throw new Error("Cube event not found");
