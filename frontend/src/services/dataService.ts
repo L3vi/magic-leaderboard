@@ -2,7 +2,7 @@ import playersData from "../data/players.json";
 import gamesData from "../data/games.json";
 import { getCacheKey, getFromCache, setCache, clearCache } from "./queryCache";
 import { compareArrays, DeltaResult } from "../utils/deltaCompare";
-import { db } from "../firebase";
+import { db, authReady } from "../firebase";
 import type {
   CommanderArtPreference,
   Player,
@@ -256,6 +256,7 @@ export async function addGame(
   session: string = "2025-December"
 ): Promise<Game> {
   try {
+    await authReady;
     const gamesCollection = collection(db, "sessions", session, "games");
     const docRef = await addDoc(gamesCollection, {
       ...gameData,
@@ -284,6 +285,7 @@ export async function updateGame(
   session: string = "2025-December"
 ): Promise<Game> {
   try {
+    await authReady;
     const gameDocRef = doc(db, "sessions", session, "games", gameId);
     await updateDoc(gameDocRef, gameData);
 
@@ -308,6 +310,7 @@ export async function deleteGame(
   session: string = "2025-December"
 ): Promise<void> {
   try {
+    await authReady;
     const gameDocRef = doc(db, "sessions", session, "games", gameId);
     await deleteDoc(gameDocRef);
 

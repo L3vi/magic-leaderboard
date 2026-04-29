@@ -1,5 +1,5 @@
 import type { CardVariant, PlayerCommanderArt } from "../types";
-import { db } from "../firebase";
+import { db, authReady } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 /**
@@ -44,6 +44,7 @@ export async function saveCommanderArtPreference(
   variant: CardVariant
 ): Promise<void> {
   try {
+    await authReady;
     const playerRef = doc(db, "players", playerId);
     
     const artData = {
@@ -83,6 +84,7 @@ export async function clearCommanderArtPreference(
   commanderName: string
 ): Promise<void> {
   try {
+    await authReady;
     const playerRef = doc(db, "players", playerId);
     const preferences = await getPlayerArtPreferences(playerId);
     
@@ -106,6 +108,7 @@ export async function clearCommanderArtPreference(
  */
 export async function clearAllPlayerArtPreferences(playerId: string): Promise<void> {
   try {
+    await authReady;
     const playerRef = doc(db, "players", playerId);
     
     await setDoc(
