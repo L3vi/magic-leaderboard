@@ -1,39 +1,65 @@
 {
-  "backupDate": "2026-02-19T00:22:12.893Z",
+  "backupDate": "2026-06-10T20:50:08.745Z",
   "players": [
     {
+      "id": "player-10",
+      "name": "Player 10"
+    },
+    {
+      "id": "player-11",
+      "name": "Andy"
+    },
+    {
+      "id": "player-12",
+      "name": "3 to 8 Ninjas"
+    },
+    {
+      "id": "player-13",
+      "name": "Colter"
+    },
+    {
+      "id": "player-14",
+      "name": "RealDirtyDan"
+    },
+    {
+      "id": "player-15",
+      "name": "keaton"
+    },
+    {
+      "id": "player-16",
+      "name": "Player 16"
+    },
+    {
+      "id": "player-4",
+      "name": "Player 15"
+    },
+    {
+      "id": "player-5",
+      "name": "Aaron Ferguson"
+    },
+    {
+      "id": "player-6",
+      "name": "Keltson"
+    },
+    {
+      "id": "player-7",
+      "name": "Player 7"
+    },
+    {
+      "id": "player-8",
+      "name": "Taylor"
+    },
+    {
+      "id": "player-9",
+      "name": "Shane"
+    },
+    {
       "id": "player-anson",
-      "name": "Anson",
-      "commanderArt": {
-        "Miirym, Sentinel Wyrm": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/9/6/96f0daf2-36c5-4b3e-ab81-7317682a406b.jpg?1674138826",
-          "commanderName": "Miirym, Sentinel Wyrm",
-          "variantId": "96f0daf2-36c5-4b3e-ab81-7317682a406b-clb",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/9/6/96f0daf2-36c5-4b3e-ab81-7317682a406b.jpg?1674138826",
-          "timestamp": 1765665173151
-        },
-        "Atla Palani, Nest Tender": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
-          "commanderName": "Atla Palani, Nest Tender",
-          "variantId": "c2559933-958b-4dfd-a037-3778b914f319-sld",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/c/2/c2559933-958b-4dfd-a037-3778b914f319.jpg?1707546235",
-          "timestamp": 1765665208869
-        },
-        "Betor, Kin to All": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
-          "commanderName": "Betor, Kin to All",
-          "variantId": "f1969dec-4d6b-493a-8233-76faf8fa3cea-tdm",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/f/1/f1969dec-4d6b-493a-8233-76faf8fa3cea.jpg?1743205213",
-          "timestamp": 1765665220683
-        },
-        "Vorinclex, Monstrous Raider": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/f/6/f6db03ef-db89-43c4-89b4-d48e0620e101.jpg?1631055228",
-          "commanderName": "Vorinclex, Monstrous Raider",
-          "variantId": "f6db03ef-db89-43c4-89b4-d48e0620e101-khm",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/f/6/f6db03ef-db89-43c4-89b4-d48e0620e101.jpg?1631055228",
-          "timestamp": 1765665246278
-        }
-      }
+      "name": "Anson"
+    },
+    {
+      "id": "player-ben",
+      "name": "Ben"
     },
     {
       "id": "player-caleb",
@@ -53,56 +79,19 @@
     },
     {
       "id": "player-levi",
-      "name": "Levi",
-      "commanderArt": {
-        "Karona, False God": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/0/3/03988a88-090d-4daf-bb0a-ca0dabee917f.jpg?1759032798",
-          "commanderName": "Karona, False God",
-          "variantId": "03988a88-090d-4daf-bb0a-ca0dabee917f-sld",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/0/3/03988a88-090d-4daf-bb0a-ca0dabee917f.jpg?1759032798",
-          "timestamp": 1765674358809
-        },
-        "Grimgrin, Corpse-Born": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/a/8/a8648734-ed6c-471f-91a1-6b710bbaf370.jpg?1562835166",
-          "commanderName": "Grimgrin, Corpse-Born",
-          "variantId": "a8648734-ed6c-471f-91a1-6b710bbaf370-isd",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/a/8/a8648734-ed6c-471f-91a1-6b710bbaf370.jpg?1562835166",
-          "timestamp": 1765684669794
-        },
-        "Abuelo, Ancestral Echo": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/e/0/e0bcc6f3-bae4-485c-82da-56c15c97c7f8.jpg?1699044750",
-          "commanderName": "Abuelo, Ancestral Echo",
-          "variantId": "e0bcc6f3-bae4-485c-82da-56c15c97c7f8-lci",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/e/0/e0bcc6f3-bae4-485c-82da-56c15c97c7f8.jpg?1699044750",
-          "timestamp": 1765690288435
-        }
-      }
+      "name": "Levi"
+    },
+    {
+      "id": "player-matt",
+      "name": "Matt"
     },
     {
       "id": "player-nate",
-      "name": "Nate",
-      "commanderArt": {
-        "Jodah, the Unifier": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/4/1/416429e0-4b7e-43d1-8126-16ab679b6e39.jpg?1674074009",
-          "commanderName": "Jodah, the Unifier",
-          "variantId": "416429e0-4b7e-43d1-8126-16ab679b6e39-dmu",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/4/1/416429e0-4b7e-43d1-8126-16ab679b6e39.jpg?1674074009",
-          "timestamp": 1765730189023
-        }
-      }
+      "name": "Nate"
     },
     {
       "id": "player-parker",
-      "name": "Parker",
-      "commanderArt": {
-        "Fire Lord Zuko": {
-          "fullImageUrl": "https://cards.scryfall.io/normal/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
-          "commanderName": "Fire Lord Zuko",
-          "variantId": "0c457a8b-8d56-474d-b788-c058a9882fdd-tla",
-          "artUrl": "https://cards.scryfall.io/art_crop/front/0/c/0c457a8b-8d56-474d-b788-c058a9882fdd.jpg?1764122655",
-          "timestamp": 1765674369289
-        }
-      }
+      "name": "Parker"
     },
     {
       "id": "player-shane",
@@ -2053,6 +2042,22 @@
           "createdAt": "2025-12-13T19:14:59.827Z"
         }
       ]
+    },
+    "2026-June": {
+      "name": "June 2026",
+      "createdAt": "2026-06-10T00:00:00.000Z",
+      "description": "Current season - fresh slate, same crew as the first event (May 2025)",
+      "players": [
+        "player-anson",
+        "player-caleb",
+        "player-danny",
+        "player-jordan",
+        "player-levi",
+        "player-nate",
+        "player-parker",
+        "player-shane"
+      ],
+      "games": []
     }
   }
 }

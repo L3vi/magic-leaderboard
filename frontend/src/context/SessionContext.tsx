@@ -34,8 +34,8 @@ interface SessionContextType {
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeSession, setActiveSession] = useState<string>('2025-December');
-  const [allSessions, setAllSessions] = useState<string[]>(['2025-December']);
+  const [activeSession, setActiveSession] = useState<string>('2026-June');
+  const [allSessions, setAllSessions] = useState<string[]>(['2026-June', '2025-December']);
   
   // Shared data state
   const [players, setPlayers] = useState<Player[]>([]);
@@ -48,8 +48,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const fetchSessions = async () => {
       // Only try API on localhost
       if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        setAllSessions(['2025-December']);
-        setActiveSession('2025-December');
+        setAllSessions(['2026-June', '2025-December']);
+        setActiveSession('2026-June');
         return;
       }
 
@@ -65,8 +65,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       } catch (err) {
         console.warn('Could not fetch sessions, using defaults:', err);
-        setAllSessions(['2025-December']);
-        setActiveSession('2025-December');
+        setAllSessions(['2026-June', '2025-December']);
+        setActiveSession('2026-June');
       }
     };
 

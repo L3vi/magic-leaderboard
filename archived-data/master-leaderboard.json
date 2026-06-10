@@ -1439,6 +1439,22 @@
           "createdAt": "2025-12-12T16:36:53.447Z"
         }
       ]
+    },
+    "2026-June": {
+      "name": "June 2026",
+      "createdAt": "2026-06-10T00:00:00.000Z",
+      "description": "Current season - fresh slate, same crew as the first event (May 2025)",
+      "players": [
+        "player-anson",
+        "player-caleb",
+        "player-danny",
+        "player-jordan",
+        "player-levi",
+        "player-nate",
+        "player-parker",
+        "player-shane"
+      ],
+      "games": []
     }
   }
 }
