@@ -14,11 +14,13 @@ import type {
 import {
   collection,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
   getDocs,
   getDoc,
+  getCountFromServer,
 } from "firebase/firestore";
 
 /**
@@ -42,6 +44,20 @@ export async function fetchPlayers(): Promise<Player[]> {
   if (cached) {
     console.log("Using cached players");
     return cached;
+  }
+
+  try {
+    await authReady;
+    const snapshot = await getDocs(collection(db, "players"));
+    if (!snapshot.empty) {
+      const players = snapshot.docs.map(
+        (d) => ({ id: d.id, ...(d.data() as object) } as Player)
+      );
+      setCache(cacheKey, players);
+      return players;
+    }
+  } catch (error) {
+    console.warn("Could not fetch players from Firebase, using bundled fallback:", error);
   }
 
   const fallback = playersData as Player[];
@@ -81,30 +97,40 @@ export async function fetchSessionMetadata(
 export interface SessionListItem {
   id: string;
   name: string;
-  description?: string;
   createdAt?: string;
   players?: string[];
+  gameCount?: number;
 }
 
 /**
  * Fetch the list of all sessions (seasons) directly from Firebase, newest first.
- * Reads Firestore (not the backend API), so it works on any host.
+ * Includes each session's game count (for the selector sublabel).
  */
 export async function fetchSessions(): Promise<SessionListItem[]> {
   try {
     await authReady;
-    const sessionsCollection = collection(db, "sessions");
-    const snapshot = await getDocs(sessionsCollection);
-    const sessions: SessionListItem[] = snapshot.docs.map((docSnapshot) => {
-      const data = docSnapshot.data();
-      return {
-        id: docSnapshot.id,
-        name: data.name ?? docSnapshot.id,
-        description: data.description,
-        createdAt: data.createdAt,
-        players: data.players,
-      };
-    });
+    const snapshot = await getDocs(collection(db, "sessions"));
+    const sessions: SessionListItem[] = await Promise.all(
+      snapshot.docs.map(async (docSnapshot) => {
+        const data = docSnapshot.data();
+        let gameCount = 0;
+        try {
+          const countSnap = await getCountFromServer(
+            collection(db, "sessions", docSnapshot.id, "games")
+          );
+          gameCount = countSnap.data().count;
+        } catch {
+          /* count is best-effort */
+        }
+        return {
+          id: docSnapshot.id,
+          name: data.name ?? docSnapshot.id,
+          createdAt: data.createdAt,
+          players: data.players,
+          gameCount,
+        };
+      })
+    );
     // Sort newest-first by createdAt (ISO strings compare lexicographically).
     sessions.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
     return sessions;
@@ -112,6 +138,67 @@ export async function fetchSessions(): Promise<SessionListItem[]> {
     console.error("Error fetching sessions from Firebase:", error);
     return [];
   }
+}
+
+/**
+ * Create a new player in Firebase (doc id = slugified name, unique). Returns it.
+ */
+export async function addPlayer(name: string): Promise<Player> {
+  await authReady;
+  const trimmed = name.trim();
+  const base =
+    "player-" +
+    (trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "x");
+  let id = base;
+  let n = 2;
+  while ((await getDoc(doc(db, "players", id))).exists()) {
+    id = `${base}-${n++}`;
+  }
+  const player: Player = { id, name: trimmed };
+  await setDoc(doc(db, "players", id), player);
+  clearCache(getCacheKey("players"));
+  return player;
+}
+
+/**
+ * Create a new session (season) in Firebase. Returns the created session.
+ */
+export async function addSession(
+  name: string,
+  playerIds: string[]
+): Promise<SessionListItem> {
+  await authReady;
+  const trimmed = name.trim();
+  const createdAt = new Date().toISOString();
+  const base =
+    trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "season";
+  let id = base;
+  let n = 2;
+  while ((await getDoc(doc(db, "sessions", id))).exists()) {
+    id = `${base}-${n++}`;
+  }
+  await setDoc(doc(db, "sessions", id), { name: trimmed, createdAt, players: playerIds });
+  return { id, name: trimmed, createdAt, players: playerIds, gameCount: 0 };
+}
+
+/**
+ * Tally how many games each player has appeared in, across all sessions.
+ * Used to sort the player pool (most-frequent first) in the new-session form.
+ */
+export async function fetchPlayerGameCounts(): Promise<Record<string, number>> {
+  await authReady;
+  const counts: Record<string, number> = {};
+  const sessionsSnap = await getDocs(collection(db, "sessions"));
+  for (const s of sessionsSnap.docs) {
+    const gamesSnap = await getDocs(collection(db, "sessions", s.id, "games"));
+    gamesSnap.docs.forEach((g) => {
+      const gp = (g.data() as any).players || [];
+      gp.forEach((p: any) => {
+        if (p?.playerId) counts[p.playerId] = (counts[p.playerId] || 0) + 1;
+      });
+    });
+  }
+  return counts;
 }
 
 /**

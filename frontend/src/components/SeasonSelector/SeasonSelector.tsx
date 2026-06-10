@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSession } from '../../context/SessionContext';
 import StaticDropdown, { DropdownOption } from '../StaticDropdown/StaticDropdown';
 import './SeasonSelector.css';
+
+const NEW_SESSION = '__new_session__';
 
 const ChevronIcon: React.FC<{ open: boolean }> = ({ open }) => (
   <svg
@@ -16,13 +19,16 @@ const ChevronIcon: React.FC<{ open: boolean }> = ({ open }) => (
   </svg>
 );
 
+const count = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
 /**
- * Season switcher that lives on the right of the header. The trigger shows the
- * active season's name; tapping it opens the list of seasons (current one
- * badged in gold). Reuses the shared StaticDropdown (the New Game player picker).
+ * Season switcher in the header. The trigger shows the active season's name;
+ * the menu lists every season (current one badged) with game/player counts,
+ * plus a "+ New season" entry that opens the create-session page.
  */
 const SeasonSelector: React.FC = () => {
   const { sessions, activeSession, setActiveSession } = useSession();
+  const navigate = useNavigate();
 
   if (!sessions || sessions.length === 0) return null;
 
@@ -32,14 +38,20 @@ const SeasonSelector: React.FC = () => {
   const options: DropdownOption[] = sessions.map((s) => ({
     id: s.id,
     label: s.name,
-    sublabel: s.description || undefined,
+    sublabel: `${count(s.gameCount ?? 0, 'game')} · ${count(s.players?.length ?? 0, 'player')}`,
     badge: s.id === newestId ? 'Current' : undefined,
   }));
+  options.push({ id: NEW_SESSION, label: '+ New season' });
+
+  const handleChange = (id: string) => {
+    if (id === NEW_SESSION) navigate('/new-session');
+    else setActiveSession(id);
+  };
 
   return (
     <StaticDropdown
       value={current.id}
-      onChange={setActiveSession}
+      onChange={handleChange}
       options={options}
       placement="bottom-end"
       matchTriggerWidth={false}

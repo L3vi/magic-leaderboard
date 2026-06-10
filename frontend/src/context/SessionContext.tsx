@@ -20,6 +20,8 @@ interface SessionContextType {
   allSessions: string[];
   // Rich metadata for each session (newest first), for the season selector
   sessions: SessionListItem[];
+  // Re-fetch the session list (e.g. after creating a new session)
+  reloadSessions: () => Promise<void>;
   // Shared data - single source of truth for all components
   players: Player[];
   games: Game[];
@@ -41,6 +43,12 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [activeSession, setActiveSession] = useState<string>('');
   const [sessions, setSessions] = useState<SessionListItem[]>([]);
   const allSessions = sessions.map((s) => s.id);
+
+  // Re-fetch the session list (e.g. after creating a new session).
+  const reloadSessions = async () => {
+    const list = await fetchSessions();
+    if (list.length) setSessions(list);
+  };
   
   // Shared data state
   const [players, setPlayers] = useState<Player[]>([]);
@@ -219,6 +227,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setActiveSession,
         allSessions,
         sessions,
+        reloadSessions,
         players,
         games,
         loading,
