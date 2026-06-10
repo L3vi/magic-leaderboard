@@ -1,0 +1,1077 @@
+{
+  "backupDate": "2026-06-10T20:57:29.895Z",
+  "events": {
+    "2026-February": {
+      "name": "February 2026 Cube Weekend",
+      "date": "2026-02-27T00:00:00.000Z",
+      "description": "Cube Draft weekend - February 2026",
+      "players": [
+        "player-matt",
+        "player-levi",
+        "player-ben",
+        "player-4",
+        "player-5",
+        "player-6",
+        "player-7",
+        "player-8",
+        "player-9",
+        "player-10",
+        "player-11",
+        "player-12",
+        "player-13",
+        "player-14",
+        "player-15",
+        "player-16"
+      ],
+      "cubes": [
+        {
+          "id": "cube-jims",
+          "name": "DNS Cube",
+          "description": "DNS Cube"
+        },
+        {
+          "id": "cube-matts",
+          "name": "Vintage Cube",
+          "description": "Vintage Cube"
+        },
+        {
+          "id": "cube-commander",
+          "name": "Commander Cube",
+          "description": "Commander Cube"
+        },
+        {
+          "id": "cube-fair-vintage",
+          "name": "Fair Vintage? Cube",
+          "description": "Fair Vintage? Cube"
+        },
+        {
+          "id": "cube-final-fantasy",
+          "name": "Final Fantasy Draft",
+          "description": "Final Fantasy Draft"
+        },
+        {
+          "id": "cube-avatar",
+          "name": "Avatar Draft",
+          "description": "Avatar Draft"
+        },
+        {
+          "id": "cube-mtgo",
+          "name": "MTGO Cube",
+          "description": "MTGO Cube"
+        }
+      ],
+      "drafts": [
+        {
+          "date": "2026-02-28T01:57:07.685Z",
+          "status": "complete",
+          "id": "draft-001",
+          "cubeId": "cube-matts",
+          "players": [
+            "player-matt",
+            "player-levi",
+            "player-ben",
+            "player-5",
+            "player-13",
+            "player-8"
+          ]
+        },
+        {
+          "status": "complete",
+          "date": "2026-02-28T03:01:51.625Z",
+          "cubeId": "cube-jims",
+          "players": [
+            "player-15",
+            "player-5",
+            "player-13",
+            "player-9",
+            "player-6",
+            "player-matt",
+            "player-12",
+            "player-11"
+          ],
+          "id": "draft-002"
+        },
+        {
+          "date": "2026-02-28T05:37:48.412Z",
+          "status": "complete",
+          "id": "draft-003",
+          "cubeId": "cube-commander",
+          "players": [
+            "player-levi",
+            "player-ben",
+            "player-8",
+            "player-14"
+          ]
+        },
+        {
+          "players": [
+            "player-8",
+            "player-levi",
+            "player-13",
+            "player-15",
+            "player-matt",
+            "player-5",
+            "player-6",
+            "player-9"
+          ],
+          "cubeId": "cube-matts",
+          "id": "draft-004",
+          "status": "complete",
+          "date": "2026-02-28T07:06:45.950Z"
+        },
+        {
+          "players": [
+            "player-13",
+            "player-5",
+            "player-6",
+            "player-matt",
+            "player-levi",
+            "player-12",
+            "player-14",
+            "player-8"
+          ],
+          "cubeId": "cube-final-fantasy",
+          "id": "draft-005",
+          "status": "complete",
+          "date": "2026-02-28T16:31:57.987Z"
+        }
+      ],
+      "matches": [
+        {
+          "date": "2026-02-28T02:12:38.786Z",
+          "draftId": "draft-001",
+          "id": "match-001",
+          "notes": "Colter: Time walk, time twister, narset, reanimate, barrowgoyf",
+          "players": [
+            {
+              "wins": 2,
+              "deckStrategy": "Grixis control",
+              "deckColors": [],
+              "playerId": "player-13"
+            },
+            {
+              "deckStrategy": "Green midrange",
+              "wins": 0,
+              "deckColors": [],
+              "playerId": "player-5"
+            }
+          ]
+        },
+        {
+          "notes": "Taylor’s deck was thrown together because he came late",
+          "players": [
+            {
+              "playerId": "player-8",
+              "wins": 0,
+              "deckStrategy": "Discard control",
+              "deckColors": [
+                "B",
+                "U"
+              ]
+            },
+            {
+              "wins": 2,
+              "deckColors": [
+                "W",
+                "U"
+              ],
+              "deckStrategy": "Tokens",
+              "playerId": "player-levi"
+            }
+          ],
+          "id": "match-002",
+          "draftId": "draft-001",
+          "date": "2026-02-28T02:18:17.879Z"
+        },
+        {
+          "id": "match-003",
+          "date": "2026-02-28T02:20:14.228Z",
+          "draftId": "draft-001",
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-matt",
+              "deckStrategy": "Reanimator/oath",
+              "deckColors": [
+                "U",
+                "B",
+                "G"
+              ],
+              "wins": 2
+            },
+            {
+              "playerId": "player-ben",
+              "wins": 0,
+              "deckColors": [
+                "U",
+                "B"
+              ],
+              "deckStrategy": "Midrange"
+            }
+          ]
+        },
+        {
+          "id": "match-004",
+          "date": "2026-02-28T04:40:41.349Z",
+          "draftId": "draft-002",
+          "notes": "",
+          "players": [
+            {
+              "wins": 2,
+              "deckColors": [
+                "B"
+              ],
+              "deckStrategy": "Midrange",
+              "playerId": "player-11"
+            },
+            {
+              "playerId": "player-5",
+              "deckColors": [
+                "R"
+              ],
+              "deckStrategy": "Burn",
+              "wins": 0
+            }
+          ]
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "R",
+                "G"
+              ],
+              "deckStrategy": "Goblins",
+              "wins": 1,
+              "playerId": "player-15"
+            },
+            {
+              "playerId": "player-6",
+              "deckColors": [
+                "W",
+                "B"
+              ],
+              "deckStrategy": "Tempest Hawk",
+              "wins": 2
+            }
+          ],
+          "id": "match-005",
+          "draftId": "draft-002",
+          "date": "2026-02-28T04:52:26.567Z"
+        },
+        {
+          "id": "match-006",
+          "draftId": "draft-002",
+          "date": "2026-02-28T05:19:26.017Z",
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-matt",
+              "deckColors": [
+                "B",
+                "U",
+                "G"
+              ],
+              "wins": 2,
+              "deckStrategy": "Madness"
+            },
+            {
+              "playerId": "player-12",
+              "wins": 1,
+              "deckStrategy": "Elves",
+              "deckColors": []
+            }
+          ]
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "W",
+                "U"
+              ],
+              "wins": 2,
+              "deckStrategy": "",
+              "playerId": "player-13"
+            },
+            {
+              "deckColors": [],
+              "deckStrategy": "",
+              "wins": 1,
+              "playerId": "player-9"
+            }
+          ],
+          "draftId": "draft-002",
+          "date": "2026-02-28T05:23:05.406Z",
+          "id": "match-007"
+        },
+        {
+          "players": [
+            {
+              "playerId": "player-8",
+              "deckStrategy": "Jund Em Out",
+              "wins": 2,
+              "deckColors": [
+                "R",
+                "B",
+                "G"
+              ]
+            },
+            {
+              "playerId": "player-14",
+              "wins": 1,
+              "deckColors": [
+                "G",
+                "W"
+              ],
+              "deckStrategy": "Creature enchantment"
+            }
+          ],
+          "notes": "",
+          "draftId": "draft-003",
+          "date": "2026-02-28T05:39:08.147Z",
+          "id": "match-008"
+        },
+        {
+          "date": "2026-02-28T05:39:49.569Z",
+          "draftId": "draft-003",
+          "id": "match-009",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "R",
+                "B",
+                "G"
+              ],
+              "wins": 0,
+              "deckStrategy": "Meren reanimate",
+              "playerId": "player-levi"
+            },
+            {
+              "playerId": "player-ben",
+              "wins": 1,
+              "deckStrategy": "Esper Control Group Slug",
+              "deckColors": [
+                "W",
+                "U",
+                "B"
+              ]
+            }
+          ]
+        },
+        {
+          "players": [
+            {
+              "deckStrategy": "Goblins",
+              "wins": 0,
+              "deckColors": [
+                "R",
+                "G"
+              ],
+              "playerId": "player-15"
+            },
+            {
+              "playerId": "player-11",
+              "wins": 2,
+              "deckColors": [
+                "B"
+              ],
+              "deckStrategy": "Zombie"
+            }
+          ],
+          "notes": "",
+          "id": "match-010",
+          "draftId": "draft-002",
+          "date": "2026-02-28T05:42:31.574Z"
+        },
+        {
+          "id": "match-011",
+          "date": "2026-02-28T05:53:12.433Z",
+          "draftId": "draft-002",
+          "players": [
+            {
+              "playerId": "player-5",
+              "deckColors": [
+                "R"
+              ],
+              "wins": 2,
+              "deckStrategy": "Burn"
+            },
+            {
+              "wins": 1,
+              "deckStrategy": "Elves",
+              "deckColors": [
+                "G"
+              ],
+              "playerId": "player-12"
+            }
+          ],
+          "notes": ""
+        },
+        {
+          "players": [
+            {
+              "wins": 1,
+              "deckColors": [
+                "W",
+                "U"
+              ],
+              "deckStrategy": "Reanimator",
+              "playerId": "player-13"
+            },
+            {
+              "playerId": "player-matt",
+              "wins": 2,
+              "deckStrategy": "Madness",
+              "deckColors": [
+                "B",
+                "U",
+                "G"
+              ]
+            }
+          ],
+          "notes": "",
+          "id": "match-012",
+          "draftId": "draft-002",
+          "date": "2026-02-28T06:01:17.862Z"
+        },
+        {
+          "draftId": "draft-002",
+          "date": "2026-02-28T06:14:25.697Z",
+          "id": "match-013",
+          "players": [
+            {
+              "deckColors": [
+                "W",
+                "B"
+              ],
+              "wins": 2,
+              "deckStrategy": "Tempest Hawk",
+              "playerId": "player-6"
+            },
+            {
+              "playerId": "player-9",
+              "deckStrategy": "",
+              "wins": 0,
+              "deckColors": [
+                "W",
+                "U"
+              ]
+            }
+          ],
+          "notes": ""
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-13",
+              "deckStrategy": "Reanimator",
+              "wins": 2,
+              "deckColors": [
+                "U",
+                "W"
+              ]
+            },
+            {
+              "deckColors": [
+                "R"
+              ],
+              "wins": 1,
+              "deckStrategy": "Burn",
+              "playerId": "player-5"
+            }
+          ],
+          "id": "match-014",
+          "draftId": "draft-002",
+          "date": "2026-02-28T06:42:40.312Z"
+        },
+        {
+          "date": "2026-02-28T07:02:45.046Z",
+          "draftId": "draft-002",
+          "id": "match-015",
+          "players": [
+            {
+              "playerId": "player-matt",
+              "deckStrategy": "Madness",
+              "wins": 2,
+              "deckColors": [
+                "B",
+                "U",
+                "G"
+              ]
+            },
+            {
+              "playerId": "player-11",
+              "deckColors": [
+                "B"
+              ],
+              "wins": 0,
+              "deckStrategy": "Zombie"
+            }
+          ],
+          "notes": ""
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-6",
+              "wins": 2,
+              "deckStrategy": "Rosie Cotton",
+              "deckColors": [
+                "G",
+                "B",
+                "U",
+                "W"
+              ]
+            },
+            {
+              "playerId": "player-levi",
+              "deckStrategy": "Aggro",
+              "deckColors": [
+                "R",
+                "B"
+              ],
+              "wins": 0
+            }
+          ],
+          "draftId": "draft-004",
+          "date": "2026-02-28T08:18:40.895Z",
+          "id": "match-016"
+        },
+        {
+          "draftId": "draft-004",
+          "date": "2026-02-28T08:36:30.800Z",
+          "id": "match-017",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "B",
+                "G"
+              ],
+              "wins": 0,
+              "deckStrategy": "Depths",
+              "playerId": "player-matt"
+            },
+            {
+              "deckColors": [
+                "R",
+                "W"
+              ],
+              "wins": 2,
+              "deckStrategy": "Aggro",
+              "playerId": "player-13"
+            }
+          ]
+        },
+        {
+          "id": "match-018",
+          "draftId": "draft-004",
+          "date": "2026-02-28T09:09:33.706Z",
+          "players": [
+            {
+              "playerId": "player-8",
+              "wins": 1,
+              "deckStrategy": "Artifacts",
+              "deckColors": [
+                "U",
+                "R"
+              ]
+            },
+            {
+              "playerId": "player-5",
+              "deckColors": [
+                "B",
+                "W"
+              ],
+              "deckStrategy": "Control",
+              "wins": 2
+            }
+          ],
+          "notes": ""
+        },
+        {
+          "draftId": "draft-004",
+          "date": "2026-02-28T09:16:34.674Z",
+          "id": "match-019",
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-13",
+              "wins": 2,
+              "deckColors": [
+                "R",
+                "W"
+              ],
+              "deckStrategy": "Aggro"
+            },
+            {
+              "playerId": "player-6",
+              "wins": 1,
+              "deckColors": [
+                "G",
+                "B",
+                "U",
+                "W"
+              ],
+              "deckStrategy": "Rosie Cotton"
+            }
+          ]
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "wins": 2,
+              "deckColors": [
+                "B",
+                "G"
+              ],
+              "deckStrategy": "Depths",
+              "playerId": "player-matt"
+            },
+            {
+              "playerId": "player-levi",
+              "deckStrategy": "Aggro",
+              "wins": 1,
+              "deckColors": [
+                "R",
+                "B"
+              ]
+            }
+          ],
+          "draftId": "draft-004",
+          "date": "2026-02-28T09:29:52.922Z",
+          "id": "match-020"
+        },
+        {
+          "players": [
+            {
+              "playerId": "player-13",
+              "wins": 2,
+              "deckStrategy": "Aggro",
+              "deckColors": [
+                "R",
+                "W"
+              ]
+            },
+            {
+              "wins": 0,
+              "deckColors": [
+                "B",
+                "W"
+              ],
+              "deckStrategy": "Control",
+              "playerId": "player-5"
+            }
+          ],
+          "notes": "",
+          "date": "2026-02-28T09:40:26.965Z",
+          "draftId": "draft-004",
+          "id": "match-021"
+        },
+        {
+          "id": "match-022",
+          "date": "2026-02-28T09:43:59.910Z",
+          "draftId": "draft-004",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "G",
+                "B",
+                "U",
+                "W"
+              ],
+              "deckStrategy": "Rosie Cotton",
+              "wins": 2,
+              "playerId": "player-6"
+            },
+            {
+              "deckColors": [
+                "U",
+                "R"
+              ],
+              "deckStrategy": "Artifacts",
+              "wins": 0,
+              "playerId": "player-8"
+            }
+          ]
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "wins": 2,
+              "deckColors": [
+                "G",
+                "B",
+                "U",
+                "W"
+              ],
+              "deckStrategy": "Rosie Cotton",
+              "playerId": "player-6"
+            },
+            {
+              "playerId": "player-9",
+              "deckStrategy": "",
+              "wins": 0,
+              "deckColors": [
+                "U",
+                "W"
+              ]
+            }
+          ],
+          "draftId": "draft-004",
+          "date": "2026-02-28T10:12:19.150Z",
+          "id": "match-023"
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "wins": 1,
+              "deckColors": [
+                "W",
+                "G"
+              ],
+              "deckStrategy": "",
+              "playerId": "player-15"
+            },
+            {
+              "deckColors": [
+                "U",
+                "B"
+              ],
+              "deckStrategy": "",
+              "wins": 2,
+              "playerId": "player-9"
+            }
+          ],
+          "date": "2026-02-28T10:36:53.090Z",
+          "draftId": "draft-004",
+          "id": "match-024"
+        },
+        {
+          "date": "2026-02-28T16:32:15.953Z",
+          "draftId": "draft-005",
+          "id": "match-025",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "U",
+                "R"
+              ],
+              "wins": 2,
+              "playerId": "player-13"
+            },
+            {
+              "playerId": "player-5",
+              "wins": 0
+            }
+          ]
+        },
+        {
+          "id": "match-026",
+          "date": "2026-02-28T16:33:53.357Z",
+          "draftId": "draft-005",
+          "notes": "Towns won. Frogs. So many frogs.",
+          "players": [
+            {
+              "deckStrategy": "Equipment Aggro Winota",
+              "deckColors": [
+                "R",
+                "W"
+              ],
+              "wins": 0,
+              "playerId": "player-levi"
+            },
+            {
+              "wins": 2,
+              "deckStrategy": "Towns",
+              "deckColors": [
+                "U",
+                "G",
+                "B"
+              ],
+              "playerId": "player-matt"
+            }
+          ]
+        },
+        {
+          "draftId": "draft-005",
+          "date": "2026-02-28T16:34:03.136Z",
+          "id": "match-027",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "B",
+                "W",
+                "G",
+                "R"
+              ],
+              "wins": 0,
+              "playerId": "player-6"
+            },
+            {
+              "playerId": "player-matt",
+              "deckColors": [
+                "R",
+                "U",
+                "B"
+              ],
+              "wins": 2
+            }
+          ]
+        },
+        {
+          "draftId": "draft-005",
+          "date": "2026-02-28T16:57:27.702Z",
+          "id": "match-028",
+          "notes": "",
+          "players": [
+            {
+              "deckColors": [
+                "U",
+                "R"
+              ],
+              "wins": 0,
+              "playerId": "player-13"
+            },
+            {
+              "playerId": "player-matt",
+              "deckColors": [
+                "R",
+                "U",
+                "B"
+              ],
+              "wins": 2,
+              "deckStrategy": "Towns"
+            }
+          ]
+        },
+        {
+          "id": "match-029",
+          "draftId": "draft-005",
+          "date": "2026-02-28T17:00:36.308Z",
+          "players": [
+            {
+              "playerId": "player-12",
+              "deckStrategy": "Counters",
+              "deckColors": [
+                "G",
+                "W"
+              ],
+              "wins": 2
+            },
+            {
+              "playerId": "player-8",
+              "deckStrategy": "Garbarge",
+              "wins": 0,
+              "deckColors": [
+                "B",
+                "U",
+                "R"
+              ]
+            }
+          ],
+          "notes": ""
+        },
+        {
+          "draftId": "draft-005",
+          "date": "2026-02-28T17:05:14.858Z",
+          "id": "match-030",
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-levi",
+              "wins": 1,
+              "deckStrategy": "Equipment Aggro Winota",
+              "deckColors": [
+                "R",
+                "W"
+              ]
+            },
+            {
+              "wins": 0,
+              "deckStrategy": "Azorius good stuff ",
+              "deckColors": [
+                "U",
+                "W"
+              ],
+              "playerId": "player-14"
+            }
+          ]
+        },
+        {
+          "players": [
+            {
+              "playerId": "player-13",
+              "wins": 2,
+              "deckStrategy": "",
+              "deckColors": [
+                "U",
+                "R"
+              ]
+            },
+            {
+              "playerId": "player-8",
+              "deckColors": [
+                "B",
+                "U",
+                "R"
+              ],
+              "wins": 0,
+              "deckStrategy": "Garbarge"
+            }
+          ],
+          "notes": "",
+          "draftId": "draft-005",
+          "date": "2026-02-28T17:18:09.652Z",
+          "id": "match-031"
+        },
+        {
+          "draftId": "draft-005",
+          "date": "2026-02-28T17:18:14.269Z",
+          "id": "match-032",
+          "notes": "",
+          "players": [
+            {
+              "deckStrategy": "",
+              "deckColors": [
+                "B"
+              ],
+              "wins": 2,
+              "playerId": "player-5"
+            },
+            {
+              "wins": 0,
+              "deckStrategy": "",
+              "deckColors": [
+                "B",
+                "W",
+                "G",
+                "R"
+              ],
+              "playerId": "player-6"
+            }
+          ]
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-6",
+              "deckStrategy": "",
+              "deckColors": [
+                "B",
+                "W",
+                "G",
+                "R"
+              ],
+              "wins": 2
+            },
+            {
+              "deckColors": [
+                "U",
+                "W"
+              ],
+              "deckStrategy": "Azorius good stuff ",
+              "wins": 0,
+              "playerId": "player-14"
+            }
+          ],
+          "date": "2026-02-28T17:18:42.198Z",
+          "draftId": "draft-005",
+          "id": "match-033"
+        },
+        {
+          "notes": "",
+          "players": [
+            {
+              "playerId": "player-matt",
+              "deckColors": [
+                "R",
+                "U",
+                "B"
+              ],
+              "wins": 2,
+              "deckStrategy": "Towns"
+            },
+            {
+              "playerId": "player-12",
+              "wins": 0,
+              "deckStrategy": "Counters",
+              "deckColors": [
+                "G",
+                "W"
+              ]
+            }
+          ],
+          "id": "match-034",
+          "date": "2026-02-28T17:25:50.582Z",
+          "draftId": "draft-005"
+        },
+        {
+          "players": [
+            {
+              "playerId": "player-5",
+              "wins": 1,
+              "deckColors": [
+                "B"
+              ],
+              "deckStrategy": ""
+            },
+            {
+              "deckColors": [
+                "R",
+                "W"
+              ],
+              "wins": 0,
+              "deckStrategy": "Equipment Aggro Winota",
+              "playerId": "player-levi"
+            }
+          ],
+          "notes": "",
+          "id": "match-035",
+          "date": "2026-02-28T17:26:03.138Z",
+          "draftId": "draft-005"
+        },
+        {
+          "id": "match-036",
+          "draftId": "draft-005",
+          "date": "2026-03-02T14:42:25.704Z",
+          "players": [
+            {
+              "playerId": "player-matt",
+              "deckColors": [
+                "R",
+                "U",
+                "B"
+              ],
+              "deckStrategy": "Towns",
+              "wins": 1
+            },
+            {
+              "playerId": "player-5",
+              "deckColors": [
+                "R",
+                "W"
+              ],
+              "deckStrategy": "Aggro",
+              "wins": 2
+            }
+          ],
+          "notes": ""
+        }
+      ]
+    }
+  }
+}
