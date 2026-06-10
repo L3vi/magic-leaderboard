@@ -71,11 +71,10 @@ This project uses GitHub Actions to automatically deploy to GitHub Pages.
 - **All branches deploy to the same GitHub Pages URL** (last push wins)
 
 ### Current Setup
-- **main**: Deploys when `main` is pushed
-- **redesign**: Deploys when `redesign` is pushed
-- **draft-variant**: Deploys when `draft-variant` is pushed
+- **main**: Production — the Commander leaderboard. Deploys when `main` is pushed.
+- **draft-variant**: The Cube Draft variant. Deploys when `draft-variant` is pushed.
 
-**⚠️ Important**: Pushing to any of these branches will overwrite what's currently live on GitHub Pages. The most recent push determines what's publicly visible.
+**⚠️ Important**: Both branches deploy to the same GitHub Pages URL, so pushing either overwrites what's currently live. The most recent push determines what's publicly visible.
 
 ## Development Guidelines
 - Use feature branches for new features.
