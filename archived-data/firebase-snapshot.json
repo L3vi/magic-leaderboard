@@ -1,5 +1,5 @@
 {
-  "backupDate": "2026-06-10T20:50:08.745Z",
+  "backupDate": "2026-06-10T23:37:59.007Z",
   "players": [
     {
       "id": "player-10",
@@ -1126,6 +1126,16 @@
       "name": "May 2025",
       "createdAt": "2025-05-31T23:59:59.000Z",
       "description": "Historical season from May 2025 - screenshot-verified",
+      "players": [
+        "player-anson",
+        "player-caleb",
+        "player-danny",
+        "player-jordan",
+        "player-levi",
+        "player-nate",
+        "player-parker",
+        "player-shane"
+      ],
       "games": [
         {
           "id": "game-2025-05-001",
