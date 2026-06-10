@@ -12,10 +12,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get session from CLI args or default to 2025-December
+// Get session from CLI args (defaults to the latest session, computed after reading master)
 const args = process.argv.slice(2);
 const sessionArg = args.find(arg => arg.startsWith('--session='));
-const SESSION = sessionArg ? sessionArg.split('=')[1] : '2025-December';
+const REQUESTED_SESSION = sessionArg ? sessionArg.split('=')[1] : null;
 
 const MASTER_FILE = path.join(__dirname, 'archived-data', 'master-leaderboard.json');
 const FRONTEND_DATA_DIR = path.join(__dirname, 'frontend', 'src', 'data');
@@ -25,6 +25,11 @@ const FRONTEND_PLAYERS = path.join(FRONTEND_DATA_DIR, 'players.json');
 try {
   console.log(`📂 Reading master leaderboard from ${MASTER_FILE}`);
   const masterData = JSON.parse(fs.readFileSync(MASTER_FILE, 'utf8'));
+
+  // Determine the session: explicit --session, otherwise the most recent by createdAt
+  const SESSION = REQUESTED_SESSION || Object.keys(masterData.sessions)
+    .sort((a, b) => (masterData.sessions[b].createdAt || '').localeCompare(masterData.sessions[a].createdAt || ''))[0];
+  console.log(`🗓  Session: ${SESSION}${REQUESTED_SESSION ? '' : ' (latest)'}`);
 
   // Extract players (same for all sessions)
   const players = masterData.players;

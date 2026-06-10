@@ -53,7 +53,7 @@ export async function fetchPlayers(): Promise<Player[]> {
  * Fetch session metadata (name, description, player roster, etc.) directly from Firebase
  */
 export async function fetchSessionMetadata(
-  session: string = "2025-December"
+  session: string
 ): Promise<SessionMetadata | null> {
   try {
     const sessionDocRef = doc(db, "sessions", session);
@@ -119,7 +119,7 @@ export async function fetchSessions(): Promise<SessionListItem[]> {
  */
 export async function fetchPlayersForSession(
   allPlayers: Player[],
-  session: string = "2025-December"
+  session: string
 ): Promise<Player[]> {
   try {
     const sessionMetadata = await fetchSessionMetadata(session);
@@ -146,7 +146,7 @@ export async function fetchPlayersForSession(
  * Caches results to avoid redundant fetches during navigation
  * Call refetchGames() to bypass cache and get fresh data
  */
-export async function fetchGames(session: string = "2025-December"): Promise<Game[]> {
+export async function fetchGames(session: string): Promise<Game[]> {
   const cacheKey = getCacheKey("games", session);
   const cached = getFromCache<Game[]>(cacheKey);
 
@@ -279,7 +279,7 @@ export async function refetchPlayers(): Promise<Player[]> {
  * Manually refresh game data - bypasses cache and gets fresh data from API
  * Call this after creating/updating a game or when user explicitly requests refresh
  */
-export async function refetchGames(session: string = "2025-December"): Promise<Game[]> {
+export async function refetchGames(session: string): Promise<Game[]> {
   const cacheKey = getCacheKey("games", session);
   clearCache(cacheKey);
   return fetchGames(session);
@@ -290,7 +290,7 @@ export async function refetchGames(session: string = "2025-December"): Promise<G
  */
 export async function addGame(
   gameData: any,
-  session: string = "2025-December"
+  session: string
 ): Promise<Game> {
   try {
     await authReady;
@@ -319,7 +319,7 @@ export async function addGame(
 export async function updateGame(
   gameId: string,
   gameData: any,
-  session: string = "2025-December"
+  session: string
 ): Promise<Game> {
   try {
     await authReady;
@@ -344,7 +344,7 @@ export async function updateGame(
  */
 export async function deleteGame(
   gameId: string,
-  session: string = "2025-December"
+  session: string
 ): Promise<void> {
   try {
     await authReady;
@@ -366,7 +366,7 @@ export async function deleteGame(
  */
 export async function refreshGamesWithDelta(
   currentGames: Game[],
-  session: string = "2025-December"
+  session: string
 ): Promise<{
   hasChanges: boolean;
   newGames: Game[];
@@ -410,7 +410,7 @@ export async function refreshPlayersWithDelta(
  */
 export async function refreshSessionPlayersWithDelta(
   currentPlayers: Player[],
-  session: string = "2025-December"
+  session: string
 ): Promise<{
   hasChanges: boolean;
   newPlayers: Player[];
