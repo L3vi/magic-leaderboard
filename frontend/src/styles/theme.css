@@ -23,7 +23,7 @@
 @media (max-width: 639px) {
   .main-section {
     margin: 0;
-    padding: 0.5rem 0 28px 0;
+    padding: 0 0 28px 0;
     /* 64px navbar + extra for safe area */
   }
 }

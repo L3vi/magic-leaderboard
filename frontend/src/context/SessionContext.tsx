@@ -10,12 +10,16 @@ import {
   refreshGamesWithDelta,
   refreshPlayersWithDelta,
   refreshSessionPlayersWithDelta,
+  fetchSessions,
+  SessionListItem,
 } from '../services/dataService';
 
 interface SessionContextType {
   activeSession: string;
   setActiveSession: (session: string) => void;
   allSessions: string[];
+  // Rich metadata for each session (newest first), for the season selector
+  sessions: SessionListItem[];
   // Shared data - single source of truth for all components
   players: Player[];
   games: Game[];
@@ -34,8 +38,9 @@ interface SessionContextType {
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeSession, setActiveSession] = useState<string>('2026-June');
-  const [allSessions, setAllSessions] = useState<string[]>(['2026-June', '2025-December']);
+  const [activeSession, setActiveSession] = useState<string>('');
+  const [sessions, setSessions] = useState<SessionListItem[]>([]);
+  const allSessions = sessions.map((s) => s.id);
   
   // Shared data state
   const [players, setPlayers] = useState<Player[]>([]);
@@ -43,38 +48,30 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch available sessions on mount
+  // Fetch the list of available sessions from Firestore on mount (works on any host).
   useEffect(() => {
-    const fetchSessions = async () => {
-      // Only try API on localhost
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        setAllSessions(['2026-June', '2025-December']);
-        setActiveSession('2026-June');
-        return;
-      }
-
+    let cancelled = false;
+    const loadSessions = async () => {
       try {
-        const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3001' : (process.env.VITE_API_BASE || window.location.origin);
-        const response = await fetch(`${apiBase}/api/sessions`);
-        const data = await response.json();
-        setAllSessions(data);
-        
-        // Default to first session (latest, since API sorts by createdAt descending)
-        if (data.length > 0) {
-          setActiveSession(data[0]);
-        }
+        const list = await fetchSessions();
+        if (cancelled || list.length === 0) return;
+        setSessions(list);
+        // Always default to the latest season (list is sorted newest-first).
+        setActiveSession(list[0].id);
       } catch (err) {
-        console.warn('Could not fetch sessions, using defaults:', err);
-        setAllSessions(['2026-June', '2025-December']);
-        setActiveSession('2026-June');
+        console.warn('Could not fetch sessions:', err);
       }
     };
 
-    fetchSessions();
+    loadSessions();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Load data when session changes
   useEffect(() => {
+    if (!activeSession) return;
     const loadData = async () => {
       try {
         setLoading(true);
@@ -218,9 +215,10 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <SessionContext.Provider 
       value={{ 
-        activeSession, 
-        setActiveSession, 
+        activeSession,
+        setActiveSession,
         allSessions,
+        sessions,
         players,
         games,
         loading,

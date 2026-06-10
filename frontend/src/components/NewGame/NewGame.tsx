@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   useFloating, 
   useInteractions, 
-  useClick, 
   useDismiss,
   offset,
   flip,
@@ -15,88 +14,7 @@ import { useGames } from "../../hooks/useApi";
 import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference } from "../../hooks/useCommanderArt";
 import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
-
-// Reusable Static Dropdown with autocomplete styling
-type StaticDropdownProps = {
-  value: string;
-  onChange: (val: string) => void;
-  options: { id: string; label: string }[];
-  placeholder?: string;
-};
-
-const StaticDropdown: React.FC<StaticDropdownProps> = ({ 
-  value, 
-  onChange, 
-  options,
-  placeholder = 'Select an option'
-}) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  
-  const { refs, floatingStyles, context } = useFloating({
-    open: showDropdown,
-    onOpenChange: setShowDropdown,
-    middleware: [
-      offset(8),
-      flip({ padding: 8 }),
-      size({
-        apply({ rects, elements }) {
-          Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
-          });
-        },
-        padding: 8,
-      }),
-    ],
-  });
-
-  const click = useClick(context);
-  const dismiss = useDismiss(context);
-  const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
-
-  const selectedLabel = options.find(opt => opt.id === value)?.label || '';
-
-  const handleSelect = (id: string) => {
-    onChange(id);
-    setShowDropdown(false);
-  };
-
-  return (
-    <div>
-      <button
-        ref={refs.setReference}
-        type="button"
-        className="dropdown-trigger field-input"
-        style={{ width: '100%', textAlign: 'left', background: 'var(--surface)', border: '1.5px solid var(--border)', cursor: 'pointer' }}
-        {...getReferenceProps()}
-      >
-        {selectedLabel || placeholder}
-      </button>
-      {showDropdown && options.length > 0 && (
-        <ul
-          className="autocomplete-dropdown"
-          ref={refs.setFloating}
-          style={{ 
-            ...floatingStyles, 
-            margin: 0, 
-            padding: 0, 
-            listStyle: 'none'
-          }}
-          {...getFloatingProps()}
-        >
-          {options.map((opt) => (
-            <li
-              key={opt.id}
-              onMouseDown={() => handleSelect(opt.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              <span>{opt.label}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
+import StaticDropdown from '../StaticDropdown/StaticDropdown';
 
 // CommanderAutocomplete - simple text input with card search
 type CommanderAutocompleteProps = {

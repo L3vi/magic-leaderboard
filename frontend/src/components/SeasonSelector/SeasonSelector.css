@@ -1,0 +1,56 @@
+/* ===================== */
+/* SeasonSelector        */
+/* Season switcher pill that lives on the right of the header. */
+/* The active season name is shown in the trigger; tap to switch. */
+/* ===================== */
+
+.season-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  flex: none;
+  max-width: 60vw;
+  transition: border-color 0.18s, background 0.18s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .season-switch:hover {
+    border-color: var(--primary-light);
+    background: rgba(139, 92, 246, 0.2);
+  }
+}
+.season-switch:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+.season-switch__name {
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.season-switch__chev {
+  flex: none;
+  color: var(--primary-light);
+  transition: transform 0.2s ease;
+}
+.season-switch__chev.open {
+  transform: rotate(180deg);
+}
+
+/* Desktop: a touch more breathing room and a slightly larger trigger */
+@media (min-width: 640px) {
+  .season-switch {
+    padding: 0.5rem 0.85rem;
+    font-size: var(--font-size-base);
+  }
+}

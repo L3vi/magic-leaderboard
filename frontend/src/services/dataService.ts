@@ -77,6 +77,43 @@ export async function fetchSessionMetadata(
   }
 }
 
+/** Lightweight session list item for the season selector. */
+export interface SessionListItem {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt?: string;
+  players?: string[];
+}
+
+/**
+ * Fetch the list of all sessions (seasons) directly from Firebase, newest first.
+ * Reads Firestore (not the backend API), so it works on any host.
+ */
+export async function fetchSessions(): Promise<SessionListItem[]> {
+  try {
+    await authReady;
+    const sessionsCollection = collection(db, "sessions");
+    const snapshot = await getDocs(sessionsCollection);
+    const sessions: SessionListItem[] = snapshot.docs.map((docSnapshot) => {
+      const data = docSnapshot.data();
+      return {
+        id: docSnapshot.id,
+        name: data.name ?? docSnapshot.id,
+        description: data.description,
+        createdAt: data.createdAt,
+        players: data.players,
+      };
+    });
+    // Sort newest-first by createdAt (ISO strings compare lexicographically).
+    sessions.sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+    return sessions;
+  } catch (error) {
+    console.error("Error fetching sessions from Firebase:", error);
+    return [];
+  }
+}
+
 /**
  * Fetch players for a specific session (filters by session's player roster if available)
  */

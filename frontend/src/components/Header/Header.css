@@ -14,12 +14,33 @@
   box-shadow: var(--shadow);
 }
 
+/* Mobile: blend the header into the page instead of an elevated surface bar */
+@media (max-width: 639px) {
+  .header {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
 .header-main {
-  /* display: flex; */
-  display: none;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-main .logo {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+/* Push the season switcher to the far right of the header row */
+.header-main .static-dropdown {
+  margin-left: auto;
 }
 
 .header-nav-desktop {
@@ -37,6 +58,16 @@
     max-width: var(--desktop-max-width);
     width: 100%;
     margin: 0 auto;
+    padding: 0.6rem 1rem;
+  }
+
+  .header-main .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
   }
   
   .header-nav-desktop {
@@ -59,11 +90,14 @@
 }
 
 .header-title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
-  padding: 0.5rem 1rem;
-  color: var(--primary);
+  padding: 0;
+  color: var(--foreground);
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

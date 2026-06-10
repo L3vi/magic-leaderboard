@@ -3,6 +3,7 @@ import React from "react";
 import "./Header.css";
 import Logo from "./Logo";
 import NavBar from "./NavBar";
+import SeasonSelector from "../SeasonSelector/SeasonSelector";
 
 /**
  * HeaderProps defines the props for the Header component.
@@ -38,6 +39,7 @@ const Header: React.FC<HeaderProps> = ({
           <Logo />
         </a>
         <h1 className="header-title" tabIndex={0}>{title}</h1>
+        <SeasonSelector />
       </div>
       {/* Desktop Navigation */}
       <nav className="header-nav-desktop" aria-label="Main Navigation" role="navigation">
