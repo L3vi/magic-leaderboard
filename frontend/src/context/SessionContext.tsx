@@ -64,8 +64,9 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const list = await fetchSessions();
         if (cancelled || list.length === 0) return;
         setSessions(list);
-        // Always default to the latest season (list is sorted newest-first).
-        setActiveSession(list[0].id);
+        // Default to the latest non-archived season (list is sorted newest-first).
+        const firstActive = list.find((s) => !s.archived) || list[0];
+        setActiveSession(firstActive.id);
       } catch (err) {
         console.warn('Could not fetch sessions:', err);
       }

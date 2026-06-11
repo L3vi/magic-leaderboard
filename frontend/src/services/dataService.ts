@@ -100,6 +100,7 @@ export interface SessionListItem {
   createdAt?: string;
   players?: string[];
   gameCount?: number;
+  archived?: boolean;
 }
 
 /**
@@ -128,6 +129,7 @@ export async function fetchSessions(): Promise<SessionListItem[]> {
           createdAt: data.createdAt,
           players: data.players,
           gameCount,
+          archived: data.archived ?? false,
         };
       })
     );
@@ -199,6 +201,44 @@ export async function fetchPlayerGameCounts(): Promise<Record<string, number>> {
     });
   }
   return counts;
+}
+
+/**
+ * Update mutable fields of a session (name / roster / archived flag).
+ */
+export async function updateSession(
+  sessionId: string,
+  patch: { name?: string; players?: string[]; archived?: boolean }
+): Promise<void> {
+  await authReady;
+  await updateDoc(doc(db, "sessions", sessionId), patch as any);
+}
+
+/**
+ * Delete a session. Refuses if it still has games (archive it instead).
+ */
+export async function deleteSession(sessionId: string): Promise<void> {
+  await authReady;
+  const gamesSnap = await getDocs(collection(db, "sessions", sessionId, "games"));
+  if (gamesSnap.size > 0) {
+    throw new Error(`Season has ${gamesSnap.size} games — archive it instead of deleting.`);
+  }
+  await deleteDoc(doc(db, "sessions", sessionId));
+}
+
+/**
+ * Which players have actually played in a given session (so the roster editor
+ * can prevent removing someone who already has games recorded).
+ */
+export async function fetchSessionPlayerIds(sessionId: string): Promise<Set<string>> {
+  await authReady;
+  const ids = new Set<string>();
+  const snap = await getDocs(collection(db, "sessions", sessionId, "games"));
+  snap.docs.forEach((g) => {
+    const gp = (g.data() as any).players || [];
+    gp.forEach((p: any) => p?.playerId && ids.add(p.playerId));
+  });
+  return ids;
 }
 
 /**

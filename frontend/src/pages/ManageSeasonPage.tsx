@@ -1,0 +1,284 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useSession } from "../context/SessionContext";
+import {
+  fetchPlayers,
+  fetchPlayerGameCounts,
+  fetchSessionPlayerIds,
+  addPlayer,
+  updateSession,
+  deleteSession,
+} from "../services/dataService";
+import type { Player } from "../types";
+import "./NewGamePage.css";
+import "./NewSessionPage.css";
+import "./ManageSeasonPage.css";
+
+const ManageSeasonPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { sessions, activeSession, setActiveSession, reloadSessions } = useSession();
+  const close = () => navigate("/players");
+  useEscapeKey(close);
+
+  const current = sessions.find((s) => s.id === activeSession);
+  const gameCount = current?.gameCount ?? 0;
+
+  const [name, setName] = useState("");
+  const [pool, setPool] = useState<Player[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [played, setPlayed] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [newPlayers, setNewPlayers] = useState<string[]>([]);
+  const [newName, setNewName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.add("modal-open");
+    document.body.classList.add("modal-open");
+    return () => {
+      document.documentElement.classList.remove("modal-open");
+      document.body.classList.remove("modal-open");
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!activeSession) return;
+    (async () => {
+      const [players, gameCounts, sessionPlayed] = await Promise.all([
+        fetchPlayers(),
+        fetchPlayerGameCounts(),
+        fetchSessionPlayerIds(activeSession),
+      ]);
+      if (cancelled) return;
+      const sess = sessions.find((s) => s.id === activeSession);
+      setPool(players);
+      setCounts(gameCounts);
+      setPlayed(sessionPlayed);
+      setName(sess?.name ?? "");
+      setSelected(new Set(sess?.players?.length ? sess.players : [...sessionPlayed]));
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSession, sessions]);
+
+  const sortedPool = useMemo(
+    () =>
+      [...pool].sort(
+        (a, b) => (counts[b.id] ?? 0) - (counts[a.id] ?? 0) || a.name.localeCompare(b.name)
+      ),
+    [pool, counts]
+  );
+
+  const toggle = (id: string) => {
+    if (played.has(id)) return; // locked — already has games this season
+    setSelected((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  };
+
+  const addNew = () => {
+    const n = newName.trim();
+    if (!n) return;
+    const existing = pool.find((p) => p.name.toLowerCase() === n.toLowerCase());
+    if (existing) setSelected((prev) => new Set(prev).add(existing.id));
+    else if (!newPlayers.some((x) => x.toLowerCase() === n.toLowerCase())) setNewPlayers((p) => [...p, n]);
+    setNewName("");
+  };
+
+  const handleSave = async () => {
+    if (!current) return;
+    setError(null);
+    if (!name.trim()) return setError("Season name can't be empty.");
+    setBusy(true);
+    try {
+      const created = await Promise.all(newPlayers.map((n) => addPlayer(n)));
+      const roster = [...selected, ...created.map((p) => p.id)];
+      await updateSession(current.id, { name: name.trim(), players: roster });
+      await reloadSessions();
+      navigate("/players");
+    } catch (e) {
+      console.error(e);
+      setError("Couldn't save changes.");
+      setBusy(false);
+    }
+  };
+
+  const pickNextActive = (excludeId: string) =>
+    sessions.find((s) => s.id !== excludeId && !s.archived)?.id;
+
+  const handleArchive = async () => {
+    if (!current) return;
+    setBusy(true);
+    try {
+      await updateSession(current.id, { archived: true });
+      const next = pickNextActive(current.id);
+      await reloadSessions();
+      if (next) setActiveSession(next);
+      navigate("/players");
+    } catch (e) {
+      console.error(e);
+      setError("Couldn't archive.");
+      setBusy(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!current) return;
+    setBusy(true);
+    try {
+      await deleteSession(current.id);
+      const next = pickNextActive(current.id);
+      await reloadSessions();
+      if (next) setActiveSession(next);
+      navigate("/players");
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message || "Couldn't delete.");
+      setBusy(false);
+    }
+  };
+
+  const archivedSessions = sessions.filter((s) => s.archived);
+  const handleUnarchive = async (id: string) => {
+    await updateSession(id, { archived: false });
+    await reloadSessions();
+  };
+
+  return (
+    <motion.div
+      className="new-game-page"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+    >
+      <div className="new-game-page-header">
+        <button className="btn btn-tertiary" onClick={close} aria-label="Back">← Back</button>
+        <h1>Manage Season</h1>
+      </div>
+
+      <div className="new-game-page-content">
+        {!current ? (
+          <div className="ms-empty">No active season to manage.</div>
+        ) : (
+          <div className="session-form">
+            <label className="session-field">
+              <span className="session-field__label">Season name</span>
+              <input className="session-input" value={name} onChange={(e) => setName(e.target.value)} />
+            </label>
+
+            <div className="session-players">
+              <div className="session-players__head">
+                <span className="session-field__label">Players</span>
+                <span className="session-players__count">{selected.size + newPlayers.length} in roster</span>
+              </div>
+
+              <div className="session-addnew">
+                <input
+                  className="session-input"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Add a new player…"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addNew(); } }}
+                />
+                <button type="button" className="btn btn-secondary" onClick={addNew} disabled={!newName.trim()}>Add</button>
+              </div>
+
+              <div className="player-pick-list">
+                {newPlayers.map((n) => (
+                  <button key={`new-${n}`} type="button" className="player-pick selected" onClick={() => setNewPlayers((p) => p.filter((x) => x !== n))}>
+                    <span className="player-pick__name">{n}</span>
+                    <span className="player-pick__meta player-pick__meta--new">new</span>
+                    <span className="player-pick__check" aria-hidden="true">✓</span>
+                  </button>
+                ))}
+                {sortedPool.map((p) => {
+                  const isSel = selected.has(p.id);
+                  const locked = played.has(p.id);
+                  const c = counts[p.id] ?? 0;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`player-pick${isSel ? " selected" : ""}${locked ? " ms-locked" : ""}`}
+                      onClick={() => toggle(p.id)}
+                      aria-pressed={isSel}
+                      title={locked ? "Has games this season — can't be removed" : undefined}
+                    >
+                      <span className="player-pick__name">{p.name}</span>
+                      <span className="player-pick__meta">{locked ? "in games" : `${c} game${c === 1 ? "" : "s"}`}</span>
+                      <span className="player-pick__check" aria-hidden="true">{locked ? "🔒" : isSel ? "✓" : ""}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="ms-hint">Players who’ve already played this season are locked (🔒) — remove their games first to drop them.</p>
+            </div>
+
+            {error && <div className="session-error">{error}</div>}
+
+            <div className="ms-actions">
+              <button className="btn btn-tertiary" onClick={close} disabled={busy}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleSave} disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
+            </div>
+
+            <div className="ms-danger">
+              <div className="ms-danger-title">Danger zone</div>
+              <div className="ms-danger-row">
+                <div>
+                  <div className="ms-danger-label">Archive season</div>
+                  <div className="ms-danger-desc">Hide it from the switcher, keep all data. Reversible.</div>
+                </div>
+                <button className="btn btn-secondary btn-sm" onClick={handleArchive} disabled={busy}>Archive</button>
+              </div>
+              <div className="ms-danger-row">
+                <div>
+                  <div className="ms-danger-label">Delete season</div>
+                  <div className="ms-danger-desc">
+                    {gameCount > 0
+                      ? `Has ${gameCount} game${gameCount === 1 ? "" : "s"} — archive it instead.`
+                      : "Permanently remove this empty season."}
+                  </div>
+                </div>
+                {gameCount > 0 ? (
+                  <button className="btn btn-sm" disabled>Delete</button>
+                ) : confirmDelete ? (
+                  <button className="btn btn-danger btn-sm" onClick={handleDelete} disabled={busy}>Confirm delete</button>
+                ) : (
+                  <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)} disabled={busy}>Delete</button>
+                )}
+              </div>
+            </div>
+
+            {archivedSessions.length > 0 && (
+              <div className="ms-archived">
+                <div className="ms-danger-title">Archived</div>
+                {archivedSessions.map((s) => (
+                  <div key={s.id} className="ms-danger-row">
+                    <div>
+                      <div className="ms-danger-label">{s.name}</div>
+                      <div className="ms-danger-desc">{s.gameCount ?? 0} games · {(s.players?.length ?? 0)} players</div>
+                    </div>
+                    <button className="btn btn-secondary btn-sm" onClick={() => handleUnarchive(s.id)}>Unarchive</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+export default ManageSeasonPage;

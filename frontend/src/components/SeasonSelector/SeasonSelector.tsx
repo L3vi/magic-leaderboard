@@ -5,6 +5,7 @@ import StaticDropdown, { DropdownOption } from '../StaticDropdown/StaticDropdown
 import './SeasonSelector.css';
 
 const NEW_SESSION = '__new_session__';
+const MANAGE = '__manage__';
 
 const ChevronIcon: React.FC<{ open: boolean }> = ({ open }) => (
   <svg
@@ -32,19 +33,22 @@ const SeasonSelector: React.FC = () => {
 
   if (!sessions || sessions.length === 0) return null;
 
-  const newestId = sessions[0].id;
-  const current = sessions.find((s) => s.id === activeSession) ?? sessions[0];
+  const visible = sessions.filter((s) => !s.archived);
+  const newestId = visible[0]?.id;
+  const current = visible.find((s) => s.id === activeSession) ?? visible[0] ?? sessions[0];
 
-  const options: DropdownOption[] = sessions.map((s) => ({
+  const options: DropdownOption[] = visible.map((s) => ({
     id: s.id,
     label: s.name,
     sublabel: `${count(s.gameCount ?? 0, 'game')} · ${count(s.players?.length ?? 0, 'player')}`,
     badge: s.id === newestId ? 'Current' : undefined,
   }));
   options.push({ id: NEW_SESSION, label: '+ New season' });
+  options.push({ id: MANAGE, label: '⚙ Manage current season' });
 
   const handleChange = (id: string) => {
     if (id === NEW_SESSION) navigate('/new-session');
+    else if (id === MANAGE) navigate('/manage-season');
     else setActiveSession(id);
   };
 

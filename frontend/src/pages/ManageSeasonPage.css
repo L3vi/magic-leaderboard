@@ -1,0 +1,70 @@
+/* ===================== */
+/* Manage Season          */
+/* (reuses NewSessionPage.css for the form + player picker) */
+/* ===================== */
+
+.ms-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2.5rem 1rem;
+}
+
+.ms-hint {
+  margin: 0.1rem 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.ms-locked {
+  opacity: 0.75;
+  cursor: default;
+}
+.ms-locked .player-pick__name {
+  color: var(--text-muted);
+}
+
+.ms-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.ms-danger,
+.ms-archived {
+  margin-top: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+}
+.ms-danger {
+  border-color: rgba(229, 115, 115, 0.3);
+}
+
+.ms-danger-title {
+  margin-bottom: 0.4rem;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.ms-danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+}
+.ms-danger-row + .ms-danger-row {
+  border-top: 1px solid var(--border);
+}
+.ms-danger-label {
+  font-weight: var(--font-weight-semibold);
+}
+.ms-danger-desc {
+  margin-top: 2px;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}

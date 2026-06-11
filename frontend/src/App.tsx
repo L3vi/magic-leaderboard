@@ -11,6 +11,7 @@ import GameDetailsPage from "./pages/GameDetailsPage";
 import ColorStatsPage from "./pages/ColorStatsPage";
 import NewGamePage from "./pages/NewGamePage";
 import NewSessionPage from "./pages/NewSessionPage";
+import ManageSeasonPage from "./pages/ManageSeasonPage";
 import EditGamePage from "./pages/EditGamePage";
 import { SessionProvider } from "./context/SessionContext";
 import { NavigationProvider } from "./context/NavigationContext";
@@ -102,6 +103,7 @@ function AnimatedRoutes() {
                        location.pathname.startsWith('/stats/colors/') ||
                        location.pathname === '/new-game' ||
                        location.pathname === '/new-session' ||
+                       location.pathname === '/manage-season' ||
                        location.pathname.startsWith('/edit-game/');
   
   return (
@@ -119,6 +121,7 @@ function AnimatedRoutes() {
               <Route path="/stats/colors/:color" element={<ColorStatsPage />} />
               <Route path="/new-game" element={<NewGamePage />} />
               <Route path="/new-session" element={<NewSessionPage />} />
+              <Route path="/manage-season" element={<ManageSeasonPage />} />
               <Route path="/edit-game/:gameId" element={<EditGamePage />} />
             </Routes>
           </motion.div>
