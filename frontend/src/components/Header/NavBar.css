@@ -34,6 +34,8 @@
   align-items: center;
   z-index: 100;
   margin: 10px;
+  /* Standalone PWA: lift the floating nav above the iOS home indicator (0 on non-notched displays) */
+  bottom: env(safe-area-inset-bottom);
 }
 
 .nav-tab-group {

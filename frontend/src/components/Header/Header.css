@@ -12,6 +12,8 @@
   justify-content: flex-start;
   background: var(--surface);
   box-shadow: var(--shadow);
+  /* Standalone PWA: clear the iOS status bar / notch (0 on non-notched displays) */
+  padding-top: env(safe-area-inset-top);
 }
 
 /* Mobile: blend the header into the page instead of an elevated surface bar */
