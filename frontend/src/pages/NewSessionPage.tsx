@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSession } from "../context/SessionContext";
+import PageShell from "../components/PageShell/PageShell";
 import FormActions from "../components/FormActions/FormActions";
 import {
   fetchPlayers,
@@ -11,7 +10,6 @@ import {
   addSession,
 } from "../services/dataService";
 import type { Player } from "../types";
-import "./NewGamePage.css";
 import "./NewSessionPage.css";
 
 const NewSessionPage: React.FC = () => {
@@ -28,16 +26,6 @@ const NewSessionPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const close = () => navigate("/players");
-  useEscapeKey(close);
-
-  useEffect(() => {
-    document.documentElement.classList.add("modal-open");
-    document.body.classList.add("modal-open");
-    return () => {
-      document.documentElement.classList.remove("modal-open");
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
 
   // Load the player pool + how many games each has played (for sorting).
   useEffect(() => {
@@ -117,21 +105,7 @@ const NewSessionPage: React.FC = () => {
   };
 
   return (
-    <motion.div
-      className="new-game-page"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
-    >
-      <div className="new-game-page-header">
-        <button className="btn btn-tertiary" onClick={close} aria-label="Back to leaderboard">
-          ← Back
-        </button>
-        <h1>New Season</h1>
-      </div>
-
-      <div className="new-game-page-content">
+    <PageShell title="New Season" onClose={close}>
         <div className="session-form">
           <label className="session-field">
             <span className="session-field__label">Season name</span>
@@ -223,8 +197,7 @@ const NewSessionPage: React.FC = () => {
             isSubmitting={saving}
           />
         </div>
-      </div>
-    </motion.div>
+    </PageShell>
   );
 };
 

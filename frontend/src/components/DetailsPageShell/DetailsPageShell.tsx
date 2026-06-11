@@ -1,9 +1,5 @@
 import React, { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEscapeKey } from "../../hooks/useEscapeKey";
-import { useNavigationAnimation } from "../../context/NavigationContext";
-import "./DetailsPageShell.css";
+import PageShell from "../PageShell/PageShell";
 
 interface DetailsPageShellProps {
   title: string;
@@ -14,6 +10,11 @@ interface DetailsPageShellProps {
   error?: string;
 }
 
+/**
+ * Detail/view page scaffold. Thin wrapper over the shared PageShell that adds
+ * the "✎ Edit" top-right action and uses flush (unpadded) content so detail
+ * components control their own spacing.
+ */
 const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
   title,
   children,
@@ -21,107 +22,23 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
   onEdit,
   loading = false,
   error,
-}) => {
-  const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
-
-  // Disable body scroll when this page is open
-  React.useEffect(() => {
-    document.documentElement.classList.add("modal-open");
-    document.body.classList.add("modal-open");
-    return () => {
-      document.documentElement.classList.remove("modal-open");
-      document.body.classList.remove("modal-open");
-    };
-  }, []);
-
-  useEscapeKey(onClose);
-
-  // Determine animation props based on whether we're navigating back
-  const animationProps = skipAnimationRef.current
-    ? {
-        initial: { opacity: 1, y: 0 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 20 },
-        transition: { duration: 0 },
-      }
-    : {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: 20 },
-        transition: { duration: 0.15, ease: "easeOut" },
-      };
-
-  // Reset skip animation flag after this component mounts
-  React.useEffect(() => {
-    return () => {
-      setSkipAnimation(false);
-    };
-  }, [setSkipAnimation]);
-
-  if (loading) {
-    return (
-      <motion.div className="details-page-shell" {...animationProps}>
-        <div className="details-page-header">
-          <button
-            className="btn btn-tertiary"
-            onClick={onClose}
-            aria-label="Back"
-          >
-            ← Back
-          </button>
-          <h1>{title}</h1>
-        </div>
-        <div className="details-page-content">
-          <div className="loading">Loading...</div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.div className="details-page-shell" {...animationProps}>
-        <div className="details-page-header">
-          <button
-            className="btn btn-tertiary"
-            onClick={onClose}
-            aria-label="Back"
-          >
-            ← Back
-          </button>
-          <h1>{title}</h1>
-        </div>
-        <div className="details-page-content">
-          <div className="error">{error}</div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div className="details-page-shell" {...animationProps}>
-      <div className="details-page-header">
-        <button
-          className="btn btn-tertiary"
-          onClick={onClose}
-          aria-label="Back to previous page"
-        >
-          ← Back
+}) => (
+  <PageShell
+    title={title}
+    onClose={onClose}
+    contentVariant="flush"
+    loading={loading}
+    error={error}
+    headerAction={
+      onEdit && (
+        <button className="btn btn-tertiary" onClick={onEdit} aria-label="Edit">
+          ✎ Edit
         </button>
-        <h1>{title}</h1>
-        {onEdit && (
-          <button
-            className="btn btn-tertiary"
-            onClick={onEdit}
-            aria-label="Edit"
-          >
-            ✎ Edit
-          </button>
-        )}
-      </div>
-      <div className="details-page-content">{children}</div>
-    </motion.div>
-  );
-};
+      )
+    }
+  >
+    {children}
+  </PageShell>
+);
 
 export default DetailsPageShell;

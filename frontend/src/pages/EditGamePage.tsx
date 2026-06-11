@@ -1,12 +1,10 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useUpdateGame, usePlayers } from "../hooks/useApi";
 import { useSession } from "../context/SessionContext";
 import { deleteGame } from "../services/dataService";
+import PageShell from "../components/PageShell/PageShell";
 import NewGame from "../components/NewGame/NewGame";
-import "./NewGamePage.css"; // Reuse NewGamePage styles
 
 const EditGamePage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -16,46 +14,18 @@ const EditGamePage: React.FC = () => {
   const { updateGame, loading, error } = useUpdateGame();
   const [isDeleting, setIsDeleting] = React.useState(false);
 
-  // Disable body scroll when this page is open
-  React.useEffect(() => {
-    document.documentElement.classList.add('modal-open');
-    document.body.classList.add('modal-open');
-    return () => {
-      document.documentElement.classList.remove('modal-open');
-      document.body.classList.remove('modal-open');
-    };
-  }, []);
-
   const handleClose = () => {
     navigate("/games");
   };
-
-  useEscapeKey(handleClose);
 
   // Find the game to edit
   const game = games.find((g: any) => g.id === gameId);
 
   if (!game) {
     return (
-      <motion.div 
-        className="new-game-page" 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
-      >
-        <div className="new-game-page-header">
-          <button 
-            className="btn btn-tertiary" 
-            onClick={handleClose}
-            aria-label="Back to games"
-          >
-            ← Back
-          </button>
-          <h1>Game Not Found</h1>
-        </div>
+      <PageShell title="Game Not Found" onClose={handleClose}>
         <p>The game could not be found.</p>
-      </motion.div>
+      </PageShell>
     );
   }
 
@@ -105,39 +75,27 @@ const EditGamePage: React.FC = () => {
   };
 
   return (
-    <motion.div 
-      className="new-game-page" 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
-    >
-      <div className="new-game-page-header">
-        <button 
-          className="btn btn-tertiary" 
-          onClick={handleClose}
-          aria-label="Cancel"
-        >
-          ← Cancel
-        </button>
-        <h1>Edit Game</h1>
-        <button 
-          className="btn btn-danger" 
+    <PageShell
+      title="Edit Game"
+      onClose={handleClose}
+      backLabel="← Cancel"
+      headerAction={
+        <button
+          className="btn btn-danger"
           onClick={handleDelete}
           disabled={isDeleting}
           aria-label="Delete game"
         >
           {isDeleting ? "Deleting..." : "Delete"}
         </button>
-      </div>
-      <div className="new-game-page-content">
-        <NewGame 
-          onSubmit={handleSubmit} 
-          onCancel={handleClose}
-          initialData={transformedGame}
-        />
-      </div>
-    </motion.div>
+      }
+    >
+      <NewGame
+        onSubmit={handleSubmit}
+        onCancel={handleClose}
+        initialData={transformedGame}
+      />
+    </PageShell>
   );
 };
 
