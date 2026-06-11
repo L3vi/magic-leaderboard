@@ -56,6 +56,10 @@ export async function preFetchCommandersFromGames(games: any[]): Promise<void> {
         const response = await fetch(
           `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
         );
+        // 429 (rate limit) / 5xx / 404: don't cache — let it retry next load.
+        if (!response.ok) {
+          throw new Error(`Scryfall responded ${response.status}`);
+        }
         const data = await response.json();
 
         let art = "";
@@ -69,11 +73,13 @@ export async function preFetchCommandersFromGames(games: any[]): Promise<void> {
           full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
         }
 
-        batchCache[commander] = { art, full };
-        console.log(`Cached: ${commander}`);
+        // Only cache real hits; an empty result would persist forever (no TTL).
+        if (art) {
+          batchCache[commander] = { art, full };
+          console.log(`Cached: ${commander}`);
+        }
       } catch (error) {
-        // Cache failed attempts
-        batchCache[commander] = { art: "", full: "" };
+        // Don't cache failed attempts — leave uncached so they retry.
         console.warn(`Failed to fetch ${commander}:`, error);
       }
     });

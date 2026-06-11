@@ -346,6 +346,15 @@ export async function refetchAllGames(): Promise<Game[]> {
 }
 
 /**
+ * Points awarded for a finishing placement.
+ * 1st = 4, 2nd = 3, 3rd = 2, 4th+ (or anything else) = 1.
+ * Single source of truth — used by the leaderboard and the player detail page.
+ */
+export function scorePlacement(placement: number): number {
+  return placement === 1 ? 4 : placement === 2 ? 3 : placement === 3 ? 2 : 1;
+}
+
+/**
  * Calculate player scores from games
  * Includes Bayesian weighted average to account for sample size
  */
@@ -367,15 +376,7 @@ export function calculatePlayerScores(
   games.forEach((game) => {
     game.players.forEach((playerInGame) => {
       if (scoreMap[playerInGame.playerId]) {
-        // Placement scoring: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th+ = 1 pt
-        const points =
-          playerInGame.placement === 1
-            ? 4
-            : playerInGame.placement === 2
-            ? 3
-            : playerInGame.placement === 3
-            ? 2
-            : 1;
+        const points = scorePlacement(playerInGame.placement);
 
         scoreMap[playerInGame.playerId].score += points;
         scoreMap[playerInGame.playerId].gameCount += 1;

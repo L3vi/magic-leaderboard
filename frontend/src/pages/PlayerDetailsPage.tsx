@@ -4,6 +4,7 @@ import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import type { PlayerRowDisplay as Player } from "../types";
 import { useSession } from "../context/SessionContext";
+import { calculatePlayerScores } from "../services/dataService";
 
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
@@ -26,20 +27,22 @@ const PlayerDetailsPage: React.FC = () => {
   const player: Player | null = React.useMemo(() => {
     if (!playerData) return null;
 
-    let score = 0;
-    let gamesPlayed = 0;
+    // Use the canonical scores (same source as the leaderboard) so score,
+    // average and weighted average never diverge between screens.
+    const canonical = calculatePlayerScores(playersRaw, gamesRaw).find(
+      (s) => s.id === playerData.id
+    );
+    const score = canonical?.score ?? 0;
+    const gamesPlayed = canonical?.gameCount ?? 0;
+
+    // Detail-only extras computed from this player's games
     const placements: number[] = [];
     const playerGames: any[] = [];
-
     gamesRaw.forEach((game: any) => {
       game.players.forEach((p: any) => {
         if (p.playerId === playerData.id) {
-          gamesPlayed += 1;
           placements.push(p.placement);
           playerGames.push(game);
-          // Placement scoring: 1st = 4 pts, 2nd = 3 pts, 3rd = 2 pts, 4th+ = 1 pt
-          const points = p.placement === 1 ? 4 : p.placement === 2 ? 3 : p.placement === 3 ? 2 : 1;
-          score += points;
         }
       });
     });
@@ -67,13 +70,13 @@ const PlayerDetailsPage: React.FC = () => {
     return {
       name: playerData.name,
       score,
-      average: gamesPlayed ? score / gamesPlayed : 0,
+      average: canonical?.average ?? 0,
       gamesPlayed,
       mostCommonPlacement: parseInt(mostCommonPlacement as any),
-      weightedAverage: gamesPlayed ? score / gamesPlayed : 0,
+      weightedAverage: canonical?.weightedAverage ?? 0,
       estimatedMinutesPlayed: estimatedMinutes,
     };
-  }, [playerData, gamesRaw]);
+  }, [playerData, gamesRaw, playersRaw]);
 
   if (!player) {
     return (

@@ -480,7 +480,15 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       alert(`Please add at least ${MIN_PLAYERS} players with commanders`);
       return;
     }
-    
+
+    // Placements must be unique — two players can't share a finish (it would
+    // double-award points and produce a nonsensical ranking).
+    const placements = validPlayers.map(f => f.placement);
+    if (new Set(placements).size !== placements.length) {
+      alert("Each player needs a unique placement — two players can't share the same finish.");
+      return;
+    }
+
     // Build game data matching the backend structure
     let gameData = {
       players: validPlayers.map(f => {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { 
   fetchPlayers, 
   fetchGames, 
@@ -56,6 +56,16 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // The polling interval below only re-binds when the session changes, so it
+  // would otherwise close over the games/players from that first render. Keep
+  // refs to the latest values so each tick diffs against current state, not a
+  // stale (usually empty) snapshot — which would force a full re-render every
+  // tick and defeat the delta-refresh optimization.
+  const gamesRef = useRef(games);
+  gamesRef.current = games;
+  const playersRef = useRef(players);
+  playersRef.current = players;
+
   // Fetch the list of available sessions from Firestore on mount (works on any host).
   useEffect(() => {
     let cancelled = false;
@@ -106,16 +116,16 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     loadData();
 
-    // Auto-refresh every 30 seconds (30000ms) using smart refresh for non-blocking updates
+    // Auto-refresh every 30 seconds using smart (delta) refresh for non-blocking updates
     let refreshInterval: NodeJS.Timeout;
-    
+
     const startAutoRefresh = async () => {
       refreshInterval = setInterval(async () => {
         try {
-          // Use smart refresh to only update if data changed, non-blocking
+          // Diff against the latest data (via refs), not the stale closure capture.
           await Promise.all([
-            refreshGamesWithDelta(games, activeSession),
-            refreshSessionPlayersWithDelta(players, activeSession),
+            refreshGamesWithDelta(gamesRef.current, activeSession),
+            refreshSessionPlayersWithDelta(playersRef.current, activeSession),
           ]).then(([gamesResult, playersResult]) => {
             if (gamesResult.hasChanges) {
               setGames(gamesResult.newGames);
@@ -127,7 +137,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } catch (err) {
           console.error('Error in auto-refresh:', err);
         }
-      }, 10000);
+      }, 30000);
     };
     
     startAutoRefresh();

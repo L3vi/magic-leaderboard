@@ -31,6 +31,10 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
       const response = await fetch(
         `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
       );
+      // 429 (rate limit) / 5xx / 404: don't poison the cache — let it retry.
+      if (!response.ok) {
+        throw new Error(`Scryfall responded ${response.status} for "${commander}"`);
+      }
       const data = await response.json();
 
       let art = "";
@@ -45,13 +49,13 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
       }
 
       const result = { art, full };
-      setImageCache(commander, result);
+      // Only persist real hits. Caching an empty result on a transient failure
+      // would permanently blank this commander's art (the cache has no TTL).
+      if (art) setImageCache(commander, result);
       return result;
     } catch (error) {
       console.error(`Failed to fetch images for ${commander}:`, error);
-      const emptyResult = { art: "", full: "" };
-      setImageCache(commander, emptyResult);
-      return emptyResult;
+      return { art: "", full: "" };
     } finally {
       clearInflightRequest(requestKey);
     }
