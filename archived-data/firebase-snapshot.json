@@ -1,5 +1,5 @@
 {
-  "backupDate": "2026-06-10T23:37:59.007Z",
+  "backupDate": "2026-06-11T00:03:39.223Z",
   "players": [
     {
       "id": "player-10",
@@ -102,7 +102,6 @@
     "2025-December": {
       "name": "December 2025",
       "createdAt": "2025-12-10T00:00:00.000Z",
-      "description": "Current season - fresh slate for this weekend",
       "players": [
         "player-anson",
         "player-caleb",
@@ -1125,7 +1124,6 @@
     "2025-May": {
       "name": "May 2025",
       "createdAt": "2025-05-31T23:59:59.000Z",
-      "description": "Historical season from May 2025 - screenshot-verified",
       "players": [
         "player-anson",
         "player-caleb",
@@ -2056,7 +2054,6 @@
     "2026-June": {
       "name": "June 2026",
       "createdAt": "2026-06-10T00:00:00.000Z",
-      "description": "Current season - fresh slate, same crew as the first event (May 2025)",
       "players": [
         "player-anson",
         "player-caleb",
