@@ -1,7 +1,7 @@
 {
   "name": "Magic Leaderboard",
   "short_name": "Leaderboard",
-  "description": "Track Magic: The Gathering Commander game results and player rankings.",
+  "description": "Track Magic: The Gathering game results and player rankings.",
   "start_url": "/magic-leaderboard/",
   "scope": "/magic-leaderboard/",
   "display": "standalone",
