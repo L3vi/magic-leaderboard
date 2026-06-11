@@ -23,12 +23,6 @@
   color: var(--text-muted);
 }
 
-.ms-actions {
-  display: flex;
-  gap: 0.6rem;
-  justify-content: flex-end;
-}
-
 .ms-danger,
 .ms-archived {
   margin-top: 0.5rem;

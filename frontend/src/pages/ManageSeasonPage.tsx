@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 import { useSession } from "../context/SessionContext";
+import FormActions from "../components/FormActions/FormActions";
 import {
   fetchPlayers,
   fetchPlayerGameCounts,
@@ -227,11 +228,6 @@ const ManageSeasonPage: React.FC = () => {
 
             {error && <div className="session-error">{error}</div>}
 
-            <div className="ms-actions">
-              <button className="btn btn-tertiary" onClick={close} disabled={busy}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSave} disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
-            </div>
-
             <div className="ms-danger">
               <div className="ms-danger-title">Danger zone</div>
               <div className="ms-danger-row">
@@ -274,6 +270,15 @@ const ManageSeasonPage: React.FC = () => {
                 ))}
               </div>
             )}
+
+            <FormActions
+              submitLabel="Save changes"
+              loadingText="Saving…"
+              submitType="button"
+              onSubmit={handleSave}
+              onCancel={close}
+              isSubmitting={busy}
+            />
           </div>
         )}
       </div>

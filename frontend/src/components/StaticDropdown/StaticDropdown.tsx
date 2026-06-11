@@ -46,6 +46,11 @@ type StaticDropdownProps = {
   triggerStyle?: React.CSSProperties;
   /** Custom trigger content. When omitted, the selected option's label (or placeholder) is shown. */
   renderTrigger?: (args: RenderTriggerArgs) => React.ReactNode;
+  /**
+   * Optional trailing action rendered inside each option row (left of the selected check).
+   * The consumer's element should stopPropagation if it shouldn't also select the row.
+   */
+  renderItemAction?: (opt: DropdownOption, isSelected: boolean) => React.ReactNode;
 };
 
 /**
@@ -65,6 +70,7 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
   triggerClassName,
   triggerStyle,
   renderTrigger,
+  renderItemAction,
 }) => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -183,6 +189,7 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
                     {opt.sublabel && <span className="sd-item-sublabel">{opt.sublabel}</span>}
                   </span>
                   {opt.badge && <span className="sd-badge">{opt.badge}</span>}
+                  {renderItemAction?.(opt, isSelected)}
                   {isSelected && (
                     <span className="sd-check" aria-hidden="true">
                       ✓

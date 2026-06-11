@@ -112,6 +112,38 @@
   font-weight: 700;
   font-size: 1.05rem;
 }
+
+/* Inline per-item action (e.g. edit the selected season) */
+.sd-edit {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.14);
+  color: var(--primary-light);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sd-edit:hover {
+    border-color: var(--primary-light);
+    background: rgba(139, 92, 246, 0.28);
+    color: #fff;
+  }
+}
+.sd-edit:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+.autocomplete-dropdown li:hover .sd-edit {
+  color: #fff;
+}
 .autocomplete-dropdown li:hover .sd-badge,
 .autocomplete-dropdown li:hover .sd-check {
   color: var(--accent-light);
