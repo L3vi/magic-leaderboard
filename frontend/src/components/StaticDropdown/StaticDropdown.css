@@ -144,6 +144,20 @@
 .autocomplete-dropdown li:hover .sd-edit {
   color: #fff;
 }
+
+/* While the inline edit action is hovered, don't light up the whole row —
+   only the edit button should read as active. */
+.autocomplete-dropdown li.sd-item:has(.sd-edit:hover),
+.autocomplete-dropdown li.sd-item--active:has(.sd-edit:hover) {
+  background: transparent;
+  color: var(--foreground);
+}
+.autocomplete-dropdown li:has(.sd-edit:hover) .sd-item-sublabel {
+  color: var(--text-muted);
+}
+.autocomplete-dropdown li:has(.sd-edit:hover) .sd-check {
+  color: var(--accent);
+}
 .autocomplete-dropdown li:hover .sd-badge,
 .autocomplete-dropdown li:hover .sd-check {
   color: var(--accent-light);
