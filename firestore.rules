@@ -1,21 +1,63 @@
 rules_version = '2';
 
+// Security model (hobby leaderboard):
+//   - Reads are fully public (the leaderboard is meant to be shared).
+//   - Writes come from the browser using ANONYMOUS auth, so "authenticated"
+//     only means "any visitor". These rules therefore can't stop a determined
+//     authed user from deleting data (the app itself needs client deletes).
+//     What they DO enforce is document SHAPE: malformed / garbage / accidental
+//     writes are rejected, so the schema can't be corrupted by a stray script.
+//   - Backend scripts use the Admin SDK, which BYPASSES these rules entirely,
+//     so only the browser-written shapes need to validate here.
+//   If this ever needs to be truly locked down, replace anonymous auth with
+//   sign-in restricted to an allow-list and gate writes on those UIDs.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Players collection: public read, authenticated write
-    match /players/{playerId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+
+    function isAuthed() {
+      return request.auth != null;
     }
 
-    // Sessions and nested games: public read, authenticated write
+    // Non-empty, length-bounded string.
+    function isName(v) {
+      return v is string && v.size() > 0 && v.size() <= 200;
+    }
+
+    // Players: public read; authed writes must be well-formed.
+    match /players/{playerId} {
+      allow read: if true;
+      allow create, update: if isAuthed()
+        && isName(request.resource.data.name)
+        && (!('commanderArt' in request.resource.data)
+            || request.resource.data.commanderArt is map);
+      allow delete: if isAuthed();
+    }
+
+    // Sessions (seasons): public read; authed writes must be well-formed.
     match /sessions/{sessionId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update: if isAuthed()
+        && isName(request.resource.data.name)
+        && request.resource.data.players is list
+        && (!('createdAt' in request.resource.data)
+            || request.resource.data.createdAt is string)
+        && (!('description' in request.resource.data)
+            || request.resource.data.description is string)
+        && (!('archived' in request.resource.data)
+            || request.resource.data.archived is bool);
+      allow delete: if isAuthed();
 
+      // Games: public read; authed writes must look like a game.
       match /games/{gameId} {
         allow read: if true;
-        allow write: if request.auth != null;
+        allow create, update: if isAuthed()
+          && request.resource.data.players is list
+          && request.resource.data.players.size() >= 1
+          && request.resource.data.dateCreated is string
+          && (!('notes' in request.resource.data)
+              || request.resource.data.notes is string);
+        allow delete: if isAuthed();
       }
     }
 

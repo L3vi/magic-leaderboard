@@ -4,7 +4,7 @@
   "private": true,
   "description": "Magic: The Gathering Commander game tracker",
   "scripts": {
-    "backup-firebase": "node backup-firebase.js",
+    "backup-firebase": "npm run backup-firebase --prefix backend",
     "sync-data": "node sync-data.js",
     "sync-data:may": "node sync-data.js --session=2025-May",
     "sync-data:december": "node sync-data.js --session=2025-December",
