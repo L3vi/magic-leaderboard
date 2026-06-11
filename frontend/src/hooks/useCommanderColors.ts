@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-
-interface CommanderColorCache {
-  colors: string[];
-  colorIdentity: string;
-}
-
-const commanderColorCache: Record<string, CommanderColorCache> = {};
+import { getColorCache, setColorCache } from '../services/cacheService';
+import { scryfallFetch } from '../services/scryfallClient';
 
 // Map color codes to color names
 const COLOR_NAMES: Record<string, string> = {
@@ -23,9 +18,9 @@ const COLOR_NAMES: Record<string, string> = {
  * @returns Array of color codes (e.g., ['U', 'B'] for Dimir)
  */
 export function useCommanderColors(commander: string): string[] {
-  const [colors, setColors] = useState<string[]>(
-    commanderColorCache[commander]?.colors || []
-  );
+  // Reads from the shared color cache, which preFetchCommanderData populates in
+  // bulk; only falls back to a (throttled) single fetch on a genuine cache miss.
+  const [colors, setColors] = useState<string[]>(() => getColorCache(commander) || []);
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -35,9 +30,10 @@ export function useCommanderColors(commander: string): string[] {
       return;
     }
 
-    // Return cached value if available
-    if (commanderColorCache[commander]) {
-      setColors(commanderColorCache[commander].colors);
+    // Return cached value if available (null = not cached; [] = colorless)
+    const cached = getColorCache(commander);
+    if (cached !== null) {
+      setColors(cached);
       return;
     }
 
@@ -46,39 +42,26 @@ export function useCommanderColors(commander: string): string[] {
       clearTimeout(debounceTimer.current);
     }
 
+    let isMounted = true;
     debounceTimer.current = setTimeout(() => {
-      let isMounted = true;
-
-      fetch(
-        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(
-          commander
-        )}`
+      scryfallFetch(
+        `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
       )
         .then((res) => res.json())
         .then((data) => {
-          if (isMounted) {
-            const colorIdentity = data.color_identity || [];
-            commanderColorCache[commander] = {
-              colors: colorIdentity,
-              colorIdentity: colorIdentity.join(''),
-            };
-            setColors(colorIdentity);
-          }
+          const colorIdentity = data.color_identity || [];
+          setColorCache(commander, colorIdentity);
+          if (isMounted) setColors(colorIdentity);
         })
         .catch((err) => {
+          // Don't poison the cache on failure — let it retry next time.
           console.error('Error fetching commander colors:', err);
-          if (isMounted) {
-            commanderColorCache[commander] = { colors: [], colorIdentity: '' };
-            setColors([]);
-          }
+          if (isMounted) setColors([]);
         });
-
-      return () => {
-        isMounted = false;
-      };
     }, 500);
 
     return () => {
+      isMounted = false;
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }

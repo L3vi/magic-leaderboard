@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Games.css";
 import GameRow from "./GameRow";
 import { useGames, usePlayers } from "../../hooks/useApi";
-import { preFetchCommandersFromGames } from "../../services/commanderPreFetchService";
+import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 
 // TypeScript interfaces for game history data
 interface Player {
@@ -40,7 +40,7 @@ const Games: React.FC = () => {
   // Only re-fetch if game count actually changes (prevents re-fetch on tab switch)
   useEffect(() => {
     if (gamesData.length > 0) {
-      preFetchCommandersFromGames(gamesData).catch((error) => {
+      preFetchCommanderData(gamesData).catch((error) => {
         console.error("Error pre-fetching commanders:", error);
       });
     }

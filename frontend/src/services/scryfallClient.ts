@@ -16,7 +16,7 @@ const RETRY_BASE_MS = 1000;
 let queueTail: Promise<unknown> = Promise.resolve();
 let lastDispatch = 0;
 
-async function dispatch(url: string): Promise<Response> {
+async function dispatch(url: string, init?: RequestInit): Promise<Response> {
   for (let attempt = 0; ; attempt++) {
     const since = Date.now() - lastDispatch;
     if (since < MIN_SPACING_MS) {
@@ -24,7 +24,10 @@ async function dispatch(url: string): Promise<Response> {
     }
     lastDispatch = Date.now();
 
-    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    const response = await fetch(url, {
+      ...init,
+      headers: { Accept: "application/json", ...(init?.headers || {}) },
+    });
     if (response.status !== 429 || attempt >= MAX_RETRIES) {
       return response;
     }
@@ -43,8 +46,8 @@ async function dispatch(url: string): Promise<Response> {
  * Fetch a Scryfall URL through the shared rate-limited queue.
  * Requests run one at a time, spaced >=110ms apart, with 429 backoff.
  */
-export function scryfallFetch(url: string): Promise<Response> {
-  const result = queueTail.then(() => dispatch(url));
+export function scryfallFetch(url: string, init?: RequestInit): Promise<Response> {
+  const result = queueTail.then(() => dispatch(url, init));
   // Keep the chain alive regardless of an individual request's outcome.
   queueTail = result.then(
     () => undefined,

@@ -1,89 +1,161 @@
 /**
  * Commander pre-fetch service
- * Efficiently batches and caches commander image data from Scryfall API
+ *
+ * Loads commander art AND color identity for every commander in a set of games.
+ * Both pieces of data live on the same Scryfall card object, so we fetch them
+ * together in one pass instead of querying art and colors separately.
+ *
+ * Bulk path: Scryfall's POST /cards/collection returns up to 75 cards per
+ * request, each carrying image_uris + color_identity. A whole season's ~75
+ * unique commanders collapses into 1–2 requests instead of ~150.
+ *
+ * Fallback path: names Scryfall can't match exactly (e.g. "A // B" MDFC names,
+ * or user typos) come back in `not_found`; those few are resolved one at a time
+ * via the fuzzy /cards/named endpoint, which also returns art + colors together.
+ *
+ * Every request funnels through scryfallFetch, so pacing/retry is handled centrally.
  */
 
-import { getImageCache, setImageCacheBatch, getUncachedCommanders } from './cacheService';
+import {
+  getImageCache,
+  getColorCache,
+  setImageCache,
+  setColorCache,
+  setImageCacheBatch,
+  setColorCacheBatch,
+} from './cacheService';
 import { scryfallFetch } from './scryfallClient';
 import type { CardImageCache } from '../types';
 
-/**
- * Pre-fetch commander images for all unique commanders in games
- * Only fetches uncached commanders, skipping already-cached ones
- * @param games - Array of game objects
- */
-export async function preFetchCommandersFromGames(games: any[]): Promise<void> {
-  // Extract all unique commanders from games
-  const uniqueCommanders = new Set<string>();
+const COLLECTION_CHUNK = 75; // Scryfall's max identifiers per /cards/collection request
 
+/** Pull art_crop + normal/large image URLs off a card (handles double-faced cards). */
+function extractArt(card: any): CardImageCache {
+  const uris = card?.image_uris || card?.card_faces?.[0]?.image_uris;
+  if (!uris) return { art: "", full: "" };
+  return { art: uris.art_crop || "", full: uris.normal || uris.large || "" };
+}
+
+/** Collect unique, cleaned commander names across all games. */
+function collectCommanders(games: any[]): string[] {
+  const unique = new Set<string>();
   for (const game of games) {
-    if (game.players && Array.isArray(game.players)) {
-      for (const player of game.players) {
-        if (player.commander) {
-          if (Array.isArray(player.commander)) {
-            player.commander.forEach((cmd: string) => {
-              if (cmd && cmd.trim().length > 0 && cmd !== "Unknown") {
-                uniqueCommanders.add(cmd.trim());
-              }
-            });
-          } else if (typeof player.commander === "string" && player.commander.trim().length > 0 && player.commander !== "Unknown") {
-            uniqueCommanders.add(player.commander.trim());
-          }
+    if (!Array.isArray(game?.players)) continue;
+    for (const player of game.players) {
+      const commanders = Array.isArray(player.commander) ? player.commander : [player.commander];
+      for (const cmd of commanders) {
+        if (typeof cmd === "string" && cmd.trim().length > 0 && cmd !== "Unknown") {
+          unique.add(cmd.trim());
         }
       }
     }
   }
+  return Array.from(unique);
+}
 
-  // Filter to only commanders not already cached
-  const commandersToFetch = getUncachedCommanders(Array.from(uniqueCommanders));
+/** Fuzzy single-card fallback: caches both art and colors for one commander. */
+async function fetchSingleCommander(name: string): Promise<void> {
+  try {
+    const response = await scryfallFetch(
+      `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(name)}`
+    );
+    if (!response.ok) {
+      throw new Error(`Scryfall named responded ${response.status}`);
+    }
+    const card = await response.json();
+    // color_identity is always present (empty array for colorless); cache it
+    // even when there's no art so we don't re-query this commander next load.
+    setColorCache(name, card.color_identity || []);
+    const { art, full } = extractArt(card);
+    if (art) setImageCache(name, { art, full });
+  } catch (error) {
+    // Leave uncached so it retries on the next load.
+    console.warn(`Failed to fetch ${name}:`, error);
+  }
+}
 
-  if (commandersToFetch.length === 0) {
-    console.log("All commanders already cached");
+/**
+ * Pre-fetch art + color identity for all commanders in the given games.
+ * Only fetches commanders missing image or color data; already-cached ones are skipped.
+ */
+export async function preFetchCommanderData(games: any[]): Promise<void> {
+  const commanders = collectCommanders(games);
+
+  // A commander needs fetching if EITHER its art or its colors are missing.
+  const toFetch = commanders.filter(
+    (name) => getImageCache(name) === null || getColorCache(name) === null
+  );
+
+  if (toFetch.length === 0) {
+    console.log("All commander data already cached");
     return;
   }
 
-  console.log(`Pre-fetching ${commandersToFetch.length} unique commanders from Scryfall`);
+  console.log(`Pre-fetching ${toFetch.length} commanders from Scryfall (collection)`);
 
-  // Rate limiting is handled centrally by scryfallFetch (serialized + spaced),
-  // so we can simply fire all requests and let the shared queue pace them.
-  const batchCache: Record<string, CardImageCache> = {};
+  const imageBatch: Record<string, CardImageCache> = {};
+  const colorBatch: Record<string, string[]> = {};
+  const matched = new Set<string>();
 
-  await Promise.all(
-    commandersToFetch.map(async (commander) => {
-      try {
-        const response = await scryfallFetch(
-          `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
-        );
-        // 429 (rate limit) / 5xx / 404: don't cache — let it retry next load.
-        if (!response.ok) {
-          throw new Error(`Scryfall responded ${response.status}`);
-        }
-        const data = await response.json();
+  for (let i = 0; i < toFetch.length; i += COLLECTION_CHUNK) {
+    const chunk = toFetch.slice(i, i + COLLECTION_CHUNK);
+    // Map lowercased name -> the exact string we'll cache under (what lookups use).
+    const requestedByLower = new Map<string, string>();
+    chunk.forEach((name) => requestedByLower.set(name.toLowerCase(), name));
 
-        let art = "";
-        let full = "";
-
-        if (data.image_uris) {
-          art = data.image_uris.art_crop || "";
-          full = data.image_uris.normal || data.image_uris.large || "";
-        } else if (data.card_faces?.[0]?.image_uris) {
-          art = data.card_faces[0].image_uris.art_crop || "";
-          full = data.card_faces[0].image_uris.normal || data.card_faces[0].image_uris.large || "";
-        }
-
-        // Only cache real hits; an empty result would persist forever (no TTL).
-        if (art) {
-          batchCache[commander] = { art, full };
-          console.log(`Cached: ${commander}`);
-        }
-      } catch (error) {
-        // Don't cache failed attempts — leave uncached so they retry.
-        console.warn(`Failed to fetch ${commander}:`, error);
+    try {
+      const response = await scryfallFetch("https://api.scryfall.com/cards/collection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifiers: chunk.map((name) => ({ name })) }),
+      });
+      if (!response.ok) {
+        throw new Error(`Scryfall collection responded ${response.status}`);
       }
-    })
-  );
+      const data = await response.json();
 
-  // Persist entire batch to cache once
-  setImageCacheBatch(batchCache);
+      for (const card of data.data || []) {
+        // Correlate the returned card back to the name we requested (and thus
+        // will look it up by). Match on the card name or either face name.
+        const candidates = [card.name, ...(card.card_faces?.map((f: any) => f.name) || [])];
+        let original: string | undefined;
+        for (const candidate of candidates) {
+          const hit = candidate && requestedByLower.get(candidate.toLowerCase());
+          if (hit) {
+            original = hit;
+            break;
+          }
+        }
+
+        const colors: string[] = card.color_identity || [];
+        const { art, full } = extractArt(card);
+        // Cache under both the canonical name and the originally-requested name.
+        const keys = new Set<string>([card.name]);
+        if (original) {
+          keys.add(original);
+          matched.add(original);
+        }
+        for (const key of keys) {
+          colorBatch[key] = colors;
+          if (art) imageBatch[key] = { art, full };
+        }
+      }
+    } catch (error) {
+      // Whole chunk failed — its names fall through to the single fallback below.
+      console.warn("Scryfall collection batch failed:", error);
+    }
+  }
+
+  setImageCacheBatch(imageBatch);
+  setColorCacheBatch(colorBatch);
+
+  // Resolve anything the collection call didn't match (not_found, "//" names,
+  // failed chunks) one at a time via fuzzy lookup.
+  const remaining = toFetch.filter((name) => !matched.has(name));
+  if (remaining.length > 0) {
+    console.log(`Resolving ${remaining.length} commanders via fuzzy fallback`);
+    await Promise.all(remaining.map((name) => fetchSingleCommander(name)));
+  }
+
   console.log("Pre-fetch complete");
 }

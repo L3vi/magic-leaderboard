@@ -2,11 +2,8 @@ import React, { useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../../context/SessionContext";
 import { useCommanderArt } from "../../hooks/useCommanderArt";
-import {
-  getCommanderColorsFromScryfall,
-  getCachedCommanderColors,
-  preFetchCommanderColors,
-} from "../../utils/commanderColorCache";
+import { getCachedCommanderColors } from "../../utils/commanderColorCache";
+import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
 import "./GameStats.css";
 
@@ -36,17 +33,11 @@ const COLOR_MAP: Record<string, string> = {
   "G": "Green",
 };
 
-// Commander color detection using Scryfall API (with fallback)
+// Commander colors are read straight from the cache; the cache is populated up
+// front by preFetchCommanderData (see the effect below), so this stays a pure
+// read and never fires its own per-commander request.
 const getCommanderColors = (commanderName: string): string[] => {
-  // Try to get from cache first
-  const cached = getCachedCommanderColors(commanderName);
-  if (cached.length > 0) {
-    return cached;
-  }
-  // If not cached yet, fetch asynchronously (will update on next render)
-  getCommanderColorsFromScryfall(commanderName);
-  // Return empty for now, will refetch when cached
-  return [];
+  return getCachedCommanderColors(commanderName);
 };
 // Sub-component to display commander with image
 interface CommanderThumbnailProps {
@@ -78,22 +69,12 @@ const GameStats: React.FC = () => {
   const { games } = useSession();
   const [colorsLoaded, setColorsLoaded] = useState(false);
 
-  // Pre-fetch commander colors when game count changes
-  // Note: Image pre-fetch is handled in Games.tsx to avoid duplication
+  // Pre-fetch art + colors for this season's commanders in one batched pass
+  // (Scryfall /cards/collection). Flip colorsLoaded when done so the stats memo
+  // recomputes with the now-populated color cache.
   useEffect(() => {
     if (games.length === 0) return;
-
-    // Extract unique commanders for color pre-fetching
-    const uniqueCommanders = new Set<string>();
-    games.forEach((game) => {
-      game.players.forEach((p) => {
-        const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
-        commanders.forEach((cmd) => uniqueCommanders.add(cmd));
-      });
-    });
-
-    // Pre-fetch colors (only fetches uncached ones)
-    preFetchCommanderColors(Array.from(uniqueCommanders)).then(() => {
+    preFetchCommanderData(games).then(() => {
       setColorsLoaded(true);
     });
   }, [games.length]); // Only trigger when game count actually changes
