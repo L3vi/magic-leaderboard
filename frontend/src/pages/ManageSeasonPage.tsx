@@ -25,6 +25,7 @@ const ManageSeasonPage: React.FC = () => {
 
   const current = sessions.find((s) => s.id === activeSession);
   const gameCount = current?.gameCount ?? 0;
+  const isEmpty = gameCount === 0;
 
   const [name, setName] = useState("");
   const [pool, setPool] = useState<Player[]>([]);
@@ -35,7 +36,7 @@ const ManageSeasonPage: React.FC = () => {
   const [newName, setNewName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("modal-open");
@@ -232,28 +233,42 @@ const ManageSeasonPage: React.FC = () => {
               <div className="ms-danger-title">Danger zone</div>
               <div className="ms-danger-row">
                 <div>
-                  <div className="ms-danger-label">Archive season</div>
-                  <div className="ms-danger-desc">Hide it from the switcher, keep all data. Reversible.</div>
-                </div>
-                <button className="btn btn-secondary btn-sm" onClick={handleArchive} disabled={busy}>Archive</button>
-              </div>
-              <div className="ms-danger-row">
-                <div>
-                  <div className="ms-danger-label">Delete season</div>
+                  <div className="ms-danger-label">{isEmpty ? "Delete season" : "Archive season"}</div>
                   <div className="ms-danger-desc">
-                    {gameCount > 0
-                      ? `Has ${gameCount} game${gameCount === 1 ? "" : "s"} — archive it instead.`
-                      : "Permanently remove this empty season."}
+                    {isEmpty
+                      ? "This season has no games, so it can be permanently deleted."
+                      : `This season has ${gameCount} game${gameCount === 1 ? "" : "s"}, so it can't be deleted — archive it instead to hide it from the switcher while keeping all data.`}
                   </div>
                 </div>
-                {gameCount > 0 ? (
-                  <button className="btn btn-sm" disabled>Delete</button>
-                ) : confirmDelete ? (
-                  <button className="btn btn-danger btn-sm" onClick={handleDelete} disabled={busy}>Confirm delete</button>
-                ) : (
-                  <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)} disabled={busy}>Delete</button>
+                {!confirming && (
+                  <button
+                    className={`btn btn-sm ${isEmpty ? "btn-danger" : "btn-secondary"}`}
+                    onClick={() => { setError(null); setConfirming(true); }}
+                    disabled={busy}
+                  >
+                    {isEmpty ? "Delete" : "Archive"}
+                  </button>
                 )}
               </div>
+              {confirming && (
+                <div className="ms-confirm">
+                  <div className="ms-confirm-msg">
+                    {isEmpty
+                      ? "Permanently delete this season? This can’t be undone."
+                      : "Archive this season? It’ll disappear from the switcher, but you can restore it anytime from the Archived list."}
+                  </div>
+                  <div className="ms-confirm-actions">
+                    <button className="btn btn-tertiary btn-sm" onClick={() => setConfirming(false)} disabled={busy}>Cancel</button>
+                    <button
+                      className={`btn btn-sm ${isEmpty ? "btn-danger" : "btn-primary"}`}
+                      onClick={isEmpty ? handleDelete : handleArchive}
+                      disabled={busy}
+                    >
+                      {busy ? "Working…" : isEmpty ? "Yes, delete" : "Yes, archive"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {archivedSessions.length > 0 && (
