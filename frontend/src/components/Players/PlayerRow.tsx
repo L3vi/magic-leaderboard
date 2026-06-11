@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import type { PlayerRowDisplay as Player } from "../../types";
 import "./PlayerRow.css";
 
+// Re-export so consumers can `import { Player } from "./PlayerRow"`.
+export type { PlayerRowDisplay as Player } from "../../types";
+
 /**
  * PlayerRow component for the Magic Leaderboard app.
  * - Displays a single player's stats in the leaderboard.

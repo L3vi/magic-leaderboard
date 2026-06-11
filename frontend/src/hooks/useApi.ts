@@ -3,6 +3,7 @@ import {
   calculatePlayerScores,
   addGame as addGameToAPI,
   updateGame as updateGameToAPI,
+  fetchAllGames,
   Player,
   Game,
   PlayerScore,
@@ -30,6 +31,33 @@ export const useGames = (sessionId?: string) => {
 };
 
 /**
+ * Hook to access games across ALL sessions (not just the active one).
+ * Used for cross-session history like commander suggestions. Fetched once
+ * on mount and cached at the service layer.
+ */
+export const useAllGames = () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAllGames()
+      .then((all) => {
+        if (!cancelled) setGames(all);
+      })
+      .catch((err) => console.error('Failed to load all-sessions games:', err))
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return { games, loading };
+};
+
+/**
  * Hook to calculate player scores from games
  * Recalculates whenever games or players change (automatically uses context data)
  * Returns all players even if there are no games (with zero scores)
@@ -54,6 +82,7 @@ export const usePlayerScores = () => {
           placement: index + 1,
           gameCount: 0,
           average: 0,
+          weightedAverage: 0,
         }));
         setScores(emptyScores);
         return;

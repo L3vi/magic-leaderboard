@@ -301,6 +301,51 @@ export async function fetchGames(session: string): Promise<Game[]> {
 }
 
 /**
+ * Fetch games across ALL sessions, concatenated into a single list.
+ * Used for cross-session history (e.g. commander suggestions) that should
+ * span a player's entire play record rather than just the active session.
+ * Caches the aggregate; call refetchAllGames() to bypass.
+ */
+export async function fetchAllGames(): Promise<Game[]> {
+  const cacheKey = getCacheKey("games", "__all__");
+  const cached = getFromCache<Game[]>(cacheKey);
+
+  if (cached) {
+    console.log("Using cached all-sessions games");
+    return cached;
+  }
+
+  try {
+    await authReady;
+    const sessionsSnap = await getDocs(collection(db, "sessions"));
+    const perSession = await Promise.all(
+      sessionsSnap.docs.map(async (s) => {
+        const gamesSnap = await getDocs(collection(db, "sessions", s.id, "games"));
+        return gamesSnap.docs.map(
+          (g) => ({ id: g.id, sessionId: s.id, ...g.data() } as Game)
+        );
+      })
+    );
+    const games = perSession.flat();
+    setCache(cacheKey, games);
+    return games;
+  } catch (error) {
+    console.error("Error fetching all-sessions games from Firebase, using local fallback:", error);
+    const fallback = gamesData as Game[];
+    setCache(cacheKey, fallback);
+    return fallback;
+  }
+}
+
+/**
+ * Bypass the cache and re-fetch the all-sessions game aggregate.
+ */
+export async function refetchAllGames(): Promise<Game[]> {
+  clearCache(getCacheKey("games", "__all__"));
+  return fetchAllGames();
+}
+
+/**
  * Calculate player scores from games
  * Includes Bayesian weighted average to account for sample size
  */
@@ -409,6 +454,8 @@ export async function refetchPlayers(): Promise<Player[]> {
 export async function refetchGames(session: string): Promise<Game[]> {
   const cacheKey = getCacheKey("games", session);
   clearCache(cacheKey);
+  // The cross-session aggregate now includes this session's games, so it's stale too.
+  clearCache(getCacheKey("games", "__all__"));
   return fetchGames(session);
 }
 

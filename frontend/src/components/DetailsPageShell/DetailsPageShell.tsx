@@ -3,7 +3,8 @@ import PageShell from "../PageShell/PageShell";
 
 interface DetailsPageShellProps {
   title: string;
-  children: ReactNode;
+  /** Optional: not rendered while `loading` or `error` is shown. */
+  children?: ReactNode;
   onClose: () => void;
   onEdit?: () => void;
   loading?: boolean;

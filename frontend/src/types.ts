@@ -24,6 +24,8 @@ export interface Game {
   dateCreated: string;
   notes: string;
   players: GamePlayer[];
+  /** Set only when aggregating across sessions (see fetchAllGames). */
+  sessionId?: string;
 }
 
 export interface SessionMetadata {

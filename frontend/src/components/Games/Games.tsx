@@ -104,11 +104,13 @@ const Games: React.FC = () => {
             const winner = game.players.find(p => p.placement === 1);
             // Map player IDs to names for GameRow
             const players = game.players.map(p => ({
+              playerId: p.playerId,
               name: getPlayerName(p.playerId),
               placement: p.placement,
               commander: p.commander
             }));
             const winnerObj = winner ? {
+              playerId: winner.playerId,
               name: getPlayerName(winner.playerId),
               placement: winner.placement,
               commander: winner.commander

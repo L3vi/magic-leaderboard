@@ -10,7 +10,7 @@ import {
 } from '@floating-ui/react';
 import FormActions from '../FormActions/FormActions';
 import { usePlayers } from "../../hooks/usePlayers";
-import { useGames } from "../../hooks/useApi";
+import { useGames, useAllGames } from "../../hooks/useApi";
 import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference } from "../../hooks/useCommanderArt";
 import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
@@ -113,7 +113,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       setPreviousCommanders([]);
       setLastPlayedCommander(null);
     }
-  }, [playerId]);
+  }, [playerId, gamesData]);
 
   const searchCommanders = (query: string) => {
     if (!query.trim()) {
@@ -296,14 +296,17 @@ interface PlayerField {
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) => {
   const players = usePlayers();
   const { games: gamesData } = useGames();
+  // Commander suggestions draw on a player's full history across every session,
+  // not just the active one. Player rotation below still uses the current session.
+  const { games: allGamesData } = useAllGames();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
-  // Helper to get the last played commander for a specific player
+  // Helper to get the last played commander for a specific player (across all sessions)
   function getLastPlayedCommander(playerId: string) {
     if (!playerId) return '';
-    const sortedGames = [...gamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+    const sortedGames = [...allGamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
     for (const game of sortedGames) {
       const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
       if (playerInGame) {
@@ -385,6 +388,22 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     }
     // eslint-disable-next-line
   }, [players.length, initialData]);
+
+  // The all-sessions game history loads asynchronously. Once it arrives,
+  // backfill each field's last-played-commander hint without disturbing any
+  // player/commander the user has already chosen.
+  useEffect(() => {
+    if (initialData) return;
+    setPlayerFields(fields =>
+      fields.map(f =>
+        f.playerId
+          ? { ...f, lastPlayedCommander: getLastPlayedCommander(f.playerId) }
+          : f
+      )
+    );
+    // eslint-disable-next-line
+  }, [allGamesData]);
+
   const [notes, setNotes] = useState("");
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string; playerId?: string } | null>(null);
 
@@ -579,7 +598,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     value={field.commander}
                     onChange={val => handleCommanderChange(idx, val)}
                     playerId={field.playerId}
-                    games={gamesData}
+                    games={allGamesData}
                     defaultCommander={field.lastPlayedCommander}
                     onCardClick={setSelectedCard}
                     onPartnerSelect={(partner) => {
@@ -598,7 +617,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                         value={field.partnerCommander}
                         onChange={val => handlePartnerCommanderChange(idx, val)}
                         playerId={field.playerId}
-                        games={gamesData}
+                        games={allGamesData}
                         onCardClick={setSelectedCard}
                       />
                       <button

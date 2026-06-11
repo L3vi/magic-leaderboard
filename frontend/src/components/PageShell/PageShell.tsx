@@ -20,7 +20,8 @@ interface PageShellProps {
   contentVariant?: "flush" | "padded";
   loading?: boolean;
   error?: string;
-  children: ReactNode;
+  /** Optional: not rendered while `loading` or `error` is shown. */
+  children?: ReactNode;
 }
 
 /**
@@ -66,7 +67,7 @@ const PageShell: React.FC<PageShellProps> = ({
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
         exit: { opacity: 0, y: 20 },
-        transition: { duration: 0.15, ease: "easeOut" },
+        transition: { duration: 0.15, ease: "easeOut" as const },
       };
 
   React.useEffect(() => {

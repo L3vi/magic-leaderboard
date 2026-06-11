@@ -4,6 +4,7 @@ import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommander
 import "./GameRow.css";
 
 interface Player {
+  playerId: string;
   name: string;
   placement: number;
   commander: string | string[];
