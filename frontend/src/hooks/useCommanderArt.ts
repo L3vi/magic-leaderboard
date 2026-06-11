@@ -8,6 +8,7 @@ import {
   setInflightRequest,
   clearInflightRequest,
 } from '../services/cacheService';
+import { scryfallFetch } from '../services/scryfallClient';
 import type { CardVariant, CardImageCache } from '../types';
 
 // Local variants cache (doesn't need persistence as much)
@@ -28,7 +29,7 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
 
   const promise = (async () => {
     try {
-      const response = await fetch(
+      const response = await scryfallFetch(
         `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
       );
       // 429 (rate limit) / 5xx / 404: don't poison the cache — let it retry.
@@ -170,10 +171,10 @@ export function useCommanderVariants(commander: string): CardVariant[] {
 
     let isMounted = true;
 
-    fetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`)
+    scryfallFetch(`https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`)
       .then((res) => res.json())
       .then((data) => {
-        return fetch(
+        return scryfallFetch(
           `https://api.scryfall.com/cards/search?q=!"${encodeURIComponent(data.name)}"&unique=prints`
         ).then((res) => res.json());
       })

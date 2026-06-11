@@ -11,6 +11,7 @@ import {
   setInflightRequest,
   clearInflightRequest,
 } from '../services/cacheService';
+import { scryfallFetch } from '../services/scryfallClient';
 
 /**
  * Fetch commander color identity from Scryfall API
@@ -37,7 +38,7 @@ export async function getCommanderColorsFromScryfall(
   // Create fetch promise
   const promise = (async () => {
     try {
-      const response = await fetch(
+      const response = await scryfallFetch(
         `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
           `!"${commanderName}"`
         )}&unique=prints`

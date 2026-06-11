@@ -14,7 +14,6 @@ interface CommanderStats {
   name: string;
   playCount: number;
   wins: number;
-  averagePlacement: number;
   winRate: number;
   weightedWinRate?: number;
 }
@@ -175,7 +174,6 @@ const GameStats: React.FC = () => {
               name: commander,
               playCount: 0,
               wins: 0,
-              averagePlacement: 0,
               winRate: 0,
             };
           }
@@ -220,7 +218,6 @@ const GameStats: React.FC = () => {
     // Calculate win rates and average placements
     Object.values(commanderStats).forEach((stat) => {
       stat.winRate = (stat.wins / stat.playCount) * 100;
-      stat.averagePlacement = stat.playCount > 0 ? stat.playCount / stat.wins || 0 : 0;
     });
 
     Object.values(colorStats).forEach((stat) => {

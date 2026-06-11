@@ -15,6 +15,7 @@ import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference }
 import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
 import StaticDropdown from '../StaticDropdown/StaticDropdown';
+import { scryfallFetch } from '../../services/scryfallClient';
 
 // CommanderAutocomplete - simple text input with card search
 type CommanderAutocompleteProps = {
@@ -123,7 +124,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     }
 
     setLoading(true);
-    fetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(query)}`)
+    scryfallFetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(query)}`)
       .then(res => res.json())
       .then(data => {
         if (data.data && Array.isArray(data.data)) {

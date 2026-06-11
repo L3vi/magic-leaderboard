@@ -4,6 +4,7 @@
  */
 
 import { getImageCache, setImageCacheBatch, getUncachedCommanders } from './cacheService';
+import { scryfallFetch } from './scryfallClient';
 import type { CardImageCache } from '../types';
 
 /**
@@ -43,17 +44,14 @@ export async function preFetchCommandersFromGames(games: any[]): Promise<void> {
 
   console.log(`Pre-fetching ${commandersToFetch.length} unique commanders from Scryfall`);
 
-  // Batch fetch with rate limiting
-  const batchSize = 10; // Fetch 10 at a time, but spaced out to respect rate limits
+  // Rate limiting is handled centrally by scryfallFetch (serialized + spaced),
+  // so we can simply fire all requests and let the shared queue pace them.
   const batchCache: Record<string, CardImageCache> = {};
 
-  for (let i = 0; i < commandersToFetch.length; i += batchSize) {
-    const batch = commandersToFetch.slice(i, i + batchSize);
-    
-    // Fetch all in batch in parallel
-    const fetchPromises = batch.map(async (commander) => {
+  await Promise.all(
+    commandersToFetch.map(async (commander) => {
       try {
-        const response = await fetch(
+        const response = await scryfallFetch(
           `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
         );
         // 429 (rate limit) / 5xx / 404: don't cache — let it retry next load.
@@ -82,15 +80,8 @@ export async function preFetchCommandersFromGames(games: any[]): Promise<void> {
         // Don't cache failed attempts — leave uncached so they retry.
         console.warn(`Failed to fetch ${commander}:`, error);
       }
-    });
-
-    await Promise.all(fetchPromises);
-
-    // Rate limiting: wait before next batch
-    if (i + batchSize < commandersToFetch.length) {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second between batches
-    }
-  }
+    })
+  );
 
   // Persist entire batch to cache once
   setImageCacheBatch(batchCache);
