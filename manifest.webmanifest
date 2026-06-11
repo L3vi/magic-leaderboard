@@ -1,0 +1,24 @@
+{
+  "name": "Magic Leaderboard",
+  "short_name": "Leaderboard",
+  "description": "Track Magic: The Gathering Commander game results and player rankings.",
+  "start_url": "/magic-leaderboard/",
+  "scope": "/magic-leaderboard/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/magic-leaderboard/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/magic-leaderboard/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
