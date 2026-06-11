@@ -330,6 +330,51 @@ const GameStats: React.FC = () => {
             <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
             <div className="stat-subtext">Played {stats.commonColorCount} times</div>
           </div>
+          <div className="stat-card">
+            <div className="stat-label">Most Played Commander</div>
+            <div className="stat-value commander-name">{stats.mostPlayedCommander}</div>
+            {stats.commanderPlayCount > 0 && (
+              <div className="stat-subtext">Played {stats.commanderPlayCount} times</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Commander Stats */}
+      <div className="stats-section">
+        <h3>Commander Performance</h3>
+
+        {stats.bestCommander.name !== "N/A" && (
+          <div className="stats-grid">
+            <div className="stat-card full-width best-commander">
+              <div className="stat-label">Best Performing Commander</div>
+              <div className="stat-value commander-name">{stats.bestCommander.name}</div>
+              <div className="stat-subtext">
+                {stats.bestCommander.winRate.toFixed(0)}% win rate ({stats.bestCommander.playCount} plays)
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="commander-list">
+          <div className="commander-list-header">
+            <span>Top Commanders</span>
+          </div>
+          {stats.commanderStats.length > 0 ? (
+            <div className="top-commanders-grid">
+              {stats.commanderStats.map((cmd, idx) => (
+                <CommanderThumbnail
+                  key={idx}
+                  name={cmd.name}
+                  rank={idx + 1}
+                  playCount={cmd.playCount}
+                  wins={cmd.wins}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="commander-row empty">No commander data</div>
+          )}
         </div>
       </div>
 
