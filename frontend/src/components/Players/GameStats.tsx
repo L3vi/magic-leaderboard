@@ -5,6 +5,7 @@ import { useCommanderArt } from "../../hooks/useCommanderArt";
 import { getCachedCommanderColors } from "../../utils/commanderColorCache";
 import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
+import { scorePlacement } from "../../services/dataService";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -12,7 +13,10 @@ interface CommanderStats {
   playCount: number;
   wins: number;
   winRate: number;
-  weightedWinRate?: number;
+  // Placement-based performance (1st=4 … 4th+=1), matching player scoring.
+  scoreSum: number;
+  average: number; // raw avg placement points per game (higher = better)
+  weightedAverage: number; // Bayesian-smoothed average, used for ranking
 }
 
 interface ColorStats {
@@ -45,11 +49,12 @@ interface CommanderThumbnailProps {
   rank: number;
   playCount: number;
   wins: number;
+  average: number;
 }
 
-const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, playCount, wins }) => {
+const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, playCount, wins, average }) => {
   const imageUrl = useCommanderArt(name);
-  
+
   return (
     <div className="commander-item">
       {imageUrl && (
@@ -59,7 +64,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats">{playCount}p • {wins}W</div>
+        <div className="commander-item-stats">{average.toFixed(1)} avg • {playCount}p • {wins}W</div>
       </div>
     </div>
   );
@@ -67,17 +72,20 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
 const GameStats: React.FC = () => {
   const navigate = useNavigate();
   const { games } = useSession();
-  const [colorsLoaded, setColorsLoaded] = useState(false);
+  // Bump on each prefetch completion so the stats memo recomputes with the
+  // now-populated color cache. A counter (not a boolean) is required so a
+  // season switch — which fetches a fresh batch of colors — still triggers a
+  // recompute; a one-way boolean would no-op on every season after the first.
+  const [colorVersion, setColorVersion] = useState(0);
 
   // Pre-fetch art + colors for this season's commanders in one batched pass
-  // (Scryfall /cards/collection). Flip colorsLoaded when done so the stats memo
-  // recomputes with the now-populated color cache.
+  // (Scryfall /cards/collection). Cheap no-op when everything is already cached.
   useEffect(() => {
     if (games.length === 0) return;
     preFetchCommanderData(games).then(() => {
-      setColorsLoaded(true);
+      setColorVersion((v) => v + 1);
     });
-  }, [games.length]); // Only trigger when game count actually changes
+  }, [games]);
 
   const stats = useMemo(() => {
     if (games.length === 0) {
@@ -89,7 +97,7 @@ const GameStats: React.FC = () => {
         uniqueCommanders: 0,
         mostPlayedCommander: "N/A",
         commanderPlayCount: 0,
-        bestCommander: { name: "N/A", winRate: 0, playCount: 0 },
+        bestCommander: { name: "N/A", average: 0, winRate: 0, playCount: 0 },
         commanderStats: [] as CommanderStats[],
         colorStats: [] as ColorStats[],
         mostCommonColor: "N/A",
@@ -150,15 +158,22 @@ const GameStats: React.FC = () => {
         const isWinner = p.placement === 1;
 
         commanders.forEach((commander) => {
+          // Skip placeholder/missing commanders (older seasons recorded "Unknown")
+          // so they never rank as a "top" or "best" commander.
+          if (!commander || commander.trim() === "" || commander === "Unknown") return;
           if (!commanderStats[commander]) {
             commanderStats[commander] = {
               name: commander,
               playCount: 0,
               wins: 0,
               winRate: 0,
+              scoreSum: 0,
+              average: 0,
+              weightedAverage: 0,
             };
           }
           commanderStats[commander].playCount += 1;
+          commanderStats[commander].scoreSum += scorePlacement(p.placement);
           if (isWinner) {
             commanderStats[commander].wins += 1;
           }
@@ -196,9 +211,10 @@ const GameStats: React.FC = () => {
       });
     });
 
-    // Calculate win rates and average placements
+    // Win rate (1st-place finishes) + average placement score per commander.
     Object.values(commanderStats).forEach((stat) => {
       stat.winRate = (stat.wins / stat.playCount) * 100;
+      stat.average = stat.scoreSum / stat.playCount;
     });
 
     Object.values(colorStats).forEach((stat) => {
@@ -213,23 +229,26 @@ const GameStats: React.FC = () => {
       stat.topCommanders = cmdrList;
     });
 
-    // Top commanders sorted by Bayesian weighted average win rate (min 3 plays), take top 5
-    const commanderArray = Object.values(commanderStats).filter((c) => c.playCount >= 3);
-    
-    // Calculate league average win rate for Bayesian weighting
-    const totalCommanderWins = commanderArray.reduce((sum, c) => sum + c.wins, 0);
-    const totalCommanderPlays = commanderArray.reduce((sum, c) => sum + c.playCount, 0);
-    const leagueWinRate = totalCommanderPlays > 0 ? (totalCommanderWins / totalCommanderPlays) * 100 : 50;
-    
-    // Bayesian weighted average: accounts for sample size
+    // Rank commanders by performance, not raw win rate. "Win rate" only credits
+    // 1st place, so a commander that consistently places 2nd/3rd in 4-player pods
+    // looks terrible. Instead use the same placement-points scoring as the player
+    // leaderboard (1st=4 … 4th+=1), Bayesian-smoothed toward the league average so
+    // a commander with one lucky game doesn't top a commander with a solid record.
     const minPlayThreshold = 3;
-    const commandersWithWeightedAverage = commanderArray.map((c) => ({
-      ...c,
-      weightedWinRate: (c.playCount * c.winRate + minPlayThreshold * leagueWinRate) / (c.playCount + minPlayThreshold),
-    }));
-    
-    const topCommandersByWinRate = commandersWithWeightedAverage
-      .sort((a, b) => b.weightedWinRate - a.weightedWinRate)
+    const commanderArray = Object.values(commanderStats).filter((c) => c.playCount >= minPlayThreshold);
+
+    const totalCommanderScore = commanderArray.reduce((sum, c) => sum + c.scoreSum, 0);
+    const totalCommanderPlays = commanderArray.reduce((sum, c) => sum + c.playCount, 0);
+    const leagueAverageScore = totalCommanderPlays > 0 ? totalCommanderScore / totalCommanderPlays : 2.5;
+
+    commanderArray.forEach((c) => {
+      c.weightedAverage =
+        (c.playCount * c.average + minPlayThreshold * leagueAverageScore) /
+        (c.playCount + minPlayThreshold);
+    });
+
+    const topCommanders = commanderArray
+      .sort((a, b) => b.weightedAverage - a.weightedAverage)
       .slice(0, 5);
 
     // Most played commander (for reference, though not shown)
@@ -262,18 +281,19 @@ const GameStats: React.FC = () => {
       mostPlayedCommander,
       commanderPlayCount,
       bestCommander: {
-        name: topCommandersByWinRate[0]?.name || "N/A",
-        winRate: topCommandersByWinRate[0]?.winRate || 0,
-        playCount: topCommandersByWinRate[0]?.playCount || 0,
+        name: topCommanders[0]?.name || "N/A",
+        average: topCommanders[0]?.average || 0,
+        winRate: topCommanders[0]?.winRate || 0,
+        playCount: topCommanders[0]?.playCount || 0,
       },
-      commanderStats: topCommandersByWinRate,
+      commanderStats: topCommanders,
       colorStats: sortedByColor,
       mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
       mostCommonColorCode,
       commonColorCount,
       partnerPairs,
     };
-  }, [games, colorsLoaded]);
+  }, [games, colorVersion]);
 
   return (
     <div className="game-stats">
@@ -328,7 +348,7 @@ const GameStats: React.FC = () => {
               <div className="stat-label">Best Performing Commander</div>
               <div className="stat-value commander-name">{stats.bestCommander.name}</div>
               <div className="stat-subtext">
-                {stats.bestCommander.winRate.toFixed(0)}% win rate ({stats.bestCommander.playCount} plays)
+                {stats.bestCommander.average.toFixed(2)} avg score · {stats.bestCommander.winRate.toFixed(0)}% wins · {stats.bestCommander.playCount} plays
               </div>
             </div>
           </div>
@@ -347,6 +367,7 @@ const GameStats: React.FC = () => {
                   rank={idx + 1}
                   playCount={cmd.playCount}
                   wins={cmd.wins}
+                  average={cmd.average}
                 />
               ))}
             </div>
