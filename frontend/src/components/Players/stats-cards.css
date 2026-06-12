@@ -6,27 +6,13 @@
   gap: 1rem;
 }
 
-.stat-card {
-  padding: 1.5rem 1rem;
-  background: var(--background);
-  border-radius: 0.6rem;
-  border: 1px solid var(--border);
-  text-align: center;
-  transition: all 0.2s ease;
-}
+/* Base .stat-card / .stat-label / .stat-value live in global.css (unified).
+   Only overview-specific sizing and modifier variants remain here. */
 
 /* Uniform card height + vertical centering so a value that wraps to two lines
    (e.g. the time estimate) doesn't leave the grid looking ragged. */
 .game-stats .stat-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   min-height: 6.5rem;
-}
-
-.stat-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card.highlight-card {
@@ -68,23 +54,10 @@
   transform: translateY(-2px);
 }
 
+/* Overview labels can wrap to two words; balance them. (Base label style is
+   global.) */
 .stat-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-  /* Even out line lengths when a multi-word label wraps (e.g. "Average Players
-     per Game") instead of orphaning the last word on its own line. */
   text-wrap: balance;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1.2;
 }
 
 .stat-value.commander-name {

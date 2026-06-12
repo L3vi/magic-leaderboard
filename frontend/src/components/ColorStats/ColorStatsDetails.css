@@ -1,5 +1,5 @@
 .color-stats-details {
-  padding: 2rem;
+  padding: var(--spacing-xl);
 }
 
 .color-stats-header {
@@ -13,22 +13,16 @@
   font-size: 1.5rem;
   font-weight: 700;
   padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   display: inline-block;
   min-width: 100px;
   text-align: center;
 }
 
-/* Stats Summary Section */
+/* Stats Summary Section. Section headings (.section-heading) and the stat tile
+   (.stat-card / .stat-label / .stat-value) are unified in global.css. */
 .stats-summary-section {
   margin-bottom: 2rem;
-}
-
-.stats-summary-section h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text);
 }
 
 .stats-summary-grid {
@@ -37,40 +31,9 @@
   gap: 1rem;
 }
 
-.stat-box {
-  padding: 1.5rem;
-  background: var(--background);
-  border-radius: 0.6rem;
-  border: 1px solid var(--border);
-  text-align: center;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1.2;
-}
-
 /* Commanders Section */
 .commanders-section {
   margin-top: 2rem;
-}
-
-.commanders-section h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text);
 }
 
 .commanders-list {
@@ -85,7 +48,7 @@
   color: var(--text-muted);
   font-style: italic;
   background: var(--background);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
 }
 
@@ -95,7 +58,7 @@
   gap: 1rem;
   padding: 1rem;
   background: var(--background);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   transition: all 0.2s ease;
 }
@@ -140,7 +103,7 @@
 /* Responsive */
 @media (max-width: 639px) {
   .color-stats-details {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .stats-summary-grid {
@@ -148,7 +111,7 @@
     gap: 0.5rem;
   }
 
-  .stat-box {
+  .stats-summary-grid .stat-card {
     padding: 1rem 0.5rem;
   }
 

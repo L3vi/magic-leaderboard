@@ -7,7 +7,7 @@
   margin-top: 1.5rem;
   padding: 2rem;
   background: var(--surface);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
 }
 
@@ -24,37 +24,13 @@
   margin-bottom: 2.5rem;
 }
 
-.stats-section h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.9rem;
-  opacity: 0.8;
-}
-
-/* Caption for a sub-group within a section (e.g. "Top Commanders" under
-   Commander Performance). Same uppercase/muted family as the section header,
-   one notch smaller, replacing the old boxed header bar. */
-.stats-subhead {
-  margin: 1.5rem 0 1rem 0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.7;
-}
-
-/* A small explanatory note under a subhead (e.g. how a ranking is computed).
-   Pairs with .stats-subhead — pulls up under it, then spaces the list below. */
+/* Section headings (.section-heading) and sub-group captions
+   (.section-subheading) are unified in global.css. The note below pulls up
+   tighter under a subhead than the global default and balances its two lines. */
 .section-note {
-  margin: -0.5rem 0 1rem 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  margin: -0.25rem 0 1rem 0;
   line-height: 1.4;
+  text-wrap: balance;
 }
 
 /* Empty state — shown when the season has no games yet */

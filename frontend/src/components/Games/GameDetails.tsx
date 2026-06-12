@@ -43,7 +43,7 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
 
         {/* Players List - Card Based */}
         <div className="players-section">
-          <div className="section-title">Results</div>
+          <h2 className="section-heading">Results</h2>
           <div className="players-list">
             {sortedPlayers.map((player, idx) => (
               <PlayerCardWithImage key={idx} player={player} onCardClick={setSelectedCard} onPlayerClick={onPlayerClick} onCommanderClick={onCommanderClick} />
@@ -54,7 +54,7 @@ const GameDetails: React.FC<GameDetailsProps> = ({ id, dateCreated, notes, playe
         {/* Notes Section */}
         {notes && (
           <div className="notes-section">
-            <div className="section-title">Notes</div>
+            <h2 className="section-heading">Notes</h2>
             <div className="notes-card">
               <p>{notes}</p>
             </div>

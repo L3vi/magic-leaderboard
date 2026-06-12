@@ -113,3 +113,74 @@ body {
 .edit-button {
   /* Uses .btn and .btn-tertiary utility classes */
 }
+
+/* --- Unified section headings ---
+   One visual language for section titles across every detail / stats page:
+   clean normal-case, semantic heading elements. Use .section-heading for the
+   primary section title and .section-subheading for a nested group label. */
+.section-heading {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.section-subheading {
+  margin: 1.5rem 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* A muted one-liner under a heading (e.g. how a ranking is computed). */
+.section-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* --- Unified stat card ---
+   Single source of truth for the "label + big number" stat tile used on the
+   player, color, combo, commander, and overview pages. Page-specific modifiers
+   (.stat-card-primary, .best-commander, grid sizing) live with their pages. */
+.stat-card {
+  background: var(--background);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover {
+    border-color: var(--primary);
+    background: var(--background-elevated);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
+  }
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+/* Opt-in gold accent for a headline number when a page wants emphasis. */
+.stat-value.stat-value--accent {
+  color: var(--accent);
+}

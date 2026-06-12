@@ -139,7 +139,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         {/* Recent Games */}
         {sortedGames.length > 0 && (
           <div className="recent-games-section">
-            <div className="section-title">Recent Games</div>
+            <h2 className="section-heading">Recent Games</h2>
             <div className="games-list">
               {sortedGames.map(g => {
                 const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
@@ -176,7 +176,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId, onCo
 
   return (
     <div className="commander-section">
-      <div className="section-title">Most Played Commander</div>
+      <h2 className="section-heading">Most Played Commander</h2>
       <div className="commander-card">
         {isPartner ? (
           // Partner commanders display
@@ -315,7 +315,7 @@ function CommanderColorDistribution({ commanders, navigate }: { commanders: stri
       ))}
       {totalColorCount > 0 && (
         <div className="commander-color-distribution">
-          <div className="section-title">Color Preferences</div>
+          <h2 className="section-heading">Color Preferences</h2>
           <div className="color-bars">
             {sortedColors.map(({ code, name, hex, count, percentage }) => (
               <div

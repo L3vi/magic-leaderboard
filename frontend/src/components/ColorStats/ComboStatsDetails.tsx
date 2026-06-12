@@ -42,21 +42,21 @@ const ComboStatsDetails: React.FC<ComboStatsDetailsProps> = ({
           distinct player+commander builds; both differ from the commander
           count in the section below — three deliberately distinct numbers. */}
       <section className="stats-summary-section">
-        <h2>Overall Statistics</h2>
+        <h2 className="section-heading">Overall Statistics</h2>
         <div className="stats-summary-grid">
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Plays</div>
             <div className="stat-value">{stats.totalPlays}</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Decks</div>
             <div className="stat-value">{stats.totalDecks}</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Wins</div>
             <div className="stat-value">{stats.totalWins}</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Win Rate</div>
             <div className="stat-value">{(stats.winRate * 100).toFixed(0)}%</div>
           </div>
@@ -65,7 +65,7 @@ const ComboStatsDetails: React.FC<ComboStatsDetailsProps> = ({
 
       {/* Commanders in This Combination */}
       <section className="commanders-section">
-        <h2>Commanders ({sortedCommanders.length})</h2>
+        <h2 className="section-heading">Commanders ({sortedCommanders.length})</h2>
         <div className="commanders-list">
           {sortedCommanders.length === 0 ? (
             <div className="empty-state">No commanders found for this combination</div>

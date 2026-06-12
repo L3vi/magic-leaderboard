@@ -35,21 +35,21 @@ const CommanderStatsDetails: React.FC<CommanderStatsDetailsProps> = ({
 
       {/* Overall Stats */}
       <section className="stats-summary-section">
-        <h2>Overall Statistics</h2>
+        <h2 className="section-heading">Overall Statistics</h2>
         <div className="stats-summary-grid">
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Plays</div>
             <div className="stat-value">{stats.totalPlays}</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Wins</div>
             <div className="stat-value">{stats.totalWins}</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Win Rate</div>
             <div className="stat-value">{(stats.winRate * 100).toFixed(0)}%</div>
           </div>
-          <div className="stat-box">
+          <div className="stat-card">
             <div className="stat-label">Pilots</div>
             <div className="stat-value">{stats.pilots.length}</div>
           </div>
@@ -58,7 +58,7 @@ const CommanderStatsDetails: React.FC<CommanderStatsDetailsProps> = ({
 
       {/* Pilots — who has played this commander */}
       <section className="commanders-section">
-        <h2>Pilots ({stats.pilots.length})</h2>
+        <h2 className="section-heading">Pilots ({stats.pilots.length})</h2>
         <div className="commanders-list">
           {stats.pilots.map((pilot, idx) => (
             <div
@@ -83,7 +83,7 @@ const CommanderStatsDetails: React.FC<CommanderStatsDetailsProps> = ({
 
       {/* Game-by-game appearances */}
       <section className="commanders-section">
-        <h2>Games ({stats.appearances.length})</h2>
+        <h2 className="section-heading">Games ({stats.appearances.length})</h2>
         <div className="commander-games-list">
           {stats.appearances.map((game) => (
             <div

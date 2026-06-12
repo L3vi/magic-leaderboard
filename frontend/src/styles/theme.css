@@ -47,6 +47,10 @@
   --border: #334155;
   --text-muted: #94a3b8;
   --foreground: #eaeaea;
+  /* Alias: several components reference var(--text) for primary body/heading
+     text. It was never defined and silently inherited --foreground; make that
+     intentional so the token resolves consistently. */
+  --text: var(--foreground);
   
   /* Primary Brand - Mystic Purple */
   --primary: #8b5cf6;

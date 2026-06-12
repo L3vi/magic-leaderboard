@@ -509,7 +509,7 @@ const GameStats: React.FC = () => {
 
       {/* Core Game Stats */}
       <div className="stats-section">
-        <h3>Season Overview</h3>
+        <h3 className="section-heading">Season Overview</h3>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-label">Total Games</div>
@@ -537,7 +537,7 @@ const GameStats: React.FC = () => {
 
       {/* Commander Stats */}
       <div className="stats-section">
-        <h3>Commander Performance</h3>
+        <h3 className="section-heading">Commander Performance</h3>
 
         {(stats.commanderPlayCount > 0 || stats.mostWinsCommander || stats.bestWinRateCommander) && (
           <div className="stats-grid">
@@ -571,7 +571,7 @@ const GameStats: React.FC = () => {
           </div>
         )}
 
-        <div className="stats-subhead">Top Commanders</div>
+        <div className="section-subheading">Top Commanders</div>
         <div className="section-note">
           {/* nbsp inside each "Nth = P" pair keeps it from splitting across a
               line; breaks happen only at the em dash or between pairs, and
@@ -601,7 +601,7 @@ const GameStats: React.FC = () => {
 
       {/* Colors */}
       <div className="stats-section">
-        <h3>Colors</h3>
+        <h3 className="section-heading">Colors</h3>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-label">Most Common Color</div>
@@ -620,7 +620,7 @@ const GameStats: React.FC = () => {
           )}
         </div>
 
-        <div className="stats-subhead">Win Rate by Color</div>
+        <div className="section-subheading">Win Rate by Color</div>
         <div className="color-stats-simple">
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => {
@@ -653,7 +653,7 @@ const GameStats: React.FC = () => {
 
         {stats.colorCombos.tiers.length > 0 && (
           <>
-            <div className="stats-subhead">By Number of Colors</div>
+            <div className="section-subheading">By Number of Colors</div>
             <div className="section-note">
               {stats.avgColorsPerDeck.toFixed(1)} colors per deck on average
             </div>
@@ -679,7 +679,7 @@ const GameStats: React.FC = () => {
             ))}
           </div>
 
-          <div className="stats-subhead">Most Played Combinations</div>
+          <div className="section-subheading">Most Played Combinations</div>
           <div className="combo-list">
             {stats.colorCombos.top.map((c, idx) => (
               <div
