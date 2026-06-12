@@ -64,6 +64,9 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
+  /* Even out line lengths when a multi-word label wraps (e.g. "Average Players
+     per Game") instead of orphaning the last word on its own line. */
+  text-wrap: balance;
 }
 
 .stat-value {
@@ -121,6 +124,9 @@
   font-size: 0.875rem;
   color: var(--text-muted);
   margin-top: 0.5rem;
+  /* Balance wrapped subtext (e.g. "4 wins in 9 games · 44%") so the trailing
+     figure isn't stranded alone on the last line. */
+  text-wrap: balance;
 }
 
 /* Responsive design */

@@ -111,6 +111,25 @@ export interface ColorStatsData {
   commanders: CommanderColorStats[];
 }
 
+/** Per-deck stats for a single color combination (or color-count tier). */
+export interface ComboCommanderStats {
+  commanderName: string; // display name — "A // B" for partner decks
+  plays: number;
+  wins: number;
+  winRate: number;
+}
+
+export interface ComboStatsData {
+  /** Combination key (WUBRG-ordered, e.g. "RWB") for a named combo, else "". */
+  comboKey: string;
+  /** Display heading, e.g. "Mardu" or "3-color". */
+  label: string;
+  totalPlays: number;
+  totalWins: number;
+  winRate: number;
+  commanders: ComboCommanderStats[];
+}
+
 // ============================================================================
 // UTILITY TYPES
 // ============================================================================

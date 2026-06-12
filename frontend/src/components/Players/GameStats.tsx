@@ -6,6 +6,7 @@ import { getCachedCommanderColors } from "../../utils/commanderColorCache";
 import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
 import { scorePlacement } from "../../services/dataService";
+import { COLOR_MAP, COLOR_HEX, TIER_LABELS, colorKey, COMBO_NAMES } from "../../utils/colorCombos";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -37,50 +38,6 @@ interface ColorStats {
   totalPlacement?: number;
   topCommanders?: Array<{ name: string; playCount: number; wins: number }>;
 }
-
-const COLOR_MAP: Record<string, string> = {
-  "W": "White",
-  "U": "Blue",
-  "B": "Black",
-  "R": "Red",
-  "G": "Green",
-};
-
-// Pip colors for the small color-identity dots next to a combination name.
-const COLOR_HEX: Record<string, string> = {
-  W: "#f7f3d8", U: "#0ea5e9", B: "#6b7280", R: "#ef4444", G: "#22c55e",
-};
-
-// A deck's color identity, normalized to canonical WUBRG order so it maps to a
-// single combination key regardless of the order colors were encountered.
-const WUBRG = "WUBRG";
-const colorKey = (colors: string[]): string =>
-  [...new Set(colors)].sort((a, b) => WUBRG.indexOf(a) - WUBRG.indexOf(b)).join("");
-
-// Canonical Commander color-combination names. Built from WUBRG-ordered keys so
-// e.g. Boros (R,W) and any "W,R" both resolve to the same "WR" → "Boros".
-const COMBO_NAMES: Record<string, string> = (() => {
-  const defs: Record<string, string> = {
-    // Guilds (2-color)
-    WU: "Azorius", UB: "Dimir", BR: "Rakdos", RG: "Gruul", GW: "Selesnya",
-    WB: "Orzhov", UR: "Izzet", BG: "Golgari", RW: "Boros", GU: "Simic",
-    // Shards (allied 3-color)
-    WUB: "Esper", UBR: "Grixis", BRG: "Jund", RGW: "Naya", GWU: "Bant",
-    // Wedges (enemy 3-color)
-    WBG: "Abzan", URW: "Jeskai", BGU: "Sultai", RWB: "Mardu", GUR: "Temur",
-    // Nephilim (4-color, named by the missing color)
-    WUBR: "Yore-Tiller", UBRG: "Glint-Eye", WBRG: "Dune-Brood", WURG: "Ink-Treader", WUBG: "Witch-Maw",
-    // 5-color
-    WUBRG: "Five-Color",
-  };
-  const out: Record<string, string> = {};
-  for (const [colors, name] of Object.entries(defs)) out[colorKey(colors.split(""))] = name;
-  return out;
-})();
-
-const TIER_LABELS: Record<number, string> = {
-  1: "Mono", 2: "2-color", 3: "3-color", 4: "4-color", 5: "5-color",
-};
 
 // Commander colors are read straight from the cache; the cache is populated up
 // front by preFetchCommanderData (see the effect below), so this stays a pure
@@ -153,8 +110,8 @@ const GameStats: React.FC = () => {
         colorStats: [] as ColorStats[],
         mostCommonColor: "N/A",
         commonColorCount: 0,
-        multicolorShare: 0,
         avgColorsPerDeck: 0,
+        topCombo: null as { label: string; key: string; plays: number; winRate: number } | null,
         colorCombos: {
           tiers: [] as Array<{ n: number; label: string; plays: number; share: number; winRate: number }>,
           top: [] as Array<{ label: string; key: string; colorCount: number; plays: number; winRate: number }>,
@@ -201,8 +158,7 @@ const GameStats: React.FC = () => {
     typicalGameMinutes = Math.min(120, Math.max(30, Math.round(typicalGameMinutes)));
     const totalGameMinutes = typicalGameMinutes * totalGames;
 
-    // Deck color counts (for the multicolor share / average colors stats).
-    let multicolorPlays = 0;
+    // Deck color counts (for the average-colors-per-deck stat).
     let colorKnownPlays = 0;
     let totalDeckColors = 0;
 
@@ -281,7 +237,6 @@ const GameStats: React.FC = () => {
         if (deckColorCount >= 1) {
           colorKnownPlays++;
           totalDeckColors += deckColorCount;
-          if (deckColorCount >= 2) multicolorPlays++;
 
           // Bucket this deck-play by tier and by named combination.
           const k = colorKey([...allCommanderColors]);
@@ -408,8 +363,34 @@ const GameStats: React.FC = () => {
     const commonColorCount = byColorPlays[0]?.playCount || 0;
 
     // How colorful are the decks?
-    const multicolorShare = colorKnownPlays > 0 ? Math.round((multicolorPlays / colorKnownPlays) * 100) : 0;
     const avgColorsPerDeck = colorKnownPlays > 0 ? totalDeckColors / colorKnownPlays : 0;
+
+    // "Deck to beat" — the best-performing color combination. Ranked by a
+    // Bayesian-smoothed win rate (same idea as the commander ranking above) so a
+    // hot small sample doesn't outrank a combo with a real track record. The
+    // league-average win rate ≈ the share of plays that finish 1st, which the
+    // combo totals already sum to (one winner per game).
+    const totalComboWins = Object.values(comboCounts).reduce((s, c) => s + c.wins, 0);
+    const totalComboPlays = Object.values(comboCounts).reduce((s, c) => s + c.plays, 0);
+    const leagueComboWinRate = totalComboPlays > 0 ? totalComboWins / totalComboPlays : 0.25;
+    const COMBO_PRIOR = 4; // strength of the pull toward the league average
+    const MIN_COMBO_GAMES = 3; // ignore one-off combinations entirely
+    const rankedCombos = Object.values(comboCounts)
+      .filter((c) => c.plays >= MIN_COMBO_GAMES)
+      .map((c) => ({
+        ...c,
+        smoothed: (c.wins + COMBO_PRIOR * leagueComboWinRate) / (c.plays + COMBO_PRIOR),
+      }))
+      .sort((a, b) => b.smoothed - a.smoothed || b.plays - a.plays || b.wins - a.wins);
+    const best = rankedCombos[0];
+    const topCombo = best
+      ? {
+          label: best.label,
+          key: best.key,
+          plays: best.plays,
+          winRate: Math.round((best.wins / best.plays) * 100),
+        }
+      : null;
 
     // Color combinations: tier breakdown (by # of colors), the most-played named
     // combinations.
@@ -456,8 +437,8 @@ const GameStats: React.FC = () => {
       mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
       mostCommonColorCode,
       commonColorCount,
-      multicolorShare,
       avgColorsPerDeck,
+      topCombo,
       colorCombos,
       partnerPairs,
     };
@@ -579,20 +560,25 @@ const GameStats: React.FC = () => {
         )}
       </div>
 
-      {/* Color Stats */}
+      {/* Colors */}
       <div className="stats-section">
-        <h3>Color Performance</h3>
+        <h3>Colors</h3>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-label">Most Common Color</div>
             <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
             <div className="stat-subtext">{stats.commonColorCount} {stats.commonColorCount === 1 ? "play" : "plays"}</div>
           </div>
-          <div className="stat-card">
-            <div className="stat-label">Multicolor Decks</div>
-            <div className="stat-value">{stats.multicolorShare}%</div>
-            <div className="stat-subtext">{stats.avgColorsPerDeck.toFixed(1)} colors per deck on average</div>
-          </div>
+          {stats.topCombo && (
+            <div className="stat-card">
+              <div className="stat-label">Top Combination</div>
+              <div className="stat-value combo-value">
+                <span className="combo-pips">{renderPips(stats.topCombo.key)}</span>
+                {stats.topCombo.label}
+              </div>
+              <div className="stat-subtext">{stats.topCombo.winRate}% win rate over {stats.topCombo.plays} {stats.topCombo.plays === 1 ? "play" : "plays"}</div>
+            </div>
+          )}
         </div>
 
         <div className="stats-subhead">Win Rate by Color</div>
@@ -625,17 +611,28 @@ const GameStats: React.FC = () => {
             <div>No color data</div>
           )}
         </div>
-      </div>
 
-      {/* Color Combinations */}
-      {stats.colorCombos.tiers.length > 0 && (
-        <div className="stats-section">
-          <h3>Color Combinations</h3>
-
-          <div className="stats-subhead">By Number of Colors</div>
-          <div className="combo-tiers">
+        {stats.colorCombos.tiers.length > 0 && (
+          <>
+            <div className="stats-subhead">By Number of Colors</div>
+            <div className="section-note">
+              {stats.avgColorsPerDeck.toFixed(1)} colors per deck on average
+            </div>
+            <div className="combo-tiers">
             {stats.colorCombos.tiers.map((t) => (
-              <div className="combo-tier-card" key={t.n}>
+              <div
+                className="combo-tier-card clickable"
+                key={t.n}
+                onClick={() => navigate(`/stats/tiers/${t.n}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/stats/tiers/${t.n}`);
+                  }
+                }}
+              >
                 <div className="combo-tier-pct">{t.share}%</div>
                 <div className="combo-tier-label">{t.label}</div>
                 <div className="combo-tier-sub">{t.plays} {t.plays === 1 ? "deck" : "decks"} · {t.winRate}% win</div>
@@ -646,7 +643,19 @@ const GameStats: React.FC = () => {
           <div className="stats-subhead">Most Played Combinations</div>
           <div className="combo-list">
             {stats.colorCombos.top.map((c, idx) => (
-              <div className="combo-row" key={idx}>
+              <div
+                className="combo-row clickable"
+                key={idx}
+                onClick={() => navigate(`/stats/combos/${c.key}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/stats/combos/${c.key}`);
+                  }
+                }}
+              >
                 <span className="combo-pips">{renderPips(c.key)}</span>
                 <span className="combo-name">{c.label}</span>
                 <span className="combo-meta">
@@ -654,9 +663,10 @@ const GameStats: React.FC = () => {
                 </span>
               </div>
             ))}
-          </div>
-        </div>
-      )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

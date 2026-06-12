@@ -102,6 +102,19 @@
   border: 1px solid var(--border);
   border-radius: 0.6rem;
   text-align: center;
+  transition: all 0.2s ease;
+}
+
+.combo-tier-card.clickable {
+  cursor: pointer;
+}
+
+.combo-tier-card.clickable:hover,
+.combo-tier-card.clickable:focus-visible {
+  border-color: var(--primary, #8b5cf6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  outline: none;
 }
 
 .combo-tier-pct {
@@ -139,12 +152,33 @@
   padding: 0.55rem 0.75rem;
   background: var(--background);
   border-radius: 0.5rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.combo-row.clickable {
+  cursor: pointer;
+}
+
+.combo-row.clickable:hover,
+.combo-row.clickable:focus-visible {
+  border-color: var(--primary, #8b5cf6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  outline: none;
 }
 
 .combo-pips {
   display: inline-flex;
   gap: 2px;
   flex-shrink: 0;
+}
+
+/* Top Combination headline card: keep pips + name on one centered row. */
+.stat-value.combo-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .combo-pip {

@@ -9,6 +9,7 @@ import Games from "./components/Games/Games";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
 import ColorStatsPage from "./pages/ColorStatsPage";
+import ComboStatsPage from "./pages/ComboStatsPage";
 import NewGamePage from "./pages/NewGamePage";
 import NewSessionPage from "./pages/NewSessionPage";
 import ManageSeasonPage from "./pages/ManageSeasonPage";
@@ -101,6 +102,8 @@ function AnimatedRoutes() {
   const isDetailPage = location.pathname.startsWith('/players/') || 
                        location.pathname.startsWith('/games/') ||
                        location.pathname.startsWith('/stats/colors/') ||
+                       location.pathname.startsWith('/stats/combos/') ||
+                       location.pathname.startsWith('/stats/tiers/') ||
                        location.pathname === '/new-game' ||
                        location.pathname === '/new-session' ||
                        location.pathname === '/manage-season' ||
@@ -119,6 +122,8 @@ function AnimatedRoutes() {
               <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
               <Route path="/games/:gameId" element={<GameDetailsPage />} />
               <Route path="/stats/colors/:color" element={<ColorStatsPage />} />
+              <Route path="/stats/combos/:comboKey" element={<ComboStatsPage />} />
+              <Route path="/stats/tiers/:tier" element={<ComboStatsPage />} />
               <Route path="/new-game" element={<NewGamePage />} />
               <Route path="/new-session" element={<NewSessionPage />} />
               <Route path="/manage-season" element={<ManageSeasonPage />} />
