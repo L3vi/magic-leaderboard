@@ -12,8 +12,8 @@ type SortOrder = "asc" | "desc";
 const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
-  average: "Average",
   weightedAverage: "Weighted Average",
+  average: "Average",
   games: "Games",
 };
 
@@ -29,6 +29,33 @@ const Players: React.FC = () => {
   const navigate = useNavigate();
   const scoresData = usePlayerScores();
   const { loading } = useSession();
+
+  // The app wraps tab content in a react-swipeable handler that flips between
+  // the Players/Games tabs on a horizontal swipe. Because this table scrolls
+  // horizontally on phones, a swipe to reveal more columns would also bubble up
+  // and switch tabs. Swallow the touch sequence at the scroll container so the
+  // swipe handler never starts tracking it — native scrolling (and row taps,
+  // which fire on click, not touch) are unaffected since we don't preventDefault.
+  //
+  // A callback ref (not useEffect) is used deliberately: the table is rendered
+  // behind a `loading` early-return, so an effect that ran once on mount would
+  // fire while the node is still absent and never re-attach. The callback ref
+  // runs exactly when the scroll node mounts/unmounts.
+  const detachScrollGuard = useRef<(() => void) | null>(null);
+  const scrollGuardRef = React.useCallback((el: HTMLDivElement | null) => {
+    detachScrollGuard.current?.();
+    detachScrollGuard.current = null;
+    if (!el) return;
+    const stop = (e: Event) => e.stopPropagation();
+    el.addEventListener("touchstart", stop, { passive: true });
+    el.addEventListener("touchmove", stop, { passive: true });
+    el.addEventListener("touchend", stop, { passive: true });
+    detachScrollGuard.current = () => {
+      el.removeEventListener("touchstart", stop);
+      el.removeEventListener("touchmove", stop);
+      el.removeEventListener("touchend", stop);
+    };
+  }, []);
 
   // Memoize sorting for performance
   const sortedPlayers = useMemo(() => {
@@ -102,7 +129,7 @@ const Players: React.FC = () => {
           (Average, Games included) stays reachable without rotating the device.
           The Name column is pinned left; a right-edge fade hints at more. */}
       <div className="leaderboard-scroll-region">
-        <div className="leaderboard-scroll" role="presentation">
+        <div className="leaderboard-scroll" role="presentation" ref={scrollGuardRef}>
       <div className="leaderboard-header" role="row" ref={headerRef}>
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
