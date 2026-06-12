@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
 import GameStats from "./GameStats";
 import "./Players.css";
+import "../../styles/skeleton.css";
 import { usePlayerScores } from "../../hooks/useApi";
 import { useSession } from "../../context/SessionContext";
 
@@ -95,9 +96,28 @@ const Players: React.FC = () => {
     return hasResults && (sortKey === "score" || sortKey === "average" || sortKey === "weightedAverage") && sortOrder === "desc";
   }, [hasResults, sortKey, sortOrder]);
 
-  // Show loading state
+  // Show loading state: shimmer placeholder rows that mirror the real
+  // leaderboard layout (name on the left, three stat columns on the right)
+  // so the table doesn't visibly jump when data arrives.
   if (loading) {
-    return <section className="leaderboard main-section">Loading players...</section>;
+    return (
+      <section
+        className="leaderboard main-section"
+        aria-busy="true"
+        aria-label="Loading players"
+      >
+        <div className="leaderboard-skeleton" role="presentation">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div className="player-row leaderboard-skeleton-row" key={i}>
+              <span className="skeleton skeleton-bar skeleton-name" />
+              <span className="skeleton skeleton-bar skeleton-num" />
+              <span className="skeleton skeleton-bar skeleton-num" />
+              <span className="skeleton skeleton-bar skeleton-num" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
   }
 
   // Keyboard navigation for sortable headers

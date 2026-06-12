@@ -1,0 +1,53 @@
+/* =========================================================
+   Shared shimmer / skeleton primitives.
+
+   Mirrors the per-thumbnail shimmer in the commander art
+   selector so loading states share one design language.
+   The app is a single dark theme, so a translucent white
+   sweep over an elevated surface reads correctly everywhere.
+   ========================================================= */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--background-elevated);
+  border-radius: 0.5rem;
+}
+
+/* The moving highlight. Kept on a pseudo-element so the base
+   tint stays put and only the sheen travels. */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+/* A pill for stand-in text. Height/width are set by the
+   layout that uses it; this only rounds the corners. */
+.skeleton-bar {
+  border-radius: 0.4rem;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Respect users who'd rather not see the sweep. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}

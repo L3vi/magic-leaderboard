@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Games.css";
+import "../../styles/skeleton.css";
 import GameRow from "./GameRow";
 import { useGames, usePlayers } from "../../hooks/useApi";
 import { preFetchCommanderData } from "../../services/commanderPreFetchService";
@@ -64,9 +65,33 @@ const Games: React.FC = () => {
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   }, [allGames, filter, playersData]);
 
-  // Show loading state
+  // Show loading state: shimmer placeholder cards that mirror a real game
+  // row (date line + a strip of commander tiles) so the list keeps its
+  // shape while data loads in.
   if (gamesLoading || playersLoading) {
-    return <section className="game-history main-section">Loading games...</section>;
+    return (
+      <section
+        className="game-history main-section"
+        aria-busy="true"
+        aria-label="Loading games"
+      >
+        <div className="game-history-list" role="presentation">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div className="game-row game-row-skeleton" key={i}>
+              <span className="skeleton skeleton-bar game-skeleton-date" />
+              <div className="game-skeleton-players">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <div className="game-skeleton-player" key={j}>
+                    <span className="skeleton game-skeleton-img" />
+                    <span className="skeleton skeleton-bar game-skeleton-label" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
   }
 
   // Show error state

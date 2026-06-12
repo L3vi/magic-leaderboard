@@ -222,6 +222,25 @@
   .player-row.rank-3 {
     border-left-color: transparent;
   }
+
+  /* The sticky Name cell needs an opaque background so scrolled columns pass
+     underneath it. On podium rows, paint that background with the SAME medal
+     tint the row uses (over an opaque surface base to stay opaque) and repaint
+     the row with the identical px-based formula, so the tint runs continuously
+     from the Name into the row instead of leaving a darker solid chip. */
+  .leaderboard-scroll .player-row.rank-1,
+  .leaderboard-scroll .player-row.rank-1 .player-name {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.12) 0, transparent 190px), var(--surface);
+  }
+  .leaderboard-scroll .player-row.rank-2,
+  .leaderboard-scroll .player-row.rank-2 .player-name {
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0.12) 0, transparent 190px), var(--surface);
+  }
+  .leaderboard-scroll .player-row.rank-3,
+  .leaderboard-scroll .player-row.rank-3 .player-name {
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.12) 0, transparent 190px), var(--surface);
+  }
+
   .player-row.rank-1 .player-name { box-shadow: inset 3px 0 0 #fbbf24; }
   .player-row.rank-2 .player-name { box-shadow: inset 3px 0 0 #cbd5e1; }
   .player-row.rank-3 .player-name { box-shadow: inset 3px 0 0 #cd7f32; }
@@ -243,5 +262,43 @@
 @media (min-width: 640px) {
   .leaderboard-scroll-fade {
     display: none;
+  }
+}
+/* ===================== */
+/* Loading skeleton      */
+/* ===================== */
+
+/* Reuse .player-row for box sizing (surface, radius, padding, margin,
+   the 1em-driving font-size) but strip interactivity. */
+.leaderboard-skeleton-row {
+  cursor: default;
+  justify-content: space-between;
+}
+
+.leaderboard-skeleton-row:hover {
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.leaderboard-skeleton-row .skeleton-name {
+  flex: 1 1 auto;
+  max-width: 45%;
+  height: 1.1rem;
+}
+
+.leaderboard-skeleton-row .skeleton-num {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 1.1rem;
+  margin-left: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .leaderboard-skeleton-row .skeleton-name {
+    height: 1.4rem;
+  }
+  .leaderboard-skeleton-row .skeleton-num {
+    width: 90px;
+    height: 1.4rem;
   }
 }
