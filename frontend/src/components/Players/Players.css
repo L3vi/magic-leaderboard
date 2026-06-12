@@ -208,8 +208,11 @@
     background: var(--surface);
   }
 
-  /* Header's pinned name sits over the page background, not a row surface. */
-  .leaderboard-header .player-name {
+  /* Header's pinned Name sits over the page background, not a row surface.
+     Needs the extra .leaderboard-col specificity to beat the generic sticky
+     rule above (which paints every pinned Name with --surface); otherwise the
+     header Name shows as a lighter chip while the other headers are clear. */
+  .leaderboard-header .leaderboard-col.player-name {
     background: var(--background);
   }
 
