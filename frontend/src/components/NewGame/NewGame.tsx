@@ -4,6 +4,7 @@ import {
   useFloating,
   useInteractions,
   useDismiss,
+  autoUpdate,
   offset,
   flip,
   size,
@@ -41,6 +42,17 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   // Tracks whether the text field currently has focus, so a search that
   // resolves after the user has dismissed the field doesn't re-open the list.
   const isFocusedRef = useRef(false);
+  // Cancels the in-flight Scryfall request when a newer search starts, and
+  // remembers the most recent query so a late-arriving response for an older
+  // one is discarded instead of clobbering the list with stale results.
+  const abortRef = useRef<AbortController | null>(null);
+  const latestQueryRef = useRef("");
+
+  // Wait until the user pauses, and don't fire off a network request for a
+  // single character — "is:commander a" matches almost everything and returns a
+  // huge payload for no useful signal.
+  const SEARCH_DEBOUNCE_MS = 400;
+  const MIN_QUERY_LENGTH = 2;
   const artUrl = useCommanderArt(value);
   const fullImageUrl = useCommanderFullImage(value);
   const preferenceArtUrl = useCommanderArtWithPreference(value, playerId && playerId !== "__add__" && playerId !== "" ? playerId : undefined);
@@ -50,6 +62,10 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const { refs, floatingStyles, context } = useFloating({
     open: showDropdown,
     onOpenChange: setShowDropdown,
+    // Reposition the menu as the page scrolls or the viewport resizes (e.g. the
+    // mobile keyboard sliding up). Without this the menu is placed once on open
+    // and gets "left behind" when its input moves — rendering detached.
+    whileElementsMounted: autoUpdate,
     middleware: [
       offset(8),
       flip({ padding: 8 }),
@@ -66,6 +82,15 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
+
+  // On unmount, drop any pending debounce and abort an in-flight request so a
+  // late response can't set state on a gone component.
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+      abortRef.current?.abort();
+    };
+  }, []);
 
   // Load last played commander for this player and update image when value changes
   useEffect(() => {
@@ -121,16 +146,30 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   }, [playerId, gamesData]);
 
   const searchCommanders = (query: string) => {
-    if (!query.trim()) {
+    const trimmed = query.trim();
+    if (trimmed.length < MIN_QUERY_LENGTH) {
       setResults([]);
       setShowDropdown(false);
+      setLoading(false);
       return;
     }
 
+    // Cancel any request still in flight and mark this as the current query.
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    latestQueryRef.current = trimmed;
+
     setLoading(true);
-    scryfallFetch(`https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(query)}`)
+    scryfallFetch(
+      `https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(trimmed)}`,
+      { signal: controller.signal }
+    )
       .then(res => res.json())
       .then(data => {
+        // A slower, older response may resolve after a newer one — ignore it so
+        // it can't overwrite the results the user is actually waiting on.
+        if (latestQueryRef.current !== trimmed) return;
         if (data.data && Array.isArray(data.data)) {
           setResults(data.data.slice(0, 10).map((card: any) => ({
             name: card.name,
@@ -144,7 +183,10 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
         }
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        // An aborted request isn't a failure — a newer search supersedes it.
+        if (err?.name === "AbortError") return;
+        if (latestQueryRef.current !== trimmed) return;
         setResults([]);
         setLoading(false);
       });
@@ -154,6 +196,10 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     const val = e.target.value;
     onChange(val);
     setSelectedImage(null);
+
+    // Any prior search is now irrelevant — drop its timer and in-flight request.
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    abortRef.current?.abort();
 
     // If input is empty, show previous commanders
     if (!val.trim()) {
@@ -166,13 +212,18 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     // User has started typing
     setHasStartedTyping(true);
 
-    // Debounce the search
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
+    // Below the minimum, don't query or show a stale list — just wait.
+    if (val.trim().length < MIN_QUERY_LENGTH) {
+      setResults([]);
+      setShowDropdown(false);
+      setLoading(false);
+      return;
     }
+
+    // Debounce so we only query once the user pauses, not on every keystroke.
     debounceTimer.current = setTimeout(() => {
       searchCommanders(val);
-    }, 300);
+    }, SEARCH_DEBOUNCE_MS);
   };
 
   const handleSelect = (cardName: string, partnerCommander?: string) => {
@@ -203,6 +254,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     // re-open the list after the keyboard is gone.
     isFocusedRef.current = false;
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    abortRef.current?.abort();
     setShowDropdown(false);
     setLoading(false);
   };
