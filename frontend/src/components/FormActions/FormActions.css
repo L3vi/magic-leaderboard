@@ -32,6 +32,31 @@
   border-radius: 0.75rem;
 }
 
+/* Variant: in-flow bottom bar for modals. Matches the standard form bar
+   (right-aligned on desktop, spread on mobile) but stays inside the modal
+   content instead of floating over the viewport. Sticks to the bottom of the
+   scrollable modal so the buttons stay reachable, with a backdrop so card art
+   doesn't bleed through while scrolling. */
+.form-actions-modal {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  justify-content: flex-end;
+}
+
+@media (max-width: 639px) {
+  .form-actions-modal {
+    justify-content: space-between;
+  }
+}
+
 /* Spinner Animation */
 .form-actions .spinner {
   display: inline-block;

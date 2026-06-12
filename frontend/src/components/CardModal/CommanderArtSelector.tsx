@@ -131,7 +131,7 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
         isSubmitting={isSaving}
         isDisabled={!selectedVariant || selectedVariant.id === currentVariantId}
         submitType="button"
-        variant="fixed"
+        variant="modal"
       />
     </div>
   );

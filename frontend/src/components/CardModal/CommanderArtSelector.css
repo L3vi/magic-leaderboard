@@ -1,7 +1,7 @@
 .art-selector-container {
   width: 100%;
   margin-top: 1.5rem;
-  padding: 0 1rem 5.5rem 1rem;
+  padding: 0 1rem;
   position: relative;
 }
 
@@ -203,14 +203,9 @@
   margin-top: 0.5rem;
 }
 
-/* Save-failure message — sits just above the fixed action bar so it's always
-   visible regardless of scroll position. */
+/* Save-failure message — sits in flow just above the action bar. */
 .art-selector-error {
-  position: fixed;
-  left: 1rem;
-  right: 1rem;
-  bottom: 5rem;
-  z-index: 10002;
+  margin-top: 0.75rem;
   text-align: center;
   font-size: 0.85rem;
   font-weight: 600;
@@ -219,15 +214,6 @@
   padding: 0.625rem 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-@media (min-width: 1024px) {
-  .art-selector-error {
-    position: static;
-    margin-top: 0.75rem;
-  }
 }
 
 @media (max-width: 640px) {
@@ -238,6 +224,6 @@
 
   .art-selector-container {
     margin-top: 1rem;
-    padding: 0 0.75rem 5.5rem 0.75rem;
+    padding: 0 0.75rem;
   }
 }

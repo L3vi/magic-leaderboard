@@ -10,7 +10,7 @@ interface FormActionsProps {
   isDisabled?: boolean;
   submitType?: "button" | "submit";
   loadingText?: string;
-  variant?: "form" | "fixed"; // "form" for sticky bottom, "fixed" for fixed position
+  variant?: "form" | "fixed" | "modal"; // "form" sticky page bottom, "fixed" floating, "modal" in-flow bottom bar inside a modal
 }
 
 const FormActions: React.FC<FormActionsProps> = ({
