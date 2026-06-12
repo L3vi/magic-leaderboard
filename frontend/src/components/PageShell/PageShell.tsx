@@ -24,6 +24,28 @@ interface PageShellProps {
   children?: ReactNode;
 }
 
+// Body scroll lock is refcounted across PageShell instances. During an
+// overlay→overlay navigation, framer-motion's AnimatePresence keeps the
+// outgoing page mounted through its exit animation, so two PageShells exist
+// at once. A plain add/remove would let the outgoing page's unmount strip the
+// class while the incoming page still needs it. Counting open shells and only
+// removing the class on the last close keeps the lock correct.
+let scrollLockCount = 0;
+const acquireScrollLock = () => {
+  if (scrollLockCount === 0) {
+    document.documentElement.classList.add("modal-open");
+    document.body.classList.add("modal-open");
+  }
+  scrollLockCount += 1;
+};
+const releaseScrollLock = () => {
+  scrollLockCount = Math.max(0, scrollLockCount - 1);
+  if (scrollLockCount === 0) {
+    document.documentElement.classList.remove("modal-open");
+    document.body.classList.remove("modal-open");
+  }
+};
+
 /**
  * Shared scaffold for every full-screen overlay page (create / edit / detail):
  * fixed overlay + entrance animation, body scroll lock, Escape-to-close, and a
@@ -43,14 +65,10 @@ const PageShell: React.FC<PageShellProps> = ({
 }) => {
   const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
 
-  // Lock body scroll while the overlay is open.
+  // Lock body scroll while the overlay is open (refcounted — see above).
   React.useEffect(() => {
-    document.documentElement.classList.add("modal-open");
-    document.body.classList.add("modal-open");
-    return () => {
-      document.documentElement.classList.remove("modal-open");
-      document.body.classList.remove("modal-open");
-    };
+    acquireScrollLock();
+    return releaseScrollLock;
   }, []);
 
   useEscapeKey(onClose);
