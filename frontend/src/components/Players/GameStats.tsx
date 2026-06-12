@@ -78,11 +78,6 @@ const COMBO_NAMES: Record<string, string> = (() => {
   return out;
 })();
 
-// 3-color shards are the allied arcs; everything else 3-color is a wedge.
-const SHARD_KEYS = new Set(
-  ["WUB", "UBR", "BRG", "RGW", "GWU"].map((c) => colorKey(c.split("")))
-);
-
 const TIER_LABELS: Record<number, string> = {
   1: "Mono", 2: "2-color", 3: "3-color", 4: "4-color", 5: "5-color",
 };
@@ -163,8 +158,6 @@ const GameStats: React.FC = () => {
         colorCombos: {
           tiers: [] as Array<{ n: number; label: string; plays: number; share: number; winRate: number }>,
           top: [] as Array<{ label: string; key: string; colorCount: number; plays: number; winRate: number }>,
-          shardPlays: 0,
-          wedgePlays: 0,
         },
         partnerPairs: [] as Array<{ pair: string; count: number }>,
       };
@@ -217,8 +210,6 @@ const GameStats: React.FC = () => {
     // combination (guild / shard / wedge / nephilim / five-color).
     const tierCounts: Record<number, { plays: number; wins: number }> = {};
     const comboCounts: Record<string, { label: string; key: string; colorCount: number; plays: number; wins: number }> = {};
-    let shardPlays = 0;
-    let wedgePlays = 0;
 
     // Commander statistics
     const commanderStats: Record<string, CommanderStats> = {};
@@ -301,10 +292,6 @@ const GameStats: React.FC = () => {
           const combo = comboCounts[k] || (comboCounts[k] = { label, key: k, colorCount: deckColorCount, plays: 0, wins: 0 });
           combo.plays += 1;
           if (isWinner) combo.wins += 1;
-          if (deckColorCount === 3) {
-            if (SHARD_KEYS.has(k)) shardPlays += 1;
-            else wedgePlays += 1;
-          }
         }
 
         allCommanderColors.forEach((color) => {
@@ -425,7 +412,7 @@ const GameStats: React.FC = () => {
     const avgColorsPerDeck = colorKnownPlays > 0 ? totalDeckColors / colorKnownPlays : 0;
 
     // Color combinations: tier breakdown (by # of colors), the most-played named
-    // combinations, and the 3-color shard-vs-wedge lean.
+    // combinations.
     const comboTiers = [1, 2, 3, 4, 5]
       .filter((n) => tierCounts[n]?.plays)
       .map((n) => ({
@@ -445,7 +432,7 @@ const GameStats: React.FC = () => {
         plays: c.plays,
         winRate: c.plays > 0 ? Math.round((c.wins / c.plays) * 100) : 0,
       }));
-    const colorCombos = { tiers: comboTiers, top: topCombos, shardPlays, wedgePlays };
+    const colorCombos = { tiers: comboTiers, top: topCombos };
 
     // Partner pairs
     const partnerPairs = Object.entries(partnerPairCounts)
@@ -649,9 +636,9 @@ const GameStats: React.FC = () => {
           <div className="combo-tiers">
             {stats.colorCombos.tiers.map((t) => (
               <div className="combo-tier-card" key={t.n}>
-                <div className="combo-tier-count">{t.plays}</div>
+                <div className="combo-tier-pct">{t.share}%</div>
                 <div className="combo-tier-label">{t.label}</div>
-                <div className="combo-tier-sub">{t.share}% of decks · {t.winRate}% win</div>
+                <div className="combo-tier-sub">{t.plays} {t.plays === 1 ? "deck" : "decks"} · {t.winRate}% win</div>
               </div>
             ))}
           </div>
@@ -668,17 +655,6 @@ const GameStats: React.FC = () => {
               </div>
             ))}
           </div>
-
-          {(stats.colorCombos.shardPlays + stats.colorCombos.wedgePlays) > 0 && (
-            <div className="section-note">
-              3-color decks lean{" "}
-              <strong>
-                {stats.colorCombos.shardPlays >= stats.colorCombos.wedgePlays ? "shards" : "wedges"}
-              </strong>{" "}
-              — {stats.colorCombos.shardPlays} shard ·{" "}
-              {stats.colorCombos.wedgePlays} wedge
-            </div>
-          )}
         </div>
       )}
     </div>
