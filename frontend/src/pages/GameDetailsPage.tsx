@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import GameDetails from "../components/Games/GameDetails";
 import { useSession } from "../context/SessionContext";
+import { encodeCommanderKey } from "../utils/commanderKey";
 
 const GameDetailsPage: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
@@ -19,6 +20,10 @@ const GameDetailsPage: React.FC = () => {
 
   const handlePlayerClick = (playerName: string) => {
     navigate(`/players/${encodeURIComponent(playerName)}`);
+  };
+
+  const handleCommanderClick = (deckName: string) => {
+    navigate(`/stats/commanders/${encodeCommanderKey(deckName)}`);
   };
 
   // Find the game from current session
@@ -67,6 +72,7 @@ const GameDetailsPage: React.FC = () => {
         winner={winnerObj}
         onClose={handleClose}
         onPlayerClick={handlePlayerClick}
+        onCommanderClick={handleCommanderClick}
       />
     </DetailsPageShell>
   );

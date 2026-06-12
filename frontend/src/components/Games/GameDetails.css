@@ -148,6 +148,17 @@
   font-style: italic;
 }
 
+.player-commander.is-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.player-commander.is-clickable:hover {
+  color: var(--text);
+}
+
 /* ===================== */
 /* Notes Section */
 /* ===================== */

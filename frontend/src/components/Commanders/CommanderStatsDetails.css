@@ -1,0 +1,71 @@
+.commander-stats-header {
+  align-items: center;
+}
+
+.commander-stats-art {
+  flex-shrink: 0;
+}
+
+.commander-stats-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+/* Game-by-game list */
+.commander-games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.commander-game-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--surface-2, rgba(255, 255, 255, 0.04));
+  transition: background 0.12s ease;
+}
+
+.commander-game-item:hover {
+  background: var(--surface-3, rgba(255, 255, 255, 0.08));
+}
+
+.commander-game-placement {
+  flex-shrink: 0;
+  min-width: 3.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-muted, #9aa0a6);
+}
+
+.commander-game-placement.placement-1 {
+  color: var(--gold, #f5c518);
+}
+
+.commander-game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.commander-game-pilot {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.commander-game-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted, #9aa0a6);
+}
+
+@media (max-width: 600px) {
+  .commander-stats-title {
+    font-size: 1.3rem;
+  }
+}

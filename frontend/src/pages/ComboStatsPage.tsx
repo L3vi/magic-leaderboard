@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { getCachedCommanderColors } from "../utils/commanderColorCache";
 import { colorKey, comboLabel, COMBO_NAMES, TIER_LABELS } from "../utils/colorCombos";
+import { encodeCommanderKey } from "../utils/commanderKey";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import ComboStatsDetails from "../components/ColorStats/ComboStatsDetails";
 import type { ComboStatsData, ComboCommanderStats } from "../types";
@@ -131,7 +132,12 @@ export default function ComboStatsPage() {
 
   return (
     <DetailsPageShell title="Combination Statistics" onClose={handleClose}>
-      <ComboStatsDetails stats={stats} />
+      <ComboStatsDetails
+        stats={stats}
+        onCommanderClick={(name) =>
+          navigate(`/stats/commanders/${encodeCommanderKey(name)}`)
+        }
+      />
     </DetailsPageShell>
   );
 }

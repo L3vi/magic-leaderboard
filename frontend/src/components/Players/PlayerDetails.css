@@ -152,6 +152,15 @@
   word-wrap: break-word;
 }
 
+.commander-name.is-clickable {
+  cursor: pointer;
+}
+
+.commander-name.is-clickable:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .commander-count {
   font-size: 0.875rem;
   color: var(--text-muted);
@@ -275,6 +284,15 @@
   color: var(--foreground);
   margin-bottom: 0.25rem;
   word-wrap: break-word;
+}
+
+.game-commander.is-clickable {
+  cursor: pointer;
+}
+
+.game-commander.is-clickable:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .game-notes {

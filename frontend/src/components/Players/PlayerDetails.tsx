@@ -6,6 +6,7 @@ import { useCommanderColors } from "../../hooks/useCommanderColors";
 import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommanderDisplay";
 import CardModal from "../CardModal/CardModal";
 import { formatPlayTime } from "../../utils/formatTime";
+import { commanderDeckName, encodeCommanderKey } from "../../utils/commanderKey";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
@@ -127,7 +128,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
 
         {/* Most Played Commander */}
         {mostPlayedCommander && (
-          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} playerId={playerId} />
+          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} playerId={playerId} onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)} />
         )}
 
         {/* Commander Color Distribution */}
@@ -143,7 +144,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
               {sortedGames.map(g => {
                 const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
                 return (
-                  <GameItemWithImage key={g.id} game={g} player={p} onCardClick={setSelectedCard} onGameClick={onGameClick} />
+                  <GameItemWithImage key={g.id} game={g} player={p} onCardClick={setSelectedCard} onGameClick={onGameClick} onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)} />
                 );
               })}
             </div>
@@ -162,7 +163,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   );
 };
 
-function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string }) {
+function MostPlayedCommanderCard({ commander, count, onCardClick, playerId, onCommanderClick }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string; onCommanderClick?: (deckName: string) => void }) {
   const commanderArray = Array.isArray(commander) ? commander : [commander];
   const isPartner = commanderArray.length === 2;
   // Hooks must run unconditionally and a fixed number of times — never in a
@@ -199,7 +200,12 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { 
           )
         )}
         <div className="commander-info">
-          <div className="commander-name">{commanderName}</div>
+          <div
+            className={`commander-name${onCommanderClick ? " is-clickable" : ""}`}
+            onClick={onCommanderClick ? () => onCommanderClick(commanderDeckName(commander)) : undefined}
+          >
+            {commanderName}
+          </div>
           <div className="commander-count">{count} game{count > 1 ? 's' : ''}</div>
         </div>
       </div>
@@ -207,7 +213,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { 
   );
 }
 
-function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onGameClick?: (gameId: string) => void }) {
+function GameItemWithImage({ game, player, onCardClick, onGameClick, onCommanderClick }: { game: any; player: any; onCardClick: (card: { name: string; imageUrl: string }) => void; onGameClick?: (gameId: string) => void; onCommanderClick?: (deckName: string) => void }) {
   const commanders = Array.isArray(player?.commander) ? player?.commander : [player?.commander || ""];
 
   const handleCardClick = (card: { name: string; imageUrl: string }) => {
@@ -235,7 +241,19 @@ function GameItemWithImage({ game, player, onCardClick, onGameClick }: { game: a
           playerId={player?.playerId}
         />
         <div className="game-commander-info">
-          <div className="game-commander">{Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}</div>
+          <div
+            className={`game-commander${onCommanderClick ? " is-clickable" : ""}`}
+            onClick={
+              onCommanderClick
+                ? (e) => {
+                    e.stopPropagation();
+                    onCommanderClick(commanderDeckName(player?.commander));
+                  }
+                : undefined
+            }
+          >
+            {Array.isArray(player?.commander) ? player?.commander.join(' // ') : player?.commander}
+          </div>
           {game.notes && <div className="game-notes">{game.notes}</div>}
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { getCachedCommanderColors } from "../utils/commanderColorCache";
+import { encodeCommanderKey } from "../utils/commanderKey";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import ColorStatsDetails from "../components/ColorStats/ColorStatsDetails";
 import type { ColorStatsData, CommanderColorStats } from "../types";
@@ -90,8 +91,7 @@ export default function ColorStatsPage() {
   };
 
   const handleCommanderClick = (commanderName: string) => {
-    // Future: Navigate to commander details page
-    console.log("Commander clicked:", commanderName);
+    navigate(`/stats/commanders/${encodeCommanderKey(commanderName)}`);
   };
 
   const colorLabels: Record<string, string> = {

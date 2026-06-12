@@ -130,6 +130,36 @@ export interface ComboStatsData {
   commanders: ComboCommanderStats[];
 }
 
+/** One pilot's record with a single commander/deck. */
+export interface CommanderPilotStats {
+  playerName: string;
+  plays: number;
+  wins: number;
+  winRate: number;
+}
+
+/** A single game in which the commander appeared, with that pilot's result. */
+export interface CommanderGameAppearance {
+  gameId: string;
+  dateCreated: string;
+  playerName: string;
+  placement: number;
+  playerCount: number;
+}
+
+/** Aggregated stats for one commander/deck across a session. */
+export interface CommanderStatsData {
+  /** Canonical deck name — "A // B" (sorted) for partner decks. */
+  deckName: string;
+  /** Individual commander names, for art display. */
+  commanders: string[];
+  totalPlays: number;
+  totalWins: number;
+  winRate: number;
+  pilots: CommanderPilotStats[];
+  appearances: CommanderGameAppearance[];
+}
+
 // ============================================================================
 // UTILITY TYPES
 // ============================================================================
