@@ -18,6 +18,12 @@
   color: var(--text);
 }
 
+/* Space between sections, but not after the last one (no trailing gap before
+   the panel's own padding). */
+.stats-section:not(:last-child) {
+  margin-bottom: 2.5rem;
+}
+
 .stats-section h3 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
