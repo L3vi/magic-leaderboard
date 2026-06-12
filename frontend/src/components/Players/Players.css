@@ -147,25 +147,93 @@
   justify-content: flex-start;
 }
 
-/* Mobile shows Name · Score · Weighted Avg (the column the board is sorted by,
-   so the order reads correctly). Raw Average and Games are hidden here and
-   reappear on wider screens / landscape. */
-@media (max-width: 639px) {
-  .games-col,
-  .player-average {
-    display: none !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    flex: 0 !important;
-  }
-}
-
 @media (min-width: 640px) {
   .games-col,
   .weighted-avg-col,
   .player-average {
     display: flex;
+  }
+}
+
+/* ============================================================= */
+/* Compact-screen horizontal scroll with a pinned Name column.   */
+/* Instead of hiding Average + Games on phones, keep every column */
+/* and let the table scroll sideways; Name stays frozen on the    */
+/* left so each row is always identifiable, and a right-edge fade */
+/* signals there's more to swipe to.                              */
+/* ============================================================= */
+
+/* The region is the positioning context for the fade overlay so the fade
+   covers only the header+list, not the GameStats below. */
+.leaderboard-scroll-region {
+  position: relative;
+}
+
+@media (max-width: 639px) {
+  .leaderboard-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  /* Grow header + each row to their natural width so the extra columns push
+     past the viewport edge and become scrollable, while never shrinking below
+     the full viewport width. */
+  .leaderboard-header,
+  .leaderboard-scroll .player-row {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  /* Header and row cells share these column classes, so pinning one explicit
+     width per column here keeps the two perfectly aligned as they scroll —
+     otherwise the header (sized to its labels) and rows (sized by flex) drift
+     to different total widths and the columns stop lining up. */
+  .leaderboard-scroll .leaderboard-col {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+  }
+  .leaderboard-scroll .player-score  { width: 92px;  min-width: 92px;  }
+  .leaderboard-scroll .player-average { width: 100px; min-width: 100px; }
+  .leaderboard-scroll .weighted-avg-col { width: 128px; min-width: 128px; }
+  .leaderboard-scroll .games-col     { width: 92px;  min-width: 92px;  }
+
+  .leaderboard-scroll .leaderboard-col.player-name {
+    /* Pin the name column to the left edge while the rest scrolls under it. */
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    width: 120px;
+    min-width: 120px;
+    background: var(--surface);
+  }
+
+  /* Header's pinned name sits over the page background, not a row surface. */
+  .leaderboard-header .player-name {
+    background: var(--background);
+  }
+
+  /* Keep the medal accent visible to the left of the pinned name. */
+  .player-row.rank-1 .player-name { box-shadow: inset 3px 0 0 #fbbf24; }
+  .player-row.rank-2 .player-name { box-shadow: inset 3px 0 0 #cbd5e1; }
+  .player-row.rank-3 .player-name { box-shadow: inset 3px 0 0 #cd7f32; }
+
+  /* Right-edge fade hint — purely decorative, never intercepts taps. */
+  .leaderboard-scroll-fade {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to left, var(--background), transparent);
+    z-index: 3;
+  }
+}
+
+/* No horizontal scroll or fade once every column fits natively. */
+@media (min-width: 640px) {
+  .leaderboard-scroll-fade {
+    display: none;
   }
 }
