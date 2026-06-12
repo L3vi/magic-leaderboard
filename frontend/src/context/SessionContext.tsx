@@ -141,33 +141,39 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     loadData();
 
-    // Auto-refresh every 30 seconds using smart (delta) refresh for non-blocking updates
-    let refreshInterval: NodeJS.Timeout;
-
-    const startAutoRefresh = async () => {
-      refreshInterval = setInterval(async () => {
-        try {
-          // Diff against the latest data (via refs), not the stale closure capture.
-          await Promise.all([
-            refreshGamesWithDelta(gamesRef.current, activeSession),
-            refreshSessionPlayersWithDelta(playersRef.current, activeSession),
-          ]).then(([gamesResult, playersResult]) => {
-            if (gamesResult.hasChanges) {
-              setGames(gamesResult.newGames);
-            }
-            if (playersResult.hasChanges) {
-              setPlayers(playersResult.newPlayers);
-            }
-          });
-        } catch (err) {
-          console.error('Error in auto-refresh:', err);
-        }
-      }, 30000);
+    // Background refresh: diff against the latest data (via refs), not the stale
+    // closure capture, and only apply when something actually changed.
+    const runRefresh = async () => {
+      try {
+        const [gamesResult, playersResult] = await Promise.all([
+          refreshGamesWithDelta(gamesRef.current, activeSession),
+          refreshSessionPlayersWithDelta(playersRef.current, activeSession),
+        ]);
+        if (gamesResult.hasChanges) setGames(gamesResult.newGames);
+        if (playersResult.hasChanges) setPlayers(playersResult.newPlayers);
+      } catch (err) {
+        console.error('Error in auto-refresh:', err);
+      }
     };
-    
-    startAutoRefresh();
 
-    return () => clearInterval(refreshInterval);
+    // Poll every 30s, but skip ticks while the tab is hidden — no point burning
+    // Firestore reads (and battery) on a backgrounded tab, which is the common
+    // case on mobile/PWA. When the tab becomes visible again, refresh once
+    // immediately so the user lands on current data instead of waiting a cycle.
+    const refreshInterval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      runRefresh();
+    }, 30000);
+
+    const handleVisibility = () => {
+      if (!document.hidden) runRefresh();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(refreshInterval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [activeSession]);
 
   // Refresh all data (players + games) with fresh API calls
