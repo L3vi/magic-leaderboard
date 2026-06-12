@@ -283,6 +283,7 @@ export async function fetchGames(session: string): Promise<Game[]> {
   }
 
   try {
+    await authReady;
     const gamesCollection = collection(db, "sessions", session, "games");
     const snapshot = await getDocs(gamesCollection);
     const games: Game[] = snapshot.docs.map((docSnapshot) => ({

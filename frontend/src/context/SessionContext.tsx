@@ -116,6 +116,12 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Load data when session changes
   useEffect(() => {
     if (!activeSession) return;
+    // Guard against stale responses: if the user switches seasons before the
+    // previous season's fetch resolves (common on a cold start, where the first
+    // season's games aren't cached yet and the request is slow), the older
+    // in-flight request must not clobber the newly-selected season's data or
+    // its loading flag. Ignore anything that lands after this effect re-runs.
+    let cancelled = false;
     const loadData = async () => {
       try {
         setLoading(true);
@@ -124,18 +130,20 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
           fetchPlayers(),
           fetchGames(activeSession),
         ]);
-        
+
         // Filter players for the active session
         const sessionPlayersData = await fetchPlayersForSession(allPlayersData, activeSession);
-        
+
+        if (cancelled) return;
         setPlayers(sessionPlayersData);
         setGames(gamesData);
       } catch (err) {
+        if (cancelled) return;
         const message = err instanceof Error ? err.message : 'Failed to load data';
         setError(message);
         console.error('Error loading data:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -171,6 +179,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
+      cancelled = true;
       clearInterval(refreshInterval);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
