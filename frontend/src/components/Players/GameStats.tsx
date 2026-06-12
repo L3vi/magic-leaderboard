@@ -72,7 +72,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} average</span> • {playCount} {playCount === 1 ? "play" : "plays"} • {wins} {wins === 1 ? "win" : "wins"}</div>
+        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} average points</span> • {playCount} {playCount === 1 ? "play" : "plays"} • {wins} {wins === 1 ? "win" : "wins"}</div>
       </div>
     </div>
   );
@@ -112,6 +112,8 @@ const GameStats: React.FC = () => {
         colorStats: [] as ColorStats[],
         mostCommonColor: "N/A",
         commonColorCount: 0,
+        multicolorShare: 0,
+        avgColorsPerDeck: 0,
         partnerPairs: [] as Array<{ pair: string; count: number }>,
       };
     }
@@ -130,23 +132,16 @@ const GameStats: React.FC = () => {
     const totalPlayerCount = games.reduce((sum, game) => sum + game.players.length, 0);
     const averagePlayersPerGame = (totalPlayerCount / totalGames).toFixed(1);
 
-    // Estimate total game minutes
-    let totalGameMinutes = 0;
-    if (games.length > 1) {
-      const sortedGames = [...games].sort(
-        (a, b) =>
-          new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime()
-      );
-      let totalGapMinutes = 0;
-      for (let i = 1; i < sortedGames.length; i++) {
-        const gap =
-          new Date(sortedGames[i].dateCreated).getTime() -
-          new Date(sortedGames[i - 1].dateCreated).getTime();
-        totalGapMinutes += gap / 1000 / 60;
-      }
-      const avgGameDuration = totalGapMinutes / (sortedGames.length - 1);
-      totalGameMinutes = Math.round(avgGameDuration * totalGames);
-    }
+    // Estimated play time: a flat ~45 min/game estimate (Commander games run
+    // long). Honest as an estimate — the old "time between games" calc actually
+    // measured the calendar span of the season, which was misleading.
+    const AVG_GAME_MINUTES = 45;
+    const totalGameMinutes = totalGames * AVG_GAME_MINUTES;
+
+    // Deck color counts (for the multicolor share / average colors stats).
+    let multicolorPlays = 0;
+    let colorKnownPlays = 0;
+    let totalDeckColors = 0;
 
     // Commander statistics
     const commanderStats: Record<string, CommanderStats> = {};
@@ -201,7 +196,16 @@ const GameStats: React.FC = () => {
           const colors = getCommanderColors(commander);
           colors.forEach((color) => allCommanderColors.add(color));
         });
-        
+
+        // Multicolor share / avg colors — only count plays whose colors we
+        // actually know (skips "Unknown" and not-yet-loaded commanders).
+        const deckColorCount = allCommanderColors.size;
+        if (deckColorCount >= 1) {
+          colorKnownPlays++;
+          totalDeckColors += deckColorCount;
+          if (deckColorCount >= 2) multicolorPlays++;
+        }
+
         allCommanderColors.forEach((color) => {
           colorStats[color].playCount += 1;
           if (isWinner) {
@@ -300,15 +304,24 @@ const GameStats: React.FC = () => {
     const mostPlayedCommander = sortedByPlay[0]?.name || "N/A";
     const commanderPlayCount = sortedByPlay[0]?.playCount || 0;
 
-    // Most common color - sort by win rate (colors with 0 plays go last)
+    // Color cards are ranked by win rate (performance); colors with 0 plays last.
     const sortedByColor = Object.values(colorStats).sort((a, b) => {
       if (a.playCount === 0 && b.playCount === 0) return 0;
       if (a.playCount === 0) return 1;
       if (b.playCount === 0) return -1;
       return b.winRate - a.winRate;
     });
-    const mostCommonColorCode = sortedByColor[0]?.color || "U";
-    const commonColorCount = sortedByColor[0]?.playCount || 0;
+
+    // Most COMMON color = most plays (a separate question from best win rate).
+    const byColorPlays = Object.values(colorStats)
+      .filter((c) => c.playCount > 0)
+      .sort((a, b) => b.playCount - a.playCount);
+    const mostCommonColorCode = byColorPlays[0]?.color || "U";
+    const commonColorCount = byColorPlays[0]?.playCount || 0;
+
+    // How colorful are the decks?
+    const multicolorShare = colorKnownPlays > 0 ? Math.round((multicolorPlays / colorKnownPlays) * 100) : 0;
+    const avgColorsPerDeck = colorKnownPlays > 0 ? totalDeckColors / colorKnownPlays : 0;
 
     // Partner pairs
     const partnerPairs = Object.entries(partnerPairCounts)
@@ -331,30 +344,18 @@ const GameStats: React.FC = () => {
       mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
       mostCommonColorCode,
       commonColorCount,
+      multicolorShare,
+      avgColorsPerDeck,
       partnerPairs,
     };
   }, [games, colorVersion]);
 
-  // Friendly, inviting empty state instead of a wall of zeros + "N/A" badges
-  // when the season has no games yet.
+  // Quiet empty state instead of a wall of zeros + "N/A" badges when the season
+  // has no games yet. (Use the header's New Game button to add one.)
   if (games.length === 0) {
     return (
       <div className="game-stats">
-        <div className="stats-empty">
-          <div className="stats-empty-icon">🎲</div>
-          <h2 className="stats-empty-title">No games yet</h2>
-          <p className="stats-empty-text">
-            Record your first game to kick off the season — standings, commander
-            performance, and color breakdowns all show up here once you do.
-          </p>
-          <button
-            type="button"
-            className="stats-empty-cta"
-            onClick={() => navigate("/new-game")}
-          >
-            + Record a game
-          </button>
-        </div>
+        <p className="stats-empty-text">No games yet — add one to start the season.</p>
       </div>
     );
   }
@@ -365,7 +366,7 @@ const GameStats: React.FC = () => {
 
       {/* Core Game Stats */}
       <div className="stats-section">
-        <h3>Game Overview</h3>
+        <h3>Season Overview</h3>
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-label">Total Games</div>
@@ -380,24 +381,13 @@ const GameStats: React.FC = () => {
             <div className="stat-value">{stats.uniqueCommanders}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">Average Players/Game</div>
+            <div className="stat-label">Average Players per Game</div>
             <div className="stat-value">{stats.averagePlayersPerGame}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-label">Estimated Total Minutes</div>
+            <div className="stat-label">Estimated Play Time</div>
             <div className="stat-value">{formatPlayTime(stats.totalGameMinutes)}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Most Common Color</div>
-            <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
-            <div className="stat-subtext">Played {stats.commonColorCount} times</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Most Played Commander</div>
-            <div className="stat-value commander-name">{stats.mostPlayedCommander}</div>
-            {stats.commanderPlayCount > 0 && (
-              <div className="stat-subtext">Played {stats.commanderPlayCount} times</div>
-            )}
+            <div className="stat-subtext">≈ 45 min per game</div>
           </div>
         </div>
       </div>
@@ -406,8 +396,17 @@ const GameStats: React.FC = () => {
       <div className="stats-section">
         <h3>Commander Performance</h3>
 
-        {(stats.mostWinsCommander || stats.bestWinRateCommander) && (
+        {(stats.commanderPlayCount > 0 || stats.mostWinsCommander || stats.bestWinRateCommander) && (
           <div className="stats-grid">
+            {stats.commanderPlayCount > 0 && (
+              <div className="stat-card best-commander">
+                <div className="stat-label">Most Played</div>
+                <div className="stat-value commander-name">{stats.mostPlayedCommander}</div>
+                <div className="stat-subtext">
+                  {stats.commanderPlayCount} {stats.commanderPlayCount === 1 ? "game" : "games"}
+                </div>
+              </div>
+            )}
             {stats.mostWinsCommander && (
               <div className="stat-card best-commander">
                 <div className="stat-label">Most Wins</div>
@@ -430,6 +429,9 @@ const GameStats: React.FC = () => {
         )}
 
         <div className="stats-subhead">Top Commanders</div>
+        <div className="section-note">
+          Ranked by average points per game — 1st = 4, 2nd = 3, 3rd = 2, 4th+ = 1
+        </div>
         {stats.commanderStats.length > 0 ? (
           <div className="top-commanders-grid">
             {stats.commanderStats.map((cmd, idx) => (
@@ -450,7 +452,21 @@ const GameStats: React.FC = () => {
 
       {/* Color Stats */}
       <div className="stats-section">
-        <h3>Color Distribution & Performance</h3>
+        <h3>Color Performance</h3>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-label">Most Common Color</div>
+            <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
+            <div className="stat-subtext">{stats.commonColorCount} {stats.commonColorCount === 1 ? "play" : "plays"}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-label">Multicolor Decks</div>
+            <div className="stat-value">{stats.multicolorShare}%</div>
+            <div className="stat-subtext">{stats.avgColorsPerDeck.toFixed(1)} colors per deck on average</div>
+          </div>
+        </div>
+
+        <div className="stats-subhead">Win Rate by Color</div>
         <div className="color-stats-simple">
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => {
