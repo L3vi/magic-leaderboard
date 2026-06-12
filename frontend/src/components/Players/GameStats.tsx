@@ -46,6 +46,47 @@ const COLOR_MAP: Record<string, string> = {
   "G": "Green",
 };
 
+// Pip colors for the small color-identity dots next to a combination name.
+const COLOR_HEX: Record<string, string> = {
+  W: "#f7f3d8", U: "#0ea5e9", B: "#6b7280", R: "#ef4444", G: "#22c55e",
+};
+
+// A deck's color identity, normalized to canonical WUBRG order so it maps to a
+// single combination key regardless of the order colors were encountered.
+const WUBRG = "WUBRG";
+const colorKey = (colors: string[]): string =>
+  [...new Set(colors)].sort((a, b) => WUBRG.indexOf(a) - WUBRG.indexOf(b)).join("");
+
+// Canonical Commander color-combination names. Built from WUBRG-ordered keys so
+// e.g. Boros (R,W) and any "W,R" both resolve to the same "WR" → "Boros".
+const COMBO_NAMES: Record<string, string> = (() => {
+  const defs: Record<string, string> = {
+    // Guilds (2-color)
+    WU: "Azorius", UB: "Dimir", BR: "Rakdos", RG: "Gruul", GW: "Selesnya",
+    WB: "Orzhov", UR: "Izzet", BG: "Golgari", RW: "Boros", GU: "Simic",
+    // Shards (allied 3-color)
+    WUB: "Esper", UBR: "Grixis", BRG: "Jund", RGW: "Naya", GWU: "Bant",
+    // Wedges (enemy 3-color)
+    WBG: "Abzan", URW: "Jeskai", BGU: "Sultai", RWB: "Mardu", GUR: "Temur",
+    // Nephilim (4-color, named by the missing color)
+    WUBR: "Yore-Tiller", UBRG: "Glint-Eye", WBRG: "Dune-Brood", WURG: "Ink-Treader", WUBG: "Witch-Maw",
+    // 5-color
+    WUBRG: "Five-Color",
+  };
+  const out: Record<string, string> = {};
+  for (const [colors, name] of Object.entries(defs)) out[colorKey(colors.split(""))] = name;
+  return out;
+})();
+
+// 3-color shards are the allied arcs; everything else 3-color is a wedge.
+const SHARD_KEYS = new Set(
+  ["WUB", "UBR", "BRG", "RGW", "GWU"].map((c) => colorKey(c.split("")))
+);
+
+const TIER_LABELS: Record<number, string> = {
+  1: "Mono", 2: "2-color", 3: "3-color", 4: "4-color", 5: "5-color",
+};
+
 // Commander colors are read straight from the cache; the cache is populated up
 // front by preFetchCommanderData (see the effect below), so this stays a pure
 // read and never fires its own per-commander request.
@@ -119,6 +160,12 @@ const GameStats: React.FC = () => {
         commonColorCount: 0,
         multicolorShare: 0,
         avgColorsPerDeck: 0,
+        colorCombos: {
+          tiers: [] as Array<{ n: number; label: string; plays: number; share: number; winRate: number }>,
+          top: [] as Array<{ label: string; key: string; colorCount: number; plays: number; winRate: number }>,
+          shardPlays: 0,
+          wedgePlays: 0,
+        },
         partnerPairs: [] as Array<{ pair: string; count: number }>,
       };
     }
@@ -165,6 +212,13 @@ const GameStats: React.FC = () => {
     let multicolorPlays = 0;
     let colorKnownPlays = 0;
     let totalDeckColors = 0;
+
+    // Color-combination aggregation: by tier (number of colors) and by the named
+    // combination (guild / shard / wedge / nephilim / five-color).
+    const tierCounts: Record<number, { plays: number; wins: number }> = {};
+    const comboCounts: Record<string, { label: string; key: string; colorCount: number; plays: number; wins: number }> = {};
+    let shardPlays = 0;
+    let wedgePlays = 0;
 
     // Commander statistics
     const commanderStats: Record<string, CommanderStats> = {};
@@ -237,6 +291,20 @@ const GameStats: React.FC = () => {
           colorKnownPlays++;
           totalDeckColors += deckColorCount;
           if (deckColorCount >= 2) multicolorPlays++;
+
+          // Bucket this deck-play by tier and by named combination.
+          const k = colorKey([...allCommanderColors]);
+          const label = deckColorCount === 1 ? COLOR_MAP[k] : COMBO_NAMES[k] || k;
+          const tier = tierCounts[deckColorCount] || (tierCounts[deckColorCount] = { plays: 0, wins: 0 });
+          tier.plays += 1;
+          if (isWinner) tier.wins += 1;
+          const combo = comboCounts[k] || (comboCounts[k] = { label, key: k, colorCount: deckColorCount, plays: 0, wins: 0 });
+          combo.plays += 1;
+          if (isWinner) combo.wins += 1;
+          if (deckColorCount === 3) {
+            if (SHARD_KEYS.has(k)) shardPlays += 1;
+            else wedgePlays += 1;
+          }
         }
 
         allCommanderColors.forEach((color) => {
@@ -356,6 +424,29 @@ const GameStats: React.FC = () => {
     const multicolorShare = colorKnownPlays > 0 ? Math.round((multicolorPlays / colorKnownPlays) * 100) : 0;
     const avgColorsPerDeck = colorKnownPlays > 0 ? totalDeckColors / colorKnownPlays : 0;
 
+    // Color combinations: tier breakdown (by # of colors), the most-played named
+    // combinations, and the 3-color shard-vs-wedge lean.
+    const comboTiers = [1, 2, 3, 4, 5]
+      .filter((n) => tierCounts[n]?.plays)
+      .map((n) => ({
+        n,
+        label: TIER_LABELS[n],
+        plays: tierCounts[n].plays,
+        share: colorKnownPlays > 0 ? Math.round((tierCounts[n].plays / colorKnownPlays) * 100) : 0,
+        winRate: tierCounts[n].plays > 0 ? Math.round((tierCounts[n].wins / tierCounts[n].plays) * 100) : 0,
+      }));
+    const topCombos = Object.values(comboCounts)
+      .sort((a, b) => b.plays - a.plays || b.wins - a.wins)
+      .slice(0, 6)
+      .map((c) => ({
+        label: c.label,
+        key: c.key,
+        colorCount: c.colorCount,
+        plays: c.plays,
+        winRate: c.plays > 0 ? Math.round((c.wins / c.plays) * 100) : 0,
+      }));
+    const colorCombos = { tiers: comboTiers, top: topCombos, shardPlays, wedgePlays };
+
     // Partner pairs
     const partnerPairs = Object.entries(partnerPairCounts)
       .map(([pair, count]) => ({ pair, count }))
@@ -380,6 +471,7 @@ const GameStats: React.FC = () => {
       commonColorCount,
       multicolorShare,
       avgColorsPerDeck,
+      colorCombos,
       partnerPairs,
     };
   }, [games, colorVersion]);
@@ -402,6 +494,12 @@ const GameStats: React.FC = () => {
       </div>
     );
   }
+
+  // Small color-identity dots for a combination (e.g. Mardu → red/white/black).
+  const renderPips = (key: string) =>
+    key.split("").map((c, i) => (
+      <span key={i} className="combo-pip" style={{ background: COLOR_HEX[c] }} title={COLOR_MAP[c]} />
+    ));
 
   return (
     <div className="game-stats">
@@ -541,6 +639,48 @@ const GameStats: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Color Combinations */}
+      {stats.colorCombos.tiers.length > 0 && (
+        <div className="stats-section">
+          <h3>Color Combinations</h3>
+
+          <div className="stats-subhead">By Number of Colors</div>
+          <div className="combo-tiers">
+            {stats.colorCombos.tiers.map((t) => (
+              <div className="combo-tier-card" key={t.n}>
+                <div className="combo-tier-count">{t.plays}</div>
+                <div className="combo-tier-label">{t.label}</div>
+                <div className="combo-tier-sub">{t.share}% of decks · {t.winRate}% win</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="stats-subhead">Most Played Combinations</div>
+          <div className="combo-list">
+            {stats.colorCombos.top.map((c, idx) => (
+              <div className="combo-row" key={idx}>
+                <span className="combo-pips">{renderPips(c.key)}</span>
+                <span className="combo-name">{c.label}</span>
+                <span className="combo-meta">
+                  {c.plays} {c.plays === 1 ? "play" : "plays"} · {c.winRate}% win
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {(stats.colorCombos.shardPlays + stats.colorCombos.wedgePlays) > 0 && (
+            <div className="section-note">
+              3-color decks lean{" "}
+              <strong>
+                {stats.colorCombos.shardPlays >= stats.colorCombos.wedgePlays ? "shards" : "wedges"}
+              </strong>{" "}
+              — {stats.colorCombos.shardPlays} shard ·{" "}
+              {stats.colorCombos.wedgePlays} wedge
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
