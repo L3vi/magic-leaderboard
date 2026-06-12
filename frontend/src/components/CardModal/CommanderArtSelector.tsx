@@ -29,6 +29,11 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
     currentVariantId
   );
   const [scrollPosition, setScrollPosition] = useState(0);
+  // Track which thumbnails have finished loading so we can show a shimmer
+  // placeholder until each image is ready.
+  const [loadedIds, setLoadedIds] = useState<Set<string>>(() => new Set());
+  const markLoaded = (id: string) =>
+    setLoadedIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
 
   // The saved preference loads asynchronously, so currentVariantId is often
   // undefined on mount. Once it arrives, pre-highlight the saved variant — but
@@ -97,11 +102,17 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
                   delay: Math.min(index * 0.05, 0.2),
                 }}
               >
+                {!loadedIds.has(variant.id) && (
+                  <div className="art-variant-skeleton" />
+                )}
                 <img
                   src={variant.art}
                   alt={`${variant.name} - ${variant.set}`}
-                  className="art-variant-image"
-                  loading="lazy"
+                  className={`art-variant-image ${
+                    loadedIds.has(variant.id) ? "loaded" : ""
+                  }`}
+                  onLoad={() => markLoaded(variant.id)}
+                  onError={() => markLoaded(variant.id)}
                 />
                 <div className="art-variant-info">
                   <div className="art-variant-set">{variant.set}</div>

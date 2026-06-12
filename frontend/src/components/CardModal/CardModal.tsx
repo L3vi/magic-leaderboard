@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { motion } from "framer-motion";
-import { useSwipeable } from "react-swipeable";
 import { useCommanderVariants, CardVariant, clearCommanderCache } from "../../hooks/useCommanderArt";
 import { useArtPreferenceRefresh } from "../../context/ArtPreferenceContext";
 import {
@@ -49,14 +48,6 @@ const CardModal: React.FC<CardModalProps> = ({
   }, [playerId, cardName]);
 
   const currentPreferenceId = currentPreference?.variantId;
-
-  const swipeHandlers = useSwipeable({
-    onSwipedDown: () => {
-      onClose();
-    },
-    trackTouch: true,
-    trackMouse: false,
-  });
 
   React.useEffect(() => {
     setDisplayedImageUrl(imageUrl);
@@ -137,9 +128,8 @@ const CardModal: React.FC<CardModalProps> = ({
 
   const modalContent = (
     <motion.div 
-      className="card-modal-overlay" 
+      className="card-modal-overlay"
       onClick={onClose}
-      {...swipeHandlers}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
