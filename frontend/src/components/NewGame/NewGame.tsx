@@ -38,6 +38,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [previousCommanders, setPreviousCommanders] = useState<{ name: string; partnerCommander?: string }[]>([]);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
+  // Tracks whether the text field currently has focus, so a search that
+  // resolves after the user has dismissed the field doesn't re-open the list.
+  const isFocusedRef = useRef(false);
   const artUrl = useCommanderArt(value);
   const fullImageUrl = useCommanderFullImage(value);
   const preferenceArtUrl = useCommanderArtWithPreference(value, playerId && playerId !== "__add__" && playerId !== "" ? playerId : undefined);
@@ -129,12 +132,13 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       .then(res => res.json())
       .then(data => {
         if (data.data && Array.isArray(data.data)) {
-          setResults(data.data.slice(0, 10).map((card: any) => ({ 
-            name: card.name, 
+          setResults(data.data.slice(0, 10).map((card: any) => ({
+            name: card.name,
             id: card.id,
             image: card.image_uris?.small || card.image_uris?.normal || undefined
           })));
-          setShowDropdown(true);
+          // Don't pop the list back open if the field was dismissed mid-search.
+          if (isFocusedRef.current) setShowDropdown(true);
         } else {
           setResults([]);
         }
@@ -183,11 +187,24 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   };
 
   const handleInputFocus = () => {
+    isFocusedRef.current = true;
     // Show previous commanders when input is focused and empty
     if (!value.trim() && previousCommanders.length > 0) {
       setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
       setShowDropdown(true);
     }
+  };
+
+  const handleInputBlur = () => {
+    // Dismiss the suggestions when the field loses focus — e.g. tapping the
+    // mobile keyboard's Done/return — even if nothing was selected. Options
+    // select on the row's onMouseDown, which fires before this blur, so taps
+    // still register. Also cancel any pending debounced search so it can't
+    // re-open the list after the keyboard is gone.
+    isFocusedRef.current = false;
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    setShowDropdown(false);
+    setLoading(false);
   };
 
   const handleInputClick = () => {
@@ -206,7 +223,11 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           src={selectedImage}
           alt={value || defaultCommander || "commander"}
           style={{ cursor: onCardClick ? "pointer" : "default" }}
-          onClick={() => {
+          onClick={(e) => {
+            // This img sits inside the field's <label>, so a tap would otherwise
+            // activate the label and focus the commander text input — popping the
+            // mobile keyboard over the art selector. Cancel that default focus.
+            e.preventDefault();
             if (onCardClick) {
               // Use selected value if available, otherwise use default commander
               const commanderName = value || defaultCommander;
@@ -229,6 +250,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           value={value}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           onClick={handleInputClick}
           placeholder={hasStartedTyping ? "Find commander" : (lastPlayedCommander || "Commander name")}
           autoComplete="off"
