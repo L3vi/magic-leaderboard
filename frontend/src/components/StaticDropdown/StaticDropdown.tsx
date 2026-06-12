@@ -12,6 +12,7 @@ import {
   useListNavigation,
   useInteractions,
   FloatingFocusManager,
+  FloatingPortal,
   type Placement,
 } from '@floating-ui/react';
 import './StaticDropdown.css';
@@ -153,6 +154,7 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
       </button>
 
       {open && options.length > 0 && (
+        <FloatingPortal>
         <FloatingFocusManager context={context} modal={false} initialFocus={-1}>
           <ul
             className="autocomplete-dropdown"
@@ -200,6 +202,7 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
             })}
           </ul>
         </FloatingFocusManager>
+        </FloatingPortal>
       )}
     </div>
   );
