@@ -294,8 +294,12 @@ export async function fetchGames(session: string): Promise<Game[]> {
     return games;
   } catch (error) {
     console.error("Error fetching games from Firebase, using local fallback:", error);
-    const fallback = gamesData as Game[];
-    setCache(cacheKey, fallback);
+    // The bundled snapshot only covers one season; only serve it for THAT season,
+    // never under a different one (which would show misleading wrong-season data).
+    // Don't cache the fallback — a transient error should retry on the next fetch.
+    const fallback = (gamesData as Game[]).filter(
+      (g) => (g as { sessionId?: string }).sessionId === session
+    );
     return fallback;
   }
 }

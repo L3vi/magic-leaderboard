@@ -46,7 +46,9 @@ try {
     process.exit(1);
   }
 
-  const games = sessionData.games || [];
+  // Tag each bundled game with its session so the frontend's offline fallback
+  // only serves these games for the matching season (never for a different one).
+  const games = (sessionData.games || []).map((g) => ({ ...g, sessionId: SESSION }));
   console.log(`🎮 Found ${games.length} games for session "${SESSION}"\n`);
 
   // Ensure frontend data directory exists
