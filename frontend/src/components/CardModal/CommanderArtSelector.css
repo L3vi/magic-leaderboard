@@ -247,3 +247,27 @@
     padding: 0 0.75rem;
   }
 }
+
+/* Column layout (mobile / tablet): make the selector fill the space left by the
+   capped preview image, with the variant strip as the flex scroll region and the
+   action bar pinned below it. This keeps the bar from ever overlapping the
+   thumbnails (see CardModal.css for the matching modal-content rules). */
+@media (max-width: 1023px) {
+  .art-selector-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .art-selector-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-actions-modal {
+    flex-shrink: 0;
+  }
+}

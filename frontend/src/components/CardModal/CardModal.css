@@ -65,6 +65,22 @@
   }
 }
 
+/* Column layout (mobile / tablet): instead of scrolling the whole modal — which
+   let the pinned action bar float over the art thumbnails — cap the preview
+   image and let the variant strip be the only scroll region, so the Cancel/Save
+   bar sits below it as a true footer and never overlaps the thumbnails. */
+@media (max-width: 1023px) {
+  .card-modal-content {
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .card-modal-image {
+    flex-shrink: 0;
+    max-height: 45vh;
+  }
+}
+
 .card-modal-close {
   position: absolute;
   top: calc(50% - 330px);
