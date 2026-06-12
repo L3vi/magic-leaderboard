@@ -19,8 +19,17 @@ const commanderVariantsCache: Record<string, CardVariant[]> = {};
  * Reused for both art and full image queries
  */
 async function fetchCommanderImages(commander: string): Promise<CardImageCache> {
+  // Cache is authoritative: never hit the network for a commander we already have.
+  // Callers (the *WithPreference hooks) gate their own cache check behind an
+  // isMounted flag, which a StrictMode/re-mount race can flip false mid-await,
+  // letting them fall through to here — so this guard prevents the redundant call.
+  const cached = getImageCache(commander);
+  if (cached) {
+    return cached;
+  }
+
   const requestKey = `image_${commander}`;
-  
+
   // Check if this request is already in-flight
   const inflightPromise = getInflightRequest(requestKey);
   if (inflightPromise) {
