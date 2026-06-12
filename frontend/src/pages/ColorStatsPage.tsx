@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { getCachedCommanderColors } from "../utils/commanderColorCache";
 import { encodeCommanderKey } from "../utils/commanderKey";
+import { useColorBackdrop } from "../hooks/useColorBackdrop";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import ColorStatsDetails from "../components/ColorStats/ColorStatsDetails";
 import type { ColorStatsData, CommanderColorStats } from "../types";
@@ -11,6 +12,10 @@ export default function ColorStatsPage() {
   const { color } = useParams<{ color: string }>();
   const navigate = useNavigate();
   const { games } = useSession();
+
+  // Iconic full-art Zendikar land behind the page (a mountain for red, etc.),
+  // with the mana color blended into the overlay.
+  const { image: backdropImage, tint: backdropTint } = useColorBackdrop(color);
 
   // Calculate color stats from all games
   const colorStats = useMemo(() => {
@@ -137,7 +142,12 @@ export default function ColorStatsPage() {
   }
 
   return (
-    <DetailsPageShell title="Color Statistics" onClose={handleClose}>
+    <DetailsPageShell
+      title="Color Statistics"
+      onClose={handleClose}
+      backdropImage={backdropImage || undefined}
+      backdropTint={backdropTint || undefined}
+    >
       <ColorStatsDetails
         color={color}
         stats={colorStats}

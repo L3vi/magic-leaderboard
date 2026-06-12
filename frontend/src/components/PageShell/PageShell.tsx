@@ -18,6 +18,17 @@ interface PageShellProps {
    * "padded" = centered max-width form padding. Defaults to "padded".
    */
   contentVariant?: "flush" | "padded";
+  /**
+   * Optional faded art shown behind the page content for context/flavor
+   * (e.g. a commander's card art on its stats page). Rendered under a dark,
+   * site-themed overlay so it reads as a background tint, not a photo.
+   */
+  backdropImage?: string;
+  /**
+   * Optional accent color blended into the backdrop overlay (e.g. the mana
+   * color on a color-stats page). Falls back to the site's purple theme.
+   */
+  backdropTint?: string;
   loading?: boolean;
   error?: string;
   /** Optional: not rendered while `loading` or `error` is shown. */
@@ -59,6 +70,8 @@ const PageShell: React.FC<PageShellProps> = ({
   backLabel = "← Back",
   headerAction,
   contentVariant = "padded",
+  backdropImage,
+  backdropTint,
   loading = false,
   error,
   children,
@@ -95,9 +108,23 @@ const PageShell: React.FC<PageShellProps> = ({
   }, [setSkipAnimation]);
 
   const contentClass = `page-shell__content page-shell__content--${contentVariant}`;
+  const shellClass = backdropImage ? "page-shell page-shell--has-backdrop" : "page-shell";
 
   return (
-    <motion.div className="page-shell" {...animationProps}>
+    <motion.div
+      className={shellClass}
+      style={backdropTint ? ({ "--backdrop-tint": backdropTint } as React.CSSProperties) : undefined}
+      {...animationProps}
+    >
+      {backdropImage && (
+        <div className="page-shell__backdrop" aria-hidden="true">
+          <div
+            className="page-shell__backdrop-image"
+            style={{ backgroundImage: `url(${backdropImage})` }}
+          />
+          <div className="page-shell__backdrop-overlay" />
+        </div>
+      )}
       <div className="page-shell__header">
         <button className="btn btn-tertiary" onClick={onClose} aria-label={backLabel}>
           {backLabel}

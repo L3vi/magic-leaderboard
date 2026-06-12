@@ -4,6 +4,7 @@ import { useSession } from "../context/SessionContext";
 import { getCachedCommanderColors } from "../utils/commanderColorCache";
 import { colorKey, comboLabel, COMBO_NAMES, TIER_LABELS } from "../utils/colorCombos";
 import { encodeCommanderKey } from "../utils/commanderKey";
+import { useComboBackdrop } from "../hooks/useColorBackdrop";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import ComboStatsDetails from "../components/ColorStats/ComboStatsDetails";
 import type { ComboStatsData, ComboCommanderStats } from "../types";
@@ -29,6 +30,12 @@ export default function ComboStatsPage() {
   const comboKey = rawComboKey ? colorKey(rawComboKey.toUpperCase().split("")) : undefined;
   const tier = rawTier ? parseInt(rawTier, 10) : undefined;
   const isTier = tier !== undefined;
+
+  // Faded Triome art behind 3-color combo pages (e.g. Xander's Lounge for
+  // Grixis), tinted by the combo's blended mana colors. Tier pages get nothing.
+  const { image: backdropImage, tint: backdropTint } = useComboBackdrop(
+    isTier ? undefined : comboKey
+  );
 
   const stats = useMemo<ComboStatsData | null>(() => {
     if (!games || games.length === 0) return null;
@@ -147,7 +154,12 @@ export default function ComboStatsPage() {
   }
 
   return (
-    <DetailsPageShell title="Combination Statistics" onClose={handleClose}>
+    <DetailsPageShell
+      title="Combination Statistics"
+      onClose={handleClose}
+      backdropImage={backdropImage || undefined}
+      backdropTint={backdropTint || undefined}
+    >
       <ComboStatsDetails
         stats={stats}
         onCommanderClick={(name) =>

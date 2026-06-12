@@ -9,6 +9,10 @@ interface DetailsPageShellProps {
   onEdit?: () => void;
   loading?: boolean;
   error?: string;
+  /** Optional faded art shown behind the page (see PageShell). */
+  backdropImage?: string;
+  /** Optional accent color blended into the backdrop overlay. */
+  backdropTint?: string;
 }
 
 /**
@@ -23,6 +27,8 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
   onEdit,
   loading = false,
   error,
+  backdropImage,
+  backdropTint,
 }) => (
   <PageShell
     title={title}
@@ -30,6 +36,8 @@ const DetailsPageShell: React.FC<DetailsPageShellProps> = ({
     contentVariant="flush"
     loading={loading}
     error={error}
+    backdropImage={backdropImage}
+    backdropTint={backdropTint}
     headerAction={
       onEdit && (
         <button className="btn btn-tertiary" onClick={onEdit} aria-label="Edit">

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { commanderDeckName, splitDeckName, decodeCommanderKey } from "../utils/commanderKey";
+import { useCommanderArt } from "../hooks/useCommanderArt";
 import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import CommanderStatsDetails from "../components/Commanders/CommanderStatsDetails";
 import type {
@@ -25,6 +26,11 @@ export default function CommanderStatsPage() {
   const { games, players } = useSession();
 
   const deckName = commanderKey ? decodeCommanderKey(commanderKey) : "";
+
+  // Faded card art behind the page. Use the first commander's art (partner
+  // decks just lead with the "A" half) — pulled from the shared Scryfall cache.
+  const backdropCommander = deckName ? splitDeckName(deckName)[0] : "";
+  const backdropImage = useCommanderArt(backdropCommander);
 
   const stats = useMemo<CommanderStatsData | null>(() => {
     if (!deckName || !games || games.length === 0) return null;
@@ -110,7 +116,11 @@ export default function CommanderStatsPage() {
   }
 
   return (
-    <DetailsPageShell title="Commander Statistics" onClose={handleClose}>
+    <DetailsPageShell
+      title="Commander Statistics"
+      onClose={handleClose}
+      backdropImage={backdropImage || undefined}
+    >
       <CommanderStatsDetails
         stats={stats}
         onPilotClick={(name) => navigate(`/players/${encodeURIComponent(name)}`)}
