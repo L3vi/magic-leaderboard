@@ -166,6 +166,16 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.commander-item.clickable {
+  cursor: pointer;
+}
+
+.commander-item.clickable:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* Highlighted stat in the meta line, so the headline number reads in the same
    gold accent the other stat sections use for "the number". */
 .commander-item-metric {

@@ -7,6 +7,7 @@ import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
 import { scorePlacement } from "../../services/dataService";
 import { COLOR_MAP, COLOR_HEX, TIER_LABELS, colorKey, COMBO_NAMES } from "../../utils/colorCombos";
+import { encodeCommanderKey } from "../../utils/commanderKey";
 import "./GameStats.css";
 
 interface CommanderStats {
@@ -53,15 +54,31 @@ interface CommanderThumbnailProps {
   playCount: number;
   wins: number;
   average: number;
+  onSelect?: () => void;
 }
 
-const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, average }) => {
+const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, average, onSelect }) => {
   // Art is fetched for a single card; for a partner deck ("A // B") use the
   // first commander, since the joined name isn't a real card to look up.
   const imageUrl = useCommanderArt(artName);
 
   return (
-    <div className="commander-item">
+    <div
+      className={`commander-item${onSelect ? " clickable" : ""}`}
+      onClick={onSelect}
+      role={onSelect ? "button" : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+      onKeyDown={
+        onSelect
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect();
+              }
+            }
+          : undefined
+      }
+    >
       {imageUrl && (
         <div className="commander-item-image">
           <img src={imageUrl} alt={name} title={name} />
@@ -463,6 +480,23 @@ const GameStats: React.FC = () => {
     );
   }
 
+  const goToCommander = (name: string) =>
+    navigate(`/stats/commanders/${encodeCommanderKey(name)}`);
+
+  // Shared interactivity for a whole card that drills into a commander page —
+  // click, keyboard (Enter/Space), and the button role/affordance.
+  const commanderCardProps = (name: string) => ({
+    onClick: () => goToCommander(name),
+    role: "button",
+    tabIndex: 0,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        goToCommander(name);
+      }
+    },
+  });
+
   // Small color-identity dots for a combination (e.g. Mardu → red/white/black).
   const renderPips = (key: string) =>
     key.split("").map((c, i) => (
@@ -508,7 +542,7 @@ const GameStats: React.FC = () => {
         {(stats.commanderPlayCount > 0 || stats.mostWinsCommander || stats.bestWinRateCommander) && (
           <div className="stats-grid">
             {stats.commanderPlayCount > 0 && (
-              <div className="stat-card best-commander">
+              <div className="stat-card best-commander clickable" {...commanderCardProps(stats.mostPlayedCommander)}>
                 <div className="stat-label">Most Played</div>
                 <div className="stat-value commander-name">{stats.mostPlayedCommander}</div>
                 <div className="stat-subtext">
@@ -517,7 +551,7 @@ const GameStats: React.FC = () => {
               </div>
             )}
             {stats.mostWinsCommander && (
-              <div className="stat-card best-commander">
+              <div className="stat-card best-commander clickable" {...commanderCardProps(stats.mostWinsCommander.name)}>
                 <div className="stat-label">Most Wins</div>
                 <div className="stat-value commander-name">{stats.mostWinsCommander.name}</div>
                 <div className="stat-subtext">
@@ -526,7 +560,7 @@ const GameStats: React.FC = () => {
               </div>
             )}
             {stats.bestWinRateCommander && (
-              <div className="stat-card best-commander">
+              <div className="stat-card best-commander clickable" {...commanderCardProps(stats.bestWinRateCommander.name)}>
                 <div className="stat-label">Best Win Rate</div>
                 <div className="stat-value commander-name">{stats.bestWinRateCommander.name}</div>
                 <div className="stat-subtext">
@@ -552,6 +586,7 @@ const GameStats: React.FC = () => {
                 playCount={cmd.playCount}
                 wins={cmd.wins}
                 average={cmd.average}
+                onSelect={() => goToCommander(cmd.name)}
               />
             ))}
           </div>
