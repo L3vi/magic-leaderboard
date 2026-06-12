@@ -1,7 +1,5 @@
 import React from "react";
-import { 
-  useCommanderArt, 
-  useCommanderFullImage,
+import {
   useCommanderArtWithPreference,
   useCommanderFullImageWithPreference
 } from "../../hooks/useCommanderArt";
@@ -40,28 +38,31 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   };
   
   const finalSize = getResponsiveSize();
-  // If only one commander, return early
+
+  // Call a fixed set of hooks unconditionally, before any early return, so the
+  // hook count never changes between renders (Rules of Hooks). These *WithPreference
+  // hooks no-op on an empty name and on a missing playerId, so covering up to two
+  // commanders is safe whether this is a single or a partner display.
+  const [cmd1, cmd2] = [commanders?.[0] || "", commanders?.[1] || ""];
+  const art1 = useCommanderArtWithPreference(cmd1, playerId);
+  const art2 = useCommanderArtWithPreference(cmd2, playerId);
+  const full1 = useCommanderFullImageWithPreference(cmd1, playerId);
+  const full2 = useCommanderFullImageWithPreference(cmd2, playerId);
+
+  if (!cmd1) return null;
+
+  // Single commander
   if (!commanders || commanders.length < 2) {
-    const commander = commanders?.[0];
-    if (!commander) return null;
-    
-    const artUrl = playerId
-      ? useCommanderArtWithPreference(commander, playerId)
-      : useCommanderArt(commander);
-    const fullImageUrl = playerId
-      ? useCommanderFullImageWithPreference(commander, playerId)
-      : useCommanderFullImage(commander);
-    
     return (
       <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
-        {artUrl ? (
+        {art1 ? (
           <img
-            src={artUrl}
-            alt={commander}
+            src={art1}
+            alt={cmd1}
             className="partner-commander-img"
             style={{ cursor: onCardClick ? "pointer" : "default" }}
-            onClick={() => onCardClick?.({ name: commander, imageUrl: fullImageUrl || artUrl })}
-            title={commander}
+            onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1 })}
+            title={cmd1}
           />
         ) : (
           <div className="partner-commander-placeholder">?</div>
@@ -70,21 +71,7 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
     );
   }
 
-  // Display first two commanders in a split view
-  const [cmd1, cmd2] = commanders;
-  const art1 = playerId
-    ? useCommanderArtWithPreference(cmd1, playerId)
-    : useCommanderArt(cmd1);
-  const art2 = playerId
-    ? useCommanderArtWithPreference(cmd2, playerId)
-    : useCommanderArt(cmd2);
-  const full1 = playerId
-    ? useCommanderFullImageWithPreference(cmd1, playerId)
-    : useCommanderFullImage(cmd1);
-  const full2 = playerId
-    ? useCommanderFullImageWithPreference(cmd2, playerId)
-    : useCommanderFullImage(cmd2);
-
+  // Two commanders in a split view
   return (
     <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
       {art1 ? (
