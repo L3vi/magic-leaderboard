@@ -308,8 +308,15 @@ const GameStats: React.FC = () => {
     // looks terrible. Instead use the same placement-points scoring as the player
     // leaderboard (1st=4 … 4th+=1), Bayesian-smoothed toward the league average so
     // a commander with one lucky game doesn't top a commander with a solid record.
-    const minPlayThreshold = 3;
-    const commanderArray = Object.values(commanderStats).filter((c) => c.playCount >= minPlayThreshold);
+    // Minimum plays for a commander to appear in the ranking — keeps one-off
+    // flukes out of Top Commanders. Set to 2 so a new season's list populates
+    // after just a couple of repeat plays rather than staying empty for a while.
+    const minPlaysToRank = 2;
+    // Bayesian prior strength: blends each commander's average with this many
+    // phantom league-average games so a small sample can't dominate. Kept at 3
+    // (independent of the eligibility floor above) to preserve the smoothing.
+    const priorStrength = 3;
+    const commanderArray = Object.values(commanderStats).filter((c) => c.playCount >= minPlaysToRank);
 
     const totalCommanderScore = commanderArray.reduce((sum, c) => sum + c.scoreSum, 0);
     const totalCommanderPlays = commanderArray.reduce((sum, c) => sum + c.playCount, 0);
@@ -317,8 +324,8 @@ const GameStats: React.FC = () => {
 
     commanderArray.forEach((c) => {
       c.weightedAverage =
-        (c.playCount * c.average + minPlayThreshold * leagueAverageScore) /
-        (c.playCount + minPlayThreshold);
+        (c.playCount * c.average + priorStrength * leagueAverageScore) /
+        (c.playCount + priorStrength);
     });
 
     const topCommanders = commanderArray
