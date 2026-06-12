@@ -98,6 +98,11 @@ const Players: React.FC = () => {
 
   return (
     <section className="leaderboard main-section" role="table">
+      {/* On compact screens this region scrolls horizontally so every column
+          (Average, Games included) stays reachable without rotating the device.
+          The Name column is pinned left; a right-edge fade hints at more. */}
+      <div className="leaderboard-scroll-region">
+        <div className="leaderboard-scroll" role="presentation">
       <div className="leaderboard-header" role="row" ref={headerRef}>
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
@@ -151,6 +156,9 @@ const Players: React.FC = () => {
             onClick={() => handlePlayerClick(playerScore)}
           />
         ))}
+      </div>
+        </div>
+        <div className="leaderboard-scroll-fade" aria-hidden="true" />
       </div>
       <GameStats />
     </section>
