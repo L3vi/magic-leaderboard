@@ -43,9 +43,15 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
       const response = await scryfallFetch(
         `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(commander)}`
       );
-      // 429 (rate limit) / 5xx / 404: don't poison the cache — let it retry.
       if (!response.ok) {
-        throw new Error(`Scryfall responded ${response.status} for "${commander}"`);
+        // 404 = no card matches that name. Expected for partial / misspelled /
+        // ambiguous input, so it's a normal miss, not an error worth logging.
+        // 429/5xx are real problems — surface those. Either way return empty
+        // without caching, so a transient failure can retry later.
+        if (response.status !== 404) {
+          console.error(`Scryfall responded ${response.status} for "${commander}"`);
+        }
+        return { art: "", full: "" };
       }
       const data = await response.json();
 

@@ -38,6 +38,15 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const [lastPlayedCommander, setLastPlayedCommander] = useState<string | null>(null);
   const [previousCommanders, setPreviousCommanders] = useState<{ name: string; partnerCommander?: string }[]>([]);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
+  // True once a search has come back empty, so we can show "No commanders
+  // found" instead of an invisible, frozen-looking field.
+  const [noResults, setNoResults] = useState(false);
+  // The commander we actually fetch art for. It updates only when one is
+  // chosen from the menu (or preset when editing), NEVER on every keystroke —
+  // otherwise the art hooks below fire a Scryfall lookup per character, and
+  // those pile up ahead of the search in the shared rate-limited queue.
+  const [committedCommander, setCommittedCommander] = useState(value);
+  const isTypingRef = useRef(false);
   const debounceTimer = useRef<NodeJS.Timeout>();
   // Tracks whether the text field currently has focus, so a search that
   // resolves after the user has dismissed the field doesn't re-open the list.
@@ -53,9 +62,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   // huge payload for no useful signal.
   const SEARCH_DEBOUNCE_MS = 400;
   const MIN_QUERY_LENGTH = 2;
-  const artUrl = useCommanderArt(value);
-  const fullImageUrl = useCommanderFullImage(value);
-  const preferenceArtUrl = useCommanderArtWithPreference(value, playerId && playerId !== "__add__" && playerId !== "" ? playerId : undefined);
+  const artUrl = useCommanderArt(committedCommander);
+  const fullImageUrl = useCommanderFullImage(committedCommander);
+  const preferenceArtUrl = useCommanderArtWithPreference(committedCommander, playerId && playerId !== "__add__" && playerId !== "" ? playerId : undefined);
   const defaultArtUrl = useCommanderArt(defaultCommander || '');
   const defaultFullImageUrl = useCommanderFullImage(defaultCommander || '');
 
@@ -92,18 +101,33 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     };
   }, []);
 
-  // Load last played commander for this player and update image when value changes
+  // Keep the committed commander in sync with externally-set values (edit-mode
+  // preload, partner auto-fill) and with clears — but ignore the per-keystroke
+  // updates that come from typing, which is what isTypingRef flags.
   useEffect(() => {
-    if (value) {
-      // Use preference art if available, otherwise fall back to default art
+    if (!value) {
+      setCommittedCommander("");
+      return;
+    }
+    if (isTypingRef.current) {
+      isTypingRef.current = false;
+      return;
+    }
+    setCommittedCommander(value);
+  }, [value]);
+
+  // Drive the art preview off the committed commander. Show its art only when
+  // the text still matches it (i.e. a real chosen card, not half-edited text);
+  // otherwise fall back to the player's last-played default, or the placeholder.
+  useEffect(() => {
+    if (committedCommander && value === committedCommander) {
       setSelectedImage(preferenceArtUrl || artUrl);
     } else if (!value && defaultCommander && defaultArtUrl) {
-      // Show default commander image if no value but default is set
       setSelectedImage(defaultArtUrl);
-    } else if (!value) {
+    } else {
       setSelectedImage(null);
     }
-  }, [value, artUrl, preferenceArtUrl, defaultCommander, defaultArtUrl]);
+  }, [value, committedCommander, artUrl, preferenceArtUrl, defaultCommander, defaultArtUrl]);
 
   // Load last played commander suggestions
   useEffect(() => {
@@ -149,6 +173,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     const trimmed = query.trim();
     if (trimmed.length < MIN_QUERY_LENGTH) {
       setResults([]);
+      setNoResults(false);
       setShowDropdown(false);
       setLoading(false);
       return;
@@ -160,6 +185,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     abortRef.current = controller;
     latestQueryRef.current = trimmed;
 
+    setNoResults(false);
     setLoading(true);
     scryfallFetch(
       `https://api.scryfall.com/cards/search?q=is:commander+${encodeURIComponent(trimmed)}`,
@@ -170,16 +196,20 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
         // A slower, older response may resolve after a newer one — ignore it so
         // it can't overwrite the results the user is actually waiting on.
         if (latestQueryRef.current !== trimmed) return;
-        if (data.data && Array.isArray(data.data)) {
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
           setResults(data.data.slice(0, 10).map((card: any) => ({
             name: card.name,
             id: card.id,
             image: card.image_uris?.small || card.image_uris?.normal || undefined
           })));
+          setNoResults(false);
           // Don't pop the list back open if the field was dismissed mid-search.
           if (isFocusedRef.current) setShowDropdown(true);
         } else {
+          // Scryfall returns a 404 / empty set when nothing matches.
           setResults([]);
+          setNoResults(true);
+          if (isFocusedRef.current) setShowDropdown(true);
         }
         setLoading(false);
       })
@@ -194,8 +224,10 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    // This value change is from typing — the sync effect must not treat it as a
+    // committed commander and fetch art for it. (Art preview updates on select.)
+    isTypingRef.current = true;
     onChange(val);
-    setSelectedImage(null);
 
     // Any prior search is now irrelevant — drop its timer and in-flight request.
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -204,6 +236,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     // If input is empty, show previous commanders
     if (!val.trim()) {
       setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
+      setNoResults(false);
       setShowDropdown(true);
       setLoading(false);
       return;
@@ -215,6 +248,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     // Below the minimum, don't query or show a stale list — just wait.
     if (val.trim().length < MIN_QUERY_LENGTH) {
       setResults([]);
+      setNoResults(false);
       setShowDropdown(false);
       setLoading(false);
       return;
@@ -227,14 +261,18 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   };
 
   const handleSelect = (cardName: string, partnerCommander?: string) => {
+    // A real card was chosen — commit it so the art preview fetches/loads for
+    // it (this is the only place a typed-into field gets art).
+    isTypingRef.current = false;
+    setCommittedCommander(cardName);
     onChange(cardName);
     setShowDropdown(false);
     setResults([]);
+    setNoResults(false);
     // Call the partner select callback if partner commander exists
     if (partnerCommander && onPartnerSelect) {
       onPartnerSelect(partnerCommander);
     }
-    // Image will be set automatically via the useEffect that watches artUrl
   };
 
   const handleInputFocus = () => {
@@ -273,7 +311,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       {selectedImage ? (
         <img
           src={selectedImage}
-          alt={value || defaultCommander || "commander"}
+          alt={committedCommander || defaultCommander || "commander"}
           style={{ cursor: onCardClick ? "pointer" : "default" }}
           onClick={(e) => {
             // This img sits inside the field's <label>, so a tap would otherwise
@@ -281,9 +319,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
             // mobile keyboard over the art selector. Cancel that default focus.
             e.preventDefault();
             if (onCardClick) {
-              // Use selected value if available, otherwise use default commander
-              const commanderName = value || defaultCommander;
-              const imageUrl = value ? fullImageUrl : defaultFullImageUrl;
+              // Use the committed commander if there is one, else the default.
+              const commanderName = committedCommander || defaultCommander;
+              const imageUrl = committedCommander ? fullImageUrl : defaultFullImageUrl;
               if (commanderName) {
                 onCardClick({ name: commanderName, imageUrl, playerId });
               }
@@ -335,6 +373,24 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
               </li>
             ))}
           </ul>
+          </FloatingPortal>
+        )}
+        {showDropdown && results.length === 0 && noResults && !loading && (
+          <FloatingPortal>
+            <div
+              className="autocomplete-dropdown"
+              ref={refs.setFloating}
+              style={{
+                ...floatingStyles,
+                margin: 0,
+                padding: '12px 14px',
+                fontSize: '14px',
+                color: 'var(--text-secondary)'
+              }}
+              {...getFloatingProps()}
+            >
+              No commanders found
+            </div>
           </FloatingPortal>
         )}
         {loading && value && (
