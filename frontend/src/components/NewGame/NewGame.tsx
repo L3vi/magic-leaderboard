@@ -507,21 +507,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       return;
     }
 
-    // Placements must be unique — two players can't share a finish (it would
-    // double-award points and produce a nonsensical ranking).
-    const placements = validPlayers.map(f => f.placement);
-    if (new Set(placements).size !== placements.length) {
-      alert("Each player needs a unique placement — two players can't share the same finish.");
-      return;
-    }
-
-    // The same player can't appear twice in one game. The row dropdowns hide
-    // already-chosen players, but guard here too (e.g. editing legacy data).
-    const playerIds = validPlayers.map(f => f.playerId);
-    if (new Set(playerIds).size !== playerIds.length) {
-      alert("Each player can only appear once in a game.");
-      return;
-    }
+    // Placements may be shared — two (or more) players can tie for the same
+    // finish, so no uniqueness check here.
 
     // Build game data matching the backend structure
     const gameData = {
@@ -594,15 +581,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                           value={field.playerId}
                           onChange={(id) => handlePlayerChange(idx, id)}
                           options={[
-                            // Hide players already chosen in another row so the
-                            // same person can't be added twice; keep this row's
-                            // own current pick visible.
-                            ...players
-                              .filter(p =>
-                                p.id === field.playerId ||
-                                !playerFields.some((other, i) => i !== idx && other.playerId === p.id)
-                              )
-                              .map(p => ({ id: p.id, label: p.name })),
+                            ...players.map(p => ({ id: p.id, label: p.name })),
                             { id: "__add__", label: "+ Add new player…" }
                           ]}
                           placeholder="Select player"
