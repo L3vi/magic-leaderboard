@@ -64,7 +64,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats">{average.toFixed(1)} avg • {playCount}p • {wins}W</div>
+        <div className="commander-item-stats">{average.toFixed(1)} avg • {playCount} plays • {wins} {wins === 1 ? "win" : "wins"}</div>
       </div>
     </div>
   );
