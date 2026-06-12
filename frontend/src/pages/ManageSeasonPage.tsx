@@ -55,7 +55,6 @@ const ManageSeasonPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessions]);
 
   const sortedPool = useMemo(

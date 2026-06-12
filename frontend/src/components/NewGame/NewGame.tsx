@@ -491,7 +491,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     }
 
     // Build game data matching the backend structure
-    let gameData = {
+    const gameData = {
       players: validPlayers.map(f => {
         // Use commander if set, otherwise use lastPlayedCommander
         const primaryCommander = f.commander || f.lastPlayedCommander || '';
