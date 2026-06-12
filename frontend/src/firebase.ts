@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
@@ -13,7 +13,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
+// Force Firestore onto its long-polling transport instead of the default
+// streaming WebChannel. A one-shot getDocs/getDoc opens a WebChannel "Listen"
+// stream, and on networks/proxies that buffer streaming responses (common on
+// mobile, VPNs, and some ISPs) that stream stalls ~30–60s before it delivers
+// the snapshot or falls back — which showed up here as a season switch taking
+// 30–40s to load while the REST-based season counts returned instantly.
+// Long-polling uses discrete HTTP requests that don't stall behind buffering,
+// trading a little streaming efficiency for a reliably fast first read.
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
 export const auth = getAuth(app);
 
 export const authReady: Promise<void> = new Promise((resolve) => {
