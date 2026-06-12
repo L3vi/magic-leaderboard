@@ -53,6 +53,10 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   touch-action: pan-y; /* Allow vertical scroll, pass horizontal swipes through */
+  /* Clear the fixed "+ New Game" FAB (bottom: 2rem, ~3rem tall) so it doesn't
+     overlap the end of the content on desktop. Mobile overrides this below with
+     the taller bottom-nav clearance. */
+  padding-bottom: 6rem;
 }
 
 @media (max-width: 639px) {
