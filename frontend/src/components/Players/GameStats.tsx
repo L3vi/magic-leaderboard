@@ -19,6 +19,14 @@ interface CommanderStats {
   weightedAverage: number; // Bayesian-smoothed average, used for ranking
 }
 
+// A headline "best commander" callout (Most Wins / Best Win Rate).
+interface CommanderAccolade {
+  name: string;
+  wins: number;
+  playCount: number;
+  winRate: number;
+}
+
 interface ColorStats {
   color: string;
   playCount: number;
@@ -97,7 +105,8 @@ const GameStats: React.FC = () => {
         uniqueCommanders: 0,
         mostPlayedCommander: "N/A",
         commanderPlayCount: 0,
-        bestCommander: { name: "N/A", average: 0, winRate: 0, playCount: 0 },
+        mostWinsCommander: null as CommanderAccolade | null,
+        bestWinRateCommander: null as CommanderAccolade | null,
         commanderStats: [] as CommanderStats[],
         colorStats: [] as ColorStats[],
         mostCommonColor: "N/A",
@@ -251,6 +260,40 @@ const GameStats: React.FC = () => {
       .sort((a, b) => b.weightedAverage - a.weightedAverage)
       .slice(0, 5);
 
+    // Two headline accolades for the casual "best commander" question:
+    //  • Most Wins — the workhorse, by raw 1st-place finishes (volume-driven).
+    //  • Best Win Rate — pound-for-pound strongest, among decks with enough
+    //    games that the rate means something.
+    const allCommanders = Object.values(commanderStats);
+
+    const mostWinsRanked = [...allCommanders].sort(
+      // most wins; ties broken by higher win rate, then fewer plays (more efficient)
+      (a, b) => b.wins - a.wins || b.winRate - a.winRate || a.playCount - b.playCount
+    );
+    const mostWinsCommander: CommanderAccolade | null =
+      mostWinsRanked[0] && mostWinsRanked[0].wins > 0
+        ? {
+            name: mostWinsRanked[0].name,
+            wins: mostWinsRanked[0].wins,
+            playCount: mostWinsRanked[0].playCount,
+            winRate: mostWinsRanked[0].winRate,
+          }
+        : null;
+
+    const MIN_WINRATE_GAMES = 3;
+    const bestRateRanked = allCommanders
+      .filter((c) => c.playCount >= MIN_WINRATE_GAMES)
+      // highest win rate; ties broken by more games, then more wins
+      .sort((a, b) => b.winRate - a.winRate || b.playCount - a.playCount || b.wins - a.wins);
+    const bestWinRateCommander: CommanderAccolade | null = bestRateRanked[0]
+      ? {
+          name: bestRateRanked[0].name,
+          wins: bestRateRanked[0].wins,
+          playCount: bestRateRanked[0].playCount,
+          winRate: bestRateRanked[0].winRate,
+        }
+      : null;
+
     // Most played commander (for reference, though not shown)
     const sortedByPlay = Object.values(commanderStats).sort((a, b) => b.playCount - a.playCount);
     const mostPlayedCommander = sortedByPlay[0]?.name || "N/A";
@@ -280,12 +323,8 @@ const GameStats: React.FC = () => {
       uniqueCommanders: Object.keys(commanderStats).length,
       mostPlayedCommander,
       commanderPlayCount,
-      bestCommander: {
-        name: topCommanders[0]?.name || "N/A",
-        average: topCommanders[0]?.average || 0,
-        winRate: topCommanders[0]?.winRate || 0,
-        playCount: topCommanders[0]?.playCount || 0,
-      },
+      mostWinsCommander,
+      bestWinRateCommander,
       commanderStats: topCommanders,
       colorStats: sortedByColor,
       mostCommonColor: COLOR_MAP[mostCommonColorCode] || mostCommonColorCode,
@@ -342,15 +381,26 @@ const GameStats: React.FC = () => {
       <div className="stats-section">
         <h3>Commander Performance</h3>
 
-        {stats.bestCommander.name !== "N/A" && (
+        {(stats.mostWinsCommander || stats.bestWinRateCommander) && (
           <div className="stats-grid">
-            <div className="stat-card full-width best-commander">
-              <div className="stat-label">Best Performing Commander</div>
-              <div className="stat-value commander-name">{stats.bestCommander.name}</div>
-              <div className="stat-subtext">
-                {stats.bestCommander.average.toFixed(2)} avg score · {stats.bestCommander.winRate.toFixed(0)}% wins · {stats.bestCommander.playCount} plays
+            {stats.mostWinsCommander && (
+              <div className="stat-card best-commander">
+                <div className="stat-label">Most Wins</div>
+                <div className="stat-value commander-name">{stats.mostWinsCommander.name}</div>
+                <div className="stat-subtext">
+                  {stats.mostWinsCommander.wins} {stats.mostWinsCommander.wins === 1 ? "win" : "wins"} in {stats.mostWinsCommander.playCount} games · {stats.mostWinsCommander.winRate.toFixed(0)}%
+                </div>
               </div>
-            </div>
+            )}
+            {stats.bestWinRateCommander && (
+              <div className="stat-card best-commander">
+                <div className="stat-label">Best Win Rate</div>
+                <div className="stat-value commander-name">{stats.bestWinRateCommander.name}</div>
+                <div className="stat-subtext">
+                  {stats.bestWinRateCommander.winRate.toFixed(0)}% · {stats.bestWinRateCommander.wins} of {stats.bestWinRateCommander.playCount} games
+                </div>
+              </div>
+            )}
           </div>
         )}
 
