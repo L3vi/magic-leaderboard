@@ -542,17 +542,48 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string; playerId?: string } | null>(null);
 
   const handlePlayerChange = (idx: number, playerId: string) => {
-    const lastCommander = getLastPlayedCommander(playerId);
-    setPlayerFields(fields => fields.map((f, i) =>
-      i === idx ? { 
-        ...f, 
-        playerId, 
-        addNew: playerId === "__add__", 
-        newName: playerId === "__add__" ? '' : f.newName,
-        lastPlayedCommander: lastCommander,
-        commander: '' // Keep empty to show as placeholder
-      } : f
-    ));
+    // "+ Add new player" isn't a real player id — handle it as a fresh entry.
+    if (playerId === "__add__") {
+      setPlayerFields(fields => fields.map((f, i) =>
+        i === idx
+          ? { ...f, playerId, addNew: true, newName: '', commander: '', partnerCommander: '', lastPlayedCommander: '' }
+          : f
+      ));
+      return;
+    }
+
+    setPlayerFields(fields => {
+      // If the chosen player already occupies another slot, swap the two
+      // players between slots rather than allowing a duplicate. Placement
+      // belongs to the slot (Player 1 = Winner, etc.) and stays put; the
+      // player and their commander travel together.
+      const otherIdx = fields.findIndex((f, i) => i !== idx && f.playerId === playerId);
+      if (otherIdx !== -1) {
+        const carry = (f: PlayerField) => ({
+          playerId: f.playerId,
+          commander: f.commander,
+          partnerCommander: f.partnerCommander,
+          addNew: f.addNew,
+          newName: f.newName,
+          lastPlayedCommander: f.lastPlayedCommander,
+        });
+        const here = carry(fields[idx]);
+        const there = carry(fields[otherIdx]);
+        return fields.map((f, i) => {
+          if (i === idx) return { ...f, ...there };
+          if (i === otherIdx) return { ...f, ...here };
+          return f;
+        });
+      }
+
+      // Otherwise it's a normal pick of a player not yet in the game.
+      const lastCommander = getLastPlayedCommander(playerId);
+      return fields.map((f, i) =>
+        i === idx
+          ? { ...f, playerId, addNew: false, lastPlayedCommander: lastCommander, commander: '', partnerCommander: '' }
+          : f
+      );
+    });
   };
 
   const handleCommanderChange = (idx: number, commander: string) => {
