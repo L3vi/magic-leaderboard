@@ -214,24 +214,24 @@
   }
 
   /* Podium rows keep their original medal-colored left border (from
-     PlayerRow.css) AND gradient tint. The only thing the sticky layout adds is
-     that the Name cell needs an opaque background so scrolled columns pass
-     underneath it — so paint the Name with the SAME medal tint the row uses
-     (over an opaque surface base) and repaint the row with the identical
-     px-based formula, so the tint runs continuously from the Name into the row
-     instead of leaving a darker solid chip behind the name. No extra accent
-     bar on the Name — the row's border is the single accent, as before. */
+     PlayerRow.css). For the tint, use a UNIFORM (flat) medal wash across the
+     whole row rather than a left-to-right fade: the sticky Name cell must paint
+     its own opaque background, and a fading gradient anchored to the Name stops
+     matching the row once you scroll (the row's tint under that spot fades away,
+     the Name's doesn't → a visible box). A flat tint is identical everywhere, so
+     the Name always matches the row at any scroll position. Same flat value on
+     the row and the Name; surface base keeps it opaque. */
   .leaderboard-scroll .player-row.rank-1,
   .leaderboard-scroll .player-row.rank-1 .player-name {
-    background: linear-gradient(90deg, rgba(251, 191, 36, 0.12) 0, transparent 190px), var(--surface);
+    background: linear-gradient(rgba(251, 191, 36, 0.10), rgba(251, 191, 36, 0.10)), var(--surface);
   }
   .leaderboard-scroll .player-row.rank-2,
   .leaderboard-scroll .player-row.rank-2 .player-name {
-    background: linear-gradient(90deg, rgba(203, 213, 225, 0.12) 0, transparent 190px), var(--surface);
+    background: linear-gradient(rgba(203, 213, 225, 0.10), rgba(203, 213, 225, 0.10)), var(--surface);
   }
   .leaderboard-scroll .player-row.rank-3,
   .leaderboard-scroll .player-row.rank-3 .player-name {
-    background: linear-gradient(90deg, rgba(205, 127, 50, 0.12) 0, transparent 190px), var(--surface);
+    background: linear-gradient(rgba(205, 127, 50, 0.10), rgba(205, 127, 50, 0.10)), var(--surface);
   }
 
   /* Right-edge fade hint — purely decorative, never intercepts taps. */
