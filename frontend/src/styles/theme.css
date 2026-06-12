@@ -23,8 +23,9 @@
 @media (max-width: 639px) {
   .main-section {
     margin: 0;
-    padding: 0 0 28px 0;
-    /* 64px navbar + extra for safe area */
+    /* Nav clearance lives on the shared .tab-content scroll container now, so no
+       bottom padding here (it would just stack on top and add dead space). */
+    padding: 0;
   }
 }
 
