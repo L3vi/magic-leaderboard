@@ -9,7 +9,7 @@
 .form-actions-form {
   margin-top: 0.5rem;
   position: sticky;
-  bottom: 2rem;
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   z-index: 1000;
   width: 100vw;
   margin-left: calc(-50vw + 50%);
@@ -22,7 +22,7 @@
 /* Variant: Fixed position (e.g., modals) */
 .form-actions-fixed {
   position: fixed;
-  bottom: 2rem;
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   right: 2rem;
   z-index: 10001;
   background: rgba(0, 0, 0, 0.7);
@@ -52,7 +52,7 @@
 /* Mobile Overrides */
 @media (max-width: 639px) {
   .form-actions-form {
-    bottom: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     gap: 0.75rem;
     padding: 0 1rem;
     justify-content: space-between;
@@ -60,7 +60,7 @@
 
   .form-actions-fixed {
     position: fixed;
-    bottom: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     left: 1rem;
     right: 1rem;
     width: auto;
