@@ -56,10 +56,13 @@ body {
 }
 
 @media (max-width: 639px) {
-  /* Prevent content from being covered by bottom nav bar */
+  /* The bottom nav + FAB are position:fixed, so they overlay the bottom of the
+     scroll area. Clear them once here — on the shared scroll container — plus the
+     iOS home indicator, so every tab page scrolls clear of the nav and individual
+     pages don't each need their own padding-bottom hack. */
   .tab-content {
     min-height: calc(100vh - var(--header-height) - var(--navbar-height) - 4px);
-    padding-bottom: 0; /* Remove old padding, use min-height instead */
+    padding-bottom: calc(var(--navbar-height) + 2rem + env(safe-area-inset-bottom));
   }
 }
 
