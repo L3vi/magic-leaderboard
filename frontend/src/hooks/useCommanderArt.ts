@@ -247,7 +247,9 @@ export function useCommanderArtWithPreference(
   commander: string,
   playerId?: string
 ): string {
-  const [imgUrl, setImgUrl] = useState<string>("");
+  // Seed from the image cache so a warm thumbnail paints on the first frame
+  // instead of going blank while we check Firestore for an art preference.
+  const [imgUrl, setImgUrl] = useState<string>(() => getImageCache(commander)?.art || "");
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
@@ -257,6 +259,11 @@ export function useCommanderArtWithPreference(
     }
 
     let isMounted = true;
+
+    // Paint cached art right away (covers commander changes, where the initial
+    // useState seed is stale). The preference, if any, overrides below.
+    const cached = getImageCache(commander);
+    if (cached) setImgUrl(cached.art);
 
     const loadArt = async () => {
       if (playerId) {
@@ -271,11 +278,8 @@ export function useCommanderArtWithPreference(
         }
       }
 
-      const cached = getImageCache(commander);
-      if (cached && isMounted) {
-        setImgUrl(cached.art);
-        return;
-      }
+      // Already showing cached art and no preference overrode it — done.
+      if (cached || !isMounted) return;
 
       const result = await fetchCommanderImages(commander);
       if (isMounted) setImgUrl(result.art);
@@ -298,7 +302,9 @@ export function useCommanderFullImageWithPreference(
   commander: string,
   playerId?: string
 ): string {
-  const [imgUrl, setImgUrl] = useState<string>("");
+  // Seed from the image cache so a warm image is available on the first frame
+  // instead of going blank while we check Firestore for an art preference.
+  const [imgUrl, setImgUrl] = useState<string>(() => getImageCache(commander)?.full || "");
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
@@ -308,6 +314,11 @@ export function useCommanderFullImageWithPreference(
     }
 
     let isMounted = true;
+
+    // Paint cached image right away (covers commander changes, where the initial
+    // useState seed is stale). The preference, if any, overrides below.
+    const cached = getImageCache(commander);
+    if (cached) setImgUrl(cached.full);
 
     const loadArt = async () => {
       if (playerId) {
@@ -322,11 +333,8 @@ export function useCommanderFullImageWithPreference(
         }
       }
 
-      const cached = getImageCache(commander);
-      if (cached && isMounted) {
-        setImgUrl(cached.full);
-        return;
-      }
+      // Already showing cached image and no preference overrode it — done.
+      if (cached || !isMounted) return;
 
       const result = await fetchCommanderImages(commander);
       if (isMounted) setImgUrl(result.full);
