@@ -36,6 +36,8 @@ export default function ComboStatsPage() {
     if (!isTier && !comboKey) return null;
 
     const commanderMap = new Map<string, ComboCommanderStats>();
+    // Distinct players per commander → pilot count = distinct decks of it.
+    const pilotsByCommander = new Map<string, Set<string>>();
     let totalPlays = 0;
     let totalWins = 0;
 
@@ -74,6 +76,7 @@ export default function ComboStatsPage() {
           commanderMap.set(deckName, {
             commanderName: deckName,
             plays: 0,
+            pilots: 0,
             wins: 0,
             winRate: 0,
           });
@@ -82,7 +85,19 @@ export default function ComboStatsPage() {
         s.plays++;
         if (isWinner) s.wins++;
         s.winRate = s.wins / s.plays;
+
+        let pilotSet = pilotsByCommander.get(deckName);
+        if (!pilotSet) pilotsByCommander.set(deckName, (pilotSet = new Set()));
+        pilotSet.add(player.playerId);
       });
+    });
+
+    // Fold each commander's distinct-pilot count in; a pilot = one deck, so the
+    // sum across commanders is the number of distinct decks in this combination.
+    let totalDecks = 0;
+    commanderMap.forEach((cmd, name) => {
+      cmd.pilots = pilotsByCommander.get(name)?.size ?? 0;
+      totalDecks += cmd.pilots;
     });
 
     const commanders = Array.from(commanderMap.values()).sort((a, b) => {
@@ -94,6 +109,7 @@ export default function ComboStatsPage() {
       comboKey: isTier ? "" : comboKey!,
       label: isTier ? TIER_LABELS[tier!] : comboLabel(comboKey!),
       totalPlays,
+      totalDecks,
       totalWins,
       winRate: totalPlays > 0 ? totalWins / totalPlays : 0,
       commanders,

@@ -19,6 +19,8 @@ export default function ColorStatsPage() {
     }
 
     const commanderMap = new Map<string, CommanderColorStats>();
+    // Distinct players per commander → pilot count = distinct decks of it.
+    const pilotsByCommander = new Map<string, Set<string>>();
     let totalPlays = 0;
     let totalWins = 0;
 
@@ -52,6 +54,7 @@ export default function ColorStatsPage() {
               color,
               commanderName: deckName,
               plays: 0,
+              pilots: 0,
               wins: 0,
               winRate: 0,
             });
@@ -63,8 +66,20 @@ export default function ColorStatsPage() {
             stats.wins++;
           }
           stats.winRate = stats.wins / stats.plays;
+
+          let pilotSet = pilotsByCommander.get(deckName);
+          if (!pilotSet) pilotsByCommander.set(deckName, (pilotSet = new Set()));
+          pilotSet.add(player.playerId);
         }
       });
+    });
+
+    // A pilot = one deck, so the sum of distinct pilots across commanders is the
+    // number of distinct decks in this color.
+    let totalDecks = 0;
+    commanderMap.forEach((cmd, name) => {
+      cmd.pilots = pilotsByCommander.get(name)?.size ?? 0;
+      totalDecks += cmd.pilots;
     });
 
     // Sort commanders by win rate (descending), then by plays (descending)
@@ -78,6 +93,7 @@ export default function ColorStatsPage() {
     const stats: ColorStatsData = {
       color,
       totalPlays,
+      totalDecks,
       totalWins,
       winRate: totalPlays > 0 ? totalWins / totalPlays : 0,
       commanders,

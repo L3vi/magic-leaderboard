@@ -38,7 +38,7 @@ const CommanderStatsDetails: React.FC<CommanderStatsDetailsProps> = ({
         <h2>Overall Statistics</h2>
         <div className="stats-summary-grid">
           <div className="stat-box">
-            <div className="stat-label">Total Plays</div>
+            <div className="stat-label">Plays</div>
             <div className="stat-value">{stats.totalPlays}</div>
           </div>
           <div className="stat-box">

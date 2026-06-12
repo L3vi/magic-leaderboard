@@ -98,23 +98,32 @@ export interface CardImageCache {
 export interface CommanderColorStats {
   color: string; // Single letter: W, U, B, R, G
   commanderName: string;
-  plays: number;
+  plays: number; // game appearances (one per player-game)
+  pilots: number; // distinct players who ran it = distinct decks of this commander
   wins: number;
   winRate: number;
 }
 
 export interface ColorStatsData {
   color: string;
+  /** Game appearances (player-games). NOT distinct decks — see totalDecks. */
   totalPlays: number;
+  /** Distinct (player + commander) decks in this color. */
+  totalDecks: number;
   totalWins: number;
   winRate: number;
   commanders: CommanderColorStats[];
 }
 
-/** Per-deck stats for a single color combination (or color-count tier). */
+/**
+ * Per-commander stats within a color combination (or color-count tier).
+ * A commander aggregates every player who ran it; `pilots` is how many distinct
+ * players did, i.e. how many distinct decks of this commander exist.
+ */
 export interface ComboCommanderStats {
   commanderName: string; // display name — "A // B" for partner decks
-  plays: number;
+  plays: number; // game appearances (one per player-game)
+  pilots: number; // distinct players who ran it = distinct decks of this commander
   wins: number;
   winRate: number;
 }
@@ -124,7 +133,10 @@ export interface ComboStatsData {
   comboKey: string;
   /** Display heading, e.g. "Mardu" or "3-color". */
   label: string;
+  /** Game appearances (player-games). NOT distinct decks — see totalDecks. */
   totalPlays: number;
+  /** Distinct (player + commander) decks in this combination. */
+  totalDecks: number;
   totalWins: number;
   winRate: number;
   commanders: ComboCommanderStats[];

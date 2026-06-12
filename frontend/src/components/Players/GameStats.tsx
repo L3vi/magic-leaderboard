@@ -546,7 +546,7 @@ const GameStats: React.FC = () => {
                 <div className="stat-label">Most Played</div>
                 <div className="stat-value commander-name">{stats.mostPlayedCommander}</div>
                 <div className="stat-subtext">
-                  {stats.commanderPlayCount} {stats.commanderPlayCount === 1 ? "game" : "games"}
+                  {stats.commanderPlayCount} {stats.commanderPlayCount === 1 ? "play" : "plays"}
                 </div>
               </div>
             )}
@@ -555,7 +555,7 @@ const GameStats: React.FC = () => {
                 <div className="stat-label">Most Wins</div>
                 <div className="stat-value commander-name">{stats.mostWinsCommander.name}</div>
                 <div className="stat-subtext">
-                  {stats.mostWinsCommander.wins} {stats.mostWinsCommander.wins === 1 ? "win" : "wins"} in {stats.mostWinsCommander.playCount} games · {stats.mostWinsCommander.winRate.toFixed(0)}%
+                  {stats.mostWinsCommander.wins} {stats.mostWinsCommander.wins === 1 ? "win" : "wins"} in {stats.mostWinsCommander.playCount} {stats.mostWinsCommander.playCount === 1 ? "play" : "plays"} · {stats.mostWinsCommander.winRate.toFixed(0)}%
                 </div>
               </div>
             )}
@@ -564,7 +564,7 @@ const GameStats: React.FC = () => {
                 <div className="stat-label">Best Win Rate</div>
                 <div className="stat-value commander-name">{stats.bestWinRateCommander.name}</div>
                 <div className="stat-subtext">
-                  {stats.bestWinRateCommander.winRate.toFixed(0)}% · {stats.bestWinRateCommander.wins} of {stats.bestWinRateCommander.playCount} games
+                  {stats.bestWinRateCommander.winRate.toFixed(0)}% · {stats.bestWinRateCommander.wins} of {stats.bestWinRateCommander.playCount} {stats.bestWinRateCommander.playCount === 1 ? "play" : "plays"}
                 </div>
               </div>
             )}
@@ -573,7 +573,11 @@ const GameStats: React.FC = () => {
 
         <div className="stats-subhead">Top Commanders</div>
         <div className="section-note">
-          Ranked by average points per game — 1st = 4, 2nd = 3, 3rd = 2, 4th+ = 1
+          {/* nbsp inside each "Nth = P" pair keeps it from splitting across a
+              line; breaks happen only at the em dash or between pairs, and
+              text-wrap: balance (see CSS) evens out the two lines. */}
+          Ranked by average points per game —{" "}
+          1st&nbsp;=&nbsp;4 · 2nd&nbsp;=&nbsp;3 · 3rd&nbsp;=&nbsp;2 · 4th+&nbsp;=&nbsp;1
         </div>
         {stats.commanderStats.length > 0 ? (
           <div className="top-commanders-grid">
@@ -670,7 +674,7 @@ const GameStats: React.FC = () => {
               >
                 <div className="combo-tier-pct">{t.share}%</div>
                 <div className="combo-tier-label">{t.label}</div>
-                <div className="combo-tier-sub">{t.plays} {t.plays === 1 ? "deck" : "decks"} · {t.winRate}% win</div>
+                <div className="combo-tier-sub">{t.plays} {t.plays === 1 ? "play" : "plays"} · {t.winRate}% win</div>
               </div>
             ))}
           </div>

@@ -38,16 +38,22 @@ const ComboStatsDetails: React.FC<ComboStatsDetailsProps> = ({
         </div>
       </div>
 
-      {/* Overall Stats */}
+      {/* Overall Stats. Games = appearances (one per player-game); Decks =
+          distinct player+commander builds; both differ from the commander
+          count in the section below — three deliberately distinct numbers. */}
       <section className="stats-summary-section">
         <h2>Overall Statistics</h2>
         <div className="stats-summary-grid">
           <div className="stat-box">
-            <div className="stat-label">Total Plays</div>
+            <div className="stat-label">Plays</div>
             <div className="stat-value">{stats.totalPlays}</div>
           </div>
           <div className="stat-box">
-            <div className="stat-label">Total Wins</div>
+            <div className="stat-label">Decks</div>
+            <div className="stat-value">{stats.totalDecks}</div>
+          </div>
+          <div className="stat-box">
+            <div className="stat-label">Wins</div>
             <div className="stat-value">{stats.totalWins}</div>
           </div>
           <div className="stat-box">
@@ -79,7 +85,8 @@ const ComboStatsDetails: React.FC<ComboStatsDetailsProps> = ({
                   <div className="commander-meta">
                     {cmd.plays} play{cmd.plays !== 1 ? "s" : ""} •{" "}
                     {cmd.wins} win{cmd.wins !== 1 ? "s" : ""} •{" "}
-                    {(cmd.winRate * 100).toFixed(0)}% win rate
+                    {(cmd.winRate * 100).toFixed(0)}% win rate •{" "}
+                    {cmd.pilots} pilot{cmd.pilots !== 1 ? "s" : ""}
                   </div>
                 </div>
               </div>
