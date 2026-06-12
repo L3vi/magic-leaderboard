@@ -33,6 +33,19 @@
   opacity: 0.8;
 }
 
+/* Caption for a sub-group within a section (e.g. "Top Commanders" under
+   Commander Performance). Same uppercase/muted family as the section header,
+   one notch smaller, replacing the old boxed header bar. */
+.stats-subhead {
+  margin: 1.5rem 0 1rem 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .game-stats {

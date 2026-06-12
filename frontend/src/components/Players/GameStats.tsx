@@ -72,7 +72,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats">{average.toFixed(1)} avg • {playCount} plays • {wins} {wins === 1 ? "win" : "wins"}</div>
+        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} avg</span> • {playCount} plays • {wins} {wins === 1 ? "win" : "wins"}</div>
       </div>
     </div>
   );
@@ -405,27 +405,23 @@ const GameStats: React.FC = () => {
           </div>
         )}
 
-        <div className="commander-list">
-          <div className="commander-list-header">
-            <span>Top Commanders</span>
+        <div className="stats-subhead">Top Commanders</div>
+        {stats.commanderStats.length > 0 ? (
+          <div className="top-commanders-grid">
+            {stats.commanderStats.map((cmd, idx) => (
+              <CommanderThumbnail
+                key={idx}
+                name={cmd.name}
+                rank={idx + 1}
+                playCount={cmd.playCount}
+                wins={cmd.wins}
+                average={cmd.average}
+              />
+            ))}
           </div>
-          {stats.commanderStats.length > 0 ? (
-            <div className="top-commanders-grid">
-              {stats.commanderStats.map((cmd, idx) => (
-                <CommanderThumbnail
-                  key={idx}
-                  name={cmd.name}
-                  rank={idx + 1}
-                  playCount={cmd.playCount}
-                  wins={cmd.wins}
-                  average={cmd.average}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="commander-row empty">No commander data</div>
-          )}
-        </div>
+        ) : (
+          <div className="commander-item empty">No commander data</div>
+        )}
       </div>
 
       {/* Color Stats */}

@@ -11,7 +11,7 @@
   padding: 1.5rem;
   background: var(--background);
   border-radius: 0.6rem;
-  border: 2px solid;
+  border: 1px solid;
   text-align: center;
   transition: all 0.2s ease;
   cursor: pointer;
