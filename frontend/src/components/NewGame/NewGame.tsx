@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  useFloating, 
-  useInteractions, 
+import {
+  useFloating,
+  useInteractions,
   useDismiss,
   offset,
   flip,
-  size
+  size,
+  FloatingPortal
 } from '@floating-ui/react';
 import FormActions from '../FormActions/FormActions';
 import { usePlayers } from "../../hooks/usePlayers";
@@ -236,6 +237,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           {...getReferenceProps()}
         />
         {showDropdown && results.length > 0 && (
+          <FloatingPortal>
           <ul
             className="autocomplete-dropdown"
             ref={refs.setFloating}
@@ -259,6 +261,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
               </li>
             ))}
           </ul>
+          </FloatingPortal>
         )}
         {loading && value && (
           <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '8px', fontSize: '14px', marginTop: '8px', borderRadius: '0.5rem', border: '1.5px solid var(--border)' }}>

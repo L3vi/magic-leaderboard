@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CardVariant } from "../../hooks/useCommanderArt";
 import FormActions from "../FormActions/FormActions";
@@ -12,6 +12,7 @@ interface CommanderArtSelectorProps {
   onCancel: () => void;
   isLoading?: boolean;
   isSaving?: boolean;
+  saveError?: string | null;
 }
 
 const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
@@ -22,11 +23,19 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
   onCancel,
   isLoading = false,
   isSaving = false,
+  saveError = null,
 }) => {
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
     currentVariantId
   );
   const [scrollPosition, setScrollPosition] = useState(0);
+
+  // The saved preference loads asynchronously, so currentVariantId is often
+  // undefined on mount. Once it arrives, pre-highlight the saved variant — but
+  // only if the user hasn't already picked one, so we never clobber their choice.
+  useEffect(() => {
+    setSelectedVariantId((prev) => prev ?? currentVariantId);
+  }, [currentVariantId]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollPosition((e.target as HTMLDivElement).scrollLeft);
@@ -108,6 +117,11 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
       </div>
       {scrollPosition > 0 && (
         <div className="art-selector-hint">← Scroll for more →</div>
+      )}
+      {saveError && (
+        <div className="art-selector-error" role="alert">
+          {saveError}
+        </div>
       )}
       <FormActions
         submitLabel="Save"

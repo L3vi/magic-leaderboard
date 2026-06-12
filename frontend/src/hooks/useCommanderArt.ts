@@ -7,6 +7,8 @@ import {
   getInflightRequest,
   setInflightRequest,
   clearInflightRequest,
+  getAllImageCache,
+  clearCommanderCache as clearCommanderCacheInService,
 } from '../services/cacheService';
 import { scryfallFetch } from '../services/scryfallClient';
 import type { CardVariant, CardImageCache } from '../types';
@@ -342,16 +344,14 @@ export function useCommanderFullImageWithPreference(
  */
 export function getCommanderImageCache(): Record<string, CardImageCache> {
   // Return all cached images in the format expected by pre-fetch service
-  const cacheService = require('../services/cacheService');
-  return cacheService.getAllImageCache();
+  return getAllImageCache();
 }
 
 /**
  * Clear cache for a specific commander to force re-fetch
  */
 export function clearCommanderCache(commander: string): void {
-  const cacheService = require('../services/cacheService');
-  cacheService.clearCommanderCache(commander);
+  clearCommanderCacheInService(commander);
 }
 
 // Re-export types for backwards compatibility

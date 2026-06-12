@@ -30,6 +30,7 @@ const CardModal: React.FC<CardModalProps> = ({
 }) => {
   const [displayedImageUrl, setDisplayedImageUrl] = useState(imageUrl);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [currentPreference, setCurrentPreference] = useState<any>(undefined);
   const variants = useCommanderVariants(cardName);
   const { triggerRefresh } = useArtPreferenceRefresh();
@@ -63,6 +64,7 @@ const CardModal: React.FC<CardModalProps> = ({
 
   const handleVariantSelect = (variant: CardVariant) => {
     setDisplayedImageUrl(variant.full);
+    setSaveError(null);
   };
 
   const handleSaveVariant = async (variant: CardVariant) => {
@@ -73,6 +75,7 @@ const CardModal: React.FC<CardModalProps> = ({
 
     try {
       setIsSaving(true);
+      setSaveError(null);
       console.log(`🎨 Saving art variant for ${cardName}...`);
       
       // Save to Firebase
@@ -96,6 +99,7 @@ const CardModal: React.FC<CardModalProps> = ({
       }, 300);
     } catch (error) {
       console.error("❌ Failed to save art preference:", error);
+      setSaveError("Couldn't save your art selection. Please try again.");
       setIsSaving(false);
     }
   };
@@ -113,6 +117,12 @@ const CardModal: React.FC<CardModalProps> = ({
     };
 
     if (isOpen) {
+      // On mobile, the commander-name text input that triggered this modal keeps
+      // focus, so the soft keyboard stays up and covers the art selector. Blur it
+      // so the keyboard dismisses when the modal opens.
+      (document.activeElement as HTMLElement | null)?.blur();
+      // Clear any stale save error from a previous open of this (kept-mounted) modal.
+      setSaveError(null);
       // Prevent body scroll when modal is open
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleEscapeKey, true);
@@ -175,6 +185,7 @@ const CardModal: React.FC<CardModalProps> = ({
             onCancel={handleCancel}
             isLoading={variants.length === 0}
             isSaving={isSaving}
+            saveError={saveError}
           />
         )}
       </motion.div>

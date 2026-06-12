@@ -31,7 +31,7 @@ const FormActions: React.FC<FormActionsProps> = ({
           type="button"
           onClick={onCancel}
           className="btn btn-secondary"
-          disabled={isSubmitting || isDisabled}
+          disabled={isSubmitting}
           aria-label={cancelLabel}
         >
           {cancelLabel}
