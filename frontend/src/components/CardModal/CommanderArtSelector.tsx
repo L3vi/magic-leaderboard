@@ -28,7 +28,6 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
     currentVariantId
   );
-  const [scrollPosition, setScrollPosition] = useState(0);
   // Track which thumbnails have finished loading so we can show a shimmer
   // placeholder until each image is ready.
   const [loadedIds, setLoadedIds] = useState<Set<string>>(() => new Set());
@@ -41,10 +40,6 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
   useEffect(() => {
     setSelectedVariantId((prev) => prev ?? currentVariantId);
   }, [currentVariantId]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    setScrollPosition((e.target as HTMLDivElement).scrollLeft);
-  };
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId);
 
@@ -83,7 +78,7 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
           Available Art Variants ({variants.length})
         </div>
       </div>
-      <div className="art-selector-scroll" onScroll={handleScroll}>
+      <div className="art-selector-scroll">
         <div className="art-selector-grid">
           <AnimatePresence>
             {variants.map((variant, index) => (
@@ -126,9 +121,6 @@ const CommanderArtSelector: React.FC<CommanderArtSelectorProps> = ({
           </AnimatePresence>
         </div>
       </div>
-      {scrollPosition > 0 && (
-        <div className="art-selector-hint">← Scroll for more →</div>
-      )}
       {saveError && (
         <div className="art-selector-error" role="alert">
           {saveError}
