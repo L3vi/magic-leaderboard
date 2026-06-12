@@ -9,7 +9,8 @@ import { scorePlacement } from "../../services/dataService";
 import "./GameStats.css";
 
 interface CommanderStats {
-  name: string;
+  name: string; // display name — "A // B" for partner decks
+  artName: string; // single commander name to fetch art for (first of a pair)
   playCount: number;
   wins: number;
   winRate: number;
@@ -54,14 +55,17 @@ const getCommanderColors = (commanderName: string): string[] => {
 // Sub-component to display commander with image
 interface CommanderThumbnailProps {
   name: string;
+  artName: string;
   rank: number;
   playCount: number;
   wins: number;
   average: number;
 }
 
-const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, playCount, wins, average }) => {
-  const imageUrl = useCommanderArt(name);
+const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, average }) => {
+  // Art is fetched for a single card; for a partner deck ("A // B") use the
+  // first commander, since the joined name isn't a real card to look up.
+  const imageUrl = useCommanderArt(artName);
 
   return (
     <div className="commander-item">
@@ -175,19 +179,29 @@ const GameStats: React.FC = () => {
       "W": {}, "U": {}, "B": {}, "R": {}, "G": {}
     };
     const partnerPairCounts: Record<string, number> = {};
+    const uniqueCommanderNames = new Set<string>();
 
     games.forEach((game) => {
       game.players.forEach((p) => {
         const commanders = Array.isArray(p.commander) ? p.commander : [p.commander];
         const isWinner = p.placement === 1;
 
-        commanders.forEach((commander) => {
-          // Skip placeholder/missing commanders (older seasons recorded "Unknown")
-          // so they never rank as a "top" or "best" commander.
-          if (!commander || commander.trim() === "" || commander === "Unknown") return;
-          if (!commanderStats[commander]) {
-            commanderStats[commander] = {
-              name: commander,
+        // Real commanders for this play (drop "Unknown"/empty placeholders).
+        const deckCommanders = commanders.filter(
+          (c) => c && c.trim() !== "" && c !== "Unknown"
+        );
+        deckCommanders.forEach((c) => uniqueCommanderNames.add(c));
+
+        // Aggregate by DECK, not by individual commander: a partner pair is ONE
+        // deck, so it's counted once (not double per partner) and ranked/shown
+        // as "A // B" with a single set of stats rather than two split entries.
+        if (deckCommanders.length > 0) {
+          const sorted = [...deckCommanders].sort();
+          const deckKey = sorted.join(" // ");
+          if (!commanderStats[deckKey]) {
+            commanderStats[deckKey] = {
+              name: deckKey,
+              artName: sorted[0],
               playCount: 0,
               wins: 0,
               winRate: 0,
@@ -196,12 +210,12 @@ const GameStats: React.FC = () => {
               weightedAverage: 0,
             };
           }
-          commanderStats[commander].playCount += 1;
-          commanderStats[commander].scoreSum += scorePlacement(p.placement);
+          commanderStats[deckKey].playCount += 1;
+          commanderStats[deckKey].scoreSum += scorePlacement(p.placement);
           if (isWinner) {
-            commanderStats[commander].wins += 1;
+            commanderStats[deckKey].wins += 1;
           }
-        });
+        }
 
         // Track partner pairs
         if (commanders.length === 2) {
@@ -354,7 +368,7 @@ const GameStats: React.FC = () => {
       averagePlayersPerGame,
       totalGameMinutes,
       typicalGameMinutes,
-      uniqueCommanders: Object.keys(commanderStats).length,
+      uniqueCommanders: uniqueCommanderNames.size,
       mostPlayedCommander,
       commanderPlayCount,
       mostWinsCommander,
@@ -467,6 +481,7 @@ const GameStats: React.FC = () => {
               <CommanderThumbnail
                 key={idx}
                 name={cmd.name}
+                artName={cmd.artName}
                 rank={idx + 1}
                 playCount={cmd.playCount}
                 wins={cmd.wins}

@@ -29,36 +29,40 @@ export default function ColorStatsPage() {
           ? player.commander
           : [player.commander];
 
-        commanders.forEach((commanderName) => {
-          // Get the colors for this commander from the cache
-          const commanderColors = getCachedCommanderColors(commanderName) || [];
+        // A deck's color identity is the UNION of its commanders' colors. Build
+        // it once so a partner pair counts as a single play for this color
+        // (not once per partner that happens to share it).
+        const deckColors = new Set<string>();
+        commanders.forEach((c) =>
+          (getCachedCommanderColors(c) || []).forEach((col) => deckColors.add(col))
+        );
 
-          // Check if this commander's colors match the selected color
-          if (commanderColors.includes(color)) {
-            totalPlays++;
-            if (player.placement === 1) {
-              totalWins++;
-            }
-
-            // Track per-commander stats
-            if (!commanderMap.has(commanderName)) {
-              commanderMap.set(commanderName, {
-                color,
-                commanderName,
-                plays: 0,
-                wins: 0,
-                winRate: 0,
-              });
-            }
-
-            const stats = commanderMap.get(commanderName)!;
-            stats.plays++;
-            if (player.placement === 1) {
-              stats.wins++;
-            }
-            stats.winRate = stats.wins / stats.plays;
+        if (deckColors.has(color)) {
+          totalPlays++;
+          if (player.placement === 1) {
+            totalWins++;
           }
-        });
+
+          // Track per-deck stats (partner pair shown as one "A // B" entry).
+          const deckName =
+            commanders.length >= 2 ? [...commanders].sort().join(" // ") : commanders[0];
+          if (!commanderMap.has(deckName)) {
+            commanderMap.set(deckName, {
+              color,
+              commanderName: deckName,
+              plays: 0,
+              wins: 0,
+              winRate: 0,
+            });
+          }
+
+          const stats = commanderMap.get(deckName)!;
+          stats.plays++;
+          if (player.placement === 1) {
+            stats.wins++;
+          }
+          stats.winRate = stats.wins / stats.plays;
+        }
       });
     });
 
