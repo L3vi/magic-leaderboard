@@ -474,7 +474,7 @@ const GameStats: React.FC = () => {
           <h2 className="stats-empty-title">No games yet</h2>
           <p className="stats-empty-text">
             Standings, commander performance, and color breakdowns all show up
-            here once this season has games. Use <strong>New Game</strong> to add
+            here once this season has games. Record a <strong>New Game</strong> to add
             the first one.
           </p>
         </div>
