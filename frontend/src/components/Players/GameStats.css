@@ -46,6 +46,15 @@
   opacity: 0.7;
 }
 
+/* A small explanatory note under a subhead (e.g. how a ranking is computed).
+   Pairs with .stats-subhead — pulls up under it, then spaces the list below. */
+.section-note {
+  margin: -0.5rem 0 1rem 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 /* Empty state — shown when the season has no games yet */
 .stats-empty-text {
   margin: 0;
