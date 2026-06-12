@@ -18,10 +18,6 @@
   color: var(--text);
 }
 
-.stats-section {
-  margin-bottom: 2.5rem;
-}
-
 .stats-section h3 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
@@ -172,4 +168,3 @@
     margin-top: 1.25rem;
   }
 }
-
