@@ -83,7 +83,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
             <div className="stat-label">Score</div>
             <div className="stat-value">{player.score}</div>
           </div>
-          <div className="stat-card">
+          <div className="stat-card stat-card-accent">
             <div className="stat-label">Games</div>
             <div className="stat-value">{totalGames}</div>
           </div>

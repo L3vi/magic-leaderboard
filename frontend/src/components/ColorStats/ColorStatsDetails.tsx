@@ -68,7 +68,7 @@ const ColorStatsDetails: React.FC<ColorStatsDetailsProps> = ({
           </div>
           <div className="stat-box">
             <div className="stat-label">Win Rate</div>
-            <div className="stat-value">{(stats.winRate * 100).toFixed(1)}%</div>
+            <div className="stat-value">{(stats.winRate * 100).toFixed(0)}%</div>
           </div>
         </div>
       </section>
@@ -95,7 +95,7 @@ const ColorStatsDetails: React.FC<ColorStatsDetailsProps> = ({
                   <div className="commander-meta">
                     {cmd.plays} play{cmd.plays !== 1 ? "s" : ""} •{" "}
                     {cmd.wins} win{cmd.wins !== 1 ? "s" : ""} •{" "}
-                    {(cmd.winRate * 100).toFixed(1)}% WR
+                    {(cmd.winRate * 100).toFixed(0)}% WR
                   </div>
                 </div>
               </div>

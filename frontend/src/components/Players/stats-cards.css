@@ -15,6 +15,15 @@
   transition: all 0.2s ease;
 }
 
+/* Uniform card height + vertical centering so a value that wraps to two lines
+   (e.g. the time estimate) doesn't leave the grid looking ragged. */
+.game-stats .stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 6.5rem;
+}
+
 .stat-card:hover {
   border-color: var(--accent);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -135,5 +144,17 @@
 
   .stat-value.commander-name {
     font-size: 1rem;
+  }
+}
+
+/* On phones, lock to a clean 2-up grid and let a lone last card span the full
+   width instead of leaving an empty half-row. */
+@media (max-width: 639px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stats-grid > .stat-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }

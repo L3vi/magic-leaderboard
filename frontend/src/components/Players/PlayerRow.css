@@ -25,17 +25,22 @@
   }
 }
 
-/* Top 3 medal backgrounds - subtle */
+/* Top 3 podium treatment: a crisp medal-colored left bar + a faint tint that
+   fades out quickly, so it reads as an intentional accent rather than a muddy
+   wash across the whole row. */
 .player-row.rank-1 {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, var(--surface) 100%);
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.12) 0%, var(--surface) 35%);
+    border-left: 3px solid #fbbf24; /* gold */
 }
 
 .player-row.rank-2 {
-    background: linear-gradient(135deg, rgba(220, 220, 220, 0.25) 0%, var(--surface) 100%);
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0.12) 0%, var(--surface) 35%);
+    border-left: 3px solid #cbd5e1; /* silver */
 }
 
 .player-row.rank-3 {
-    background: linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, var(--surface) 100%);
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.12) 0%, var(--surface) 35%);
+    border-left: 3px solid #cd7f32; /* bronze */
 }
 
 .player-row>.player-name {

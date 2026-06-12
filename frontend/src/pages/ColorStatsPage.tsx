@@ -90,12 +90,28 @@ export default function ColorStatsPage() {
     console.log("Commander clicked:", commanderName);
   };
 
-  if (!color || !colorStats) {
+  const colorLabels: Record<string, string> = {
+    W: "White",
+    U: "Blue",
+    B: "Black",
+    R: "Red",
+    G: "Green",
+  };
+
+  // Genuinely invalid color code in the URL.
+  if (!color || !colorLabels[color]) {
+    return (
+      <DetailsPageShell title="Color Stats" onClose={handleClose} error="Color not found" />
+    );
+  }
+
+  // Valid color, but this season has no games for it yet.
+  if (!colorStats || colorStats.totalPlays === 0) {
     return (
       <DetailsPageShell
-        title="Color Stats"
+        title={`${colorLabels[color]} Stats`}
         onClose={handleClose}
-        error="Color not found"
+        error={`No ${colorLabels[color]} games recorded this season yet.`}
       />
     );
   }

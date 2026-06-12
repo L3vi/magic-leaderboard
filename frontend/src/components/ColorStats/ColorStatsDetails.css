@@ -144,7 +144,12 @@
   }
 
   .stats-summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stat-box {
+    padding: 1rem 0.5rem;
   }
 
   .commander-rank {

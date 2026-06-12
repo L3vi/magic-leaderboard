@@ -130,21 +130,18 @@
   justify-content: center;
 }
 
-/* Games column - hidden on mobile, visible on desktop */
-@media (max-width: 639px) {
-  .games-col {
-    display: none !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    flex: 0 !important;
-  }
+/* Name header aligns left to match the left-aligned name values */
+.leaderboard-header .player-name {
+  text-align: left;
+  justify-content: flex-start;
 }
 
-/* Weighted average column - hidden on mobile, visible on desktop */
+/* Mobile shows Name · Score · Weighted Avg (the column the board is sorted by,
+   so the order reads correctly). Raw Average and Games are hidden here and
+   reappear on wider screens / landscape. */
 @media (max-width: 639px) {
-  .weighted-avg-col {
+  .games-col,
+  .player-average {
     display: none !important;
     width: 0 !important;
     min-width: 0 !important;
@@ -155,10 +152,9 @@
 }
 
 @media (min-width: 640px) {
-  .games-col {
-    display: flex;
-  }
-  .weighted-avg-col {
+  .games-col,
+  .weighted-avg-col,
+  .player-average {
     display: flex;
   }
 }

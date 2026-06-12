@@ -100,7 +100,13 @@ const Players: React.FC = () => {
         {Object.entries(COLUMN_LABELS).map(([key, label]) => (
           <span
             key={key}
-            className={`leaderboard-col${key === "name" ? " player-name" : ""}${key === "games" ? " games-col" : ""}${key === "weightedAverage" ? " weighted-avg-col" : ""}`}
+            className={`leaderboard-col ${
+              key === "name" ? "player-name"
+                : key === "score" ? "player-score"
+                : key === "average" ? "player-average"
+                : key === "weightedAverage" ? "weighted-avg-col"
+                : "games-col"
+            }`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"
