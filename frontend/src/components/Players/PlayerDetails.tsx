@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Player } from "./PlayerRow";
 import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference, useCommanderFullImageWithPreference } from "../../hooks/useCommanderArt";
@@ -164,15 +164,20 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
 
 function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string }) {
   const commanderArray = Array.isArray(commander) ? commander : [commander];
-  const artUrls = commanderArray.map(c => useCommanderArtWithPreference(c, playerId));
-  const fullImageUrls = commanderArray.map(c => useCommanderFullImageWithPreference(c, playerId));
+  const isPartner = commanderArray.length === 2;
+  // Hooks must run unconditionally and a fixed number of times — never in a
+  // .map() whose length varies. The partner branch renders via
+  // PartnerCommanderDisplay (which fetches its own art), so we only need the
+  // primary commander's art here, for the single-commander branch.
+  const primaryArt = useCommanderArtWithPreference(commanderArray[0] || "", playerId);
+  const primaryFull = useCommanderFullImageWithPreference(commanderArray[0] || "", playerId);
   const commanderName = commanderArray.join(" + ");
 
   return (
     <div className="commander-section">
       <div className="section-title">Most Played Commander</div>
       <div className="commander-card">
-        {commanderArray.length === 2 ? (
+        {isPartner ? (
           // Partner commanders display
           <PartnerCommanderDisplay
             commanders={commanderArray}
@@ -183,13 +188,13 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId }: { 
           />
         ) : (
           // Single commander display
-          artUrls[0] && (
+          primaryArt && (
             <img
-              src={artUrls[0]}
+              src={primaryArt}
               alt={commanderArray[0]}
               className="commander-thumbnail"
               style={{ cursor: "pointer" }}
-              onClick={() => onCardClick({ name: commanderArray[0], imageUrl: fullImageUrls[0] })}
+              onClick={() => onCardClick({ name: commanderArray[0], imageUrl: primaryFull })}
             />
           )
         )}
@@ -248,33 +253,33 @@ function CommanderColorDistribution({ commanders, navigate }: { commanders: stri
     G: { name: 'Green', hex: '#2E7D32' },
   };
 
-  // Calculate individual color frequency
+  // Resolve each unique commander's colors via a keyed child hook (ColorProbe)
+  // rather than calling useCommanderColors in a .map() here — a hook in a loop
+  // whose length changes between renders violates the Rules of Hooks and crashes
+  // when a player's deck set shifts (e.g. a game lands via the background poll).
+  const uniqueCommanders = useMemo(() => [...new Set(commanders)], [commanders]);
+  const [colorsByCommander, setColorsByCommander] = useState<Record<string, string[]>>({});
+  const reportColors = useCallback((commander: string, colors: string[]) => {
+    setColorsByCommander((prev) => {
+      const existing = prev[commander];
+      if (existing && existing.length === colors.length && existing.every((c, i) => c === colors[i])) {
+        return prev; // unchanged — avoid a needless re-render
+      }
+      return { ...prev, [commander]: colors };
+    });
+  }, []);
+
+  // Aggregate over every play (commanders includes repeats) so a deck played
+  // more often weighs more, matching the original behavior.
   const colorFrequency: Record<string, number> = {};
   let totalColorCount = 0;
-
-  // We need to fetch colors for each unique commander
-  const uniqueCommanders = [...new Set(commanders)];
-  const colorResults = uniqueCommanders.map((cmd) => ({
-    commander: cmd,
-    colors: useCommanderColors(cmd),
-  }));
-
-  // Build color frequency from fetched colors
   commanders.forEach((commander) => {
-    const result = colorResults.find((r) => r.commander === commander);
-    if (result && result.colors.length > 0) {
-      result.colors.forEach((color: string) => {
-        colorFrequency[color] = (colorFrequency[color] || 0) + 1;
-        totalColorCount++;
-      });
-    }
+    (colorsByCommander[commander] || []).forEach((color) => {
+      colorFrequency[color] = (colorFrequency[color] || 0) + 1;
+      totalColorCount++;
+    });
   });
 
-  if (totalColorCount === 0) {
-    return null;
-  }
-
-  // Sort colors by frequency
   const sortedColors = Object.entries(colorFrequency)
     .sort((a, b) => b[1] - a[1])
     .map(([color, count]) => ({
@@ -285,38 +290,56 @@ function CommanderColorDistribution({ commanders, navigate }: { commanders: stri
     }));
 
   return (
-    <div className="commander-color-distribution">
-      <div className="section-title">Color Preferences</div>
-      <div className="color-bars">
-        {sortedColors.map(({ code, name, hex, count, percentage }) => (
-          <div
-            key={code}
-            className="color-bar-item"
-            onClick={() => navigate(`/stats/colors/${code}`)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                navigate(`/stats/colors/${code}`);
-              }
-            }}
-          >
-            <div className="color-indicator" style={{ backgroundColor: hex }} title={name} />
-            <div className="color-bar-label">{name}</div>
-            <div className="color-bar-container">
+    <>
+      {/* Invisible resolvers — one per unique commander, each calling the hook once. */}
+      {uniqueCommanders.map((cmd) => (
+        <ColorProbe key={cmd} commander={cmd} onResolved={reportColors} />
+      ))}
+      {totalColorCount > 0 && (
+        <div className="commander-color-distribution">
+          <div className="section-title">Color Preferences</div>
+          <div className="color-bars">
+            {sortedColors.map(({ code, name, hex, count, percentage }) => (
               <div
-                className="color-bar-fill"
-                style={{ width: `${percentage}%`, backgroundColor: hex }}
-              />
-            </div>
-            <div className="color-bar-count">
-              {count} ({percentage}%)
-            </div>
+                key={code}
+                className="color-bar-item"
+                onClick={() => navigate(`/stats/colors/${code}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    navigate(`/stats/colors/${code}`);
+                  }
+                }}
+              >
+                <div className="color-indicator" style={{ backgroundColor: hex }} title={name} />
+                <div className="color-bar-label">{name}</div>
+                <div className="color-bar-container">
+                  <div
+                    className="color-bar-fill"
+                    style={{ width: `${percentage}%`, backgroundColor: hex }}
+                  />
+                </div>
+                <div className="color-bar-count">
+                  {count} ({percentage}%)
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
+}
+
+// Resolves one commander's color identity and reports it up. Isolating the hook
+// in a keyed child keeps the hook count stable as the commander list changes.
+function ColorProbe({ commander, onResolved }: { commander: string; onResolved: (commander: string, colors: string[]) => void }) {
+  const colors = useCommanderColors(commander);
+  useEffect(() => {
+    onResolved(commander, colors);
+  }, [commander, colors, onResolved]);
+  return null;
 }
 
 export default PlayerDetails;
