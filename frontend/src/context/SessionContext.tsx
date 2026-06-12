@@ -39,10 +39,25 @@ interface SessionContextType {
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
+// Remember the season the user explicitly selected so a refresh doesn't snap
+// back to the latest one. Only explicit picks are stored (see setActiveSession),
+// so a visitor who never touches the selector still lands on the newest season.
+const ACTIVE_SESSION_KEY = 'magicLeaderboard_activeSession';
+
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeSession, setActiveSession] = useState<string>('');
+  const [activeSession, setActiveSessionState] = useState<string>('');
   const [sessions, setSessions] = useState<SessionListItem[]>([]);
   const allSessions = sessions.map((s) => s.id);
+
+  // Public setter: persist the user's choice so it survives a reload.
+  const setActiveSession = (session: string) => {
+    setActiveSessionState(session);
+    try {
+      localStorage.setItem(ACTIVE_SESSION_KEY, session);
+    } catch {
+      // localStorage unavailable (private mode / quota) — just skip persistence.
+    }
+  };
 
   // Re-fetch the session list (e.g. after creating a new session).
   const reloadSessions = async () => {
@@ -74,9 +89,19 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const list = await fetchSessions();
         if (cancelled || list.length === 0) return;
         setSessions(list);
-        // Default to the latest non-archived season (list is sorted newest-first).
-        const firstActive = list.find((s) => !s.archived) || list[0];
-        setActiveSession(firstActive.id);
+        // Restore the user's last explicitly-chosen season if it still exists;
+        // otherwise default to the latest non-archived one (list is newest-first).
+        // Use the raw setter so auto-defaulting doesn't get persisted — that way a
+        // visitor who never picks a season keeps following the newest one.
+        let stored: string | null = null;
+        try {
+          stored = localStorage.getItem(ACTIVE_SESSION_KEY);
+        } catch {
+          stored = null;
+        }
+        const restored = stored && list.some((s) => s.id === stored) ? stored : null;
+        const fallback = (list.find((s) => !s.archived) || list[0]).id;
+        setActiveSessionState(restored ?? fallback);
       } catch (err) {
         console.warn('Could not fetch sessions:', err);
       }
