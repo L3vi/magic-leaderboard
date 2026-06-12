@@ -77,8 +77,16 @@ async function fetchSingleCommander(name: string): Promise<void> {
 /**
  * Pre-fetch art + color identity for all commanders in the given games.
  * Only fetches commanders missing image or color data; already-cached ones are skipped.
+ *
+ * onProgress fires whenever a batch of data lands in the cache (after each
+ * collection chunk, and after the fuzzy fallback). Callers use it to re-render
+ * as data streams in, so the UI isn't blocked on the slow serialized tail —
+ * important on mobile, where the fallback crawl can be throttled or stall.
  */
-export async function preFetchCommanderData(games: any[]): Promise<void> {
+export async function preFetchCommanderData(
+  games: any[],
+  onProgress?: () => void
+): Promise<void> {
   const commanders = collectCommanders(games);
 
   // A commander needs fetching if EITHER its art or its colors are missing.
@@ -93,8 +101,6 @@ export async function preFetchCommanderData(games: any[]): Promise<void> {
 
   console.log(`Pre-fetching ${toFetch.length} commanders from Scryfall (collection)`);
 
-  const imageBatch: Record<string, CardImageCache> = {};
-  const colorBatch: Record<string, string[]> = {};
   const matched = new Set<string>();
 
   for (let i = 0; i < toFetch.length; i += COLLECTION_CHUNK) {
@@ -102,6 +108,9 @@ export async function preFetchCommanderData(games: any[]): Promise<void> {
     // Map lowercased name -> the exact string we'll cache under (what lookups use).
     const requestedByLower = new Map<string, string>();
     chunk.forEach((name) => requestedByLower.set(name.toLowerCase(), name));
+
+    const imageBatch: Record<string, CardImageCache> = {};
+    const colorBatch: Record<string, string[]> = {};
 
     try {
       const response = await scryfallFetch("https://api.scryfall.com/cards/collection", {
@@ -144,10 +153,13 @@ export async function preFetchCommanderData(games: any[]): Promise<void> {
       // Whole chunk failed — its names fall through to the single fallback below.
       console.warn("Scryfall collection batch failed:", error);
     }
-  }
 
-  setImageCacheBatch(imageBatch);
-  setColorCacheBatch(colorBatch);
+    // Commit this chunk and let the UI repaint with it — don't wait for the
+    // remaining chunks or the slow fallback below.
+    setImageCacheBatch(imageBatch);
+    setColorCacheBatch(colorBatch);
+    onProgress?.();
+  }
 
   // Resolve anything the collection call didn't match (not_found, "//" names,
   // failed chunks) one at a time via fuzzy lookup.
@@ -155,6 +167,7 @@ export async function preFetchCommanderData(games: any[]): Promise<void> {
   if (remaining.length > 0) {
     console.log(`Resolving ${remaining.length} commanders via fuzzy fallback`);
     await Promise.all(remaining.map((name) => fetchSingleCommander(name)));
+    onProgress?.();
   }
 
   console.log("Pre-fetch complete");

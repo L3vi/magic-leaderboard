@@ -90,9 +90,10 @@ const GameStats: React.FC = () => {
   // (Scryfall /cards/collection). Cheap no-op when everything is already cached.
   useEffect(() => {
     if (games.length === 0) return;
-    preFetchCommanderData(games).then(() => {
-      setColorVersion((v) => v + 1);
-    });
+    // Bump on each progress tick (per collection batch + after the fallback), not
+    // just on final resolution — so colors paint as soon as the bulk lands rather
+    // than waiting on the slow serialized fallback, which can stall on mobile.
+    preFetchCommanderData(games, () => setColorVersion((v) => v + 1));
   }, [games]);
 
   const stats = useMemo(() => {
