@@ -70,7 +70,7 @@ export async function saveCommanderArtPreference(
   try {
     await authReady;
     const playerRef = doc(db, "players", playerId);
-    
+
     const artData = {
       commanderName,
       variantId: variant.id,
@@ -80,16 +80,24 @@ export async function saveCommanderArtPreference(
     };
 
     console.log(`📝 Saving art preference:`, { playerId, commanderName, variant: variant.set });
-    
-    await setDoc(
-      playerRef,
-      {
-        commanderArt: {
-          [commanderName]: artData,
-        },
+
+    // The security rule requires every players/* doc to carry a `name`. An
+    // existing doc already has one (merge preserves it), but a player who isn't
+    // persisted yet — e.g. a brand-new player added in the New Game form before
+    // the game is saved — has no doc, so a bare { commanderArt } merge would
+    // create a nameless doc and be rejected. In that case seed `name` too. The
+    // New Game form uses the player's name as their id, so playerId is the name.
+    const payload: Record<string, any> = {
+      commanderArt: {
+        [commanderName]: artData,
       },
-      { merge: true }
-    );
+    };
+    const existing = await getDoc(playerRef);
+    if (!existing.exists()) {
+      payload.name = playerId;
+    }
+
+    await setDoc(playerRef, payload, { merge: true });
 
     // Stale-read guard: the memoized map no longer reflects Firestore.
     invalidatePlayerArtPreferences(playerId);
