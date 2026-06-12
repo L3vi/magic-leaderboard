@@ -95,7 +95,7 @@ const ColorStatsDetails: React.FC<ColorStatsDetailsProps> = ({
                   <div className="commander-meta">
                     {cmd.plays} play{cmd.plays !== 1 ? "s" : ""} •{" "}
                     {cmd.wins} win{cmd.wins !== 1 ? "s" : ""} •{" "}
-                    {(cmd.winRate * 100).toFixed(0)}% WR
+                    {(cmd.winRate * 100).toFixed(0)}% win rate
                   </div>
                 </div>
               </div>

@@ -72,7 +72,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, rank, pla
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} avg</span> • {playCount} plays • {wins} {wins === 1 ? "win" : "wins"}</div>
+        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} average</span> • {playCount} {playCount === 1 ? "play" : "plays"} • {wins} {wins === 1 ? "win" : "wins"}</div>
       </div>
     </div>
   );
@@ -335,10 +335,34 @@ const GameStats: React.FC = () => {
     };
   }, [games, colorVersion]);
 
+  // Friendly, inviting empty state instead of a wall of zeros + "N/A" badges
+  // when the season has no games yet.
+  if (games.length === 0) {
+    return (
+      <div className="game-stats">
+        <div className="stats-empty">
+          <div className="stats-empty-icon">🎲</div>
+          <h2 className="stats-empty-title">No games yet</h2>
+          <p className="stats-empty-text">
+            Record your first game to kick off the season — standings, commander
+            performance, and color breakdowns all show up here once you do.
+          </p>
+          <button
+            type="button"
+            className="stats-empty-cta"
+            onClick={() => navigate("/new-game")}
+          >
+            + Record a game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="game-stats">
       <h2>Overall Game Statistics</h2>
-      
+
       {/* Core Game Stats */}
       <div className="stats-section">
         <h3>Game Overview</h3>
@@ -445,9 +469,9 @@ const GameStats: React.FC = () => {
                 >
                   <div className="color-stat-header">
                     <div className="color-stat-name">{COLOR_MAP[color.color] || color.color}</div>
-                    <div className="color-stat-plays">{color.playCount}p</div>
+                    <div className="color-stat-plays">{color.playCount} {color.playCount === 1 ? "play" : "plays"}</div>
                   </div>
-                  <div className="color-stat-record">{color.wins}W • {color.playCount - color.wins}L</div>
+                  <div className="color-stat-record">{color.wins} {color.wins === 1 ? "win" : "wins"} • {color.playCount - color.wins} {(color.playCount - color.wins) === 1 ? "loss" : "losses"}</div>
                   <div className="color-stat-rate">{color.winRate.toFixed(0)}%</div>
                 </div>
               );

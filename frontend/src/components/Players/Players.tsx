@@ -13,7 +13,7 @@ const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
   score: "Score",
   average: "Average",
-  weightedAverage: "Weighted Avg",
+  weightedAverage: "Weighted Average",
   games: "Games",
 };
 
@@ -61,10 +61,12 @@ const Players: React.FC = () => {
     return players;
   }, [scoresData, sortKey, sortOrder]);
 
-  // Determine if current sort shows top rankings (medals for score/average/weightedAverage descending only)
+  // Determine if current sort shows top rankings (medals for score/average/weightedAverage descending only).
+  // Suppressed when nobody has played yet, so an empty season doesn't award medals to a 0–0–0 board.
+  const hasResults = useMemo(() => scoresData.some((p) => p.gameCount > 0), [scoresData]);
   const showTopRankings = useMemo(() => {
-    return (sortKey === "score" || sortKey === "average" || sortKey === "weightedAverage") && sortOrder === "desc";
-  }, [sortKey, sortOrder]);
+    return hasResults && (sortKey === "score" || sortKey === "average" || sortKey === "weightedAverage") && sortOrder === "desc";
+  }, [hasResults, sortKey, sortOrder]);
 
   // Show loading state
   if (loading) {

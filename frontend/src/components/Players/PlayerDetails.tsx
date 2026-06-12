@@ -100,7 +100,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         {/* Secondary Stats */}
         <div className="player-secondary-stats">
           <div className="secondary-stat">
-            <div className="secondary-stat-label">Avg Score</div>
+            <div className="secondary-stat-label">Average Score</div>
             <div className="secondary-stat-value">{player.average.toFixed(2)}</div>
           </div>
           <div className="secondary-stat">
