@@ -6,18 +6,24 @@
     "sync-data": "node ../sync-data.js",
     "dev": "npm run sync-data && vite --open",
     "build": "npm run sync-data && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^24.3.0",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^17.6.0",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.61.0",
     "vite": "^7.1.2",
     "vite-plugin-svgr": "^4.3.0"
   },
