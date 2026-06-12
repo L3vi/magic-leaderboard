@@ -70,6 +70,17 @@
   font-size: 0.75em;
 }
 
+/* The sort-arrow always reserves its space (it's only toggled with visibility),
+   so on the centered columns it would pull the label left of true center. Add a
+   matching spacer on the left so the WORD stays centered over its column while
+   the arrow keeps its room. Name is left-aligned, so it's excluded. */
+.leaderboard-header .leaderboard-col:not(.player-name)::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.75em;
+  font-size: 0.75em;
+}
+
 /* ===================== */
 /* Desktop overrides     */
 /* Desktop: 640px+ */
