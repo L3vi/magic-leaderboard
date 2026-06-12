@@ -213,7 +213,15 @@
     background: var(--background);
   }
 
-  /* Keep the medal accent visible to the left of the pinned name. */
+  /* Move the medal accent onto the pinned Name cell so it travels with the
+     frozen column as the row scrolls. The row's own border-left would scroll
+     out of view (and double up with this bar at scroll position 0), so blank
+     its color here while keeping the 3px width for consistent inset. */
+  .player-row.rank-1,
+  .player-row.rank-2,
+  .player-row.rank-3 {
+    border-left-color: transparent;
+  }
   .player-row.rank-1 .player-name { box-shadow: inset 3px 0 0 #fbbf24; }
   .player-row.rank-2 .player-name { box-shadow: inset 3px 0 0 #cbd5e1; }
   .player-row.rank-3 .player-name { box-shadow: inset 3px 0 0 #cd7f32; }
