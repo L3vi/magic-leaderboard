@@ -19,7 +19,11 @@
   align-items: center;
   font-weight: 600;
   font-size: 1rem;
-  padding: 0.25rem 0;
+  /* Match the player rows' horizontal insets (margin 5px + padding 1vw + the 3px
+     podium border) so each column header lines up exactly over the values below. */
+  margin: 0 5px;
+  padding: 0.25rem 1vw;
+  border-left: 3px solid transparent;
   border-bottom: 1px solid var(--primary-light);
   color: var(--primary-dark);
   height: var(--header-height);
