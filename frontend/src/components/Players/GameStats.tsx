@@ -103,6 +103,7 @@ const GameStats: React.FC = () => {
         totalPlayers: 0,
         averagePlayersPerGame: "0",
         totalGameMinutes: 0,
+        typicalGameMinutes: 0,
         uniqueCommanders: 0,
         mostPlayedCommander: "N/A",
         commanderPlayCount: 0,
@@ -132,11 +133,29 @@ const GameStats: React.FC = () => {
     const totalPlayerCount = games.reduce((sum, game) => sum + game.players.length, 0);
     const averagePlayersPerGame = (totalPlayerCount / totalGames).toFixed(1);
 
-    // Estimated play time: a flat ~45 min/game estimate (Commander games run
-    // long). Honest as an estimate — the old "time between games" calc actually
-    // measured the calendar span of the season, which was misleading.
-    const AVG_GAME_MINUTES = 45;
-    const totalGameMinutes = totalGames * AVG_GAME_MINUTES;
+    // Estimated play time. Each game's timestamp is when it was logged, so the
+    // gap to the next game ≈ how long that game took — but only for plausible
+    // single-game gaps. Drop gaps over 150 min (sleep, going home, breaks
+    // between sessions) and under 15 min (rapid back-logging or a quick
+    // blowout — not a real game's length), take the median of what's left as
+    // the typical game length, and scale by the game count. Scaling a robust
+    // typical length beats summing raw gaps, which irregular logging distorts.
+    const sortedTimes = games
+      .map((g) => new Date(g.dateCreated).getTime())
+      .filter((t) => !Number.isNaN(t))
+      .sort((a, b) => a - b);
+    const gameGaps: number[] = [];
+    for (let i = 1; i < sortedTimes.length; i++) {
+      const gapMin = (sortedTimes[i] - sortedTimes[i - 1]) / 60000;
+      if (gapMin >= 15 && gapMin <= 150) gameGaps.push(gapMin);
+    }
+    let typicalGameMinutes = 50; // fallback for sparse / synthetic timestamps
+    if (gameGaps.length >= 3) {
+      const s = [...gameGaps].sort((a, b) => a - b);
+      typicalGameMinutes = s[Math.floor(s.length / 2)];
+    }
+    typicalGameMinutes = Math.min(120, Math.max(30, Math.round(typicalGameMinutes)));
+    const totalGameMinutes = typicalGameMinutes * totalGames;
 
     // Deck color counts (for the multicolor share / average colors stats).
     let multicolorPlays = 0;
@@ -334,6 +353,7 @@ const GameStats: React.FC = () => {
       totalPlayers,
       averagePlayersPerGame,
       totalGameMinutes,
+      typicalGameMinutes,
       uniqueCommanders: Object.keys(commanderStats).length,
       mostPlayedCommander,
       commanderPlayCount,
@@ -350,12 +370,21 @@ const GameStats: React.FC = () => {
     };
   }, [games, colorVersion]);
 
-  // Quiet empty state instead of a wall of zeros + "N/A" badges when the season
-  // has no games yet. (Use the header's New Game button to add one.)
+  // Inviting empty state instead of a wall of zeros + "N/A" badges when the
+  // season has no games yet. Points at the existing New Game button rather than
+  // duplicating it with its own CTA.
   if (games.length === 0) {
     return (
       <div className="game-stats">
-        <p className="stats-empty-text">No games yet — add one to start the season.</p>
+        <div className="stats-empty">
+          <div className="stats-empty-icon">🎲</div>
+          <h2 className="stats-empty-title">No games yet</h2>
+          <p className="stats-empty-text">
+            Standings, commander performance, and color breakdowns all show up
+            here once this season has games. Use <strong>New Game</strong> to add
+            the first one.
+          </p>
+        </div>
       </div>
     );
   }
@@ -387,7 +416,7 @@ const GameStats: React.FC = () => {
           <div className="stat-card">
             <div className="stat-label">Estimated Play Time</div>
             <div className="stat-value">{formatPlayTime(stats.totalGameMinutes)}</div>
-            <div className="stat-subtext">≈ 45 min per game</div>
+            <div className="stat-subtext">≈ {stats.typicalGameMinutes} min per game</div>
           </div>
         </div>
       </div>

@@ -106,7 +106,10 @@
     font-size: 1.25rem;
   }
 
-  .leaderboard-list {
+  /* Clear the fixed bottom nav/FAB. Put it on the whole section (not the list)
+     so the last element — the stats panel, empty or populated — scrolls clear
+     of the nav instead of being hidden behind it. */
+  .leaderboard {
     padding-bottom: 6rem;
   }
 }
