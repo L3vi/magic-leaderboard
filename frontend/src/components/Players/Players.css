@@ -213,21 +213,14 @@
     background: var(--background);
   }
 
-  /* Move the medal accent onto the pinned Name cell so it travels with the
-     frozen column as the row scrolls. The row's own border-left would scroll
-     out of view (and double up with this bar at scroll position 0), so blank
-     its color here while keeping the 3px width for consistent inset. */
-  .player-row.rank-1,
-  .player-row.rank-2,
-  .player-row.rank-3 {
-    border-left-color: transparent;
-  }
-
-  /* The sticky Name cell needs an opaque background so scrolled columns pass
-     underneath it. On podium rows, paint that background with the SAME medal
-     tint the row uses (over an opaque surface base to stay opaque) and repaint
-     the row with the identical px-based formula, so the tint runs continuously
-     from the Name into the row instead of leaving a darker solid chip. */
+  /* Podium rows keep their original medal-colored left border (from
+     PlayerRow.css) AND gradient tint. The only thing the sticky layout adds is
+     that the Name cell needs an opaque background so scrolled columns pass
+     underneath it — so paint the Name with the SAME medal tint the row uses
+     (over an opaque surface base) and repaint the row with the identical
+     px-based formula, so the tint runs continuously from the Name into the row
+     instead of leaving a darker solid chip behind the name. No extra accent
+     bar on the Name — the row's border is the single accent, as before. */
   .leaderboard-scroll .player-row.rank-1,
   .leaderboard-scroll .player-row.rank-1 .player-name {
     background: linear-gradient(90deg, rgba(251, 191, 36, 0.12) 0, transparent 190px), var(--surface);
@@ -240,10 +233,6 @@
   .leaderboard-scroll .player-row.rank-3 .player-name {
     background: linear-gradient(90deg, rgba(205, 127, 50, 0.12) 0, transparent 190px), var(--surface);
   }
-
-  .player-row.rank-1 .player-name { box-shadow: inset 3px 0 0 #fbbf24; }
-  .player-row.rank-2 .player-name { box-shadow: inset 3px 0 0 #cbd5e1; }
-  .player-row.rank-3 .player-name { box-shadow: inset 3px 0 0 #cd7f32; }
 
   /* Right-edge fade hint — purely decorative, never intercepts taps. */
   .leaderboard-scroll-fade {
