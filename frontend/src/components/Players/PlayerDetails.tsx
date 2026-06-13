@@ -7,6 +7,7 @@ import PartnerCommanderDisplay from "../PartnerCommanderDisplay/PartnerCommander
 import CardModal from "../CardModal/CardModal";
 import { formatPlayTime } from "../../utils/formatTime";
 import { commanderDeckName, encodeCommanderKey } from "../../utils/commanderKey";
+import { scorePlacement } from "../../services/dataService";
 import "./PlayerDetails.css";
 
 interface PlayerDetailsProps {
@@ -61,29 +62,45 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   const mostPlayedDeckEntry = Object.entries(deckCombinationCounts).sort((a, b) => b[1] - a[1])[0];
   const mostPlayedCommander: [string[], number] | undefined = mostPlayedDeckEntry ? [mostPlayedDeckEntry[0].split("|"), mostPlayedDeckEntry[1]] : undefined;
 
-  // Per-deck record (plays + wins) for the "best performing" stat.
-  const deckStats: Record<string, { plays: number; wins: number }> = {};
+  // Per-deck record for the "best performing" stat: plays, wins, and total
+  // placement points (1st=4 … 4th+=1, the same scoring the leaderboard uses).
+  const deckStats: Record<string, { plays: number; wins: number; scoreSum: number }> = {};
   gamesForPlayer.forEach(g => {
     const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
     const cmd = p?.commander;
     const key = Array.isArray(cmd) ? [...cmd].sort().join("|") : cmd || "";
-    if (!key) return;
-    const s = deckStats[key] || (deckStats[key] = { plays: 0, wins: 0 });
+    if (!key || !p) return;
+    const s = deckStats[key] || (deckStats[key] = { plays: 0, wins: 0, scoreSum: 0 });
     s.plays++;
-    if (p?.placement === 1) s.wins++;
+    s.scoreSum += scorePlacement(p.placement);
+    if (p.placement === 1) s.wins++;
   });
-  // Best performing = highest win rate among decks played at least twice (so a
-  // single lucky win can't top the list); tie-break by more plays.
-  const bestPerformingEntry = Object.entries(deckStats)
-    .filter(([, s]) => s.plays >= 2)
-    .sort((a, b) => {
-      const aWin = a[1].wins / a[1].plays;
-      const bWin = b[1].wins / b[1].plays;
-      if (bWin !== aWin) return bWin - aWin;
-      return b[1].plays - a[1].plays;
-    })[0];
+  // Best performing = the deck with the highest performance, gauged exactly like
+  // the site's Top Commanders ranking: average placement points (not raw win
+  // rate, which ignores 2nd/3rd finishes), Bayesian-smoothed toward this
+  // player's own average so a single lucky game can't top a solid record.
+  // Constants mirror GameStats: eligibility floor of 2 plays, prior strength 3.
+  const MIN_PLAYS_TO_RANK = 2;
+  const PRIOR_STRENGTH = 3;
+  const eligibleDecks = Object.entries(deckStats).filter(([, s]) => s.plays >= MIN_PLAYS_TO_RANK);
+  const eligiblePlays = eligibleDecks.reduce((n, [, s]) => n + s.plays, 0);
+  const eligibleScore = eligibleDecks.reduce((n, [, s]) => n + s.scoreSum, 0);
+  const baselineAvg = eligiblePlays > 0 ? eligibleScore / eligiblePlays : 2.5;
+  const bestPerformingEntry = eligibleDecks
+    .map(([key, s]) => {
+      const average = s.scoreSum / s.plays;
+      const weightedAverage =
+        (s.plays * average + PRIOR_STRENGTH * baselineAvg) / (s.plays + PRIOR_STRENGTH);
+      return { key, plays: s.plays, wins: s.wins, average, weightedAverage };
+    })
+    .sort((a, b) => b.weightedAverage - a.weightedAverage || b.plays - a.plays)[0];
   const bestPerformingCommander = bestPerformingEntry
-    ? { commanders: bestPerformingEntry[0].split("|"), wins: bestPerformingEntry[1].wins, plays: bestPerformingEntry[1].plays }
+    ? {
+        commanders: bestPerformingEntry.key.split("|"),
+        wins: bestPerformingEntry.wins,
+        plays: bestPerformingEntry.plays,
+        average: bestPerformingEntry.average,
+      }
     : undefined;
   
   const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
@@ -179,7 +196,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
               <CommanderHighlightCard
                 title="Best Performing"
                 commander={bestPerformingCommander.commanders}
-                meta={`${Math.round((bestPerformingCommander.wins / bestPerformingCommander.plays) * 100)}% win • ${bestPerformingCommander.wins}/${bestPerformingCommander.plays}`}
+                meta={`${bestPerformingCommander.average.toFixed(1)} avg pts • ${bestPerformingCommander.plays} play${bestPerformingCommander.plays !== 1 ? "s" : ""} • ${bestPerformingCommander.wins} win${bestPerformingCommander.wins !== 1 ? "s" : ""}`}
                 onCardClick={setSelectedCard}
                 playerId={playerId}
                 onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)}
