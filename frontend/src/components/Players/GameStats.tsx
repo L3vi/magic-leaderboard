@@ -616,7 +616,18 @@ const GameStats: React.FC = () => {
             <div className="stat-subtext">{stats.commonColorCount} {stats.commonColorCount === 1 ? "play" : "plays"}</div>
           </div>
           {stats.topCombo && (
-            <div className="stat-card">
+            <div
+              className="stat-card clickable"
+              onClick={() => navigate(`/stats/combos/${stats.topCombo!.key}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(`/stats/combos/${stats.topCombo!.key}`);
+                }
+              }}
+            >
               <div className="stat-label">Top Combination</div>
               <div className="stat-value combo-value">
                 <span className="combo-pips">{renderPips(stats.topCombo.key)}</span>
