@@ -18,10 +18,16 @@ import EditGamePage from "./pages/EditGamePage";
 import { SessionProvider } from "./context/SessionContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import { ArtPreferenceProvider } from "./context/ArtPreferenceContext";
+import { useScrollRestoration } from "./hooks/useScrollRestoration";
 
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // The Players/Games tabs scroll the window (their .tab-content only sets a
+  // min-height, so the document grows). Restore that position on Back so
+  // tapping a stat row and coming back lands you where you were.
+  useScrollRestoration("window");
 
   // Determine active tab from URL path
   const getTabFromPath = (path: string): 'players' | 'games' => {

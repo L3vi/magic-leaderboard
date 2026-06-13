@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useEscapeKey } from "../../hooks/useEscapeKey";
+import { useScrollRestoration } from "../../hooks/useScrollRestoration";
 import { useNavigationAnimation } from "../../context/NavigationContext";
 import "./PageShell.css";
 
@@ -77,6 +78,13 @@ const PageShell: React.FC<PageShellProps> = ({
   children,
 }) => {
   const { skipAnimationRef, setSkipAnimation } = useNavigationAnimation();
+  const shellRef = React.useRef<HTMLDivElement>(null);
+
+  // Restore the scroll position when this page is revisited via Back. Overlay
+  // pages remount on every navigation, so without this they always reset to
+  // the top. The .page-shell root is the scroll container (the inner content
+  // just grows).
+  useScrollRestoration(shellRef, { freezeKey: true });
 
   // Lock body scroll while the overlay is open (refcounted — see above).
   React.useEffect(() => {
@@ -112,6 +120,7 @@ const PageShell: React.FC<PageShellProps> = ({
 
   return (
     <motion.div
+      ref={shellRef}
       className={shellClass}
       style={backdropTint ? ({ "--backdrop-tint": backdropTint } as React.CSSProperties) : undefined}
       {...animationProps}
