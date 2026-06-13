@@ -1,4 +1,14 @@
 /**
+ * Whether a commander value is a real, known commander rather than the
+ * "Unknown" placeholder (used when a game was recorded without a commander)
+ * or an empty/whitespace string. Single source of truth for this check, which
+ * several views use to filter out placeholders.
+ */
+export function isRealCommander(commander: string | undefined | null): commander is string {
+  return !!commander && commander.trim() !== "" && commander !== "Unknown";
+}
+
+/**
  * Canonical identity for a "deck" — a single commander or a partner/companion
  * pair. Partner pairs are sorted and joined with " // " so the same two
  * commanders always resolve to one key regardless of input order.
@@ -8,9 +18,7 @@
  * lands on the same CommanderStatsPage.
  */
 export function commanderDeckName(commander: string | string[]): string {
-  const list = (Array.isArray(commander) ? commander : [commander]).filter(
-    (c) => c && c.trim() !== "" && c !== "Unknown"
-  );
+  const list = (Array.isArray(commander) ? commander : [commander]).filter(isRealCommander);
   if (list.length === 0) return "";
   return list.length >= 2 ? [...list].sort().join(" // ") : list[0];
 }

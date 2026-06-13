@@ -18,6 +18,7 @@ import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
 import StaticDropdown from '../StaticDropdown/StaticDropdown';
 import { scryfallFetch } from '../../services/scryfallClient';
+import { isRealCommander } from '../../utils/commanderKey';
 
 // CommanderAutocomplete - simple text input with card search
 type CommanderAutocompleteProps = {
@@ -143,7 +144,13 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           const isArray = Array.isArray(playerInGame.commander);
           let cmdString = isArray ? playerInGame.commander[0] : playerInGame.commander;
           let partnerCmd = isArray && playerInGame.commander.length > 1 ? playerInGame.commander[1] : undefined;
-          
+
+          // Drop the "Unknown"/empty placeholder so it never shows up as a
+          // suggestion or the last-played default. Skip the play entirely if
+          // it has no real primary commander; clear a placeholder partner.
+          if (!isRealCommander(cmdString)) continue;
+          if (!isRealCommander(partnerCmd)) partnerCmd = undefined;
+
           // Normalize partner order (sort alphabetically to ensure consistent ordering)
           if (partnerCmd) {
             const sorted = [cmdString, partnerCmd].sort();
@@ -444,8 +451,13 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     for (const game of sortedGames) {
       const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
       if (playerInGame) {
-        // Return the first commander if it's an array (partner commanders)
-        return Array.isArray(playerInGame.commander) ? playerInGame.commander[0] : playerInGame.commander;
+        // The first commander (of a partner pair, or the single commander).
+        const primary = Array.isArray(playerInGame.commander)
+          ? playerInGame.commander[0]
+          : playerInGame.commander;
+        // Skip the "Unknown"/empty placeholder and keep looking back for a
+        // real commander to suggest as the default.
+        if (isRealCommander(primary)) return primary;
       }
     }
     return '';
