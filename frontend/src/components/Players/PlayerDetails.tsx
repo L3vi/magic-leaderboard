@@ -33,6 +33,9 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   const winRate = totalGames ? Math.round((wins / totalGames) * 100) : 0;
   const placements = gamesForPlayer.map(g => g.players.find(p => getPlayerName(p.playerId) === player.name)?.placement || 0);
   const avgPlacement = placements.length ? (placements.reduce((a, b) => a + b, 0) / placements.length).toFixed(2) : "-";
+  // Podium rate = share of games finishing in the top 3 (placement 1–3).
+  const podiumCount = placements.filter(p => p >= 1 && p <= 3).length;
+  const podiumRate = placements.length ? Math.round((podiumCount / placements.length) * 100) : 0;
   
   // Get unique deck combinations (treating companion pairs as single decks)
   const deckCombinations = gamesForPlayer
@@ -57,6 +60,31 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   }, {} as Record<string, number>);
   const mostPlayedDeckEntry = Object.entries(deckCombinationCounts).sort((a, b) => b[1] - a[1])[0];
   const mostPlayedCommander: [string[], number] | undefined = mostPlayedDeckEntry ? [mostPlayedDeckEntry[0].split("|"), mostPlayedDeckEntry[1]] : undefined;
+
+  // Per-deck record (plays + wins) for the "best performing" stat.
+  const deckStats: Record<string, { plays: number; wins: number }> = {};
+  gamesForPlayer.forEach(g => {
+    const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
+    const cmd = p?.commander;
+    const key = Array.isArray(cmd) ? [...cmd].sort().join("|") : cmd || "";
+    if (!key) return;
+    const s = deckStats[key] || (deckStats[key] = { plays: 0, wins: 0 });
+    s.plays++;
+    if (p?.placement === 1) s.wins++;
+  });
+  // Best performing = highest win rate among decks played at least twice (so a
+  // single lucky win can't top the list); tie-break by more plays.
+  const bestPerformingEntry = Object.entries(deckStats)
+    .filter(([, s]) => s.plays >= 2)
+    .sort((a, b) => {
+      const aWin = a[1].wins / a[1].plays;
+      const bWin = b[1].wins / b[1].plays;
+      if (bWin !== aWin) return bWin - aWin;
+      return b[1].plays - a[1].plays;
+    })[0];
+  const bestPerformingCommander = bestPerformingEntry
+    ? { commanders: bestPerformingEntry[0].split("|"), wins: bestPerformingEntry[1].wins, plays: bestPerformingEntry[1].plays }
+    : undefined;
   
   const sortedGames = [...gamesForPlayer].sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   const firstGameDate = gamesForPlayer.length ? new Date(sortedGames[sortedGames.length - 1].dateCreated).toLocaleDateString() : "-";
@@ -109,6 +137,14 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
             <div className="secondary-stat-value">#{player.mostCommonPlacement}</div>
           </div>
           <div className="secondary-stat">
+            <div className="secondary-stat-label">Avg Finish</div>
+            <div className="secondary-stat-value">{avgPlacement === "-" ? "-" : `#${avgPlacement}`}</div>
+          </div>
+          <div className="secondary-stat">
+            <div className="secondary-stat-label">Podium Rate</div>
+            <div className="secondary-stat-value">{totalGames ? `${podiumRate}%` : "-"}</div>
+          </div>
+          <div className="secondary-stat">
             <div className="secondary-stat-label">Time Played</div>
             <div className="secondary-stat-value">{player.estimatedMinutesPlayed ? formatPlayTime(player.estimatedMinutesPlayed) : '-'}</div>
           </div>
@@ -126,9 +162,30 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
           </div>
         </div>
 
-        {/* Most Played Commander */}
-        {mostPlayedCommander && (
-          <MostPlayedCommanderCard commander={mostPlayedCommander[0]} count={mostPlayedCommander[1]} onCardClick={setSelectedCard} playerId={playerId} onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)} />
+        {/* Commander highlights: most played + best performing, side by side */}
+        {(mostPlayedCommander || bestPerformingCommander) && (
+          <div className="commander-highlights">
+            {mostPlayedCommander && (
+              <CommanderHighlightCard
+                title="Most Played"
+                commander={mostPlayedCommander[0]}
+                meta={`${mostPlayedCommander[1]} game${mostPlayedCommander[1] > 1 ? "s" : ""}`}
+                onCardClick={setSelectedCard}
+                playerId={playerId}
+                onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)}
+              />
+            )}
+            {bestPerformingCommander && (
+              <CommanderHighlightCard
+                title="Best Performing"
+                commander={bestPerformingCommander.commanders}
+                meta={`${Math.round((bestPerformingCommander.wins / bestPerformingCommander.plays) * 100)}% win • ${bestPerformingCommander.wins}/${bestPerformingCommander.plays}`}
+                onCardClick={setSelectedCard}
+                playerId={playerId}
+                onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)}
+              />
+            )}
+          </div>
         )}
 
         {/* Commander Color Distribution */}
@@ -163,7 +220,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   );
 };
 
-function MostPlayedCommanderCard({ commander, count, onCardClick, playerId, onCommanderClick }: { commander: string | string[]; count: number; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string; onCommanderClick?: (deckName: string) => void }) {
+function CommanderHighlightCard({ title, commander, meta, onCardClick, playerId, onCommanderClick }: { title: string; commander: string | string[]; meta: string; onCardClick: (card: { name: string; imageUrl: string }) => void; playerId?: string; onCommanderClick?: (deckName: string) => void }) {
   const commanderArray = Array.isArray(commander) ? commander : [commander];
   const isPartner = commanderArray.length === 2;
   // Hooks must run unconditionally and a fixed number of times — never in a
@@ -176,7 +233,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId, onCo
 
   return (
     <div className="commander-section">
-      <h2 className="section-heading">Most Played Commander</h2>
+      <h2 className="section-heading">{title}</h2>
       <div className="commander-card">
         {isPartner ? (
           // Partner commanders display
@@ -206,7 +263,7 @@ function MostPlayedCommanderCard({ commander, count, onCardClick, playerId, onCo
           >
             {commanderName}
           </div>
-          <div className="commander-count">{count} game{count > 1 ? 's' : ''}</div>
+          <div className="commander-count">{meta}</div>
         </div>
       </div>
     </div>
