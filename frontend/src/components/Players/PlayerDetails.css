@@ -149,6 +149,66 @@
 }
 
 /* ===================== */
+/* Commanders Played tile */
+/* ===================== */
+.commanders-played-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--accent-rgba-8);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md, 0.5rem);
+  box-shadow: 0 0 8px rgba(251, 146, 60, 0.1);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.commanders-played-tile:hover {
+  box-shadow: 0 2px 12px rgba(251, 146, 60, 0.25);
+}
+
+.commanders-played-tile:active {
+  transform: scale(0.99);
+}
+
+.cpt-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cpt-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.cpt-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cpt-count {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.cpt-arrow {
+  font-size: 1.6rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* ===================== */
 /* Section Title */
 /* ===================== */
 

@@ -21,9 +21,13 @@ interface PlayerDetailsProps {
   players: Array<{ id: string; name: string }>;
   onGameClick?: (gameId: string) => void;
   playerId?: string;
+  /** Distinct decks piloted across ALL sessions; undefined while loading. */
+  allTimeCommanderCount?: number;
+  /** Opens the full cross-session commanders list. */
+  onViewCommanders?: () => void;
 }
 
-const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick, playerId: propPlayerId }) => {
+const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, onGameClick, playerId: propPlayerId, allTimeCommanderCount, onViewCommanders }) => {
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<{ name: string; imageUrl: string } | null>(null);
   const playerId = propPlayerId || player.id; // Use prop if provided, otherwise use player.id
@@ -181,6 +185,27 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
             <div className="secondary-stat-value">{lastGameDate}</div>
           </div>
         </div>
+
+        {/* Entry point to the full cross-session commander list. */}
+        {onViewCommanders && (
+          <button
+            type="button"
+            className="commanders-played-tile"
+            onClick={onViewCommanders}
+            aria-label="View all commanders played"
+          >
+            <div className="cpt-text">
+              <div className="cpt-label">Commanders Played</div>
+              <div className="cpt-sub">across all seasons</div>
+            </div>
+            <div className="cpt-right">
+              <span className="cpt-count">
+                {allTimeCommanderCount === undefined ? "…" : allTimeCommanderCount}
+              </span>
+              <span className="cpt-arrow" aria-hidden="true">›</span>
+            </div>
+          </button>
+        )}
 
         {/* Commander highlights: most played + best performing, side by side */}
         {(mostPlayedCommander || bestPerformingCommander) && (

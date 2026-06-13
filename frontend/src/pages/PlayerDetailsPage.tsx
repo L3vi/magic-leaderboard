@@ -4,12 +4,16 @@ import DetailsPageShell from "../components/DetailsPageShell/DetailsPageShell";
 import PlayerDetails from "../components/Players/PlayerDetails";
 import type { PlayerRowDisplay as Player } from "../types";
 import { useSession } from "../context/SessionContext";
+import { useAllGames } from "../hooks/useApi";
 import { calculatePlayerScores } from "../services/dataService";
+import { commanderDeckName } from "../utils/commanderKey";
+import type { Game } from "../types";
 
 const PlayerDetailsPage: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const navigate = useNavigate();
   const { games: gamesRaw, players: playersRaw } = useSession();
+  const { games: allGames } = useAllGames();
 
   const handleClose = () => {
     navigate(-1);
@@ -22,6 +26,22 @@ const PlayerDetailsPage: React.FC = () => {
   // Find player by name (URL encoded)
   const decodedName = playerName ? decodeURIComponent(playerName) : "";
   const playerData = playersRaw.find(p => p.name === decodedName);
+
+  // All-time count of distinct decks (commanders / partner pairs) this player
+  // has piloted across every session — powers the "Commanders Played" tile,
+  // which links to the full cross-session breakdown. Undefined until the
+  // all-sessions aggregate resolves.
+  const allTimeCommanderCount = React.useMemo<number | undefined>(() => {
+    if (!playerData || allGames.length === 0) return undefined;
+    const decks = new Set<string>();
+    (allGames as Game[]).forEach((game) => {
+      const gp = game.players?.find((p) => p.playerId === playerData.id);
+      if (!gp) return;
+      const key = commanderDeckName(gp.commander);
+      if (key) decks.add(key);
+    });
+    return decks.size;
+  }, [allGames, playerData]);
 
   // Calculate player stats from session games only
   const player: Player | null = React.useMemo(() => {
@@ -93,12 +113,14 @@ const PlayerDetailsPage: React.FC = () => {
       title={player.name}
       onClose={handleClose}
     >
-      <PlayerDetails 
-        player={player} 
-        games={gamesRaw} 
-        players={playersRaw} 
-        onGameClick={handleGameClick} 
-        playerId={playerData?.id} 
+      <PlayerDetails
+        player={player}
+        games={gamesRaw}
+        players={playersRaw}
+        onGameClick={handleGameClick}
+        playerId={playerData?.id}
+        allTimeCommanderCount={allTimeCommanderCount}
+        onViewCommanders={() => navigate(`/players/${encodeURIComponent(player.name)}/commanders`)}
       />
     </DetailsPageShell>
   );

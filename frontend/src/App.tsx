@@ -7,6 +7,7 @@ import Header from "./components/Header/Header";
 import Players from "./components/Players/Players";
 import Games from "./components/Games/Games";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
+import PlayerCommandersPage from "./pages/PlayerCommandersPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
 import ColorStatsPage from "./pages/ColorStatsPage";
 import ComboStatsPage from "./pages/ComboStatsPage";
@@ -127,6 +128,7 @@ function AnimatedRoutes() {
         {isDetailPage && (
           <motion.div key={location.pathname}>
             <Routes location={location}>
+              <Route path="/players/:playerName/commanders" element={<PlayerCommandersPage />} />
               <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
               <Route path="/games/:gameId" element={<GameDetailsPage />} />
               <Route path="/stats/colors/:color" element={<ColorStatsPage />} />
