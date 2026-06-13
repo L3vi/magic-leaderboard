@@ -610,7 +610,18 @@ const GameStats: React.FC = () => {
       <div className="stats-section">
         <h3 className="section-heading">Colors</h3>
         <div className="stats-grid">
-          <div className="stat-card">
+          <div
+            className="stat-card clickable"
+            onClick={() => navigate(`/stats/colors/${stats.mostCommonColorCode}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(`/stats/colors/${stats.mostCommonColorCode}`);
+              }
+            }}
+          >
             <div className="stat-label">Most Common Color</div>
             <div className={`stat-value color-badge color-${stats.mostCommonColorCode?.toLowerCase() || 'u'}`}>{stats.mostCommonColor}</div>
             <div className="stat-subtext">{stats.commonColorCount} {stats.commonColorCount === 1 ? "play" : "plays"}</div>
