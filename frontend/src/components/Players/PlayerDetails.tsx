@@ -62,17 +62,19 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
   const mostPlayedDeckEntry = Object.entries(deckCombinationCounts).sort((a, b) => b[1] - a[1])[0];
   const mostPlayedCommander: [string[], number] | undefined = mostPlayedDeckEntry ? [mostPlayedDeckEntry[0].split("|"), mostPlayedDeckEntry[1]] : undefined;
 
-  // Per-deck record for the "best performing" stat: plays, wins, and total
-  // placement points (1st=4 … 4th+=1, the same scoring the leaderboard uses).
-  const deckStats: Record<string, { plays: number; wins: number; scoreSum: number }> = {};
+  // Per-deck record for the "best performing" stat: plays, wins, total placement
+  // points (1st=4 … 4th+=1, the same scoring the leaderboard uses), and the sum
+  // of finishing places (for an intuitive average-finish readout).
+  const deckStats: Record<string, { plays: number; wins: number; scoreSum: number; placeSum: number }> = {};
   gamesForPlayer.forEach(g => {
     const p = g.players.find(p => getPlayerName(p.playerId) === player.name);
     const cmd = p?.commander;
     const key = Array.isArray(cmd) ? [...cmd].sort().join("|") : cmd || "";
     if (!key || !p) return;
-    const s = deckStats[key] || (deckStats[key] = { plays: 0, wins: 0, scoreSum: 0 });
+    const s = deckStats[key] || (deckStats[key] = { plays: 0, wins: 0, scoreSum: 0, placeSum: 0 });
     s.plays++;
     s.scoreSum += scorePlacement(p.placement);
+    s.placeSum += p.placement;
     if (p.placement === 1) s.wins++;
   });
   // Best performing = the deck with the highest performance, gauged exactly like
@@ -91,7 +93,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
       const average = s.scoreSum / s.plays;
       const weightedAverage =
         (s.plays * average + PRIOR_STRENGTH * baselineAvg) / (s.plays + PRIOR_STRENGTH);
-      return { key, plays: s.plays, wins: s.wins, average, weightedAverage };
+      return { key, plays: s.plays, wins: s.wins, average, weightedAverage, avgFinish: s.placeSum / s.plays };
     })
     .sort((a, b) => b.weightedAverage - a.weightedAverage || b.plays - a.plays)[0];
   const bestPerformingCommander = bestPerformingEntry
@@ -100,6 +102,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         wins: bestPerformingEntry.wins,
         plays: bestPerformingEntry.plays,
         average: bestPerformingEntry.average,
+        avgFinish: bestPerformingEntry.avgFinish,
       }
     : undefined;
   
@@ -196,7 +199,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
               <CommanderHighlightCard
                 title="Best Performing"
                 commander={bestPerformingCommander.commanders}
-                meta={`${bestPerformingCommander.average.toFixed(1)} avg pts • ${bestPerformingCommander.plays} play${bestPerformingCommander.plays !== 1 ? "s" : ""} • ${bestPerformingCommander.wins} win${bestPerformingCommander.wins !== 1 ? "s" : ""}`}
+                meta={`${bestPerformingCommander.average.toFixed(1)} avg pts • #${bestPerformingCommander.avgFinish.toFixed(1)} avg finish • ${bestPerformingCommander.plays} play${bestPerformingCommander.plays !== 1 ? "s" : ""}`}
                 onCardClick={setSelectedCard}
                 playerId={playerId}
                 onCommanderClick={(key) => navigate(`/stats/commanders/${encodeCommanderKey(key)}`)}
