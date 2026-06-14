@@ -109,8 +109,10 @@ const AllCombinationsPage: React.FC = () => {
                   <div className="combo-list-info">
                     <div className="combo-list-name">{combo.label}</div>
                     <div className="combo-list-meta">
-                      {combo.plays} {combo.plays === 1 ? "play" : "plays"} ·{" "}
-                      {combo.decks} {combo.decks === 1 ? "deck" : "decks"} · {combo.winRate}% win
+                      <span className="combo-list-plays">
+                        {combo.plays} {combo.plays === 1 ? "play" : "plays"}
+                      </span>{" "}
+                      · {combo.decks} {combo.decks === 1 ? "deck" : "decks"} · {combo.winRate}% win
                     </div>
                   </div>
                 </div>
