@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useCommanderArtStateWithPreference,
   useCommanderFullImageWithPreference
@@ -39,48 +39,57 @@ const CommanderThumb: React.FC<CommanderThumbProps> = ({
   onClick,
   clickable,
 }) => {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [loaded, setLoaded] = useState(false);
+  // `shownUrl` is the image we're actually displaying — only ever set to a URL
+  // once it has finished loading (via an off-screen preloader). So when the art
+  // URL changes (default→preferred, a refresh, a new preference) we keep showing
+  // the current image until the next one is ready, then swap instantly. There's
+  // never an intermediate flash to the default art or a blank, and because the
+  // preloader's onload fires reliably even for cached images, the shimmer never
+  // gets stuck after a remount either.
+  const [shownUrl, setShownUrl] = useState("");
   const [errored, setErrored] = useState(false);
 
-  // A new URL means a new image to load — shimmer again until it arrives. But a
-  // cached image can finish loading before React attaches onLoad (e.g. when a
-  // tab switch remounts this), so onLoad never fires and the shimmer would stay
-  // stuck. Sync from the element's own .complete to cover that case.
   useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete) {
-      setErrored(img.naturalWidth === 0);
-      setLoaded(img.naturalWidth > 0);
-    } else {
-      setLoaded(false);
+    if (!url) {
+      setShownUrl("");
       setErrored(false);
+      return;
     }
+    let cancelled = false;
+    const pre = new Image();
+    pre.onload = () => {
+      if (cancelled) return;
+      setShownUrl(url);
+      setErrored(false);
+    };
+    pre.onerror = () => {
+      if (cancelled) return;
+      // Only fall back to "?" if we have nothing else to show.
+      setErrored((prev) => prev || !shownUrl);
+    };
+    pre.src = url;
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
-  // Resolved with no art (or a broken image) → the question-mark placeholder.
-  if ((!loading && !url) || errored) {
+  // Genuinely no art (resolved empty with nothing shown, or a broken image) → "?".
+  if ((!loading && !url && !shownUrl) || (errored && !shownUrl)) {
     return <div className="partner-commander-placeholder">?</div>;
   }
 
-  const showShimmer = loading || !loaded;
-
   return (
     <>
-      {url && (
+      {shownUrl && (
         <img
-          ref={imgRef}
-          src={url}
+          src={shownUrl}
           alt={name}
           title={name}
           className={`partner-commander-img ${imgClassName}`}
-          style={{ cursor: clickable ? "pointer" : "default", opacity: loaded ? 1 : 0 }}
+          style={{ cursor: clickable ? "pointer" : "default" }}
           onClick={onClick}
-          onLoad={() => setLoaded(true)}
-          onError={() => setErrored(true)}
         />
       )}
-      {showShimmer && (
+      {!shownUrl && (
         <div
           className={`partner-commander-img commander-thumb-shimmer skeleton ${imgClassName}`}
           aria-hidden="true"

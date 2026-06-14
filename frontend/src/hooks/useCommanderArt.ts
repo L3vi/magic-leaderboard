@@ -365,9 +365,13 @@ export function useCommanderFullImageWithPreference(
   commander: string,
   playerId?: string
 ): string {
-  // Seed from the image cache so a warm image is available on the first frame
-  // instead of going blank while we check Firestore for an art preference.
-  const [imgUrl, setImgUrl] = useState<string>(() => getImageCache(commander)?.full || "");
+  // With a playerId the player's saved art may override the default, so hold
+  // back the URL (don't paint the default first) until the preference resolves
+  // — same anti-flicker rule as useCommanderArtStateWithPreference. Without a
+  // playerId the cached image is final, so seed it immediately.
+  const [imgUrl, setImgUrl] = useState<string>(() =>
+    playerId ? "" : (getImageCache(commander)?.full || "")
+  );
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
@@ -377,27 +381,35 @@ export function useCommanderFullImageWithPreference(
     }
 
     let isMounted = true;
-
-    // Paint cached image right away (covers commander changes, where the initial
-    // useState seed is stale). The preference, if any, overrides below.
     const cached = getImageCache(commander);
-    if (cached) setImgUrl(cached.full);
+
+    if (!playerId && cached) {
+      // No preference possible — the cached image is final, paint it now.
+      setImgUrl(cached.full);
+    }
+    // With a playerId we keep whatever's already shown (don't blank it) and let
+    // loadArt settle to the final image, so it never flickers default→selected.
 
     const loadArt = async () => {
       if (playerId) {
         try {
           const preference = await getCommanderArtPreference(playerId, commander);
-          if (preference && isMounted) {
+          if (!isMounted) return;
+          if (preference) {
             setImgUrl(preference.fullImageUrl);
             return;
           }
         } catch (error) {
           // Silently fall through to default
         }
+        if (!isMounted) return;
       }
 
-      // Already showing cached image and no preference overrode it — done.
-      if (cached || !isMounted) return;
+      if (cached) {
+        if (isMounted) setImgUrl(cached.full);
+        return;
+      }
+      if (!isMounted) return;
 
       const result = await fetchCommanderImages(commander);
       if (isMounted) setImgUrl(result.full);
