@@ -10,6 +10,56 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 // thumbnail mounting at once — share a single read. Invalidated on any write.
 const preferencesCache = new Map<string, Promise<Record<string, PlayerCommanderArt>>>();
 
+// Synchronously-readable copy of each player's resolved preference map, mirrored
+// to localStorage. This lets a thumbnail know the player's chosen art on the
+// very first render — including right after a reload — so it can paint the
+// correct art immediately instead of flashing the default and then swapping, or
+// stalling on a Firestore read. Firestore still refreshes it in the background.
+const PREFS_STORAGE_KEY = 'magicLeaderboard_artPrefs_v1';
+const resolvedPreferences = new Map<string, Record<string, PlayerCommanderArt>>();
+
+(function loadResolvedFromStorage() {
+  try {
+    const raw = localStorage.getItem(PREFS_STORAGE_KEY);
+    if (!raw) return;
+    const obj = JSON.parse(raw) as Record<string, Record<string, PlayerCommanderArt>>;
+    for (const [pid, map] of Object.entries(obj)) resolvedPreferences.set(pid, map);
+  } catch {
+    // Ignore a corrupt cache — Firestore will repopulate it.
+  }
+})();
+
+function persistResolvedPreferences(): void {
+  try {
+    const obj: Record<string, Record<string, PlayerCommanderArt>> = {};
+    for (const [pid, map] of resolvedPreferences) obj[pid] = map;
+    localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(obj));
+  } catch {
+    // Storage full / unavailable — non-fatal, we just lose the warm cache.
+  }
+}
+
+function setResolvedPreferences(playerId: string, map: Record<string, PlayerCommanderArt>): void {
+  resolvedPreferences.set(playerId, map);
+  persistResolvedPreferences();
+}
+
+/**
+ * Synchronously read a player's saved art preference for a commander, if we've
+ * already loaded that player's map (this session or from the persisted cache).
+ * `known: false` means "not loaded yet — caller should fall back and resolve
+ * asynchronously"; `known: true` with `pref: undefined` means "loaded, and this
+ * commander has no custom art".
+ */
+export function peekCommanderArtPreference(
+  playerId: string,
+  commanderName: string
+): { known: boolean; pref?: PlayerCommanderArt } {
+  const map = resolvedPreferences.get(playerId);
+  if (!map) return { known: false };
+  return { known: true, pref: map[commanderName] };
+}
+
 /** Drop a player's cached preferences so the next read re-fetches from Firestore. */
 export function invalidatePlayerArtPreferences(playerId: string): void {
   preferencesCache.delete(playerId);
@@ -31,11 +81,10 @@ export async function getPlayerArtPreferences(
       const playerRef = doc(db, "players", playerId);
       const playerDoc = await getDoc(playerRef);
 
-      if (!playerDoc.exists()) {
-        return {};
-      }
-
-      return playerDoc.data()?.commanderArt || {};
+      const map = playerDoc.exists() ? (playerDoc.data()?.commanderArt || {}) : {};
+      // Mirror into the synchronous + persisted cache for instant first paints.
+      setResolvedPreferences(playerId, map);
+      return map;
     } catch (error) {
       // Don't cache transient failures — let the next call retry.
       preferencesCache.delete(playerId);
@@ -99,8 +148,10 @@ export async function saveCommanderArtPreference(
 
     await setDoc(playerRef, payload, { merge: true });
 
-    // Stale-read guard: the memoized map no longer reflects Firestore.
+    // Stale-read guard: the memoized promise no longer reflects Firestore. Keep
+    // the synchronous cache current with the new art so it paints immediately.
     invalidatePlayerArtPreferences(playerId);
+    setResolvedPreferences(playerId, { ...(resolvedPreferences.get(playerId) || {}), [commanderName]: artData });
 
     console.log(
       `✅ Saved art preference for ${playerId}'s ${commanderName}: ${variant.set}`
@@ -134,6 +185,7 @@ export async function clearCommanderArtPreference(
     );
 
     invalidatePlayerArtPreferences(playerId);
+    setResolvedPreferences(playerId, { ...preferences });
   } catch (error) {
     console.error("Failed to clear player art preference:", error);
     throw error;
@@ -157,6 +209,7 @@ export async function clearAllPlayerArtPreferences(playerId: string): Promise<vo
     );
 
     invalidatePlayerArtPreferences(playerId);
+    setResolvedPreferences(playerId, {});
   } catch (error) {
     console.error("Failed to clear all player art preferences:", error);
     throw error;

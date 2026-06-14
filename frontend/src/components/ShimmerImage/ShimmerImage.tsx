@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../../styles/skeleton.css";
 import "./ShimmerImage.css";
 
@@ -18,14 +18,12 @@ interface ShimmerImageProps {
 }
 
 /**
- * An image that shimmers while it loads and shows a fallback when there is
- * genuinely no image (resolved empty or errored).
- *
- * It only ever displays a URL once that URL has finished loading (via an
- * off-screen preloader), so when `src` changes it keeps showing the current
- * image until the next one is ready, then swaps instantly — no flash to a
- * different/blank image. The preloader's onload also fires reliably for cached
- * images, so the shimmer never gets stuck after a remount.
+ * An image that shimmers until its first load completes, then shows the image.
+ * The <img> loads directly (normal browser priority, paints as soon as bytes
+ * arrive). `loaded` is NOT reset when `src` changes — the browser keeps the
+ * current image painted until the new one loads, so swapping never blanks or
+ * re-shimmers. Shows the fallback only when there's genuinely no image (empty
+ * src) or the first load fails.
  *
  * Layout-agnostic: it renders the <img> plus an absolutely-positioned shimmer
  * sibling, so the PARENT must be `position: relative` with a defined size.
@@ -40,49 +38,43 @@ const ShimmerImage: React.FC<ShimmerImageProps> = ({
   onClick,
   fallback = null,
 }) => {
-  const [shownSrc, setShownSrc] = useState("");
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
+  // Cover cached images whose onLoad fires before React attaches (remount), and
+  // clear any prior error for the new src — but keep `loaded` so the current
+  // image stays painted through a swap.
   useEffect(() => {
-    if (!src) {
-      setShownSrc("");
-      setErrored(false);
-      return;
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      setLoaded(true);
     }
-    let cancelled = false;
-    const pre = new Image();
-    pre.onload = () => {
-      if (cancelled) return;
-      setShownSrc(src);
-      setErrored(false);
-    };
-    pre.onerror = () => {
-      if (cancelled) return;
-      setErrored((prev) => prev || !shownSrc);
-    };
-    pre.src = src;
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setErrored(false);
   }, [src]);
 
-  // Genuinely no image (resolved empty with nothing shown, or broken) → fallback.
-  if ((!loading && !src && !shownSrc) || (errored && !shownSrc)) {
+  // Genuinely no image (resolved empty, nothing ever loaded) or a failed first
+  // load → the caller's fallback.
+  if ((!loading && !src && !loaded) || (errored && !loaded)) {
     return <>{fallback}</>;
   }
 
   return (
     <>
-      {shownSrc && (
+      {src && (
         <img
-          src={shownSrc}
+          ref={imgRef}
+          src={src}
           alt={alt}
           title={title}
-          className={`shimmer-image is-loaded ${className}`}
+          className={`shimmer-image ${loaded ? "is-loaded" : ""} ${className}`}
           style={style}
           onClick={onClick}
+          onLoad={() => { setLoaded(true); setErrored(false); }}
+          onError={() => setErrored(true)}
         />
       )}
-      {!shownSrc && <div className="shimmer-image-overlay skeleton" aria-hidden="true" />}
+      {!loaded && !errored && <div className="shimmer-image-overlay skeleton" aria-hidden="true" />}
     </>
   );
 };

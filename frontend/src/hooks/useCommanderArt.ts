@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getCommanderArtPreference } from '../services/playerArtPreferences';
+import { getCommanderArtPreference, peekCommanderArtPreference } from '../services/playerArtPreferences';
 import { useArtPreferenceRefresh } from '../context/ArtPreferenceContext';
 import {
   getImageCache,
@@ -273,23 +273,32 @@ export function useCommanderArtStateWithPreference(
   commander: string,
   playerId?: string
 ): CommanderArtState {
-  // Seed the first frame. With a playerId the player's saved art may override
-  // the cached default, so we hold the shimmer (no url) until that's resolved
-  // rather than painting the default and then visibly swapping to the selected
-  // art. Without a playerId the cached art is final, so paint it immediately.
-  const [state, setState] = useState<CommanderArtState>(() => {
-    const seed = getImageCache(commander)?.art || "";
+  // Resolve the art to show *right now*, synchronously, so there's no shimmer
+  // hold and no flicker:
+  //   - If we already know the player's preference (this session or from the
+  //     persisted cache), use it (or the cached default if they have none).
+  //   - If we don't know it yet, paint the cached default immediately and let
+  //     the effect swap in a preference if one turns up (only happens on a cold
+  //     first load — every later visit/refresh knows it up front).
+  const resolveImmediate = (): CommanderArtState => {
     const valid = !!commander && commander.trim().length >= 3;
+    if (!valid) return { url: "", loading: false };
+    const cachedArt = getImageCache(commander)?.art || "";
     if (playerId) {
-      return { url: "", loading: valid };
+      const peek = peekCommanderArtPreference(playerId, commander);
+      if (peek.known) {
+        const art = peek.pref?.artUrl || cachedArt;
+        return { url: art, loading: !art };
+      }
     }
-    return { url: seed, loading: !seed && valid };
-  });
+    return { url: cachedArt, loading: !cachedArt };
+  };
+
+  const [state, setState] = useState<CommanderArtState>(resolveImmediate);
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
     if (!commander || commander.trim().length < 3) {
-      // Too short to ever match a card — resolved as "no art", show "?".
       setState({ url: "", loading: false });
       return;
     }
@@ -297,16 +306,9 @@ export function useCommanderArtStateWithPreference(
     let isMounted = true;
     const cached = getImageCache(commander);
 
-    if (playerId) {
-      // Keep shimmering until the preference check settles, so the thumbnail
-      // never flickers from the default art to the player's selected art.
-      setState({ url: "", loading: true });
-    } else if (cached) {
-      // No preference possible — the cached art is final, paint it now.
-      setState({ url: cached.art, loading: false });
-    } else {
-      setState({ url: "", loading: true });
-    }
+    // Reflect the current commander immediately (covers prop changes and warm
+    // preference/image caches) — never blanks art we already have.
+    setState(resolveImmediate());
 
     const loadArt = async () => {
       if (playerId) {
@@ -323,7 +325,6 @@ export function useCommanderArtStateWithPreference(
         if (!isMounted) return;
       }
 
-      // No preference (or no playerId): use cached art, else fetch it.
       if (cached) {
         if (isMounted) setState({ url: cached.art, loading: false });
         return;
@@ -331,7 +332,6 @@ export function useCommanderArtStateWithPreference(
       if (!isMounted) return;
 
       const result = await fetchCommanderImages(commander);
-      // Settle regardless of hit/miss so a genuine miss stops shimmering.
       if (isMounted) setState({ url: result.art, loading: false });
     };
 
@@ -365,13 +365,18 @@ export function useCommanderFullImageWithPreference(
   commander: string,
   playerId?: string
 ): string {
-  // With a playerId the player's saved art may override the default, so hold
-  // back the URL (don't paint the default first) until the preference resolves
-  // — same anti-flicker rule as useCommanderArtStateWithPreference. Without a
-  // playerId the cached image is final, so seed it immediately.
-  const [imgUrl, setImgUrl] = useState<string>(() =>
-    playerId ? "" : (getImageCache(commander)?.full || "")
-  );
+  // Resolve synchronously like useCommanderArtStateWithPreference: use the known
+  // preference if we have it (session/persisted cache), else the cached default,
+  // and let the effect swap in a preference only when one turns up cold.
+  const resolveImmediate = (): string => {
+    const cachedFull = getImageCache(commander)?.full || "";
+    if (playerId) {
+      const peek = peekCommanderArtPreference(playerId, commander);
+      if (peek.known) return peek.pref?.fullImageUrl || cachedFull;
+    }
+    return cachedFull;
+  };
+  const [imgUrl, setImgUrl] = useState<string>(resolveImmediate);
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
@@ -383,12 +388,8 @@ export function useCommanderFullImageWithPreference(
     let isMounted = true;
     const cached = getImageCache(commander);
 
-    if (!playerId && cached) {
-      // No preference possible — the cached image is final, paint it now.
-      setImgUrl(cached.full);
-    }
-    // With a playerId we keep whatever's already shown (don't blank it) and let
-    // loadArt settle to the final image, so it never flickers default→selected.
+    // Reflect the current commander immediately; never blank what's already shown.
+    setImgUrl(resolveImmediate());
 
     const loadArt = async () => {
       if (playerId) {

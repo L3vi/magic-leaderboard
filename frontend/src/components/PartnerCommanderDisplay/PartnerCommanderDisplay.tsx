@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useCommanderArtStateWithPreference,
   useCommanderFullImageWithPreference
@@ -26,10 +26,12 @@ interface CommanderThumbProps {
 }
 
 /**
- * A single commander art slot. Shimmers while the art URL is resolving and
- * while the image bytes download, swaps in the image once it loads, and falls
- * back to the "?" placeholder only when there is genuinely no art (resolved
- * empty, or the image failed to load).
+ * A single commander art slot. Shows a shimmer until the first image has loaded,
+ * then the art. The <img> loads directly (normal browser priority, paints as
+ * soon as bytes arrive). `loaded` is intentionally NOT reset when the URL
+ * changes: the browser keeps the current image painted until the new src loads,
+ * so swapping art (default→preferred) never blanks or re-shimmers. Falls back to
+ * "?" only when there's genuinely no art (empty URL) or the first load fails.
  */
 const CommanderThumb: React.FC<CommanderThumbProps> = ({
   url,
@@ -39,57 +41,44 @@ const CommanderThumb: React.FC<CommanderThumbProps> = ({
   onClick,
   clickable,
 }) => {
-  // `shownUrl` is the image we're actually displaying — only ever set to a URL
-  // once it has finished loading (via an off-screen preloader). So when the art
-  // URL changes (default→preferred, a refresh, a new preference) we keep showing
-  // the current image until the next one is ready, then swap instantly. There's
-  // never an intermediate flash to the default art or a blank, and because the
-  // preloader's onload fires reliably even for cached images, the shimmer never
-  // gets stuck after a remount either.
-  const [shownUrl, setShownUrl] = useState("");
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
+  // A cached image can finish loading before React attaches onLoad (e.g. when a
+  // tab switch remounts this), so onLoad never fires; sync from .complete to
+  // avoid a stuck shimmer. Clear any prior error for the new URL, but keep
+  // `loaded` so the old image stays painted through the swap.
   useEffect(() => {
-    if (!url) {
-      setShownUrl("");
-      setErrored(false);
-      return;
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      setLoaded(true);
     }
-    let cancelled = false;
-    const pre = new Image();
-    pre.onload = () => {
-      if (cancelled) return;
-      setShownUrl(url);
-      setErrored(false);
-    };
-    pre.onerror = () => {
-      if (cancelled) return;
-      // Only fall back to "?" if we have nothing else to show.
-      setErrored((prev) => prev || !shownUrl);
-    };
-    pre.src = url;
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setErrored(false);
   }, [url]);
 
-  // Genuinely no art (resolved empty with nothing shown, or a broken image) → "?".
-  if ((!loading && !url && !shownUrl) || (errored && !shownUrl)) {
+  // Genuinely no art (resolved empty, nothing ever loaded) or a failed first
+  // load → the question-mark placeholder.
+  if ((!loading && !url && !loaded) || (errored && !loaded)) {
     return <div className="partner-commander-placeholder">?</div>;
   }
 
   return (
     <>
-      {shownUrl && (
+      {url && (
         <img
-          src={shownUrl}
+          ref={imgRef}
+          src={url}
           alt={name}
           title={name}
           className={`partner-commander-img ${imgClassName}`}
-          style={{ cursor: clickable ? "pointer" : "default" }}
+          style={{ cursor: clickable ? "pointer" : "default", opacity: loaded ? 1 : 0 }}
           onClick={onClick}
+          onLoad={() => { setLoaded(true); setErrored(false); }}
+          onError={() => setErrored(true)}
         />
       )}
-      {!shownUrl && (
+      {!loaded && !errored && (
         <div
           className={`partner-commander-img commander-thumb-shimmer skeleton ${imgClassName}`}
           aria-hidden="true"
