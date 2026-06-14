@@ -54,6 +54,17 @@
   box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
 }
 
+/* "Weighted Average" is the only header long enough to wrap to two lines. With
+   the shared 0.5rem vertical padding that two-line span grows taller than the
+   header row, so its hover/active pill pokes out above and below. Drop the
+   vertical padding and tighten the line-height for just this column so the
+   two-line label fits the row like the single-line headers do. */
+.leaderboard-header .weighted-avg-col {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.1;
+}
+
 .leaderboard-col {
   flex: 1;
   text-align: right;
