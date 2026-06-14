@@ -13,6 +13,7 @@ import {
   fetchSessions,
   SessionListItem,
 } from '../services/dataService';
+import { preFetchCommanderData } from '../services/commanderPreFetchService';
 
 interface SessionContextType {
   activeSession: string;
@@ -184,6 +185,19 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [activeSession]);
+
+  // Batch-fetch commander art + colors as soon as games are available, app-wide
+  // and regardless of which tab is showing. This warms the shared cache with one
+  // or two /cards/collection requests so thumbnails read straight from cache
+  // instead of each firing its own /cards/named request (the per-thumbnail storm
+  // that made cold loads slow and tripped Scryfall's rate limit). Idempotent: it
+  // skips already-cached and in-flight commanders.
+  useEffect(() => {
+    if (games.length === 0) return;
+    preFetchCommanderData(games).catch((err) => {
+      console.warn('Commander pre-fetch failed:', err);
+    });
+  }, [games]);
 
   // Refresh all data (players + games) with fresh API calls
   const refreshData = async () => {

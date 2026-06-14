@@ -29,6 +29,11 @@ import type { CardImageCache } from '../types';
 
 const COLLECTION_CHUNK = 75; // Scryfall's max identifiers per /cards/collection request
 
+// Names currently being fetched by an in-flight pre-fetch pass. Lets concurrent
+// callers (e.g. an app-wide trigger + a per-tab one) skip commanders already in
+// flight instead of issuing duplicate Scryfall requests.
+const inFlightNames = new Set<string>();
+
 /** Pull art_crop + normal/large image URLs off a card (handles double-faced cards). */
 function extractArt(card: any): CardImageCache {
   const uris = card?.image_uris || card?.card_faces?.[0]?.image_uris;
@@ -89,16 +94,28 @@ export async function preFetchCommanderData(
 ): Promise<void> {
   const commanders = collectCommanders(games);
 
-  // A commander needs fetching if EITHER its art or its colors are missing.
+  // A commander needs fetching if EITHER its art or its colors are missing, and
+  // isn't already being fetched by a concurrent pass.
   const toFetch = commanders.filter(
-    (name) => getImageCache(name) === null || getColorCache(name) === null
+    (name) =>
+      (getImageCache(name) === null || getColorCache(name) === null) &&
+      !inFlightNames.has(name)
   );
 
   if (toFetch.length === 0) {
-    console.log("All commander data already cached");
     return;
   }
 
+  toFetch.forEach((name) => inFlightNames.add(name));
+
+  try {
+    await runPreFetch(toFetch, onProgress);
+  } finally {
+    toFetch.forEach((name) => inFlightNames.delete(name));
+  }
+}
+
+async function runPreFetch(toFetch: string[], onProgress?: () => void): Promise<void> {
   console.log(`Pre-fetching ${toFetch.length} commanders from Scryfall (collection)`);
 
   const matched = new Set<string>();

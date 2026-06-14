@@ -35,6 +35,30 @@ let memoryCache: CacheStore = { ...DEFAULT_CACHE };
 // Track in-flight requests to prevent duplicate fetches
 const inflightRequests: Map<string, Promise<any>> = new Map();
 
+// Lightweight subscription so React views can repaint when image art lands in
+// the cache (e.g. as the batch pre-fetch streams in), without each thumbnail
+// firing its own network request. Bumped on every image-cache write.
+let imageCacheVersion = 0;
+const imageCacheListeners = new Set<() => void>();
+
+function notifyImageCacheChanged(): void {
+  imageCacheVersion++;
+  imageCacheListeners.forEach((listener) => {
+    try { listener(); } catch { /* a bad listener shouldn't break the rest */ }
+  });
+}
+
+/** Subscribe to image-cache changes (for useSyncExternalStore). Returns an unsubscribe fn. */
+export function subscribeImageCache(callback: () => void): () => void {
+  imageCacheListeners.add(callback);
+  return () => { imageCacheListeners.delete(callback); };
+}
+
+/** Monotonic version that increments on every image-cache write. */
+export function getImageCacheVersion(): number {
+  return imageCacheVersion;
+}
+
 /**
  * Load cache from localStorage on initialization
  */
@@ -93,6 +117,7 @@ export function setImageCache(commander: string, data: CommanderImageData): void
     timestamp: Date.now(),
   };
   saveCache();
+  notifyImageCacheChanged();
 }
 
 /**
@@ -106,6 +131,7 @@ export function setImageCacheBatch(entries: Record<string, CommanderImageData>):
     };
   }
   saveCache();
+  notifyImageCacheChanged();
 }
 
 /**

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { getCommanderArtPreference, peekCommanderArtPreference } from '../services/playerArtPreferences';
 import { useArtPreferenceRefresh } from '../context/ArtPreferenceContext';
 import {
@@ -9,6 +9,8 @@ import {
   clearInflightRequest,
   getAllImageCache,
   clearCommanderCache as clearCommanderCacheInService,
+  subscribeImageCache,
+  getImageCacheVersion,
 } from '../services/cacheService';
 import { scryfallFetch } from '../services/scryfallClient';
 import type { CardVariant, CardImageCache } from '../types';
@@ -89,6 +91,9 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
  * @returns URL of the card art image, or empty string if not found
  */
 export function useCommanderArtState(commander: string): CommanderArtState {
+  // Re-render when art lands in the shared cache (e.g. the batch pre-fetch) so
+  // we paint from cache without each caller firing its own request.
+  const cacheVersion = useSyncExternalStore(subscribeImageCache, getImageCacheVersion);
   const cachedSeed = getImageCache(commander)?.art || "";
   const [state, setState] = useState<CommanderArtState>(() => ({
     url: cachedSeed,
@@ -102,31 +107,34 @@ export function useCommanderArtState(commander: string): CommanderArtState {
       return;
     }
 
-    // Use cached value if available — already resolved, no shimmer.
+    // Prefer the shared cache (populated up front by the batch pre-fetch).
     const cached = getImageCache(commander);
     if (cached) {
       setState({ url: cached.art, loading: false });
       return;
     }
 
-    // Resolving: shimmer through the debounce window and the fetch.
+    // Not cached yet: shimmer. Most commanders arrive via the batch pre-fetch
+    // (this effect re-runs on cacheVersion and paints them). Only fetch directly
+    // as a fallback — debounced — for one-off names the batch won't cover (e.g.
+    // a commander typed into the New Game form).
     setState({ url: "", loading: true });
 
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
 
     let isMounted = true;
     debounceTimer.current = setTimeout(() => {
+      if (!isMounted || getImageCache(commander)) return; // batch may have filled it
       fetchCommanderImages(commander).then((result) => {
-        // Settle regardless of hit/miss so a genuine miss stops shimmering.
         if (isMounted) setState({ url: result.art, loading: false });
       });
-    }, 500);
+    }, 600);
 
     return () => {
       isMounted = false;
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
-  }, [commander]);
+  }, [commander, cacheVersion]);
 
   return state;
 }
@@ -294,6 +302,10 @@ export function useCommanderArtStateWithPreference(
     return { url: cachedArt, loading: !cachedArt };
   };
 
+  // Repaint when art lands in the shared cache (the batch pre-fetch streaming
+  // in). This is what lets every thumbnail read straight from cache instead of
+  // firing its own Scryfall request — the cause of the cold-load request storm.
+  const cacheVersion = useSyncExternalStore(subscribeImageCache, getImageCacheVersion);
   const [state, setState] = useState<CommanderArtState>(resolveImmediate);
   const { refreshTrigger } = useArtPreferenceRefresh();
 
@@ -304,40 +316,27 @@ export function useCommanderArtStateWithPreference(
     }
 
     let isMounted = true;
-    const cached = getImageCache(commander);
 
-    // Reflect the current commander immediately (covers prop changes and warm
-    // preference/image caches) — never blanks art we already have.
+    // Reflect the current commander from the caches immediately. This NEVER
+    // fetches art — the app-wide batch pre-fetch (see SessionContext) is the
+    // sole fetcher, so thumbnails never storm Scryfall. We shimmer until the
+    // batch fills the cache (this effect re-runs on cacheVersion).
     setState(resolveImmediate());
 
-    const loadArt = async () => {
-      if (playerId) {
-        try {
-          const preference = await getCommanderArtPreference(playerId, commander);
+    // Resolve the player's preference (Firestore, memoized per player) so the
+    // first cold load can swap a default to the player's chosen art once known.
+    if (playerId && peekCommanderArtPreference(playerId, commander).known === false) {
+      getCommanderArtPreference(playerId, commander)
+        .then((preference) => {
           if (!isMounted) return;
-          if (preference) {
-            setState({ url: preference.artUrl, loading: false });
-            return;
-          }
-        } catch (error) {
-          // Silently fall through to default
-        }
-        if (!isMounted) return;
-      }
+          if (preference) setState({ url: preference.artUrl, loading: false });
+          else setState(resolveImmediate());
+        })
+        .catch(() => { /* keep showing the cached default */ });
+    }
 
-      if (cached) {
-        if (isMounted) setState({ url: cached.art, loading: false });
-        return;
-      }
-      if (!isMounted) return;
-
-      const result = await fetchCommanderImages(commander);
-      if (isMounted) setState({ url: result.art, loading: false });
-    };
-
-    loadArt();
     return () => { isMounted = false; };
-  }, [commander, playerId, refreshTrigger]);
+  }, [commander, playerId, refreshTrigger, cacheVersion]);
 
   return state;
 }
@@ -376,6 +375,7 @@ export function useCommanderFullImageWithPreference(
     }
     return cachedFull;
   };
+  const cacheVersion = useSyncExternalStore(subscribeImageCache, getImageCacheVersion);
   const [imgUrl, setImgUrl] = useState<string>(resolveImmediate);
   const { refreshTrigger } = useArtPreferenceRefresh();
 
@@ -386,39 +386,22 @@ export function useCommanderFullImageWithPreference(
     }
 
     let isMounted = true;
-    const cached = getImageCache(commander);
 
-    // Reflect the current commander immediately; never blank what's already shown.
+    // Cache-only (the batch pre-fetch is the sole fetcher); repaint on cacheVersion.
     setImgUrl(resolveImmediate());
 
-    const loadArt = async () => {
-      if (playerId) {
-        try {
-          const preference = await getCommanderArtPreference(playerId, commander);
+    if (playerId && peekCommanderArtPreference(playerId, commander).known === false) {
+      getCommanderArtPreference(playerId, commander)
+        .then((preference) => {
           if (!isMounted) return;
-          if (preference) {
-            setImgUrl(preference.fullImageUrl);
-            return;
-          }
-        } catch (error) {
-          // Silently fall through to default
-        }
-        if (!isMounted) return;
-      }
+          if (preference) setImgUrl(preference.fullImageUrl);
+          else setImgUrl(resolveImmediate());
+        })
+        .catch(() => { /* keep cached default */ });
+    }
 
-      if (cached) {
-        if (isMounted) setImgUrl(cached.full);
-        return;
-      }
-      if (!isMounted) return;
-
-      const result = await fetchCommanderImages(commander);
-      if (isMounted) setImgUrl(result.full);
-    };
-
-    loadArt();
     return () => { isMounted = false; };
-  }, [commander, playerId, refreshTrigger]);
+  }, [commander, playerId, refreshTrigger, cacheVersion]);
 
   return imgUrl;
 }
