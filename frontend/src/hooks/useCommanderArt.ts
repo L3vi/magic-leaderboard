@@ -273,14 +273,18 @@ export function useCommanderArtStateWithPreference(
   commander: string,
   playerId?: string
 ): CommanderArtState {
-  // Seed from the image cache so a warm thumbnail paints on the first frame
-  // instead of going blank while we check Firestore for an art preference. A
-  // cache hit (or a too-short name) is already resolved, so it never shimmers.
-  const cachedSeed = getImageCache(commander)?.art || "";
-  const [state, setState] = useState<CommanderArtState>(() => ({
-    url: cachedSeed,
-    loading: !cachedSeed && !!commander && commander.trim().length >= 3,
-  }));
+  // Seed the first frame. With a playerId the player's saved art may override
+  // the cached default, so we hold the shimmer (no url) until that's resolved
+  // rather than painting the default and then visibly swapping to the selected
+  // art. Without a playerId the cached art is final, so paint it immediately.
+  const [state, setState] = useState<CommanderArtState>(() => {
+    const seed = getImageCache(commander)?.art || "";
+    const valid = !!commander && commander.trim().length >= 3;
+    if (playerId) {
+      return { url: "", loading: valid };
+    }
+    return { url: seed, loading: !seed && valid };
+  });
   const { refreshTrigger } = useArtPreferenceRefresh();
 
   useEffect(() => {
@@ -291,14 +295,16 @@ export function useCommanderArtStateWithPreference(
     }
 
     let isMounted = true;
-
-    // Paint cached art right away (covers commander changes, where the initial
-    // useState seed is stale). The preference, if any, overrides below.
     const cached = getImageCache(commander);
-    if (cached) {
+
+    if (playerId) {
+      // Keep shimmering until the preference check settles, so the thumbnail
+      // never flickers from the default art to the player's selected art.
+      setState({ url: "", loading: true });
+    } else if (cached) {
+      // No preference possible — the cached art is final, paint it now.
       setState({ url: cached.art, loading: false });
     } else {
-      // No cache yet — we're resolving; shimmer until loadArt settles.
       setState({ url: "", loading: true });
     }
 
@@ -306,16 +312,18 @@ export function useCommanderArtStateWithPreference(
       if (playerId) {
         try {
           const preference = await getCommanderArtPreference(playerId, commander);
-          if (preference && isMounted) {
+          if (!isMounted) return;
+          if (preference) {
             setState({ url: preference.artUrl, loading: false });
             return;
           }
         } catch (error) {
           // Silently fall through to default
         }
+        if (!isMounted) return;
       }
 
-      // Already showing cached art and no preference overrode it — done.
+      // No preference (or no playerId): use cached art, else fetch it.
       if (cached) {
         if (isMounted) setState({ url: cached.art, loading: false });
         return;
