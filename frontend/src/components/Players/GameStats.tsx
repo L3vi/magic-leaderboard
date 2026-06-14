@@ -11,6 +11,9 @@ import { COLOR_MAP, COLOR_HEX, TIER_LABELS, colorKey, COMBO_NAMES } from "../../
 import { encodeCommanderKey } from "../../utils/commanderKey";
 import "./GameStats.css";
 
+// How many combinations to show before the "show all" toggle.
+const COMBO_PREVIEW = 6;
+
 interface CommanderStats {
   name: string; // display name — "A // B" for partner decks
   artName: string; // single commander name to fetch art for (first of a pair)
@@ -428,9 +431,10 @@ const GameStats: React.FC = () => {
         share: colorKnownPlays > 0 ? Math.round((tierCounts[n].plays / colorKnownPlays) * 100) : 0,
         winRate: tierCounts[n].plays > 0 ? Math.round((tierCounts[n].wins / tierCounts[n].plays) * 100) : 0,
       }));
+    // Every named combination, ranked by plays — the UI shows a short preview
+    // and reveals the rest behind a "show all" toggle.
     const topCombos = Object.values(comboCounts)
       .sort((a, b) => b.plays - a.plays || b.wins - a.wins)
-      .slice(0, 6)
       .map((c) => ({
         label: c.label,
         key: c.key,
@@ -657,7 +661,7 @@ const GameStats: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className={`color-stat-card color-${color.color.toLowerCase()}`}
+                  className={`color-stat-card clickable color-${color.color.toLowerCase()}`}
                   onClick={() => navigate(`/stats/colors/${color.color}`)}
                   role="button"
                   tabIndex={0}
@@ -711,7 +715,7 @@ const GameStats: React.FC = () => {
 
           <div className="section-subheading">Most Played Combinations</div>
           <div className="combo-list">
-            {stats.colorCombos.top.map((c, idx) => (
+            {stats.colorCombos.top.slice(0, COMBO_PREVIEW).map((c, idx) => (
               <div
                 className="combo-row clickable"
                 key={idx}
@@ -733,6 +737,16 @@ const GameStats: React.FC = () => {
               </div>
             ))}
             </div>
+            {stats.colorCombos.top.length > COMBO_PREVIEW && (
+              <button
+                type="button"
+                className="combo-view-all clickable"
+                onClick={() => navigate("/stats/combos")}
+              >
+                View all {stats.colorCombos.top.length} combinations
+                <span className="combo-view-all-chevron" aria-hidden="true">›</span>
+              </button>
+            )}
           </>
         )}
       </div>

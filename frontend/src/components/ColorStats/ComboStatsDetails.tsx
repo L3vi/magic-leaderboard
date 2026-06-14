@@ -73,11 +73,8 @@ const ComboStatsDetails: React.FC<ComboStatsDetailsProps> = ({
             sortedCommanders.map((cmd, idx) => (
               <div
                 key={idx}
-                className="commander-stat-item"
+                className={`commander-stat-item${onCommanderClick ? " clickable" : ""}`}
                 onClick={() => onCommanderClick?.(cmd.commanderName)}
-                style={{
-                  cursor: onCommanderClick ? "pointer" : "default",
-                }}
               >
                 <div className="commander-rank">{idx + 1}</div>
                 <div className="commander-info">

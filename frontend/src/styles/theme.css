@@ -56,7 +56,14 @@
   --primary: #8b5cf6;
   --primary-light: #a78bfa;
   --primary-dark: #7c3aed;
-  
+
+  /* Interactive surfaces — one hover language for every clickable card/tile/row
+     (see interactive.css). Hover lifts + shadows + tints the border purple;
+     active presses back down. */
+  --interactive-transition: 0.2s ease;
+  --interactive-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  --interactive-hover-border: var(--primary);
+
   /* Accent - Victory Gold */
   --accent: #fbbf24;
   --accent-light: #fde68a;

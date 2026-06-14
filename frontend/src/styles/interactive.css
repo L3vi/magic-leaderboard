@@ -1,0 +1,104 @@
+/* ============================================================================
+   Interactive surfaces — ONE hover language for every clickable card/tile/row.
+
+   Add the `clickable` class to any card/tile/list-row that drills into more
+   data. This file owns the whole treatment: cursor, transition, hover lift +
+   purple border + shadow, keyboard focus, the active press, and the subtle "›"
+   drill-in chevron. Component CSS should only add context extras (color tints,
+   image zoom, podium accents) — never re-declare the hover here.
+
+   Table rows (player/game leaderboard) deliberately opt OUT: they keep a medal
+   left-border that a border-color hover would clobber, so they carry their own
+   border-safe version of this same lift + shadow in their component CSS.
+   ========================================================================== */
+
+.clickable {
+  cursor: pointer;
+  transition:
+    border-color var(--interactive-transition),
+    box-shadow var(--interactive-transition),
+    transform var(--interactive-transition),
+    background-color var(--interactive-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clickable:hover {
+    border-color: var(--interactive-hover-border);
+    box-shadow: var(--interactive-hover-shadow);
+    transform: translateY(-2px);
+  }
+}
+
+.clickable:focus-visible {
+  outline: none;
+  border-color: var(--interactive-hover-border);
+  box-shadow: var(--interactive-hover-shadow);
+  transform: translateY(-2px);
+}
+
+/* Tactile press — works for mouse and touch alike. */
+.clickable:active {
+  transform: translateY(0);
+  transition-duration: 0.05s;
+}
+
+/* ── Drill-in chevron ──────────────────────────────────────────────────────
+   Card-shaped clickables (centered content) get a corner chevron; list rows
+   (flex) get a trailing one. Both share the glyph, color, and hover nudge. */
+
+/* Card-type: anchor in a free corner. */
+.stat-card.clickable,
+.combo-tier-card.clickable,
+.color-stat-card.clickable {
+  position: relative;
+}
+
+.stat-card.clickable::after,
+.combo-tier-card.clickable::after,
+.color-stat-card.clickable::after {
+  content: "›";
+  position: absolute;
+  top: 0.45rem;
+  right: 0.6rem;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--text-muted);
+  opacity: 0.4;
+  transition: opacity var(--interactive-transition), transform var(--interactive-transition);
+}
+
+/* Color cards carry a header across the top, so drop their chevron to the
+   bottom-right corner instead. */
+.color-stat-card.clickable::after {
+  top: auto;
+  bottom: 0.45rem;
+}
+
+/* List-row type: trailing chevron at the end of the flex row. */
+.commander-item.clickable::after,
+.commander-stat-item.clickable::after,
+.combo-row.clickable::after,
+.combo-list-row.clickable::after {
+  content: "›";
+  margin-left: auto;
+  padding-left: 0.5rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-muted);
+  opacity: 0.45;
+  flex-shrink: 0;
+  transition: opacity var(--interactive-transition), transform var(--interactive-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card.clickable:hover::after,
+  .combo-tier-card.clickable:hover::after,
+  .color-stat-card.clickable:hover::after,
+  .commander-item.clickable:hover::after,
+  .commander-stat-item.clickable:hover::after,
+  .combo-row.clickable:hover::after,
+  .combo-list-row.clickable:hover::after {
+    opacity: 0.85;
+    transform: translateX(2px);
+  }
+}

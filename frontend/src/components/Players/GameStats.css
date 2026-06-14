@@ -81,17 +81,7 @@
   transition: all 0.2s ease;
 }
 
-.combo-tier-card.clickable {
-  cursor: pointer;
-}
-
-.combo-tier-card.clickable:hover,
-.combo-tier-card.clickable:focus-visible {
-  border-color: var(--primary, #8b5cf6);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-  outline: none;
-}
+/* Hover/focus/chevron handled centrally in interactive.css (.clickable). */
 
 .combo-tier-pct {
   font-size: 1.9rem;
@@ -132,16 +122,7 @@
   transition: all 0.2s ease;
 }
 
-.combo-row.clickable {
-  cursor: pointer;
-}
-
-.combo-row.clickable:hover,
-.combo-row.clickable:focus-visible {
-  border-color: var(--primary, #8b5cf6);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  outline: none;
-}
+/* Hover/focus/chevron handled centrally in interactive.css (.clickable). */
 
 .combo-pips {
   display: inline-flex;
@@ -175,6 +156,40 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+/* Interactive hover + drill-in chevron for all clickable cards/rows here is
+   handled centrally in interactive.css (keyed on .clickable). */
+
+/* "View all combinations" link under the Most Played Combinations list. Routes
+   to the full All Combinations page (matches the player "Commanders Played"
+   pattern). Hover lift/shadow comes from .clickable in interactive.css. */
+.combo-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.combo-view-all .combo-view-all-chevron {
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform var(--interactive-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .combo-view-all:hover .combo-view-all-chevron {
+    transform: translateX(2px);
+  }
 }
 
 /* Responsive design */

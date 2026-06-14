@@ -28,14 +28,9 @@
   background: var(--background);
   border-radius: var(--radius-md, 0.5rem);
   border: 1px solid var(--border);
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.player-commanders .commander-stat-item:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+/* Interactive hover/focus/chevron come from interactive.css (.clickable). */
 
 /* The yellow play-count badge — mirrors the rank badge used on the
    color/combo stat pages. */

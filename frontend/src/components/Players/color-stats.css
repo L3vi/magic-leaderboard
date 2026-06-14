@@ -13,14 +13,10 @@
   border-radius: 0.6rem;
   border: 1px solid;
   text-align: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
 }
 
-.color-stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
+/* Lift/shadow/border/chevron come from interactive.css (.clickable). The
+   per-color :hover rules below only deepen the color tint. */
 
 /* MTG Color Styles - Simple Cards */
 .color-stat-card.color-w {

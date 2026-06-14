@@ -158,23 +158,9 @@
   border: 1px solid var(--border);
   border-radius: 0.6rem;
   font-size: 0.9rem;
-  transition: all 0.2s ease;
 }
 
-.commander-item:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.commander-item.clickable {
-  cursor: pointer;
-}
-
-.commander-item.clickable:focus-visible {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+/* Interactive hover/focus/chevron come from interactive.css (.clickable). */
 
 /* Highlighted stat in the meta line, so the headline number reads in the same
    gold accent the other stat sections use for "the number". */
@@ -220,7 +206,7 @@
   transition: transform 0.2s ease;
 }
 
-.commander-item:hover .commander-item-image img {
+.commander-item.clickable:hover .commander-item-image img {
   transform: scale(1.05);
 }
 

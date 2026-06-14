@@ -151,6 +151,8 @@
 /* ===================== */
 /* Commanders Played tile */
 /* ===================== */
+/* Drill-in tile to the full commanders list. Interactive hover/lift/shadow +
+   focus come from interactive.css (.clickable); only layout lives here. */
 .commanders-played-tile {
   display: flex;
   align-items: center;
@@ -158,23 +160,12 @@
   gap: 1rem;
   width: 100%;
   padding: 1rem 1.25rem;
-  background: var(--accent-rgba-8);
-  border: 1px solid var(--accent);
+  background: var(--background);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md, 0.5rem);
-  box-shadow: 0 0 8px rgba(251, 146, 60, 0.1);
-  cursor: pointer;
   text-align: left;
   font: inherit;
   color: inherit;
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
-}
-
-.commanders-played-tile:hover {
-  box-shadow: 0 2px 12px rgba(251, 146, 60, 0.25);
-}
-
-.commanders-played-tile:active {
-  transform: scale(0.99);
 }
 
 .cpt-label {
@@ -195,6 +186,7 @@
   gap: 0.5rem;
 }
 
+/* Count keeps the gold "metric number" accent used across the stats. */
 .cpt-count {
   font-size: 1.6rem;
   font-weight: 800;
@@ -203,9 +195,16 @@
 }
 
 .cpt-arrow {
-  font-size: 1.6rem;
-  color: var(--accent);
+  font-size: 1.5rem;
+  color: var(--text-muted);
   line-height: 1;
+  transition: transform var(--interactive-transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .commanders-played-tile:hover .cpt-arrow {
+    transform: translateX(2px);
+  }
 }
 
 /* ===================== */

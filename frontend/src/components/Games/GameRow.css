@@ -10,7 +10,9 @@
   font-size: 1.1rem;
   color: var(--foreground);
   cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s;
+  /* Shared interactive language: lift + shadow on hover, press on active
+     (matches the stats cards/tiles — see interactive.css). */
+  transition: box-shadow var(--interactive-transition), transform var(--interactive-transition);
   min-height: 120px;
   gap: 0.75rem;
   flex-direction: column;
@@ -20,15 +22,13 @@
 
 @media (hover: hover) and (pointer: fine) {
   .game-row:hover {
-    background: var(--primary-light);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
+    box-shadow: var(--interactive-hover-shadow);
+    transform: translateY(-2px);
   }
 
   .game-row:active {
-    background: var(--primary-dark);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
     transform: scale(0.98);
+    transition-duration: 0.05s;
   }
 }
 

@@ -63,9 +63,8 @@ const CommanderStatsDetails: React.FC<CommanderStatsDetailsProps> = ({
           {stats.pilots.map((pilot, idx) => (
             <div
               key={pilot.playerName}
-              className="commander-stat-item"
+              className={`commander-stat-item${onPilotClick ? " clickable" : ""}`}
               onClick={() => onPilotClick?.(pilot.playerName)}
-              style={{ cursor: onPilotClick ? "pointer" : "default" }}
             >
               <div className="commander-rank">{idx + 1}</div>
               <div className="commander-info">

@@ -12,7 +12,10 @@
     font-size: 1.1rem;
     color: var(--foreground);
     cursor: pointer;
-    transition: background 0.18s, box-shadow 0.18s;
+    /* Shared interactive language: lift + shadow on hover, press on active
+       (matches the stats cards/tiles — see interactive.css). No bg-fill so the
+       podium medal gradients below stay intact on hover. */
+    transition: box-shadow var(--interactive-transition), transform var(--interactive-transition);
     margin: 5px;
     /* Reserve the 3px the podium rows spend on a medal border so every row —
        and the header (which matches this) — shares the same content inset. */
@@ -20,11 +23,14 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .player-row:hover {
+    box-shadow: var(--interactive-hover-shadow);
+    transform: translateY(-2px);
+  }
+
   .player-row:active {
-    background: var(--primary-dark);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.22);
     transform: scale(0.98);
+    transition-duration: 0.05s;
   }
 }
 
@@ -69,12 +75,7 @@
     min-width: 48px;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .player-row:hover {
-      background: var(--primary-light);
-      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
-  }
-}
+/* (Row hover handled above with the shared lift + shadow.) */
 
 /* ===================== */
 /* Desktop Styles */

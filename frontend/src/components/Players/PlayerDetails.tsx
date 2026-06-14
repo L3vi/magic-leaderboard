@@ -190,7 +190,7 @@ const PlayerDetails: React.FC<PlayerDetailsProps> = ({ player, games, players, o
         {onViewCommanders && (
           <button
             type="button"
-            className="commanders-played-tile"
+            className="commanders-played-tile clickable"
             onClick={onViewCommanders}
             aria-label="View all commanders played"
           >

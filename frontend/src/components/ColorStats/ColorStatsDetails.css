@@ -60,13 +60,9 @@
   background: var(--background);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  transition: all 0.2s ease;
 }
 
-.commander-stat-item:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+/* Interactive hover/focus/chevron come from interactive.css (.clickable). */
 
 .commander-rank {
   min-width: 2.5rem;

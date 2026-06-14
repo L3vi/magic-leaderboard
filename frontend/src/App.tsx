@@ -13,6 +13,7 @@ import PlayerCommandersPage from "./pages/PlayerCommandersPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
 import ColorStatsPage from "./pages/ColorStatsPage";
 import ComboStatsPage from "./pages/ComboStatsPage";
+import AllCombinationsPage from "./pages/AllCombinationsPage";
 import CommanderStatsPage from "./pages/CommanderStatsPage";
 import NewGamePage from "./pages/NewGamePage";
 import NewSessionPage from "./pages/NewSessionPage";
@@ -122,7 +123,7 @@ function AnimatedRoutes() {
   const isDetailPage = location.pathname.startsWith('/players/') || 
                        location.pathname.startsWith('/games/') ||
                        location.pathname.startsWith('/stats/colors/') ||
-                       location.pathname.startsWith('/stats/combos/') ||
+                       location.pathname.startsWith('/stats/combos') ||
                        location.pathname.startsWith('/stats/tiers/') ||
                        location.pathname.startsWith('/stats/commanders/') ||
                        location.pathname === '/new-game' ||
@@ -144,6 +145,7 @@ function AnimatedRoutes() {
               <Route path="/players/:playerName" element={<PlayerDetailsPage />} />
               <Route path="/games/:gameId" element={<GameDetailsPage />} />
               <Route path="/stats/colors/:color" element={<ColorStatsPage />} />
+              <Route path="/stats/combos" element={<AllCombinationsPage />} />
               <Route path="/stats/combos/:comboKey" element={<ComboStatsPage />} />
               <Route path="/stats/tiers/:tier" element={<ComboStatsPage />} />
               <Route path="/stats/commanders/:commanderKey" element={<CommanderStatsPage />} />

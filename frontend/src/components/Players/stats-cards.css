@@ -43,16 +43,7 @@
   border-color: var(--accent);
 }
 
-.stat-card.clickable {
-  cursor: pointer;
-}
-
-.stat-card.clickable:hover,
-.stat-card.clickable:focus-visible {
-  outline: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
+/* .stat-card.clickable hover/focus/chevron come from interactive.css. */
 
 /* Overview labels can wrap to two words; balance them. (Base label style is
    global.) */

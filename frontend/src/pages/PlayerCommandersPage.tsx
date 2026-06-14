@@ -94,7 +94,7 @@ const PlayerCommandersPage: React.FC = () => {
               decks.map((deck, idx) => (
                 <div
                   key={deck.key}
-                  className="commander-stat-item"
+                  className="commander-stat-item clickable"
                   role="button"
                   tabIndex={0}
                   onClick={() => navigate(`/stats/commanders/${encodeCommanderKey(deck.key)}`)}

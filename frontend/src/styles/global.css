@@ -1,5 +1,6 @@
 @import url("./theme.css");
 @import url("./buttons.css");
+@import url("./interactive.css");
 
 /* ===================== */
 /* CSS Reset & Base      */
@@ -171,16 +172,12 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: border-color var(--interactive-transition), box-shadow var(--interactive-transition), transform var(--interactive-transition);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .stat-card:hover {
-    border-color: var(--primary);
-    background: var(--background-elevated);
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
-  }
-}
+/* Note: a bare .stat-card is display-only and intentionally has NO hover —
+   interactivity (and its hover) comes from the shared .clickable treatment in
+   interactive.css. */
 
 .stat-label {
   font-size: 0.875rem;
