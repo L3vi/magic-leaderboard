@@ -26,6 +26,74 @@
   color: #bbb;
 }
 
+/* Left-of-input art preview: a fixed, rounded slot so the image (and its
+   shimmer-while-loading overlay) fade in place instead of popping. */
+.commander-preview-slot {
+  position: relative;
+  width: var(--input-height);
+  height: var(--input-height);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--background);
+}
+.commander-preview-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+}
+.commander-preview-slot .game-row-commander-img-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* Autocomplete rows: a consistent 32px art slot in every row (results,
+   previous commanders, and the loading skeleton) so the list never changes
+   row height as it moves between states. */
+.ac-thumb {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--background-elevated);
+}
+.ac-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ac-thumb-empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ac-row-label {
+  flex: 1;
+  min-width: 0;
+}
+.ac-skel-label {
+  height: 0.95rem;
+  width: 60%;
+  border-radius: 0.3rem;
+}
+.ac-skeleton-row {
+  cursor: default;
+}
+.ac-empty {
+  color: var(--text-secondary);
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .autocomplete-dropdown li.ac-skeleton-row:hover,
+  .autocomplete-dropdown li.ac-empty:hover {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+}
+
 /* ===================== */
 /* NewGame Component     */
 /* ===================== */

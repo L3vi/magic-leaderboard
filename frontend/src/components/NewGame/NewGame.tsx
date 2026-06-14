@@ -7,6 +7,7 @@ import {
   autoUpdate,
   offset,
   flip,
+  shift,
   size,
   FloatingPortal
 } from '@floating-ui/react';
@@ -17,7 +18,9 @@ import { useCommanderArt, useCommanderFullImage, useCommanderArtWithPreference }
 import CardModal from "../CardModal/CardModal";
 import "./NewGame.css";
 import StaticDropdown from '../StaticDropdown/StaticDropdown';
+import ShimmerImage from '../ShimmerImage/ShimmerImage';
 import { scryfallFetch } from '../../services/scryfallClient';
+import { getImageCache } from '../../services/cacheService';
 import { isRealCommander } from '../../utils/commanderKey';
 
 // CommanderAutocomplete - simple text input with card search
@@ -69,26 +72,75 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const defaultArtUrl = useCommanderArt(defaultCommander || '');
   const defaultFullImageUrl = useCommanderFullImage(defaultCommander || '');
 
-  const { refs, floatingStyles, context } = useFloating({
+  // The mobile keyboard shrinks the *visual* viewport but NOT the layout
+  // viewport (window.innerHeight) on iOS, so floating-ui's default overflow
+  // detection thinks there's room below the input and drops the menu straight
+  // behind the keyboard. We feed flip/shift/size a rootBoundary derived from the
+  // visual viewport so the menu flips above and caps its height to the space
+  // that's actually visible above the keyboard. A ref keeps the latest rect for
+  // the middleware; a state bump forces a recompute when the keyboard moves.
+  const visualRectRef = useRef<{ x: number; y: number; width: number; height: number }>({
+    x: 0,
+    y: 0,
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
+  const [viewportTick, setViewportTick] = useState(0);
+
+  const { refs, floatingStyles, context, update } = useFloating({
     open: showDropdown,
     onOpenChange: setShowDropdown,
+    placement: 'bottom-start',
     // Reposition the menu as the page scrolls or the viewport resizes (e.g. the
     // mobile keyboard sliding up). Without this the menu is placed once on open
     // and gets "left behind" when its input moves — rendering detached.
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(8),
-      flip({ padding: 8 }),
+      flip({ padding: 8, rootBoundary: visualRectRef.current }),
+      shift({ padding: 8, rootBoundary: visualRectRef.current }),
       size({
-        apply({ rects, elements }) {
+        padding: 8,
+        rootBoundary: visualRectRef.current,
+        apply({ availableHeight, rects, elements }) {
           Object.assign(elements.floating.style, {
             width: `${rects.reference.width}px`,
+            // Never taller than the visible space in the chosen placement (so it
+            // can't hide behind the keyboard), capped at a comfortable max and
+            // floored so it doesn't collapse to a sliver mid-resize.
+            maxHeight: `${Math.max(140, Math.min(Math.floor(availableHeight), 340))}px`,
           });
         },
-        padding: 8,
       }),
     ],
   });
+
+  // Track the visual viewport so the middleware above can exclude the keyboard.
+  useEffect(() => {
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+    const sync = () => {
+      if (vv) {
+        visualRectRef.current = { x: vv.offsetLeft, y: vv.offsetTop, width: vv.width, height: vv.height };
+      } else {
+        visualRectRef.current = { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight };
+      }
+      setViewportTick((t) => t + 1);
+    };
+    sync();
+    vv?.addEventListener('resize', sync);
+    vv?.addEventListener('scroll', sync);
+    window.addEventListener('resize', sync);
+    return () => {
+      vv?.removeEventListener('resize', sync);
+      vv?.removeEventListener('scroll', sync);
+      window.removeEventListener('resize', sync);
+    };
+  }, []);
+
+  // Recompute placement whenever the keyboard/viewport changes while open.
+  useEffect(() => {
+    if (showDropdown) update();
+  }, [viewportTick, showDropdown, update]);
 
   const dismiss = useDismiss(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
@@ -242,7 +294,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
 
     // If input is empty, show previous commanders
     if (!val.trim()) {
-      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander, image: getImageCache(cmd.name)?.art || undefined })));
       setNoResults(false);
       setShowDropdown(true);
       setLoading(false);
@@ -260,6 +312,12 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
       setLoading(false);
       return;
     }
+
+    // Open the menu and show the loading skeleton right away, so the dropdown
+    // doesn't blink out during the debounce and the search feels responsive.
+    setNoResults(false);
+    setLoading(true);
+    setShowDropdown(true);
 
     // Debounce so we only query once the user pauses, not on every keystroke.
     debounceTimer.current = setTimeout(() => {
@@ -286,7 +344,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
     isFocusedRef.current = true;
     // Show previous commanders when input is focused and empty
     if (!value.trim() && previousCommanders.length > 0) {
-      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander, image: getImageCache(cmd.name)?.art || undefined })));
       setShowDropdown(true);
     }
   };
@@ -307,19 +365,21 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
   const handleInputClick = () => {
     // When clicking an empty input, show previous commanders
     if (!value.trim() && previousCommanders.length > 0) {
-      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander })));
+      setResults(previousCommanders.map(cmd => ({ name: cmd.name, id: cmd.name, partnerCommander: cmd.partnerCommander, image: getImageCache(cmd.name)?.art || undefined })));
       setShowDropdown(true);
     }
   };
 
   return (
     <div className="commander-autocomplete">
-      {/* Commander image preview */}
-      {selectedImage ? (
-        <img
-          src={selectedImage}
-          alt={committedCommander || defaultCommander || "commander"}
-          style={{ cursor: onCardClick ? "pointer" : "default" }}
+      {/* Commander image preview — shimmers in instead of popping. */}
+      <div className="commander-preview-slot">
+        <ShimmerImage
+          src={selectedImage || ''}
+          alt={committedCommander || defaultCommander || 'commander'}
+          title={committedCommander || defaultCommander || undefined}
+          style={{ cursor: onCardClick ? 'pointer' : 'default' }}
+          fallback={<div className="game-row-commander-img-placeholder">?</div>}
           onClick={(e) => {
             // This img sits inside the field's <label>, so a tap would otherwise
             // activate the label and focus the commander text input — popping the
@@ -335,11 +395,7 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
             }
           }}
         />
-      ) : (
-        <div className="game-row-commander-img-placeholder">
-          ?
-        </div>
-      )}
+      </div>
       <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
         <input
           ref={refs.setReference}
@@ -355,55 +411,51 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           style={{ width: '100%' }}
           {...getReferenceProps()}
         />
-        {showDropdown && results.length > 0 && (
+        {/* One floating menu for every state — loading skeleton, results, or
+            "no results" — so it never blinks out or jumps between different
+            boxes as a search resolves. */}
+        {showDropdown && (loading || results.length > 0 || noResults) && (
           <FloatingPortal>
-          <ul
-            className="autocomplete-dropdown"
-            ref={refs.setFloating}
-            style={{
-              ...floatingStyles,
-              margin: 0,
-              padding: 0,
-              listStyle: 'none'
-            }}
-            {...getFloatingProps()}
-          >
-            {results.map((card, idx) => (
-              <li
-                key={`${card.id}|${card.partnerCommander ?? ''}|${idx}`}
-                onMouseDown={() => handleSelect(card.name, card.partnerCommander)}
-              >
-                {card.image && (
-                  <img src={card.image} alt={card.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', background: '#eee' }} />
-                )}
-                <span>{card.name}{card.partnerCommander ? ` // ${card.partnerCommander}` : ''}</span>
-              </li>
-            ))}
-          </ul>
-          </FloatingPortal>
-        )}
-        {showDropdown && results.length === 0 && noResults && !loading && (
-          <FloatingPortal>
-            <div
+            <ul
               className="autocomplete-dropdown"
               ref={refs.setFloating}
               style={{
                 ...floatingStyles,
                 margin: 0,
-                padding: '12px 14px',
-                fontSize: '14px',
-                color: 'var(--text-secondary)'
+                padding: 0,
+                listStyle: 'none'
               }}
               {...getFloatingProps()}
             >
-              No commanders found
-            </div>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <li key={`sk-${i}`} className="ac-row ac-skeleton-row" aria-hidden="true">
+                    <span className="ac-thumb skeleton" />
+                    <span className="ac-skel-label skeleton skeleton-bar" />
+                  </li>
+                ))
+              ) : results.length > 0 ? (
+                results.map((card, idx) => (
+                  <li
+                    key={`${card.id}|${card.partnerCommander ?? ''}|${idx}`}
+                    className="ac-row"
+                    onMouseDown={() => handleSelect(card.name, card.partnerCommander)}
+                  >
+                    <span className="ac-thumb">
+                      {card.image ? (
+                        <ShimmerImage src={card.image} alt={card.name} />
+                      ) : (
+                        <span className="ac-thumb-empty" aria-hidden="true" />
+                      )}
+                    </span>
+                    <span className="ac-row-label">{card.name}{card.partnerCommander ? ` // ${card.partnerCommander}` : ''}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="ac-row ac-empty">No commanders found</li>
+              )}
+            </ul>
           </FloatingPortal>
-        )}
-        {loading && value && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '8px', fontSize: '14px', marginTop: '8px', borderRadius: '0.5rem', border: '1.5px solid var(--border)' }}>
-            Searching…
-          </div>
         )}
       </div>
     </div>
