@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../../styles/skeleton.css";
 import "./ShimmerImage.css";
 
@@ -34,13 +34,23 @@ const ShimmerImage: React.FC<ShimmerImageProps> = ({
   onClick,
   fallback = null,
 }) => {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
-  // A new src is a new image to load — shimmer again until it arrives.
+  // A new src is a new image to load — shimmer again until it arrives. But a
+  // cached image can finish loading before React attaches onLoad (e.g. after a
+  // tab switch remounts this), so onLoad never fires and the shimmer would stay
+  // stuck. Sync from the element's own .complete to cover that case.
   useEffect(() => {
-    setLoaded(false);
-    setErrored(false);
+    const img = imgRef.current;
+    if (img && img.complete) {
+      setErrored(img.naturalWidth === 0);
+      setLoaded(img.naturalWidth > 0);
+    } else {
+      setLoaded(false);
+      setErrored(false);
+    }
   }, [src]);
 
   // Resolved with no image (or a broken one) → the caller's fallback.
@@ -52,6 +62,7 @@ const ShimmerImage: React.FC<ShimmerImageProps> = ({
     <>
       {src && (
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
           title={title}

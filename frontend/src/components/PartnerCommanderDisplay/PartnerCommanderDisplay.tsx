@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useCommanderArtStateWithPreference,
   useCommanderFullImageWithPreference
@@ -39,13 +39,23 @@ const CommanderThumb: React.FC<CommanderThumbProps> = ({
   onClick,
   clickable,
 }) => {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
-  // A new URL means a new image to load — shimmer again until it arrives.
+  // A new URL means a new image to load — shimmer again until it arrives. But a
+  // cached image can finish loading before React attaches onLoad (e.g. when a
+  // tab switch remounts this), so onLoad never fires and the shimmer would stay
+  // stuck. Sync from the element's own .complete to cover that case.
   useEffect(() => {
-    setLoaded(false);
-    setErrored(false);
+    const img = imgRef.current;
+    if (img && img.complete) {
+      setErrored(img.naturalWidth === 0);
+      setLoaded(img.naturalWidth > 0);
+    } else {
+      setLoaded(false);
+      setErrored(false);
+    }
   }, [url]);
 
   // Resolved with no art (or a broken image) → the question-mark placeholder.
@@ -59,6 +69,7 @@ const CommanderThumb: React.FC<CommanderThumbProps> = ({
     <>
       {url && (
         <img
+          ref={imgRef}
           src={url}
           alt={name}
           title={name}
