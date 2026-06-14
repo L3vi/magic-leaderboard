@@ -368,9 +368,9 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
             }}
             {...getFloatingProps()}
           >
-            {results.map((card) => (
+            {results.map((card, idx) => (
               <li
-                key={card.id}
+                key={`${card.id}|${card.partnerCommander ?? ''}|${idx}`}
                 onMouseDown={() => handleSelect(card.name, card.partnerCommander)}
               >
                 {card.image && (
