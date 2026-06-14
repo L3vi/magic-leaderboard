@@ -4,8 +4,10 @@ import { useSwipeable } from "react-swipeable";
 import { AnimatePresence, motion } from "framer-motion";
 import "./styles/global.css";
 import Header from "./components/Header/Header";
+import type { TabType } from "./components/Header/NavBar";
 import Players from "./components/Players/Players";
 import Games from "./components/Games/Games";
+import Stats from "./components/Stats/Stats";
 import PlayerDetailsPage from "./pages/PlayerDetailsPage";
 import PlayerCommandersPage from "./pages/PlayerCommandersPage";
 import GameDetailsPage from "./pages/GameDetailsPage";
@@ -21,6 +23,10 @@ import { NavigationProvider } from "./context/NavigationContext";
 import { ArtPreferenceProvider } from "./context/ArtPreferenceContext";
 import { useScrollRestoration } from "./hooks/useScrollRestoration";
 
+// Left-to-right order of the primary tabs — drives swipe neighbors and the
+// slide-transition direction.
+const TAB_ORDER: TabType[] = ['players', 'games', 'stats'];
+
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,45 +36,51 @@ function MainLayout() {
   // tapping a stat row and coming back lands you where you were.
   useScrollRestoration("window");
 
-  // Determine active tab from URL path
-  const getTabFromPath = (path: string): 'players' | 'games' => {
+  // Determine active tab from URL path. Detail overlays (e.g. /stats/colors/W)
+  // resolve to the tab they sit on top of, so a deep link restores the right tab.
+  const getTabFromPath = (path: string): TabType => {
     if (path.startsWith('/games')) return 'games';
+    if (path.startsWith('/stats')) return 'stats';
     if (path.startsWith('/players')) return 'players';
     return 'players';
   };
-  
-  const [activeTab, setActiveTab] = React.useState<'players' | 'games'>(() => {
+
+  const [activeTab, setActiveTab] = React.useState<TabType>(() => {
     const savedTab = localStorage.getItem('activeTab');
-    if (savedTab === 'games' || savedTab === 'players') {
-      return savedTab as 'players' | 'games';
+    if (savedTab === 'games' || savedTab === 'players' || savedTab === 'stats') {
+      return savedTab as TabType;
     }
     return getTabFromPath(location.pathname);
   });
 
-  // 1 = navigating right (towards games), -1 = navigating left (towards players)
+  // Sign of the slide transition: +1 when moving to a tab further right in
+  // TAB_ORDER, -1 when moving left.
   const [direction, setDirection] = React.useState<1 | -1>(1);
 
-  // Sync activeTab with URL and localStorage
+  // Sync activeTab with URL and localStorage (only the bare tab routes; detail
+  // overlays leave the underlying tab as-is).
   React.useEffect(() => {
-    if (location.pathname === '/players' || location.pathname === '/games') {
+    if (location.pathname === '/players' || location.pathname === '/games' || location.pathname === '/stats') {
       const pathTab = getTabFromPath(location.pathname);
       setActiveTab(pathTab);
       localStorage.setItem('activeTab', pathTab);
     }
   }, [location.pathname]);
 
-  const handleTabChange = (tab: 'players' | 'games') => {
-    setDirection(tab === 'games' ? 1 : -1);
-    navigate(tab === 'players' ? '/players' : '/games');
+  const handleTabChange = (tab: TabType) => {
+    setDirection(TAB_ORDER.indexOf(tab) >= TAB_ORDER.indexOf(activeTab) ? 1 : -1);
+    navigate(`/${tab}`);
   };
 
-  // Swipe handlers for tab navigation
+  // Swipe between adjacent tabs (Players ↔ Games ↔ Stats).
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (activeTab === 'players') handleTabChange('games'); // games is to the right
+      const next = TAB_ORDER[TAB_ORDER.indexOf(activeTab) + 1];
+      if (next) handleTabChange(next);
     },
     onSwipedRight: () => {
-      if (activeTab === 'games') handleTabChange('players'); // players is to the left
+      const prev = TAB_ORDER[TAB_ORDER.indexOf(activeTab) - 1];
+      if (prev) handleTabChange(prev);
     },
     trackMouse: true,
     trackTouch: true,
@@ -95,7 +107,7 @@ function MainLayout() {
             transition={{ duration: 0.15, ease: "easeInOut" }}
             className="tab-content-inner"
           >
-            {activeTab === 'players' ? <Players /> : <Games />}
+            {activeTab === 'players' ? <Players /> : activeTab === 'games' ? <Games /> : <Stats />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -179,7 +191,7 @@ function App() {
 
 function AppRedirect() {
   const savedTab = localStorage.getItem('activeTab');
-  const targetPath = savedTab === 'games' ? '/games' : '/players';
+  const targetPath = savedTab === 'games' ? '/games' : savedTab === 'stats' ? '/stats' : '/players';
   return <Navigate to={targetPath} replace />;
 }
 

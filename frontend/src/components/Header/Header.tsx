@@ -2,7 +2,7 @@
 import React from "react";
 import "./Header.css";
 import Logo from "./Logo";
-import NavBar from "./NavBar";
+import NavBar, { type TabType } from "./NavBar";
 import SeasonSelector from "../SeasonSelector/SeasonSelector";
 
 /**
@@ -13,8 +13,8 @@ import SeasonSelector from "../SeasonSelector/SeasonSelector";
  */
 interface HeaderProps {
   title?: string;
-  activeTab: "players" | "games";
-  setActiveTab: (tab: "players" | "games") => void;
+  activeTab: TabType;
+  setActiveTab: (tab: TabType) => void;
   onNewGame?: () => void;
   hideNewGameButton?: boolean;
 }

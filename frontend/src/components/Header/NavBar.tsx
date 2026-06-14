@@ -2,14 +2,17 @@
 import React from "react";
 import "./NavBar.css";
 
+/** The three primary content tabs. */
+export type TabType = "players" | "games" | "stats";
+
 /**
  * NavBarProps defines the props for the NavBar component.
  * @property activeTab - The currently active tab.
  * @property setActiveTab - Function to set the active tab.
  */
 interface NavBarProps {
-	activeTab: "players" | "games";
-	setActiveTab: (tab: "players" | "games") => void;
+	activeTab: TabType;
+	setActiveTab: (tab: TabType) => void;
 	onNewGame?: () => void;
 	hideNewGameButton?: boolean;
 }
@@ -18,6 +21,7 @@ interface NavBarProps {
 const NAV_ITEMS = [
 	{ label: "Players", icon: "🏆", tab: "players" },
 	{ label: "Games", icon: "🎲", tab: "games" },
+	{ label: "Stats", icon: "📊", tab: "stats" },
 	{ label: "Add Game", icon: "+", isFab: true },
 ];
 
@@ -94,7 +98,7 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame, hid
 								aria-selected={activeTab === item.tab}
 								tabIndex={0}
 								role="tab"
-							onClick={() => setActiveTab(item.tab as "players" | "games")}
+							onClick={() => setActiveTab(item.tab as TabType)}
 								onKeyDown={e => handleKeyDown(e, idx)}
 								ref={el => tabRefs.current[idx] = el}
 							>
