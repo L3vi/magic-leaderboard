@@ -24,6 +24,24 @@ html.modal-open {
   overflow: hidden;
 }
 
+/* A PageShell overlay is position:fixed and covers the viewport, but the mobile
+   keyboard shrinks the visual viewport and shifts fixed elements up — exposing
+   whatever is painted behind the overlay. Hide the underlying app shell (home
+   header + nav bars and the tab content — both siblings of the overlay, never
+   ancestors of it; the overlay uses .page-shell__header / .page-shell__content)
+   so the previous page can't peek through, and paint the body in the overlay's
+   surface color so any exposed strip reads as part of the overlay. visibility
+   (not display) keeps layout and window scroll intact for scroll restoration
+   on close. */
+body.modal-open {
+  background: var(--surface);
+}
+
+body.modal-open .header,
+body.modal-open .tab-content {
+  visibility: hidden;
+}
+
 body {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   background: var(--background);
