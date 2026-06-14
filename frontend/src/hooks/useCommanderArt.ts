@@ -88,41 +88,51 @@ async function fetchCommanderImages(commander: string): Promise<CardImageCache> 
  * @param commander - The commander card name
  * @returns URL of the card art image, or empty string if not found
  */
-export function useCommanderArt(commander: string): string {
-  const cached = getImageCache(commander);
-  const [imgUrl, setImgUrl] = useState<string>(cached?.art || "");
+export function useCommanderArtState(commander: string): CommanderArtState {
+  const cachedSeed = getImageCache(commander)?.art || "";
+  const [state, setState] = useState<CommanderArtState>(() => ({
+    url: cachedSeed,
+    loading: !cachedSeed && !!commander && commander.trim().length >= 3,
+  }));
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!commander || commander.trim().length < 3) {
-      setImgUrl("");
+      setState({ url: "", loading: false });
       return;
     }
 
-    // Use cached value if available
+    // Use cached value if available — already resolved, no shimmer.
     const cached = getImageCache(commander);
     if (cached) {
-      setImgUrl(cached.art);
+      setState({ url: cached.art, loading: false });
       return;
     }
 
-    // Debounce the fetch
+    // Resolving: shimmer through the debounce window and the fetch.
+    setState({ url: "", loading: true });
+
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
 
+    let isMounted = true;
     debounceTimer.current = setTimeout(() => {
-      let isMounted = true;
       fetchCommanderImages(commander).then((result) => {
-        if (isMounted) setImgUrl(result.art);
+        // Settle regardless of hit/miss so a genuine miss stops shimmering.
+        if (isMounted) setState({ url: result.art, loading: false });
       });
-      return () => { isMounted = false; };
     }, 500);
 
     return () => {
+      isMounted = false;
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
     };
   }, [commander]);
 
-  return imgUrl;
+  return state;
+}
+
+export function useCommanderArt(commander: string): string {
+  return useCommanderArtState(commander).url;
 }
 
 /**

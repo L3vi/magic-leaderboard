@@ -1,0 +1,18 @@
+/* The image starts hidden and fades in once loaded, so it doesn't pop in
+   behind the dissolving shimmer. The parent supplies size/object-fit. */
+.shimmer-image {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.shimmer-image.is-loaded {
+  opacity: 1;
+}
+
+/* Fills the (position:relative, sized) parent while the image loads. */
+.shimmer-image-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}

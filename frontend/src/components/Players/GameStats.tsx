@@ -1,7 +1,8 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../../context/SessionContext";
-import { useCommanderArt } from "../../hooks/useCommanderArt";
+import { useCommanderArtState } from "../../hooks/useCommanderArt";
+import ShimmerImage from "../ShimmerImage/ShimmerImage";
 import { getCachedCommanderColors } from "../../utils/commanderColorCache";
 import { preFetchCommanderData } from "../../services/commanderPreFetchService";
 import { formatPlayTime } from "../../utils/formatTime";
@@ -60,7 +61,7 @@ interface CommanderThumbnailProps {
 const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, average, onSelect }) => {
   // Art is fetched for a single card; for a partner deck ("A // B") use the
   // first commander, since the joined name isn't a real card to look up.
-  const imageUrl = useCommanderArt(artName);
+  const { url: imageUrl, loading: imageLoading } = useCommanderArtState(artName);
 
   return (
     <div
@@ -79,9 +80,9 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, 
           : undefined
       }
     >
-      {imageUrl && (
+      {(imageLoading || imageUrl) && (
         <div className="commander-item-image">
-          <img src={imageUrl} alt={name} title={name} />
+          <ShimmerImage src={imageUrl} loading={imageLoading} alt={name} title={name} />
         </div>
       )}
       <div className="commander-item-info">
