@@ -58,12 +58,12 @@
 .color-stat-card.clickable::after {
   content: "›";
   position: absolute;
-  top: 0.4rem;
-  right: 0.65rem;
-  font-size: 1.3rem;
+  top: 0.3rem;
+  right: 0.7rem;
+  font-size: 1.6rem;
   line-height: 1;
   color: var(--text-muted);
-  opacity: 0.65;
+  opacity: 0.85;
   transition: opacity var(--interactive-transition), transform var(--interactive-transition);
 }
 
@@ -82,10 +82,10 @@
   content: "›";
   margin-left: auto;
   padding-left: 0.5rem;
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   line-height: 1;
   color: var(--text-muted);
-  opacity: 0.65;
+  opacity: 0.85;
   flex-shrink: 0;
   transition: opacity var(--interactive-transition), transform var(--interactive-transition);
 }
@@ -98,7 +98,7 @@
   .commander-stat-item.clickable:hover::after,
   .combo-row.clickable:hover::after,
   .combo-list-row.clickable:hover::after {
-    opacity: 0.95;
+    opacity: 1;
     transform: translateX(2px);
   }
 }
