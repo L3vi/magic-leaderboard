@@ -45,6 +45,17 @@
   object-fit: cover;
   top: 0;
   left: 0;
+  /* Fade in once the bytes arrive (the img starts at opacity 0) so it doesn't
+     pop in behind the dissolving shimmer. */
+  transition: opacity 0.25s ease;
+}
+
+/* Shimmer placeholder shown over the slot while the art URL resolves and the
+   image downloads. Sits above the not-yet-loaded (opacity:0) img but below the
+   partner-slash overlay (z-index 2). */
+.commander-thumb-shimmer {
+  z-index: 1;
+  border-radius: 0.4rem;
 }
 
 .partner-img-1 {

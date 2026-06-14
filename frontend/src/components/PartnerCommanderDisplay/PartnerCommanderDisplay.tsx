@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  useCommanderArtWithPreference,
+  useCommanderArtStateWithPreference,
   useCommanderFullImageWithPreference
 } from "../../hooks/useCommanderArt";
+import "../../styles/skeleton.css";
 import "./PartnerCommanderDisplay.css";
 
 interface PartnerCommanderDisplayProps {
@@ -14,6 +15,69 @@ interface PartnerCommanderDisplayProps {
   isWinner?: boolean;
   playerId?: string;
 }
+
+interface CommanderThumbProps {
+  url: string;
+  loading: boolean;
+  name: string;
+  imgClassName?: string; // e.g. "partner-img-1" for the clipped split view
+  onClick?: () => void;
+  clickable?: boolean;
+}
+
+/**
+ * A single commander art slot. Shimmers while the art URL is resolving and
+ * while the image bytes download, swaps in the image once it loads, and falls
+ * back to the "?" placeholder only when there is genuinely no art (resolved
+ * empty, or the image failed to load).
+ */
+const CommanderThumb: React.FC<CommanderThumbProps> = ({
+  url,
+  loading,
+  name,
+  imgClassName = "",
+  onClick,
+  clickable,
+}) => {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  // A new URL means a new image to load — shimmer again until it arrives.
+  useEffect(() => {
+    setLoaded(false);
+    setErrored(false);
+  }, [url]);
+
+  // Resolved with no art (or a broken image) → the question-mark placeholder.
+  if ((!loading && !url) || errored) {
+    return <div className="partner-commander-placeholder">?</div>;
+  }
+
+  const showShimmer = loading || !loaded;
+
+  return (
+    <>
+      {url && (
+        <img
+          src={url}
+          alt={name}
+          title={name}
+          className={`partner-commander-img ${imgClassName}`}
+          style={{ cursor: clickable ? "pointer" : "default", opacity: loaded ? 1 : 0 }}
+          onClick={onClick}
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+        />
+      )}
+      {showShimmer && (
+        <div
+          className={`partner-commander-img commander-thumb-shimmer skeleton ${imgClassName}`}
+          aria-hidden="true"
+        />
+      )}
+    </>
+  );
+};
 
 const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   commanders,
@@ -27,16 +91,16 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   // Calculate responsive size
   const getResponsiveSize = (): string => {
     if (!responsive) return size;
-    
+
     const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
     const is4Plus = playerCount >= 4;
-    
+
     if (isMobile) {
       return is4Plus ? "compact" : "medium";
     }
     return "medium"; // desktop
   };
-  
+
   const finalSize = getResponsiveSize();
 
   // Call a fixed set of hooks unconditionally, before any early return, so the
@@ -44,8 +108,8 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   // hooks no-op on an empty name and on a missing playerId, so covering up to two
   // commanders is safe whether this is a single or a partner display.
   const [cmd1, cmd2] = [commanders?.[0] || "", commanders?.[1] || ""];
-  const art1 = useCommanderArtWithPreference(cmd1, playerId);
-  const art2 = useCommanderArtWithPreference(cmd2, playerId);
+  const art1 = useCommanderArtStateWithPreference(cmd1, playerId);
+  const art2 = useCommanderArtStateWithPreference(cmd2, playerId);
   const full1 = useCommanderFullImageWithPreference(cmd1, playerId);
   const full2 = useCommanderFullImageWithPreference(cmd2, playerId);
 
@@ -55,18 +119,13 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   if (!commanders || commanders.length < 2) {
     return (
       <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
-        {art1 ? (
-          <img
-            src={art1}
-            alt={cmd1}
-            className="partner-commander-img"
-            style={{ cursor: onCardClick ? "pointer" : "default" }}
-            onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1 })}
-            title={cmd1}
-          />
-        ) : (
-          <div className="partner-commander-placeholder">?</div>
-        )}
+        <CommanderThumb
+          url={art1.url}
+          loading={art1.loading}
+          name={cmd1}
+          clickable={!!onCardClick}
+          onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1.url })}
+        />
       </div>
     );
   }
@@ -74,31 +133,22 @@ const PartnerCommanderDisplay: React.FC<PartnerCommanderDisplayProps> = ({
   // Two commanders in a split view
   return (
     <div className={`partner-commander-container size-${finalSize}${isWinner ? " winner" : ""}`}>
-      {art1 ? (
-        <img
-          src={art1}
-          alt={cmd1}
-          className="partner-commander-img partner-img-1"
-          style={{ cursor: onCardClick ? "pointer" : "default" }}
-          onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1 })}
-          title={cmd1}
-        />
-      ) : (
-        <div className="partner-commander-placeholder">?</div>
-      )}
-
-      {art2 ? (
-        <img
-          src={art2}
-          alt={cmd2}
-          className="partner-commander-img partner-img-2"
-          style={{ cursor: onCardClick ? "pointer" : "default" }}
-          onClick={() => onCardClick?.({ name: cmd2, imageUrl: full2 || art2 })}
-          title={cmd2}
-        />
-      ) : (
-        <div className="partner-commander-placeholder">?</div>
-      )}
+      <CommanderThumb
+        url={art1.url}
+        loading={art1.loading}
+        name={cmd1}
+        imgClassName="partner-img-1"
+        clickable={!!onCardClick}
+        onClick={() => onCardClick?.({ name: cmd1, imageUrl: full1 || art1.url })}
+      />
+      <CommanderThumb
+        url={art2.url}
+        loading={art2.loading}
+        name={cmd2}
+        imgClassName="partner-img-2"
+        clickable={!!onCardClick}
+        onClick={() => onCardClick?.({ name: cmd2, imageUrl: full2 || art2.url })}
+      />
 
       <div className="partner-slash" />
     </div>
