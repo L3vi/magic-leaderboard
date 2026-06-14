@@ -260,11 +260,29 @@
 /* Loading skeleton      */
 /* ===================== */
 
+/* Fill the same area the loaded leaderboard occupies (tab-content sizes
+   itself with this exact calc) so the shimmer reads as a full-height
+   placeholder rather than a short stub near the top. */
+.leaderboard-skeleton {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+}
+
 /* Reuse .player-row for box sizing (surface, radius, padding, margin,
-   the 1em-driving font-size) but strip interactivity. */
+   the 1em-driving font-size) but strip interactivity. The rows grow to
+   share the page height evenly so they span top to bottom. */
 .leaderboard-skeleton-row {
   cursor: default;
   justify-content: space-between;
+  flex: 1 1 0;
+}
+
+@media (max-width: 639px) {
+  /* Match tab-content's mobile height (header + bottom nav + safe-area). */
+  .leaderboard-skeleton {
+    min-height: calc(100vh - var(--header-height) - var(--navbar-height) - 4px);
+  }
 }
 
 .leaderboard-skeleton-row:hover {
