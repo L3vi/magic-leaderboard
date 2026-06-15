@@ -40,13 +40,28 @@ interface PageShellProps {
 // overlay→overlay navigation, framer-motion's AnimatePresence keeps the
 // outgoing page mounted through its exit animation, so two PageShells exist
 // at once. A plain add/remove would let the outgoing page's unmount strip the
-// class while the incoming page still needs it. Counting open shells and only
-// removing the class on the last close keeps the lock correct.
+// lock while the incoming page still needs it. Counting open shells and only
+// releasing on the last close keeps the lock correct.
+//
+// "Lock & preserve": rather than saving the home scroll offset and re-applying
+// it on close (race-prone — the save runs on scroll events that may not have
+// fired before navigation), we pin the page exactly where it is. overflow:hidden
+// alone doesn't stop iOS Safari from touch-scrolling the document behind a
+// fixed overlay, so we set position:fixed at the current offset — the page
+// physically can't move. On release we unpin and jump straight back, so the
+// home page is exactly where it was, with nothing to re-apply.
 let scrollLockCount = 0;
+let lockedScrollY = 0;
 const acquireScrollLock = () => {
   if (scrollLockCount === 0) {
+    lockedScrollY = window.scrollY;
     document.documentElement.classList.add("modal-open");
     document.body.classList.add("modal-open");
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
   }
   scrollLockCount += 1;
 };
@@ -55,6 +70,14 @@ const releaseScrollLock = () => {
   if (scrollLockCount === 0) {
     document.documentElement.classList.remove("modal-open");
     document.body.classList.remove("modal-open");
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    // Setting position:fixed reset the document scroll; jump back to where we
+    // were so the page is exactly as the user left it.
+    window.scrollTo(0, lockedScrollY);
   }
 };
 

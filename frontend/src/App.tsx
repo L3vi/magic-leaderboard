@@ -22,7 +22,6 @@ import EditGamePage from "./pages/EditGamePage";
 import { SessionProvider } from "./context/SessionContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import { ArtPreferenceProvider } from "./context/ArtPreferenceContext";
-import { useScrollRestoration } from "./hooks/useScrollRestoration";
 
 // Left-to-right order of the primary tabs — drives swipe neighbors and the
 // slide-transition direction.
@@ -31,11 +30,6 @@ const TAB_ORDER: TabType[] = ['players', 'games', 'stats'];
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // The Players/Games tabs scroll the window (their .tab-content only sets a
-  // min-height, so the document grows). Restore that position on Back so
-  // tapping a stat row and coming back lands you where you were.
-  useScrollRestoration("window");
 
   // Determine active tab from URL path. Detail overlays (e.g. /stats/colors/W)
   // resolve to the tab they sit on top of, so a deep link restores the right tab.
@@ -71,6 +65,10 @@ function MainLayout() {
   const handleTabChange = (tab: TabType) => {
     setDirection(TAB_ORDER.indexOf(tab) >= TAB_ORDER.indexOf(activeTab) ? 1 : -1);
     navigate(`/${tab}`);
+    // Switching tabs is a fresh view — start at the top (the tabs share the
+    // window scroller, so without this the new tab would inherit the old tab's
+    // offset). Overlay round-trips are handled by the body scroll-lock instead.
+    window.scrollTo(0, 0);
   };
 
   // Swipe between adjacent tabs (Players ↔ Games ↔ Stats).
@@ -166,6 +164,13 @@ function App() {
 
   React.useEffect(() => {
     setIsReady(true);
+    // We manage window scroll ourselves (the body scroll-lock preserves the
+    // page under overlays; tab switches reset to top). Disable the browser's
+    // native per-entry restoration so it can't fight us and reapply a stale
+    // offset on Back.
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
   }, []);
 
   return (
