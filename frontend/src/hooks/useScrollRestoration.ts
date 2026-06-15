@@ -81,26 +81,43 @@ export function useScrollRestoration(target: Target, options: Options = {}) {
     eventSource.addEventListener("scroll", save, { passive: true });
 
     // --- Restore: only when we have a non-trivial saved offset for this entry.
-    // Content (Firestore-backed lists) may not be laid out yet, so poll on
-    // animation frames until the scroller is tall enough to reach the target,
-    // capped at ~2s so a now-shorter page never spins. On a Back navigation the
-    // session data is already warm, so this typically lands within a frame.
+    // The page remounts with its content still streaming in — commander art and
+    // color-stat sections above the list resolve async and grow the layout. A
+    // one-shot restore fired against that half-laid-out page lands on a pixel
+    // that maps to a LOWER item, then settles there. So instead we re-apply the
+    // target every frame until the scroll height stops changing (layout
+    // settled), then do a final accurate set. Capped so a page that never
+    // settles can't spin forever. On a warm Back this settles in a few frames.
     const target_ = positions.get(key) ?? 0;
     let done = target_ <= 0;
     let raf = 0;
-    const MAX_FRAMES = 120;
+    let lastHeight = -1;
+    let stableFrames = 0;
+    const MIN_FRAMES = 8; // ride over the first async burst before finalizing
+    const STABLE_NEEDED = 4; // consecutive frames of unchanged height = settled
+    const MAX_FRAMES = 90; // ~1.5s hard cap
 
     const attempt = (frame: number) => {
       if (done) return;
       const node = getNode();
-      if (node && node.scrollHeight - node.clientHeight >= target_) {
-        setScrollTop(target_);
+      if (!node) {
         done = true;
         return;
       }
-      if (frame >= MAX_FRAMES) {
-        // Best effort: clamp to whatever is reachable now.
-        if (node) setScrollTop(target_);
+      const reachable = node.scrollHeight - node.clientHeight >= target_;
+      // Track the target as content streams in (re-applying keeps us pinned to
+      // the right offset even as sections above the target grow).
+      if (reachable) setScrollTop(target_);
+
+      if (node.scrollHeight === lastHeight) stableFrames += 1;
+      else {
+        stableFrames = 0;
+        lastHeight = node.scrollHeight;
+      }
+
+      const settled = frame >= MIN_FRAMES && reachable && stableFrames >= STABLE_NEEDED;
+      if (frame >= MAX_FRAMES || settled) {
+        if (reachable) setScrollTop(target_); // final, against settled layout
         done = true;
         return;
       }
