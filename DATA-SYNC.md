@@ -2,6 +2,53 @@
 
 This explains how data flows between your local files and Firebase, and when to use which command.
 
+## ⚠️ Read this before uploading
+
+`npm run upload-to-firebase` (= `npm run restore`, `backend/src/restore.ts`) is an
+**additive, overwrite** restore:
+
+- Docs present in your file **replace** the live doc. Docs absent from your file
+  are **never deleted**.
+- `players` and `sessions` are written with `{ merge: true }`, so live fields the
+  file doesn't carry (e.g. `commanderArt` preferences) survive.
+- **Game docs are written without `merge`** — a game in your file fully replaces
+  the live game doc of the same id.
+- So uploading a **stale** master file overwrites live games that were entered in
+  the app after your file was last downloaded.
+
+The script protects you, if you let it:
+
+- It downloads the current Firebase state to a timestamped backup under
+  `archived-data/` before writing anything.
+- It prints a diff of what will be overwritten/added and lists live docs absent
+  from the file.
+- `--dry-run` prints that diff and exits **without writing**.
+
+**Safe procedure:**
+
+```bash
+cd backend
+npm run download-from-firebase          # refresh archived-data/firebase-snapshot.json
+npm run restore -- --dry-run            # read the diff. Actually read it.
+npm run restore                         # only if the diff is what you expect
+```
+
+To add just new data without touching anything else, build a minimal file
+(new players + the one new session) and upload only that:
+
+```bash
+cd backend && npm run restore -- --file=/abs/path/to/new-data.json
+```
+
+> **Command location:** `upload-to-firebase`, `restore`, and
+> `download-from-firebase` are **backend** scripts. Run them from `backend/`, or
+> from the repo root with `--prefix backend`. They do not exist as root scripts.
+> Only `backup-firebase`, `sync-data`, `dev`, `build`, and `deploy` are root scripts.
+
+> **Scope:** restore writes `players`, `sessions`, and `sessions/*/games` only.
+> A commander upload never touches `cube-events` (backed up separately in
+> `archived-data/cube-events-snapshot.json`).
+
 ## The Big Picture
 
 ```

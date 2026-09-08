@@ -19,8 +19,27 @@ A web app to track Magic: The Gathering Commander games and player rankings for 
 
 ## Tech Stack
 - **Frontend:** React + TypeScript (bundled with Vite)
-- **Backend:** Express + TypeScript
-- **Database:** JSON files (migrating to SQLite)
+- **Backend:** Express + TypeScript (local API + backup/restore scripts)
+- **Database:** Firebase Firestore (live). The browser reads and writes Firestore
+  directly using anonymous auth; `firestore.rules` validates document shape but
+  cannot prevent a determined visitor from deleting data.
+- **Data archives:** `archived-data/*.json` are backups and the offline fallback
+  bundle, not the live database. See [DATA-SYNC.md](DATA-SYNC.md).
+
+### Firestore collections
+| Collection | Contents |
+|---|---|
+| `players` | Global player docs (shared by both leaderboard styles) |
+| `sessions` | Commander seasons; games live in the `games` subcollection |
+| `cube-events` | Draft/cube data, used by the `draft-variant` branch only |
+
+Commander scoring is 1st=4, 2nd=3, 3rd=2, 4th+=1
+(`frontend/src/services/dataService.ts`). Player game counts are commander-only.
+
+The season (a.k.a. "season selector") is chosen in the header and **persisted to
+`localStorage`** under `magicLeaderboard_activeSession`; a fresh load with no
+stored value falls back to the newest season by `createdAt`
+(`frontend/src/context/SessionContext.tsx`).
 
 ## Project Structure
 ```
@@ -73,6 +92,12 @@ This project uses GitHub Actions to automatically deploy to GitHub Pages.
 ### Current Setup
 - **main**: Production — the Commander leaderboard. Deploys when `main` is pushed.
 - **draft-variant**: The Cube Draft variant. Deploys when `draft-variant` is pushed.
+- **gh-pages**: Build output, published by the workflow. Never edit by hand.
+- **combined-formats**: Local-only, never pushed, paused experiment — see
+  [docs/combined-formats-experiment.md](docs/combined-formats-experiment.md).
+
+Both workflows build on Node 22 via `actions/setup-node@v6` and publish
+`frontend/dist` with `peaceiris/actions-gh-pages@v4`.
 
 **⚠️ Important**: Both branches deploy to the same GitHub Pages URL, so pushing either overwrites what's currently live. The most recent push determines what's publicly visible.
 
