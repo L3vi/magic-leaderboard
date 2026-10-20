@@ -23,7 +23,6 @@ const Logo: React.FC<LogoProps> = ({ className = "logo", style }) => (
     style={style}
     role="img"
     aria-label="Magic Leaderboard Logo"
-    tabIndex={0}
   />
 );
 

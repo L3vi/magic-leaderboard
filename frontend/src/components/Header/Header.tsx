@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Header.css";
 import Logo from "./Logo";
 import NavBar, { type TabType } from "./NavBar";
@@ -35,10 +36,12 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="header" aria-label="Site Header" role="banner">
       <div className="header-main">
-        <a href="/" aria-label="Home" tabIndex={0}>
+        {/* Router Link, not a bare href="/": on GitHub Pages the app lives under
+            /magic-leaderboard/, so a plain "/" leaves the site entirely. */}
+        <Link to="/" aria-label="Home">
           <Logo />
-        </a>
-        <h1 className="header-title" tabIndex={0}>{title}</h1>
+        </Link>
+        <h1 className="header-title">{title}</h1>
         <SeasonSelector />
       </div>
       {/* Desktop Navigation */}

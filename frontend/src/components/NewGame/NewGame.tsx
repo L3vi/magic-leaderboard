@@ -405,8 +405,15 @@ const CommanderAutocomplete: React.FC<CommanderAutocompleteProps> = ({ value, on
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onClick={handleInputClick}
-          placeholder={hasStartedTyping ? "Find commander" : (lastPlayedCommander || "Commander name")}
+          // The suggested name comes from the parent (so a partner field shows
+          // the partner, not the player's primary); fall back to history.
+          placeholder={hasStartedTyping ? "Find commander" : (defaultCommander || lastPlayedCommander || "Commander name")}
           autoComplete="off"
+          // Card names aren't dictionary words: iOS autocorrect turns "Atrax"
+          // into "Attack" and leaves its bubble hanging over the form.
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
           className="field-input"
           style={{ width: '100%' }}
           {...getReferenceProps()}
@@ -483,7 +490,10 @@ interface PlayerField {
   placement: number;
   addNew: boolean;
   newName: string;
+  // The deck this player piloted most recently, offered as the default when the
+  // commander field is left untouched. A partner pair defaults as a pair.
   lastPlayedCommander?: string;
+  lastPlayedPartner?: string;
 }
 
 const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) => {
@@ -496,23 +506,24 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 8;
   const DEFAULT_PLAYERS = 4;
-  // Helper to get the last played commander for a specific player (across all sessions)
-  function getLastPlayedCommander(playerId: string) {
-    if (!playerId) return '';
+  // The deck a player piloted most recently (across all sessions), as
+  // { commander, partner }. Partner order is normalized alphabetically to
+  // match how pairs are stored on submit.
+  function getLastPlayedDeck(playerId: string): { commander: string; partner: string } {
+    if (!playerId) return { commander: '', partner: '' };
     const sortedGames = [...allGamesData].sort((a: any, b: any) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
     for (const game of sortedGames) {
       const playerInGame = (game.players as any[]).find((p: any) => p.playerId === playerId);
-      if (playerInGame) {
-        // The first commander (of a partner pair, or the single commander).
-        const primary = Array.isArray(playerInGame.commander)
-          ? playerInGame.commander[0]
-          : playerInGame.commander;
-        // Skip the "Unknown"/empty placeholder and keep looking back for a
-        // real commander to suggest as the default.
-        if (isRealCommander(primary)) return primary;
-      }
+      if (!playerInGame) continue;
+      const names: string[] = Array.isArray(playerInGame.commander)
+        ? playerInGame.commander
+        : [playerInGame.commander];
+      // Skip the "Unknown"/empty placeholder and keep looking back for a
+      // real commander to suggest as the default.
+      const real = names.filter((n) => isRealCommander(n)).sort();
+      if (real.length > 0) return { commander: real[0], partner: real[1] || '' };
     }
-    return '';
+    return { commander: '', partner: '' };
   }
 
   // Helper to get the 4 players who played least recently
@@ -572,6 +583,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       setPlayerFields(
         Array(DEFAULT_PLAYERS).fill(null).map((_, i) => {
           const playerId = defaultPlayers[i] || '';
+          const deck = getLastPlayedDeck(playerId);
           return {
             playerId,
             commander: '',
@@ -579,7 +591,8 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
             placement: i + 1,
             addNew: false,
             newName: '',
-            lastPlayedCommander: getLastPlayedCommander(playerId)
+            lastPlayedCommander: deck.commander,
+            lastPlayedPartner: deck.partner
           };
         })
       );
@@ -593,11 +606,11 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   useEffect(() => {
     if (initialData) return;
     setPlayerFields(fields =>
-      fields.map(f =>
-        f.playerId
-          ? { ...f, lastPlayedCommander: getLastPlayedCommander(f.playerId) }
-          : f
-      )
+      fields.map(f => {
+        if (!f.playerId) return f;
+        const deck = getLastPlayedDeck(f.playerId);
+        return { ...f, lastPlayedCommander: deck.commander, lastPlayedPartner: deck.partner };
+      })
     );
     // eslint-disable-next-line
   }, [allGamesData]);
@@ -610,7 +623,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     if (playerId === "__add__") {
       setPlayerFields(fields => fields.map((f, i) =>
         i === idx
-          ? { ...f, playerId, addNew: true, newName: '', commander: '', partnerCommander: '', lastPlayedCommander: '' }
+          ? { ...f, playerId, addNew: true, newName: '', commander: '', partnerCommander: '', lastPlayedCommander: '', lastPlayedPartner: '' }
           : f
       ));
       return;
@@ -630,6 +643,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
           addNew: f.addNew,
           newName: f.newName,
           lastPlayedCommander: f.lastPlayedCommander,
+          lastPlayedPartner: f.lastPlayedPartner,
         });
         const here = carry(fields[idx]);
         const there = carry(fields[otherIdx]);
@@ -641,10 +655,10 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
       }
 
       // Otherwise it's a normal pick of a player not yet in the game.
-      const lastCommander = getLastPlayedCommander(playerId);
+      const deck = getLastPlayedDeck(playerId);
       return fields.map((f, i) =>
         i === idx
-          ? { ...f, playerId, addNew: false, lastPlayedCommander: lastCommander, commander: '', partnerCommander: '' }
+          ? { ...f, playerId, addNew: false, lastPlayedCommander: deck.commander, lastPlayedPartner: deck.partner, commander: '', partnerCommander: '' }
           : f
       );
     });
@@ -659,6 +673,13 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
   const handlePartnerCommanderChange = (idx: number, partnerCommander: string) => {
     setPlayerFields(fields => fields.map((f, i) =>
       i === idx ? { ...f, partnerCommander } : f
+    ));
+  };
+
+  // Drop the suggested partner (the player is running the primary alone this time).
+  const handleDismissDefaultPartner = (idx: number) => {
+    setPlayerFields(fields => fields.map((f, i) =>
+      i === idx ? { ...f, partnerCommander: '', lastPlayedPartner: '' } : f
     ));
   };
 
@@ -681,9 +702,10 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
         commander: '',
         partnerCommander: '',
         placement: playerFields.length + 1,
-        addNew: false, 
+        addNew: false,
         newName: '',
-        lastPlayedCommander: ''
+        lastPlayedCommander: '',
+        lastPlayedPartner: ''
       }]);
     }
   };
@@ -716,12 +738,15 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     // Build game data matching the backend structure
     const gameData = {
       players: validPlayers.map(f => {
-        // Use commander if set, otherwise use lastPlayedCommander
+        // Use commander if set, otherwise use lastPlayedCommander — and when the
+        // default is used, the default partner (if any) comes with it.
+        const usingDefault = !f.commander;
         const primaryCommander = f.commander || f.lastPlayedCommander || '';
+        const partnerCommander = f.partnerCommander.trim() || (usingDefault ? f.lastPlayedPartner || '' : '');
         // Use array for partners, string for single commander
-        if (f.partnerCommander) {
+        if (partnerCommander) {
           // Normalize partner order (sort alphabetically for consistency)
-          const partners = [primaryCommander, f.partnerCommander].sort();
+          const partners = [primaryCommander, partnerCommander].sort();
           return {
             playerId: f.playerId,
             commander: partners,
@@ -751,6 +776,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
     const player = players.find(p => p.id === playerId);
     return player ? player.name : playerId;
   };
+
+  // The suggested partner shows (and submits) only while the suggested primary
+  // is still in use — once the player types their own commander, the old
+  // deck's partner no longer applies.
+  const showDefaultPartner = (f: PlayerField) =>
+    !f.commander && !f.partnerCommander && !!f.lastPlayedPartner;
 
   return (
     <>
@@ -841,7 +872,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     }}
                   />
                 </label>
-                {field.partnerCommander && (
+                {(field.partnerCommander || showDefaultPartner(field)) && (
                   <label className="field-label" style={{ position: 'relative', marginTop: '0.5rem' }}>
                     Partner Commander
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -850,11 +881,12 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                         onChange={val => handlePartnerCommanderChange(idx, val)}
                         playerId={field.playerId}
                         games={allGamesData}
+                        defaultCommander={showDefaultPartner(field) ? field.lastPlayedPartner : undefined}
                         onCardClick={setSelectedCard}
                       />
                       <button
                         type="button"
-                        onClick={() => handlePartnerCommanderChange(idx, '')}
+                        onClick={() => handleDismissDefaultPartner(idx)}
                         className="remove-player-btn"
                         title="Remove partner commander"
                       >
@@ -863,7 +895,7 @@ const NewGame: React.FC<NewGameProps> = ({ onSubmit, onCancel, initialData }) =>
                     </div>
                   </label>
                 )}
-                {!field.partnerCommander && (
+                {!field.partnerCommander && !showDefaultPartner(field) && (
                   <button
                     type="button"
                     onClick={() => handlePartnerCommanderChange(idx, ' ')}

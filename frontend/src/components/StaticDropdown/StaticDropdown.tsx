@@ -51,7 +51,7 @@ type StaticDropdownProps = {
    * Optional trailing action rendered inside each option row (left of the selected check).
    * The consumer's element should stopPropagation if it shouldn't also select the row.
    */
-  renderItemAction?: (opt: DropdownOption, isSelected: boolean) => React.ReactNode;
+  renderItemAction?: (opt: DropdownOption, isSelected: boolean, close: () => void) => React.ReactNode;
 };
 
 /**
@@ -191,7 +191,7 @@ const StaticDropdown: React.FC<StaticDropdownProps> = ({
                     {opt.sublabel && <span className="sd-item-sublabel">{opt.sublabel}</span>}
                   </span>
                   {opt.badge && <span className="sd-badge">{opt.badge}</span>}
-                  {renderItemAction?.(opt, isSelected)}
+                  {renderItemAction?.(opt, isSelected, () => setOpen(false))}
                   {isSelected && (
                     <span className="sd-check" aria-hidden="true">
                       ✓

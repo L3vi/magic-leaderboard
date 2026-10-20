@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import { useEscapeKey } from "../../hooks/useEscapeKey";
 import { useScrollRestoration } from "../../hooks/useScrollRestoration";
+import { useSwipeToClose } from "../../hooks/useSwipeToClose";
 import { useNavigationAnimation } from "../../context/NavigationContext";
 import "./PageShell.css";
 
@@ -117,6 +118,10 @@ const PageShell: React.FC<PageShellProps> = ({
 
   useEscapeKey(onClose);
 
+  // Swipe right from the left edge to close (the page follows the finger).
+  const swipeX = useMotionValue(0);
+  useSwipeToClose(shellRef, swipeX, onClose);
+
   // Skip the entrance animation when navigating back (set by NavigationContext).
   const animationProps = skipAnimationRef.current
     ? {
@@ -145,7 +150,10 @@ const PageShell: React.FC<PageShellProps> = ({
     <motion.div
       ref={shellRef}
       className={shellClass}
-      style={backdropTint ? ({ "--backdrop-tint": backdropTint } as React.CSSProperties) : undefined}
+      style={{
+        x: swipeX,
+        ...(backdropTint ? ({ "--backdrop-tint": backdropTint } as React.CSSProperties) : {}),
+      }}
       {...animationProps}
     >
       {backdropImage && (

@@ -131,12 +131,9 @@
   }
 }
 
-/* Desktop floating action button */
+/* Desktop New Game button — in flow at the right end of the nav row. */
 .nav-fab-desktop {
-  position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-  z-index: 1100;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.75rem;

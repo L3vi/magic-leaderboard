@@ -82,13 +82,16 @@ const SeasonSelector: React.FC = () => {
           <ChevronIcon open={open} />
         </>
       )}
-      renderItemAction={(opt, isSelected) =>
+      renderItemAction={(opt, isSelected, close) =>
         isSelected ? (
           <button
             type="button"
             className="sd-edit"
             onClick={(e) => {
+              // Not a selection, so the menu doesn't close itself — close it
+              // here or it stays open on top of the Manage Season page.
               e.stopPropagation();
+              close();
               navigate('/manage-season');
             }}
             aria-label={`Edit ${opt.label}`}

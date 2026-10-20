@@ -57,11 +57,13 @@ interface CommanderThumbnailProps {
   rank: number;
   playCount: number;
   wins: number;
-  average: number;
+  // The smoothed average the list is ranked by — shown so the order reads
+  // correctly (a raw average would look mis-sorted next to it).
+  weightedAverage: number;
   onSelect?: () => void;
 }
 
-const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, average, onSelect }) => {
+const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, rank, playCount, wins, weightedAverage, onSelect }) => {
   // Art is fetched for a single card; for a partner deck ("A // B") use the
   // first commander, since the joined name isn't a real card to look up.
   const { url: imageUrl, loading: imageLoading } = useCommanderArtState(artName);
@@ -90,7 +92,7 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, 
       )}
       <div className="commander-item-info">
         <div className="commander-item-name">{name}</div>
-        <div className="commander-item-stats"><span className="commander-item-metric">{average.toFixed(1)} average points</span> • {playCount} {playCount === 1 ? "play" : "plays"} • {wins} {wins === 1 ? "win" : "wins"}</div>
+        <div className="commander-item-stats"><span className="commander-item-metric">{weightedAverage.toFixed(1)} weighted avg points</span> • {playCount} {playCount === 1 ? "play" : "plays"} • {wins} {wins === 1 ? "win" : "wins"}</div>
       </div>
     </div>
   );
@@ -588,7 +590,8 @@ const GameStats: React.FC = () => {
           {/* nbsp inside each "Nth = P" pair keeps it from splitting across a
               line; breaks happen only at the em dash or between pairs, and
               text-wrap: balance (see CSS) evens out the two lines. */}
-          Ranked by average points per game —{" "}
+          Ranked by weighted average points per game (small samples are pulled
+          toward the league average) —{" "}
           1st&nbsp;=&nbsp;4 · 2nd&nbsp;=&nbsp;3 · 3rd&nbsp;=&nbsp;2 · 4th+&nbsp;=&nbsp;1
         </div>
         {stats.commanderStats.length > 0 ? (
@@ -601,7 +604,7 @@ const GameStats: React.FC = () => {
                 rank={idx + 1}
                 playCount={cmd.playCount}
                 wins={cmd.wins}
-                average={cmd.average}
+                weightedAverage={cmd.weightedAverage}
                 onSelect={() => goToCommander(cmd.name)}
               />
             ))}

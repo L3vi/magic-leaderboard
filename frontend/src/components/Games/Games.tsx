@@ -118,6 +118,9 @@ const Games: React.FC = () => {
             value={filter}
             onChange={e => setFilter(e.target.value)}
             aria-label="Filter games"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
           />
         </div>
       </div>

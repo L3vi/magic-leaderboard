@@ -119,15 +119,16 @@ const NavBar: React.FC<NavBarProps> = ({ activeTab, setActiveTab, onNewGame, hid
 							+
 						</button>
 					)}
+					{/* Desktop New Game button: sits in the nav row beside the tabs
+					    (in flow, not floating) so it can never cover page content. */}
+					{!hideNewGameButton && (
+						<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
+							<span className="nav-fab-icon">+</span>
+							<span className="nav-fab-label">New Game</span>
+						</button>
+					)}
 					<div className="nav-highlight" style={underlineStyle} />
 				</div>
-				{/* Desktop FAB */}
-				{!hideNewGameButton && (
-					<button className="nav-fab-desktop" aria-label="Add New Game" onClick={onNewGame}>
-						<span className="nav-fab-icon">+</span>
-						<span className="nav-fab-label">New Game</span>
-					</button>
-				)}
 			</>
 		);
 };
