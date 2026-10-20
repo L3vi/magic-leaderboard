@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
-import { useSwipeable } from "react-swipeable";
 import { AnimatePresence, motion } from "framer-motion";
 import "./styles/global.css";
 import Header from "./components/Header/Header";
@@ -23,8 +22,7 @@ import { SessionProvider } from "./context/SessionContext";
 import { NavigationProvider } from "./context/NavigationContext";
 import { ArtPreferenceProvider } from "./context/ArtPreferenceContext";
 
-// Left-to-right order of the primary tabs — drives swipe neighbors and the
-// slide-transition direction.
+// Left-to-right order of the primary tabs — drives the slide-transition direction.
 const TAB_ORDER: TabType[] = ['players', 'games', 'stats'];
 
 function MainLayout() {
@@ -71,20 +69,6 @@ function MainLayout() {
     window.scrollTo(0, 0);
   };
 
-  // Swipe between adjacent tabs (Players ↔ Games ↔ Stats).
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => {
-      const next = TAB_ORDER[TAB_ORDER.indexOf(activeTab) + 1];
-      if (next) handleTabChange(next);
-    },
-    onSwipedRight: () => {
-      const prev = TAB_ORDER[TAB_ORDER.indexOf(activeTab) - 1];
-      if (prev) handleTabChange(prev);
-    },
-    trackMouse: true,
-    trackTouch: true,
-  });
-
   // Handler to open new game page
   const handleNewGame = () => {
     if (document.activeElement instanceof HTMLElement) {
@@ -96,7 +80,7 @@ function MainLayout() {
   return (
     <>
       <Header activeTab={activeTab} setActiveTab={handleTabChange} onNewGame={handleNewGame} hideNewGameButton={location.pathname.startsWith('/edit-game/')} />
-      <div {...swipeHandlers} className="tab-content">
+      <div className="tab-content">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
