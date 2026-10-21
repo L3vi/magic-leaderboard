@@ -122,6 +122,30 @@ const PageShell: React.FC<PageShellProps> = ({
   const swipeX = useMotionValue(0);
   useSwipeToClose(shellRef, swipeX, onClose);
 
+  // iOS keyboard: a fixed, full-height overlay keeps its layout-viewport height
+  // when the keyboard shrinks the *visual* viewport, so everything under the
+  // keyboard is unreachable (the page has nothing to scroll). Size the shell to
+  // the visual viewport while it's smaller than the window, so the content
+  // scrolls above the keyboard and the sticky action bar sits on top of it.
+  React.useEffect(() => {
+    const vv = window.visualViewport;
+    const el = shellRef.current;
+    if (!vv || !el) return;
+    const sync = () => {
+      const shrunk = vv.height < window.innerHeight - 1;
+      el.style.top = shrunk ? `${vv.offsetTop}px` : "";
+      el.style.height = shrunk ? `${vv.height}px` : "";
+      el.style.bottom = shrunk ? "auto" : "";
+    };
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+    };
+  }, []);
+
   // Skip the entrance animation when navigating back (set by NavigationContext).
   const animationProps = skipAnimationRef.current
     ? {

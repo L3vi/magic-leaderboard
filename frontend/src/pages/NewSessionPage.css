@@ -67,12 +67,13 @@
   flex: 1;
 }
 
+/* The list flows with the page (no inner scroll box): a nested scroller on a
+   phone is easy to miss and, with the keyboard up, sat mostly behind it. The
+   page itself scrolls and the Create bar stays pinned at the bottom. */
 .player-pick-list {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  max-height: 46vh;
-  overflow-y: auto;
 }
 
 .player-pick {
