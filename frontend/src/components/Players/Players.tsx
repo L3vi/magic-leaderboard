@@ -10,11 +10,12 @@ import { useMediaQuery } from "../../hooks/useMediaQuery";
 type SortKey = "name" | "score" | "average" | "weightedAverage" | "games";
 type SortOrder = "asc" | "desc";
 
+// Key order is column order; PlayerRow renders its cells in the same order.
 const COLUMN_LABELS: Record<SortKey, string> = {
   name: "Name",
-  score: "Score",
   weightedAverage: "Weighted Average",
   average: "Average",
+  score: "Score",
   games: "Games",
 };
 
@@ -28,9 +29,9 @@ const COMPACT_LABELS: Record<SortKey, string> = {
 
 const COLUMN_CLASS: Record<SortKey, string> = {
   name: "player-name",
-  score: "player-score",
   weightedAverage: "weighted-avg-col",
   average: "player-average",
+  score: "player-score",
   games: "games-col",
 };
 
