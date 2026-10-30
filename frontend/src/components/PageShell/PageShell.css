@@ -83,18 +83,12 @@
 }
 
 /* Over a backdrop the header drops the frosted glass band (which read as a
-   light bar cutting across the art). Instead it uses a soft dark fade that
-   blends into the art's own top shading — so the image looks continuous, the
-   title/Back stay legible (helped by a text shadow), and content still fades
-   out cleanly under the header on scroll rather than colliding with it. */
+   light bar cutting across the art). Instead it uses the page's dark
+   background, which blends into the art's own top shading — so the image
+   looks continuous, the title/Back stay legible (helped by a text shadow), and
+   content still fades out cleanly under the header on scroll. */
 .page-shell--has-backdrop .page-shell__header {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--background) 92%, transparent) 0%,
-    color-mix(in srgb, var(--background) 88%, transparent) 60%,
-    color-mix(in srgb, var(--background) 55%, transparent) 85%,
-    transparent 100%
-  );
+  --header-scrim: var(--background);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85), 0 0 2px rgba(0, 0, 0, 0.6);
@@ -118,15 +112,12 @@
   /* Transparent header, matching the transparent form footer (FormActions): the
      Back button and title sit on the page with no opaque bar or border. Because
      the header is sticky *inside* the scroll region (content passes under it),
-     a top-anchored scrim of the page color fades that content out as it scrolls
-     up — so there's no hard bar, but the title/Back stay legible. At rest (top
-     of page) the scrim matches the page, so the header reads as transparent. */
-  background: linear-gradient(
-    to bottom,
-    var(--surface) 0%,
-    var(--surface) 70%,
-    color-mix(in srgb, var(--surface) 0%, transparent) 100%
-  );
+     it's painted in the page color with a short fade below (::after), so
+     scrolled content fades out with no hard bar and the title/Back stay
+     legible. At rest the scrim matches the page, so the header reads as
+     transparent. */
+  --header-scrim: var(--surface);
+  background: var(--header-scrim);
   padding: 1rem 1.5rem;
   /* Home-screen app: the page starts under the status bar / notch. */
   padding-top: calc(1rem + env(safe-area-inset-top, 0px));
@@ -135,6 +126,24 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+/* The fade lives below the header, not inside it: an in-header fade sat behind
+   Back and the title once the header grew by the status-bar inset, so scrolled
+   content showed through them. */
+.page-shell__header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 1.25rem;
+  background: linear-gradient(
+    to bottom,
+    var(--header-scrim),
+    color-mix(in srgb, var(--header-scrim) 0%, transparent)
+  );
+  pointer-events: none;
 }
 
 .page-shell__header h1 {
