@@ -13,6 +13,13 @@
     <meta name="apple-mobile-web-app-title" content="Magic Leaderboard" />
     <meta name="theme-color" content="#0f172a" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      // Flag the home-screen app before first paint. display-mode alone isn't
+      // trusted on iOS, hence navigator.standalone too (see theme.css).
+      if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) {
+        document.documentElement.classList.add("standalone");
+      }
+    </script>
 
     <!-- Favicon (version query busts the sticky iOS Safari favicon cache) -->
     <link rel="icon" type="image/svg+xml" href="/logo.svg?v=2" />
