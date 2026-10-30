@@ -13,6 +13,13 @@
     <meta name="apple-mobile-web-app-title" content="Magic Leaderboard" />
     <meta name="theme-color" content="#0f172a" />
     <link rel="manifest" href="/magic-leaderboard/manifest.webmanifest" />
+    <script>
+      // Flag the home-screen app before first paint. display-mode alone isn't
+      // trusted on iOS, hence navigator.standalone too (see theme.css).
+      if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) {
+        document.documentElement.classList.add("standalone");
+      }
+    </script>
 
     <!-- Favicon (version query busts the sticky iOS Safari favicon cache) -->
     <link rel="icon" type="image/svg+xml" href="/magic-leaderboard/logo.svg?v=2" />
@@ -33,8 +40,8 @@
     <meta name="twitter:title" content="Magic Leaderboard - Magic: The Gathering Rankings" />
     <meta name="twitter:description" content="Track Magic: The Gathering game results and player rankings for casual tournaments." />
     <meta name="twitter:image" content="https://l3vi.github.io/magic-leaderboard/og-image.png?v=2" />
-    <script type="module" crossorigin src="/magic-leaderboard/assets/index-DU8-MWQ1.js"></script>
-    <link rel="stylesheet" crossorigin href="/magic-leaderboard/assets/index-Cyz7rxfx.css">
+    <script type="module" crossorigin src="/magic-leaderboard/assets/index-CUgHYhKb.js"></script>
+    <link rel="stylesheet" crossorigin href="/magic-leaderboard/assets/index-D4PHgf-R.css">
   </head>
   <body>
     <div id="root"></div>
