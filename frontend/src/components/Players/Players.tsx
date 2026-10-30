@@ -1,10 +1,11 @@
-import React, { useMemo, useRef } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PlayerRow, { Player } from "./PlayerRow";
 import "./Players.css";
 import "../../styles/skeleton.css";
 import { usePlayerScores } from "../../hooks/useApi";
 import { useSession } from "../../context/SessionContext";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 type SortKey = "name" | "score" | "average" | "weightedAverage" | "games";
 type SortOrder = "asc" | "desc";
@@ -15,6 +16,14 @@ const COLUMN_LABELS: Record<SortKey, string> = {
   weightedAverage: "Weighted Average",
   average: "Average",
   games: "Games",
+};
+
+const COMPACT_LABELS: Record<SortKey, string> = {
+  name: "Name",
+  score: "Pts",
+  weightedAverage: "W.Avg",
+  average: "Avg",
+  games: "GP",
 };
 
 const COLUMN_CLASS: Record<SortKey, string> = {
@@ -36,9 +45,28 @@ const Players: React.FC = () => {
   const [sortKey, setSortKey] = React.useState<SortKey>("weightedAverage");
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc");
   const headerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [listTop, setListTop] = useState<number>();
   const navigate = useNavigate();
   const scoresData = usePlayerScores();
   const { loading } = useSession();
+  const isCompact = useMediaQuery("(max-width: 639px)");
+
+  // Compact rows are sized so 8 fill the screen below the list (Players.css),
+  // which needs the list's page offset. offsetTop, not getBoundingClientRect,
+  // so the value doesn't depend on scroll position.
+  useLayoutEffect(() => {
+    const measure = () => {
+      let top = 0;
+      for (let el: HTMLElement | null = listRef.current; el; el = el.offsetParent as HTMLElement | null) {
+        top += el.offsetTop;
+      }
+      if (listRef.current) setListTop(top);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [loading]);
 
   // Memoize sorting for performance
   const sortedPlayers = useMemo(() => {
@@ -103,21 +131,17 @@ const Players: React.FC = () => {
 
   // The column headers render in both states so the table's chrome is in place
   // before data arrives; only the rows swap from shimmer to real. The shimmer
-  // rows reuse the real column classes, so they line up under the headers and
-  // share the compact-screen horizontal scroll instead of being a fixed-width
-  // stub next to a wider header.
+  // rows reuse the real column classes, so they line up under the headers
+  // instead of being a fixed-width stub next to a wider header.
   return (
     <section
       className="leaderboard main-section"
       role="table"
       aria-busy={loading || undefined}
       aria-label={loading ? "Loading players" : undefined}
+      data-sort={sortKey}
+      style={listTop !== undefined ? ({ "--list-top": `${listTop}px` } as React.CSSProperties) : undefined}
     >
-      {/* On compact screens this region scrolls horizontally so every column
-          (Average, Games included) stays reachable without rotating the device.
-          The Name column is pinned left; a right-edge fade hints at more. */}
-      <div className="leaderboard-scroll-region">
-        <div className="leaderboard-scroll" role="presentation">
       <div className="leaderboard-header" role="row" ref={headerRef}>
         {(Object.keys(COLUMN_LABELS) as SortKey[]).map((key) => (
           <span
@@ -137,7 +161,7 @@ const Players: React.FC = () => {
             onClick={() => handleSort(key)}
             onKeyDown={(e) => handleHeaderKeyDown(e, key)}
           >
-            {COLUMN_LABELS[key]}
+            {isCompact ? COMPACT_LABELS[key] : COLUMN_LABELS[key]}
             <span
               className="sort-arrow"
               style={{
@@ -151,7 +175,7 @@ const Players: React.FC = () => {
         ))}
       </div>
       {loading ? (
-        <div className="leaderboard-list leaderboard-skeleton" role="presentation">
+        <div className="leaderboard-list leaderboard-skeleton" role="presentation" ref={listRef}>
           {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
             <div className="player-row leaderboard-skeleton-row" key={i}>
               {(Object.keys(COLUMN_CLASS) as SortKey[]).map((key) => (
@@ -167,7 +191,7 @@ const Players: React.FC = () => {
           ))}
         </div>
       ) : (
-      <div className="leaderboard-list" role="rowgroup">
+      <div className="leaderboard-list" role="rowgroup" ref={listRef}>
         {sortedPlayers.map((playerScore, index) => (
           <PlayerRow
             key={playerScore.name}
@@ -184,9 +208,6 @@ const Players: React.FC = () => {
         ))}
       </div>
       )}
-        </div>
-        <div className="leaderboard-scroll-fade" aria-hidden="true" />
-      </div>
     </section>
   );
 };

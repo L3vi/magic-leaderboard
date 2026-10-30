@@ -167,146 +167,75 @@
 }
 
 /* ============================================================= */
-/* Compact-screen horizontal scroll with a pinned Name column.   */
-/* Instead of hiding Average + Games on phones, keep every column */
-/* and let the table scroll sideways; Name stays frozen on the    */
-/* left so each row is always identifiable, and a right-edge fade */
-/* signals there's more to swipe to.                              */
+/* Compact phone table: every column fits, no sideways scroll.   */
 /* ============================================================= */
 
-/* The region is the positioning context for the fade overlay so the fade
-   covers only the header+list, not the GameStats below. */
-.leaderboard-scroll-region {
-  position: relative;
-}
-
 @media (max-width: 639px) {
-  .leaderboard-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-
-  /* Grow header + each row to their natural width so the extra columns push
-     past the viewport edge and become scrollable, while never shrinking below
-     the full viewport width. */
   .leaderboard-header,
-  .leaderboard-scroll .player-row {
-    width: max-content;
-    min-width: 100%;
+  .player-row {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    /* No gap: each stat column already has spare room around its centered
+       number, and the width is needed for Name's padding at 360px. */
+    gap: 0;
   }
 
-  /* Header and row cells share these column classes, so pinning one explicit
-     width per column here keeps the two perfectly aligned as they scroll —
-     otherwise the header (sized to its labels) and rows (sized by flex) drift
-     to different total widths and the columns stop lining up. */
-  .leaderboard-scroll .leaderboard-col {
-    flex: 0 0 auto;
+  /* Size rows so 8 exactly fill the screen from the top of the list to the
+     bottom edge, so the first view looks full. The floating nav covers the
+     last row; .tab-content's bottom padding lets it scroll clear. The 5px is
+     the collapsed gap between rows; the two extra 5px in --rows-space are the
+     first row's top margin and the last row's bottom margin. svh, not vh/dvh,
+     so rows don't resize as iOS Safari's toolbar shows and hides.
+     --list-top is measured in Players.tsx; 107px is its value on an iPhone
+     before the first measure lands. */
+  .player-row {
+    --rows-space: calc(100svh - var(--list-top, 107px) - 10px);
+    --row-h: clamp(48px, calc((var(--rows-space) + 5px) / 8 - 5px), 108px);
     box-sizing: border-box;
+    min-height: var(--row-h);
+    /* Width is the limit, not row height: 6.6vw keeps "2.85" inside its
+       column and a 6-letter name inside Name down to a 360px screen. */
+    font-size: clamp(1.1rem, min(var(--row-h) * 0.42, 6.6vw), 1.75rem);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
   }
-  .leaderboard-scroll .player-score  { width: 92px;  min-width: 92px;  }
-  .leaderboard-scroll .player-average { width: 100px; min-width: 100px; }
-  .leaderboard-scroll .weighted-avg-col { width: 128px; min-width: 128px; }
-  .leaderboard-scroll .games-col     { width: 92px;  min-width: 92px;  }
 
-  /* The row's left inset (medal border + horizontal padding) moves onto the
-     pinned Name cell so it travels with the name instead of scrolling away,
-     and the vertical padding moves onto every cell so the stretched Name cell
-     spans the full row height and can paint that medal bar edge to edge. */
-  .leaderboard-scroll .player-row {
-    padding: 0 1vw 0 0;
-    border-left: 0;
+  /* Scales with width like the rows; "W.Avg" + arrow + spacer is the widest
+     label and fills its column down to a 360px screen. */
+  .leaderboard-header {
+    font-size: clamp(0.75rem, 3.4vw, 1rem);
   }
-  .leaderboard-scroll .leaderboard-header {
+  .leaderboard-header > span {
     padding-left: 0;
-    border-left: 0;
-  }
-  .leaderboard-scroll .player-row > .leaderboard-col {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-right: 0;
+    gap: 0;
   }
 
-  .leaderboard-scroll .leaderboard-col.player-name {
-    /* Pin the name column while the rest scrolls under it. `left` equals the
-       5px row/header margin — exactly where the cell rests — so sticking never
-       nudges it sideways. */
-    position: sticky;
-    left: 5px;
-    z-index: 2;
-    width: 120px;
-    min-width: 120px;
-    background: var(--surface);
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-    border-left: 3px solid transparent;
-    padding-left: calc(1vw + 0.5rem);
-    border-radius: 0.5rem 0 0 0.5rem;
-    /* Frozen-pane edge: paint the page color over the 5px margin gap and behind
-       the rounded corners so scrolled content can't show through either.
-       -13px = 5px gap + 8px corner radius. A shadow (not a ::before) because the
-       row cell's overflow: hidden would clip a pseudo-element, and a shadow
-       never paints over the medal border. */
-    box-shadow: -13px 0 0 var(--background);
+  /* An even table: four equal stat columns, Name a little wider. flex-basis 0
+     so header and row cells get identical widths regardless of content. */
+  .leaderboard-col,
+  .player-row > span {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
   }
-  .leaderboard-scroll .player-row.rank-1 .player-name { border-left-color: #fbbf24; }
-  .leaderboard-scroll .player-row.rank-2 .player-name { border-left-color: #cbd5e1; }
-  .leaderboard-scroll .player-row.rank-3 .player-name { border-left-color: #cd7f32; }
-
-  /* Header's pinned Name sits over the page background, not a row surface.
-     Needs the extra .leaderboard-col specificity to beat the generic sticky
-     rule above (which paints every pinned Name with --surface); otherwise the
-     header Name shows as a lighter chip while the other headers are clear. */
-  .leaderboard-header .leaderboard-col.player-name {
-    background: var(--background);
-  }
-  /* The header's underline sits below this cell, in the header's 4px bottom
-     padding + 1px border, so the shadow needs 5px spread to cover it in the gap.
-     -125px (120px width + 5px gap) puts the shadow's right edge exactly at the
-     gap so it doesn't also hide the underline under Name itself. Rows can't use
-     spread: it would reach into the neighbouring row. */
-  .leaderboard-scroll .leaderboard-header .leaderboard-col.player-name {
-    box-shadow: -125px 0 0 5px var(--background);
+  /* The padding keeps names off the podium rows' medal bar. */
+  .leaderboard-col.player-name {
+    flex-grow: 1.4;
+    padding-left: 0.5rem;
   }
 
-  /* Podium rows keep their original medal-colored left border (from
-     PlayerRow.css). For the tint, use a UNIFORM (flat) medal wash across the
-     whole row rather than a left-to-right fade: the sticky Name cell must paint
-     its own opaque background, and a fading gradient anchored to the Name stops
-     matching the row once you scroll (the row's tint under that spot fades away,
-     the Name's doesn't → a visible box). A flat tint is identical everywhere, so
-     the Name always matches the row at any scroll position. Same flat value on
-     the row and the Name; surface base keeps it opaque. */
-  .leaderboard-scroll .player-row.rank-1,
-  .leaderboard-scroll .player-row.rank-1 .player-name {
-    background: linear-gradient(rgba(251, 191, 36, 0.10), rgba(251, 191, 36, 0.10)), var(--surface);
+  /* The column you're sorted by is the headline number; the rest step back. */
+  .player-row > .leaderboard-col:not(.player-name) {
+    color: var(--text-muted);
   }
-  .leaderboard-scroll .player-row.rank-2,
-  .leaderboard-scroll .player-row.rank-2 .player-name {
-    background: linear-gradient(rgba(203, 213, 225, 0.10), rgba(203, 213, 225, 0.10)), var(--surface);
-  }
-  .leaderboard-scroll .player-row.rank-3,
-  .leaderboard-scroll .player-row.rank-3 .player-name {
-    background: linear-gradient(rgba(205, 127, 50, 0.10), rgba(205, 127, 50, 0.10)), var(--surface);
-  }
-
-  /* Right-edge fade hint — purely decorative, never intercepts taps. */
-  .leaderboard-scroll-fade {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 28px;
-    pointer-events: none;
-    background: linear-gradient(to left, var(--background), transparent);
-    z-index: 3;
-  }
-}
-
-/* No horizontal scroll or fade once every column fits natively. */
-@media (min-width: 640px) {
-  .leaderboard-scroll-fade {
-    display: none;
+  .leaderboard[data-sort="score"] .player-row > .player-score,
+  .leaderboard[data-sort="weightedAverage"] .player-row > .weighted-avg-col,
+  .leaderboard[data-sort="average"] .player-row > .player-average,
+  .leaderboard[data-sort="games"] .player-row > .games-col {
+    color: var(--foreground);
+    font-weight: 600;
   }
 }
 /* ===================== */
@@ -336,6 +265,19 @@
   /* Match tab-content's mobile height (header + bottom nav + safe-area). */
   .leaderboard-skeleton {
     min-height: calc(100vh - var(--header-height) * 2 - 0.5rem - 1px - var(--navbar-height) - 4px);
+  }
+  /* Real phone rows have a fixed height (--row-h); growing would make the
+     shimmer rows a different size from the rows that replace them. At that
+     height 7 overrun the area above the nav, so clip rather than scroll, and
+     fade the clip so the cut-off row doesn't end in a hard edge. */
+  .leaderboard-skeleton {
+    max-height: calc(100vh - var(--header-height) * 2 - 0.5rem - 1px - var(--navbar-height) - 4px);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 3rem), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 3rem), transparent);
+  }
+  .leaderboard-skeleton-row {
+    flex: none;
   }
 }
 
