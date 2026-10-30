@@ -170,8 +170,9 @@ body {
 /* Home-screen app on iOS 26 (WebKit bug 301994): iOS blurs the top edge of
    the page, which landed on the header. Push headers down past it, on top of
    whatever inset iOS reports. On a phone 3.5rem fixed it but left too much
-   space; 0.5rem is being tried. An 8px solid strip at the top did not help.
+   space and 0.5rem was not enough; 1rem is being tried. An 8px solid strip at
+   the top did not help.
    `standalone` is set in index.html. */
 html.standalone {
-  --top-inset: calc(env(safe-area-inset-top, 0px) + 0.5rem);
+  --top-inset: calc(env(safe-area-inset-top, 0px) + 1rem);
 }
