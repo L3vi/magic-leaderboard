@@ -57,22 +57,6 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
-/* Home-screen app on iOS 26 blurs the top of the page, which lands on the
-   header (WebKit bug 301994). Safari is reported to style its bars from a
-   solid element (6px+) pinned to the top; offer it one. Under the overlays
-   (z-index 100). `standalone` is set in index.html. */
-html.standalone body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: var(--background);
-  z-index: 50;
-  pointer-events: none;
-}
-
 /* ===================== */
 /* Utility Classes       */
 /* ===================== */
