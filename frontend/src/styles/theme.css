@@ -167,12 +167,11 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
-/* Home-screen app on iOS 26 (WebKit bug 301994): iOS blurs roughly the first
-   50px of the page, which landed on the header. Push headers down past it, on
-   top of whatever inset iOS reports. 3.5rem: in a phone screenshot the column
-   labels, 56px below the blurred title, were sharp, and on a phone this fixed
-   it where an 8px solid strip at the top did not. `standalone` is set in
-   index.html. */
+/* Home-screen app on iOS 26 (WebKit bug 301994): iOS blurs the top edge of
+   the page, which landed on the header. Push headers down past it, on top of
+   whatever inset iOS reports. On a phone 3.5rem fixed it but left too much
+   space; 0.5rem is being tried. An 8px solid strip at the top did not help.
+   `standalone` is set in index.html. */
 html.standalone {
-  --top-inset: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+  --top-inset: calc(env(safe-area-inset-top, 0px) + 0.5rem);
 }
