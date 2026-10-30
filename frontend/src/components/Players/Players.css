@@ -242,17 +242,12 @@
     border-left: 3px solid transparent;
     padding-left: calc(1vw + 0.5rem);
     border-radius: 0.5rem 0 0 0.5rem;
-  }
-  /* Scrolled content would otherwise peek through the 5px margin gap to the
-     left of the pinned cell; paint that gap in the page color. */
-  .leaderboard-scroll .leaderboard-col.player-name::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -8px; /* 5px margin + the 3px border this cell draws itself */
-    width: 8px;
-    background: var(--background);
+    /* Frozen-pane edge: paint the page color over the 5px margin gap and behind
+       the rounded corners so scrolled content can't show through either.
+       -13px = 5px gap + 8px corner radius. A shadow (not a ::before) because the
+       row cell's overflow: hidden would clip a pseudo-element, and a shadow
+       never paints over the medal border. */
+    box-shadow: -13px 0 0 var(--background);
   }
   .leaderboard-scroll .player-row.rank-1 .player-name { border-left-color: #fbbf24; }
   .leaderboard-scroll .player-row.rank-2 .player-name { border-left-color: #cbd5e1; }
@@ -264,6 +259,14 @@
      header Name shows as a lighter chip while the other headers are clear. */
   .leaderboard-header .leaderboard-col.player-name {
     background: var(--background);
+  }
+  /* The header's underline sits below this cell, in the header's 4px bottom
+     padding + 1px border, so the shadow needs 5px spread to cover it in the gap.
+     -125px (120px width + 5px gap) puts the shadow's right edge exactly at the
+     gap so it doesn't also hide the underline under Name itself. Rows can't use
+     spread: it would reach into the neighbouring row. */
+  .leaderboard-scroll .leaderboard-header .leaderboard-col.player-name {
+    box-shadow: -125px 0 0 5px var(--background);
   }
 
   /* Podium rows keep their original medal-colored left border (from
