@@ -9,6 +9,11 @@ import { formatPlayTime } from "../../utils/formatTime";
 import { scorePlacement } from "../../services/dataService";
 import { COLOR_MAP, COLOR_HEX, TIER_LABELS, colorKey, COMBO_NAMES } from "../../utils/colorCombos";
 import { encodeCommanderKey } from "../../utils/commanderKey";
+import GameStatsSkeleton, {
+  ColorCardsSkeleton,
+  ComboSectionsSkeleton,
+  StatCardSkeleton,
+} from "./GameStatsSkeleton";
 import "./GameStats.css";
 
 // How many combinations to show before the "show all" toggle.
@@ -99,21 +104,34 @@ const CommanderThumbnail: React.FC<CommanderThumbnailProps> = ({ name, artName, 
 };
 const GameStats: React.FC = () => {
   const navigate = useNavigate();
-  const { games } = useSession();
+  const { games, loading } = useSession();
   // Bump on each prefetch completion so the stats memo recomputes with the
   // now-populated color cache. A counter (not a boolean) is required so a
   // season switch — which fetches a fresh batch of colors — still triggers a
   // recompute; a one-way boolean would no-op on every season after the first.
   const [colorVersion, setColorVersion] = useState(0);
+  // True once this season's color prefetch has finished (or failed). Until
+  // then the color sections shimmer instead of showing zeros and then popping
+  // in; a season whose colors are already cached computes non-empty tiers on
+  // the first pass, so it never shows the shimmer at all.
+  const [colorsSettled, setColorsSettled] = useState(false);
 
   // Pre-fetch art + colors for this season's commanders in one batched pass
   // (Scryfall /cards/collection). Cheap no-op when everything is already cached.
   useEffect(() => {
     if (games.length === 0) return;
+    let cancelled = false;
+    setColorsSettled(false);
+    const settle = () => {
+      if (!cancelled) setColorsSettled(true);
+    };
     // Bump on each progress tick (per collection batch + after the fallback), not
     // just on final resolution — so colors paint as soon as the bulk lands rather
     // than waiting on the slow serialized fallback, which can stall on mobile.
-    preFetchCommanderData(games, () => setColorVersion((v) => v + 1));
+    preFetchCommanderData(games, () => setColorVersion((v) => v + 1)).then(settle, settle);
+    return () => {
+      cancelled = true;
+    };
   }, [games]);
 
   const stats = useMemo(() => {
@@ -475,6 +493,14 @@ const GameStats: React.FC = () => {
     };
   }, [games, colorVersion]);
 
+  // While the season loads, assume there will be data: paint the real layout
+  // with shimmer values so a populated season fills in place rather than
+  // swapping out an empty state. (games still holds the previous season's
+  // list during a switch, so this also keeps stale figures from flashing.)
+  if (loading) {
+    return <GameStatsSkeleton />;
+  }
+
   // Inviting empty state instead of a wall of zeros + "N/A" badges when the
   // season has no games yet. Points at the existing New Game button rather than
   // duplicating it with its own CTA.
@@ -493,6 +519,11 @@ const GameStats: React.FC = () => {
       </div>
     );
   }
+
+  // Colors arrive from Scryfall after the games do. Until the first batch lands
+  // the color-derived sections would read as all zeros (and the combination
+  // sections would be hidden, then appear), so shimmer them instead.
+  const colorsPending = !colorsSettled && stats.colorCombos.tiers.length === 0;
 
   const goToCommander = (name: string) =>
     navigate(`/stats/commanders/${encodeCommanderKey(name)}`);
@@ -618,6 +649,13 @@ const GameStats: React.FC = () => {
       <div className="stats-section">
         <h3 className="section-heading">Colors</h3>
         <div className="stats-grid">
+          {colorsPending ? (
+            <>
+              <StatCardSkeleton label="Most Common Color" valueClass="stat-skeleton-value--badge" subtext />
+              <StatCardSkeleton label="Top Combination" subtext />
+            </>
+          ) : (
+          <>
           <div
             className="stat-card clickable"
             onClick={() => navigate(`/stats/colors/${stats.mostCommonColorCode}`)}
@@ -655,9 +693,14 @@ const GameStats: React.FC = () => {
               <div className="stat-subtext">{stats.topCombo.winRate}% win rate over {stats.topCombo.plays} {stats.topCombo.plays === 1 ? "play" : "plays"}</div>
             </div>
           )}
+          </>
+          )}
         </div>
 
         <div className="section-subheading">Win Rate by Color</div>
+        {colorsPending ? (
+          <ColorCardsSkeleton />
+        ) : (
         <div className="color-stats-simple">
           {stats.colorStats.length > 0 ? (
             stats.colorStats.map((color, idx) => {
@@ -687,7 +730,9 @@ const GameStats: React.FC = () => {
             <div>No color data</div>
           )}
         </div>
+        )}
 
+        {colorsPending && <ComboSectionsSkeleton />}
         {stats.colorCombos.tiers.length > 0 && (
           <>
             <div className="section-subheading">By Number of Colors</div>

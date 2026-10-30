@@ -65,37 +65,10 @@ const Games: React.FC = () => {
     return games.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
   }, [allGames, filter, playersData]);
 
-  // Show loading state: shimmer placeholder cards that mirror a real game
-  // row (date line + a strip of commander tiles) so the list keeps its
-  // shape while data loads in.
-  if (gamesLoading || playersLoading) {
-    return (
-      <section
-        className="game-history main-section"
-        aria-busy="true"
-        aria-label="Loading games"
-      >
-        <div className="game-history-list" role="presentation">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div className="game-row game-row-skeleton" key={i}>
-              <span className="skeleton skeleton-bar game-skeleton-date" />
-              <div className="game-skeleton-players">
-                {Array.from({ length: 4 }).map((_, j) => (
-                  <div className="game-skeleton-player" key={j}>
-                    <span className="skeleton game-skeleton-img" />
-                    <span className="skeleton skeleton-bar game-skeleton-label" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
+  const isLoading = gamesLoading || playersLoading;
 
   // Show error state
-  if (gamesError) {
+  if (!isLoading && gamesError) {
     return (
       <section className="game-history main-section">
         <div style={{ color: 'red' }}>Error loading games: {gamesError}</div>
@@ -108,7 +81,11 @@ const Games: React.FC = () => {
   }
 
   return (
-    <section className="game-history main-section">
+    <section
+      className="game-history main-section"
+      aria-busy={isLoading || undefined}
+      aria-label={isLoading ? "Loading games" : undefined}
+    >
       <div className="game-history-header">
         <div className="game-history-controls">
           <input
@@ -124,6 +101,26 @@ const Games: React.FC = () => {
           />
         </div>
       </div>
+      {isLoading ? (
+        // Shimmer placeholder cards that mirror a real game row (date line +
+        // a strip of commander tiles). They sit under the always-rendered
+        // filter header so the list keeps its shape while data loads in.
+        <div className="game-history-list" role="presentation">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div className="game-row game-row-skeleton" key={i}>
+              <span className="skeleton skeleton-bar game-skeleton-date" />
+              <div className="game-skeleton-players">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <div className="game-skeleton-player" key={j}>
+                    <span className="skeleton game-skeleton-img" />
+                    <span className="skeleton skeleton-bar game-skeleton-label" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
       <div className="game-history-list" role="rowgroup">
         {filteredGames.length === 0 ? (
           <div className="game-history-empty">No game history found.</div>
@@ -157,6 +154,7 @@ const Games: React.FC = () => {
           })
         )}
       </div>
+      )}
     </section>
   );
 };

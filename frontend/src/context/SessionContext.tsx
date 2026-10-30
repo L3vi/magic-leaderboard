@@ -21,6 +21,9 @@ interface SessionContextType {
   allSessions: string[];
   // Rich metadata for each session (newest first), for the season selector
   sessions: SessionListItem[];
+  // False until the first session-list fetch has settled (success, empty or
+  // error), so the UI can tell "not loaded yet" from "there are no seasons".
+  sessionsLoaded: boolean;
   // Re-fetch the session list (e.g. after creating a new session)
   reloadSessions: () => Promise<void>;
   // Shared data - single source of truth for all components
@@ -48,6 +51,7 @@ const ACTIVE_SESSION_KEY = 'magicLeaderboard_activeSession';
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeSession, setActiveSessionState] = useState<string>('');
   const [sessions, setSessions] = useState<SessionListItem[]>([]);
+  const [sessionsLoaded, setSessionsLoaded] = useState(false);
   const allSessions = sessions.map((s) => s.id);
 
   // Public setter: persist the user's choice so it survives a reload.
@@ -105,6 +109,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setActiveSessionState(restored ?? fallback);
       } catch (err) {
         console.warn('Could not fetch sessions:', err);
+      } finally {
+        if (!cancelled) setSessionsLoaded(true);
       }
     };
 
@@ -292,6 +298,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setActiveSession,
         allSessions,
         sessions,
+        sessionsLoaded,
         reloadSessions,
         players,
         games,

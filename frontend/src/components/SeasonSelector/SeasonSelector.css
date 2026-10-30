@@ -47,6 +47,19 @@
   transform: rotate(180deg);
 }
 
+/* Loading stand-in: same pill box as the trigger (so the header row keeps its
+   height) with a shimmer bar where the season name goes. Pushed right like the
+   real trigger, which gets its margin from .header-main .static-dropdown. */
+.season-switch--placeholder {
+  margin-left: auto;
+  cursor: default;
+}
+.season-switch__placeholder-bar {
+  display: block;
+  width: 5.5rem;
+  height: 1em;
+}
+
 /* Desktop: a touch more breathing room and a slightly larger trigger */
 @media (min-width: 640px) {
   .season-switch {

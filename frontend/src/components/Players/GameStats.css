@@ -64,6 +64,134 @@
   line-height: 1.5;
 }
 
+/* Loading shimmer stand-ins (see GameStatsSkeleton.tsx). Each bar is sized
+   to the text it replaces so the card keeps the loaded height. */
+.stat-skeleton-value {
+  display: block;
+  width: 3.5rem;
+  height: 2.1rem; /* .stat-value: 1.75rem × 1.2 line-height */
+  margin: 0 auto;
+}
+
+.stat-skeleton-value--name {
+  width: 70%;
+  height: 1.5rem; /* .stat-value.commander-name: 1.25rem × 1.2 */
+}
+
+.stat-skeleton-value--badge {
+  width: 5.5rem;
+  height: 2.8rem; /* .color-badge: 1.5rem text + 0.5rem padding top and bottom */
+}
+
+.stat-skeleton-subtext {
+  display: block;
+  width: 60%;
+  height: 0.875rem;
+  margin: 0.5rem auto 0;
+}
+
+.commander-item-skeleton-img {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.commander-skeleton-name {
+  display: block;
+  width: 55%;
+  height: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.commander-skeleton-stats {
+  display: block;
+  width: 85%;
+  height: 0.8rem;
+}
+
+.color-stat-card-skeleton {
+  border-color: var(--border);
+}
+
+.color-skeleton-name {
+  width: 3.5rem;
+  height: 1rem;
+}
+
+.color-skeleton-plays {
+  width: 2.5rem;
+  height: 0.85rem;
+}
+
+.color-skeleton-record {
+  display: block;
+  width: 70%;
+  height: 0.9rem;
+  margin: 0 auto 0.5rem;
+}
+
+.color-skeleton-rate {
+  display: block;
+  width: 2.5rem;
+  height: 1.25rem;
+  margin: 0 auto;
+}
+
+.section-note-skeleton {
+  display: inline-block;
+  width: 10rem;
+  height: 0.8rem;
+  vertical-align: middle;
+}
+
+.combo-tier-skeleton-pct {
+  display: block;
+  width: 3rem;
+  height: 1.9rem;
+  margin: 0 auto 0.3rem;
+}
+
+.combo-tier-skeleton-label {
+  display: block;
+  width: 60%;
+  height: 0.85rem;
+  margin: 0 auto 0.3rem;
+}
+
+.combo-tier-skeleton-sub {
+  display: block;
+  width: 75%;
+  height: 0.72rem;
+  margin: 0 auto;
+}
+
+.combo-skeleton-pips {
+  width: 40px;
+  height: 12px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.combo-skeleton-name {
+  flex: 1;
+  max-width: 8rem;
+  height: 1rem;
+}
+
+.combo-skeleton-meta {
+  width: 6rem;
+  height: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .stat-skeleton-value {
+    height: 1.8rem; /* .stat-value drops to 1.5rem here */
+  }
+  .stat-skeleton-value--name {
+    height: 1.2rem;
+  }
+}
+
 /* Color combinations — tier breakdown */
 .combo-tiers {
   display: grid;

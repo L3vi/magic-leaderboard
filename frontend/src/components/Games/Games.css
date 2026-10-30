@@ -107,43 +107,59 @@
 
 /* While loading, fill the same area the loaded list occupies (matching
    tab-content's height calc, navbar-aware on mobile) so the shimmer spans
-   the whole page. Scoped to aria-busy so the real list is untouched. */
+   the whole page. The filter header renders above the shimmer too, so its
+   full box (--header-height content + 0.25rem padding top and bottom + 1px
+   border + 0.5rem bottom margin) comes off the fill height. Scoped to
+   aria-busy so the real list is untouched. */
 .game-history[aria-busy="true"] .game-history-list {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100vh - var(--header-height) * 2 - 1rem - 1px);
+  /* The loaded list is a block, so its first row's 5px top margin collapses
+     into the header's 0.5rem bottom margin. A flex list doesn't collapse, so
+     pull the list up by that 5px to keep the first row at the same y. */
+  margin-top: -5px;
 }
 
 /* Reuse .game-row for box sizing (surface, radius, min-height, padding,
-   column layout) but strip interactivity. The rows grow to share the page
-   height evenly and center their shimmer content vertically. */
+   column layout) but strip interactivity. Rows may grow to share the page
+   height but never shrink below their content, or the date bar collapses
+   and the row ends up shorter than the real row it stands in for. */
 .game-row-skeleton {
   cursor: default;
-  flex: 1 1 0;
+  flex: 1 0 auto;
   justify-content: center;
 }
 
 @media (max-width: 639px) {
   /* Match tab-content's mobile height (header + bottom nav + safe-area). */
   .game-history[aria-busy="true"] .game-history-list {
-    min-height: calc(100vh - var(--header-height) - var(--navbar-height) - 4px);
+    min-height: calc(100vh - var(--header-height) * 2 - 1rem - 1px - var(--navbar-height) - 4px);
   }
 }
 
 .game-row-skeleton:hover {
   background: var(--surface);
   box-shadow: none;
+  transform: none;
 }
 
+/* Sized to the real row's line boxes (date and name text are 0.95rem on a
+   ~1.15 line-height) so a shimmer row is as tall as the row that replaces
+   it; a shorter stand-in lets the list grow as the rows fill in. */
 .game-skeleton-date {
-  width: 96px;
+  flex: none;
+  width: 120px;
   height: 0.95rem;
+  margin: 0.1rem 0;
 }
 
 .game-skeleton-players {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  /* The real strip reserves a scrollbar gutter beneath the tiles. */
+  min-height: 100px;
 }
 
 .game-skeleton-player {
@@ -162,7 +178,8 @@
 
 .game-skeleton-label {
   width: 52px;
-  height: 0.7rem;
+  height: 0.8rem;
+  margin: 0.15rem 0;
 }
 
 @media (min-width: 640px) {

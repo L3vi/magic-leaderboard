@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../../context/SessionContext';
 import StaticDropdown, { DropdownOption } from '../StaticDropdown/StaticDropdown';
+import '../../styles/skeleton.css';
 import './SeasonSelector.css';
 
 const NEW_SESSION = '__new_session__';
@@ -46,8 +47,21 @@ const count = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
  * plus a "+ New season" entry that opens the create-session page.
  */
 const SeasonSelector: React.FC = () => {
-  const { sessions, activeSession, setActiveSession } = useSession();
+  const { sessions, sessionsLoaded, activeSession, setActiveSession } = useSession();
   const navigate = useNavigate();
+
+  // Until the season list arrives, hold the trigger's footprint with a shimmer
+  // pill: the trigger is taller than the title, so rendering nothing here lets
+  // the whole header grow by a few pixels when it mounts, nudging every tab's
+  // content down after load.
+  if (!sessionsLoaded && (!sessions || sessions.length === 0)) {
+    return (
+      <span className="season-switch season-switch--placeholder" aria-hidden="true">
+        <span className="skeleton skeleton-bar season-switch__placeholder-bar" />
+        <ChevronIcon open={false} />
+      </span>
+    );
+  }
 
   if (!sessions || sessions.length === 0) return null;
 

@@ -17,6 +17,16 @@ const COLUMN_LABELS: Record<SortKey, string> = {
   games: "Games",
 };
 
+const COLUMN_CLASS: Record<SortKey, string> = {
+  name: "player-name",
+  score: "player-score",
+  weightedAverage: "weighted-avg-col",
+  average: "player-average",
+  games: "games-col",
+};
+
+const SKELETON_ROWS = 7;
+
 /**
  * Players component for the Magic Leaderboard app.
  * - Displays sortable player stats in a responsive, accessible layout.
@@ -68,30 +78,6 @@ const Players: React.FC = () => {
     return hasResults && (sortKey === "score" || sortKey === "average" || sortKey === "weightedAverage") && sortOrder === "desc";
   }, [hasResults, sortKey, sortOrder]);
 
-  // Show loading state: shimmer placeholder rows that mirror the real
-  // leaderboard layout (name on the left, three stat columns on the right)
-  // so the table doesn't visibly jump when data arrives.
-  if (loading) {
-    return (
-      <section
-        className="leaderboard main-section"
-        aria-busy="true"
-        aria-label="Loading players"
-      >
-        <div className="leaderboard-skeleton" role="presentation">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div className="player-row leaderboard-skeleton-row" key={i}>
-              <span className="skeleton skeleton-bar skeleton-name" />
-              <span className="skeleton skeleton-bar skeleton-num" />
-              <span className="skeleton skeleton-bar skeleton-num" />
-              <span className="skeleton skeleton-bar skeleton-num" />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   // Keyboard navigation for sortable headers
   const handleHeaderKeyDown = (
     e: React.KeyboardEvent<HTMLSpanElement>,
@@ -115,24 +101,28 @@ const Players: React.FC = () => {
     navigate(`/players/${encodeURIComponent(playerScore.name)}`);
   }
 
+  // The column headers render in both states so the table's chrome is in place
+  // before data arrives; only the rows swap from shimmer to real. The shimmer
+  // rows reuse the real column classes, so they line up under the headers and
+  // share the compact-screen horizontal scroll instead of being a fixed-width
+  // stub next to a wider header.
   return (
-    <section className="leaderboard main-section" role="table">
+    <section
+      className="leaderboard main-section"
+      role="table"
+      aria-busy={loading || undefined}
+      aria-label={loading ? "Loading players" : undefined}
+    >
       {/* On compact screens this region scrolls horizontally so every column
           (Average, Games included) stays reachable without rotating the device.
           The Name column is pinned left; a right-edge fade hints at more. */}
       <div className="leaderboard-scroll-region">
         <div className="leaderboard-scroll" role="presentation">
       <div className="leaderboard-header" role="row" ref={headerRef}>
-        {Object.entries(COLUMN_LABELS).map(([key, label]) => (
+        {(Object.keys(COLUMN_LABELS) as SortKey[]).map((key) => (
           <span
             key={key}
-            className={`leaderboard-col ${
-              key === "name" ? "player-name"
-                : key === "score" ? "player-score"
-                : key === "average" ? "player-average"
-                : key === "weightedAverage" ? "weighted-avg-col"
-                : "games-col"
-            }`}
+            className={`leaderboard-col ${COLUMN_CLASS[key]}`}
             style={{ cursor: "pointer", userSelect: "none" }}
             tabIndex={0}
             role="columnheader"
@@ -143,11 +133,11 @@ const Players: React.FC = () => {
                   : "descending"
                 : undefined
             }
-            aria-label={`Sort by ${label}`}
-            onClick={() => handleSort(key as SortKey)}
-            onKeyDown={(e) => handleHeaderKeyDown(e, key as SortKey)}
+            aria-label={`Sort by ${COLUMN_LABELS[key]}`}
+            onClick={() => handleSort(key)}
+            onKeyDown={(e) => handleHeaderKeyDown(e, key)}
           >
-            {label}
+            {COLUMN_LABELS[key]}
             <span
               className="sort-arrow"
               style={{
@@ -160,6 +150,23 @@ const Players: React.FC = () => {
           </span>
         ))}
       </div>
+      {loading ? (
+        <div className="leaderboard-list leaderboard-skeleton" role="presentation">
+          {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+            <div className="player-row leaderboard-skeleton-row" key={i}>
+              {(Object.keys(COLUMN_CLASS) as SortKey[]).map((key) => (
+                <span key={key} className={`leaderboard-col ${COLUMN_CLASS[key]}`}>
+                  <span
+                    className={`skeleton skeleton-bar ${
+                      key === "name" ? "skeleton-name" : "skeleton-num"
+                    }`}
+                  />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
       <div className="leaderboard-list" role="rowgroup">
         {sortedPlayers.map((playerScore, index) => (
           <PlayerRow
@@ -176,6 +183,7 @@ const Players: React.FC = () => {
           />
         ))}
       </div>
+      )}
         </div>
         <div className="leaderboard-scroll-fade" aria-hidden="true" />
       </div>

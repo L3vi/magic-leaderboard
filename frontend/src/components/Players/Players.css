@@ -310,13 +310,14 @@
 /* Loading skeleton      */
 /* ===================== */
 
-/* Fill the same area the loaded leaderboard occupies (tab-content sizes
-   itself with this exact calc) so the shimmer reads as a full-height
-   placeholder rather than a short stub near the top. */
+/* The column headers render above the shimmer too, so the fill height is the
+   page area minus the header row's full box (its --header-height content plus
+   0.25rem padding top and bottom plus the 1px bottom border). Without that
+   subtraction the shimmer overshoots and the page scrolls while loading. */
 .leaderboard-skeleton {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100vh - var(--header-height) * 2 - 0.5rem - 1px);
 }
 
 /* Reuse .player-row for box sizing (surface, radius, padding, margin,
@@ -331,26 +332,41 @@
 @media (max-width: 639px) {
   /* Match tab-content's mobile height (header + bottom nav + safe-area). */
   .leaderboard-skeleton {
-    min-height: calc(100vh - var(--header-height) - var(--navbar-height) - 4px);
+    min-height: calc(100vh - var(--header-height) * 2 - 0.5rem - 1px - var(--navbar-height) - 4px);
   }
 }
 
 .leaderboard-skeleton-row:hover {
   background: var(--surface);
   box-shadow: none;
+  transform: none;
+}
+
+/* Each shimmer bar sits inside a real column cell so it inherits the column's
+   width and alignment (left for Name, centered for the numbers). */
+.leaderboard-skeleton-row > .leaderboard-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A real cell is one line of the row's 1.5rem text; hold that line box so a
+     shimmer row is exactly as tall as the row that replaces it. content-box
+     keeps the compact-screen cell padding from eating into it. */
+  min-height: 1.15em;
+  box-sizing: content-box;
+}
+
+.leaderboard-skeleton-row > .leaderboard-col.player-name {
+  justify-content: flex-start;
 }
 
 .leaderboard-skeleton-row .skeleton-name {
-  flex: 1 1 auto;
-  max-width: 45%;
+  width: 70%;
   height: 1.1rem;
 }
 
 .leaderboard-skeleton-row .skeleton-num {
-  flex: 0 0 auto;
-  width: 48px;
+  width: 44px;
   height: 1.1rem;
-  margin-left: 0.5rem;
 }
 
 @media (min-width: 640px) {
@@ -358,7 +374,7 @@
     height: 1.4rem;
   }
   .leaderboard-skeleton-row .skeleton-num {
-    width: 90px;
+    width: 64px;
     height: 1.4rem;
   }
 }
