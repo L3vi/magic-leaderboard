@@ -23,6 +23,12 @@ body.modal-open {
 
 html.modal-open {
   overflow: hidden;
+  /* The scroll lock pins <body> (position: fixed), leaving the document nothing
+     to scroll. In the iOS 26 home-screen app an unscrollable document shrinks
+     the viewport by the status-bar height (874pt → 812pt on an iPhone 17 Pro),
+     and the gap shows as a bar along the bottom. Staying taller than the full
+     screen avoids it; 100% isn't enough, it tracks the already-shrunk viewport. */
+  min-height: calc(100vh + 1px);
 }
 
 /* A PageShell overlay is position:fixed and covers the viewport, but the mobile

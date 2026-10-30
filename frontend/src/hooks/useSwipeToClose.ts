@@ -3,14 +3,19 @@ import { animate, type MotionValue } from 'framer-motion';
 
 // A swipe must begin this close to the left edge. Wide enough to be easy to
 // hit, narrow enough that a stray horizontal drag mid-screen does nothing.
-// (In Safari the outermost strip belongs to the browser's own back gesture;
-// in a home-screen install there is no such gesture, which is why we need one.)
 const EDGE_PX = 40;
 // Movement before we commit to "horizontal swipe" vs "vertical scroll".
 const LOCK_PX = 10;
 // Release past this fraction of the page width, or faster than this, closes.
 const CLOSE_FRACTION = 0.3;
 const CLOSE_VELOCITY = 0.5; // px per ms
+
+// Only the home-screen install needs our own gesture. In a browser tab, Safari's
+// edge swipe already goes Back, and running both on one swipe pops two history
+// entries (detail page → tab → the tab before it).
+const isStandalone = () =>
+  window.matchMedia('(display-mode: standalone)').matches ||
+  (navigator as Navigator & { standalone?: boolean }).standalone === true;
 
 /**
  * Swipe right from the left edge to close an overlay page. The page follows
@@ -34,7 +39,7 @@ export function useSwipeToClose(
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !isStandalone()) return;
 
     let startX = 0;
     let startY = 0;
