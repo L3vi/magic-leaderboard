@@ -120,7 +120,7 @@
   background: var(--header-scrim);
   padding: 1rem 1.5rem;
   /* Home-screen app: the page starts under the status bar / notch. */
-  padding-top: calc(1rem + env(safe-area-inset-top, 0px));
+  padding-top: calc(1rem + var(--top-inset));
   z-index: 10;
   display: flex;
   align-items: center;
@@ -186,7 +186,7 @@
 @media (max-width: 639px) {
   .page-shell__header {
     padding: 0.75rem 1rem;
-    padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+    padding-top: calc(0.75rem + var(--top-inset));
     gap: 0.5rem;
   }
   .page-shell__header h1 {
